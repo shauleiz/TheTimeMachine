@@ -3,9 +3,7 @@ package com.example.thetimemachine;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.widget.Button;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -27,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Add alarm floating button
         // Get it from the XML file then define what it does when clicked
-        FloatingActionButton AddAlarm_Button = findViewById(R.id.Add_Allarm_fab);
-        AddAlarm_Button.setOnClickListener(v -> alarmViewModel.NewAlarm());
+        FloatingActionButton AddAlarm_Button = findViewById(R.id.Add_Alarm_fab);
+        AddAlarm_Button.setOnClickListener(v -> alarmViewModel.AddAlarm());
     }
 }

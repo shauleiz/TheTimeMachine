@@ -18,7 +18,7 @@
         tools:listitem="@layout/recycler_view_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/Add_Allarm_fab"
+        android:id="@+id/Add_Alarm_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
@@ -27,9 +27,12 @@
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/alarm_add"
         android:src="@drawable/baseline_alarm_add_48"
+        android:tooltipText="Add Alarm"
         app:backgroundTint="?attr/colorPrimaryInverse"
         app:fabSize="auto"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:fabCustomSize="56dp"
+        app:maxImageSize="40dp"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
