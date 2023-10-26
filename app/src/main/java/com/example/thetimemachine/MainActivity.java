@@ -5,8 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.example.thetimemachine.AlarmListFragment;
+
 public class MainActivity extends AppCompatActivity {
 
     public MainActivity() {
@@ -15,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     // ViewModel object of class MyViewModel
     // Holds all UI variables related to this activity
-    AlarmViewModel alarmViewModel;
+    public AlarmViewModel alarmViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +31,14 @@ public class MainActivity extends AppCompatActivity {
         //FloatingActionButton AddAlarm_Button = findViewById(R.id.Add_Alarm_fab);
         //AddAlarm_Button.setOnClickListener(v -> alarmViewModel.AddAlarm());
 
-/*
+
         // Display Fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
-                    .add(R.id.fragment_alarm_list, AlarmListFragment.class, null)
+                    .add(R.id.fragment_container_view, AlarmListFragment.class, null)
                     .commit();
       }
-*/
+
 }
 }
