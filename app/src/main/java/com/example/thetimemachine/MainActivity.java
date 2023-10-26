@@ -6,8 +6,12 @@ import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+import com.example.thetimemachine.AlarmListFragment;
 public class MainActivity extends AppCompatActivity {
+
+    public MainActivity() {
+        super(R.layout.activity_main);
+    }
 
     // ViewModel object of class MyViewModel
     // Holds all UI variables related to this activity
@@ -21,11 +25,21 @@ public class MainActivity extends AppCompatActivity {
         alarmViewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
 
         // Display the main Activity window
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
 
         // Add alarm floating button
         // Get it from the XML file then define what it does when clicked
-        FloatingActionButton AddAlarm_Button = findViewById(R.id.Add_Alarm_fab);
-        AddAlarm_Button.setOnClickListener(v -> alarmViewModel.AddAlarm());
-    }
+        //FloatingActionButton AddAlarm_Button = findViewById(R.id.Add_Alarm_fab);
+        //AddAlarm_Button.setOnClickListener(v -> alarmViewModel.AddAlarm());
+
+/*
+        // Display Fragment
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.fragment_alarm_list, AlarmListFragment.class, null)
+                    .commit();
+      }
+*/
+}
 }
