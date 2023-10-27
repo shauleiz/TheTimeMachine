@@ -16,8 +16,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class AlarmListFragment extends Fragment {
 
-    FloatingActionButton AddAlarm_Button;
 
+    private FloatingActionButton AddAlarm_Button;
+
+    // Default constructor
     public AlarmListFragment() {
         // Required empty public constructor
     }
@@ -41,8 +43,13 @@ public class AlarmListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Get the handle to the Add Alarm button (FAB)
+        // Then define what to do when clicked
         AddAlarm_Button = view.findViewById(R.id.Add_Alarm_fab);
         AddAlarm_Button.setOnClickListener(v -> AddAlarmClicked());
+
+
+
     }
 
     /**
@@ -61,4 +68,7 @@ public class AlarmListFragment extends Fragment {
                     addToBackStack("tag2").
                     commit();
     }
+
+
+
 }
