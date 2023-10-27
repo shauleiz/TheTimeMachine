@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
                     .add(R.id.fragment_container_view, AlarmListFragment.class, null)
+                    //.addToBackStack("tag1")
                     .commit();
       }
-
-}
+    }
 }

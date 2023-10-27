@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,17 +22,6 @@ public class AlarmListFragment extends Fragment {
         // Required empty public constructor
     }
 
-
-    // TODO: Rename and change types and number of parameters
- /*   public static AlarmListFragment newInstance(String param1, String param2) {
-        AlarmListFragment fragment = new AlarmListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-*/
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,9 +45,20 @@ public class AlarmListFragment extends Fragment {
         AddAlarm_Button.setOnClickListener(v -> AddAlarmClicked());
     }
 
-
+    /**
+     * Call the fragment
+     * where a new entry is added to the list of alarms
+     *
+     */
     void AddAlarmClicked()
     {
-
+        // Replace current fragment with the Setup Alarm fragment
+        final FragmentActivity parent = getActivity();
+        if (parent != null)
+            parent.getSupportFragmentManager().
+                beginTransaction().
+                replace(R.id.fragment_container_view, SetUpAlarmFragment.class, null).
+                    addToBackStack("tag2").
+                    commit();
     }
 }
