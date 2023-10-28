@@ -1,4 +1,4 @@
-package com.example.thetimemachine;
+package com.example.thetimemachine.UI;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -10,13 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TimePicker;
+
+import com.example.thetimemachine.Alarm;
+import com.example.thetimemachine.R;
 
 public class SetUpAlarmFragment extends Fragment {
 
-    private SetUpAlarmViewModel mViewModel;
     private Button Ok_Button;
     private TimePicker timePicker;
+    private EditText title;
+    private Alarm alarm;
 
 
     // Default constructor
@@ -43,16 +48,25 @@ public class SetUpAlarmFragment extends Fragment {
         // Get Time Picker and modify it
         timePicker = view.findViewById(R.id.time_picker);
         InitTimePicker(timePicker, true); // newalarm=true for default values
+
+        // The Title edit field
+        title = view.findViewById((R.id.alarm_title));
+
     }
 
     // OK Button clicked
     private void OkClicked(){
+        final MainActivity parent = (MainActivity) getActivity();
+
         // Get the time from the time picker and pass it to the ViewModel
         int h = timePicker.getHour();
         int m = timePicker.getMinute();
+        String t = title.getText().toString();
+        alarm = new Alarm(h, m, t);
+        parent.alarmViewModel.AddAlarm(alarm);
+
 
         // Go back to the Alarm List Fragment
-        final FragmentActivity parent = getActivity();
         if (parent != null)
             parent.getSupportFragmentManager().
                     beginTransaction().

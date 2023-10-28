@@ -12,6 +12,6 @@ import androidx.lifecycle.ViewModel;
 */
 public class AlarmViewModel extends ViewModel {
 
-    public void AddAlarm() {
+    public void AddAlarm(Alarm alarm) {
     }
 }

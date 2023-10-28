@@ -5,12 +5,12 @@
     android:id="@+id/SetUpAlarmFrag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SetUpAlarmFragment">
+    tools:context=".UI.SetUpAlarmFragment">
 
     <TextClock
         android:id="@+id/textClock"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:text="@string/Text_Clock"
         android:textColor="#512222"
@@ -29,6 +29,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textClock" />
+
+    <EditText
+        android:id="@+id/alarm_title"
+        android:layout_width="400dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:autofillHints="@string/title_hint"
+        android:hint="@string/title_hint"
+        android:inputType="textCapSentences|textAutoCorrect"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time_picker" />
 
     <Button
         android:id="@+id/OK"

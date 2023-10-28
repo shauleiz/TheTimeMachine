@@ -1,9 +1,12 @@
-package com.example.thetimemachine;
+package com.example.thetimemachine.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
+
+import com.example.thetimemachine.AlarmViewModel;
+import com.example.thetimemachine.R;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -23,14 +26,6 @@ public class MainActivity extends AppCompatActivity {
         // Create/acquire the ViewModel object of class AlarmViewModel
         alarmViewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
 
-        // Display the main Activity window
-        //setContentView(R.layout.activity_main);
-
-        // Add alarm floating button
-        // Get it from the XML file then define what it does when clicked
-        //FloatingActionButton AddAlarm_Button = findViewById(R.id.Add_Alarm_fab);
-        //AddAlarm_Button.setOnClickListener(v -> alarmViewModel.AddAlarm());
-
 
         // Display Fragment
         if (savedInstanceState == null) {
@@ -41,4 +36,6 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
       }
     }
+
+
 }
