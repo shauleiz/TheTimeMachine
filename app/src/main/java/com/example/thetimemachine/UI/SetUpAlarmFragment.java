@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import com.example.thetimemachine.Alarm;
+import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.R;
 
 public class SetUpAlarmFragment extends Fragment {
@@ -22,6 +24,8 @@ public class SetUpAlarmFragment extends Fragment {
     private TimePicker timePicker;
     private EditText title;
     private Alarm alarm;
+    private AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
+    private MainActivity parent;
 
 
     // Default constructor
@@ -52,6 +56,42 @@ public class SetUpAlarmFragment extends Fragment {
         // The Title edit field
         title = view.findViewById((R.id.alarm_title));
 
+        // Get instance of SetUpAlarmValues sub-class
+        parent = (MainActivity) getActivity();
+        setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
+
+        // Set observers on the time picker
+        SetTimePickerObserver();
+
+        // Observers to change in the setup values:
+        setUpAlarmValues.getHour().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer h) {
+                if (h != null) {
+                    timePicker.setHour(h);
+                }
+            }
+        });
+
+        setUpAlarmValues.getMinute().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer m) {
+                if (m != null) {
+                    timePicker.setMinute(m);
+                }
+            }
+        });
+
+
+        setUpAlarmValues.getTitle().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String t) {
+                if (t != null) {
+                    title.setText(t);
+                }
+            }
+        });
+
     }
 
     // OK Button clicked
@@ -62,8 +102,12 @@ public class SetUpAlarmFragment extends Fragment {
         int h = timePicker.getHour();
         int m = timePicker.getMinute();
         String t = title.getText().toString();
-        alarm = new Alarm(h, m, t);
-        parent.alarmViewModel.AddAlarm(alarm);
+        //alarm = new Alarm(h, m, t);
+        //parent.alarmViewModel.AddAlarm(alarm);
+        setUpAlarmValues.setHour(h);
+        setUpAlarmValues.setMinute(m);
+        setUpAlarmValues.setTitle(t);
+
 
 
         // Go back to the Alarm List Fragment
@@ -90,5 +134,17 @@ public class SetUpAlarmFragment extends Fragment {
             timePicker.animate();
         }
         // TODO: newalarm == false: Modify values of existing alarm.
+    }
+
+    private  void SetTimePickerObserver(){
+        //title.setOnT
+        timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                setUpAlarmValues.setHour(hourOfDay);
+                setUpAlarmValues.setMinute(minute);
+
+            }
+        });
     }
 }
