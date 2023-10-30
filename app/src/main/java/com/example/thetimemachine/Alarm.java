@@ -6,12 +6,12 @@ import java.util.Calendar;
  *  Class that holds a single alarm item
  */
 public class Alarm {
-    private String title;
+    private String label;
     private int alarmId;
     private int hour, minute;
 
     // Constructor - Structure that  holds definition of a single alarm entry
-    public Alarm(int hour, int minute, String title){
+    public Alarm(int hour, int minute, String label){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -22,7 +22,7 @@ public class Alarm {
         this.alarmId = calendar.get(Calendar.MILLISECOND);
         this.hour =  hour;
         this.minute = minute;
-        this.title = title;
+        this.label = label;
     }
 
     // Getter functions
@@ -38,7 +38,7 @@ public class Alarm {
         return minute;
     }
 
-    public String getTitle() {
-        return title;
+    public String getLabel() {
+        return label;
     }
 }

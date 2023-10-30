@@ -22,30 +22,30 @@ public class AlarmViewModel extends ViewModel {
     // This Class holds the values of the alarm that is being added/modified
     public class SetUpAlarmValues{
         MutableLiveData<Integer> hour, minute;
-        MutableLiveData<String> title;
+        MutableLiveData<String> label;
 
         // Default constructor
         // TODO: Take Default values
         public SetUpAlarmValues() {
             this.hour = new MutableLiveData<Integer>();
             this.minute = new MutableLiveData<Integer>();
-            this.title = new MutableLiveData<String>();
+            this.label = new MutableLiveData<String>();
 
             this.hour.setValue(00);
             this.minute.setValue(00);
-            this.title.setValue("");
+            this.label.setValue("");
         }
 
-        public SetUpAlarmValues(int hour, int minute, String title, boolean newAlarm){
+        public SetUpAlarmValues(int hour, int minute, String label, boolean newAlarm){
             this.hour = new MutableLiveData<Integer>();
             this.minute = new MutableLiveData<Integer>();
-            this.title = new MutableLiveData<String>();
+            this.label = new MutableLiveData<String>();
 
             if (newAlarm){ // Add new alarm
               // TODO: Get the default values and ignore the passed values
               this.hour.setValue(hour);
               this.minute.setValue(minute);
-              this.title.setValue(title);
+              this.label.setValue(label);
           }
           // TODO: Modify alarm
         }
@@ -58,10 +58,10 @@ public class AlarmViewModel extends ViewModel {
             this.minute.setValue(minute);
         }
 
-        public void setTitle(String title) {
-            String t = this.title.getValue().toString();
-            if (!(t.equals(title)))
-                this.title.setValue(title);
+        public void setLabel(String label) {
+            String t = this.label.getValue().toString();
+            if (!(t.equals(label)))
+                this.label.setValue(label);
         }
 
         public MutableLiveData<Integer> getHour() {
@@ -72,8 +72,8 @@ public class AlarmViewModel extends ViewModel {
             return minute;
         }
 
-        public MutableLiveData<String> getTitle() {
-            return title;
+        public MutableLiveData<String> getLabel() {
+            return label;
         }
     }
     public void AddAlarm(Alarm alarm) {

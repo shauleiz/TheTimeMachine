@@ -2,7 +2,7 @@
     <string name="app_name">The Time Machine</string>
     <string name="alarm_add">Add Alarm</string>
     <string name="Text_Clock">Text Clock - 2nd Frame</string>
-    <string name="title_hint">Alarm Label</string>
+    <string name="label_hint">Alarm Label</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

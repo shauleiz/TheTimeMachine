@@ -16,7 +16,7 @@
         tools:src="@tools:sample/avatars[2]" />
 
     <TextView
-        android:id="@+id/AlarmTitle"
+        android:id="@+id/AlarmLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"

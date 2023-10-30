@@ -4,7 +4,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 
 import android.text.Editable;
@@ -24,7 +23,7 @@ public class SetUpAlarmFragment extends Fragment {
 
     private Button Ok_Button;
     private TimePicker timePicker;
-    private EditText title;
+    private EditText label;
     private Alarm alarm;
     private AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
     private MainActivity parent;
@@ -40,12 +39,12 @@ public class SetUpAlarmFragment extends Fragment {
     public void onDestroy(){
 
         // Get the selected values
-        String t = title.getText().toString();
+        String t = label.getText().toString();
         int hourOfDay = timePicker.getHour();
         int minute = timePicker.getMinute();
 
         // Save the values on the ViewModel
-        setUpAlarmValues.setTitle(t);
+        setUpAlarmValues.setLabel(t);
         setUpAlarmValues.setHour(hourOfDay);
         setUpAlarmValues.setMinute(minute);
 
@@ -76,9 +75,9 @@ public class SetUpAlarmFragment extends Fragment {
         timePicker = view.findViewById(R.id.time_picker);
         InitTimePicker(timePicker, true); // newalarm=true for default values
 
-        // The Title edit field
-        title = (EditText) view.findViewById((R.id.alarm_title));
-        title.setText(setUpAlarmValues.getTitle().getValue());
+        // The Label edit field
+        label = (EditText) view.findViewById((R.id.alarm_label));
+        label.setText(setUpAlarmValues.getLabel().getValue());
 
 
         // Set observers on the time picker fragment
@@ -107,11 +106,11 @@ public class SetUpAlarmFragment extends Fragment {
 
 
 
-        setUpAlarmValues.getTitle().observe(getViewLifecycleOwner(), new Observer<String>() {
+        setUpAlarmValues.getLabel().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String t) {
                 if (t != null) {
-                    title.setText(t);
+                    label.setText(t);
                 }
             }
         });
@@ -128,12 +127,12 @@ public class SetUpAlarmFragment extends Fragment {
         // Get the time from the time picker and pass it to the ViewModel
         int h = timePicker.getHour();
         int m = timePicker.getMinute();
-        String t = title.getText().toString();
+        String t = label.getText().toString();
         //alarm = new Alarm(h, m, t);
         //parent.alarmViewModel.AddAlarm(alarm);
         setUpAlarmValues.setHour(h);
         setUpAlarmValues.setMinute(m);
-        setUpAlarmValues.setTitle(t);
+        setUpAlarmValues.setLabel(t);
 
         //TODO: Put new/modified alarm entry in alarm list
 
@@ -168,7 +167,7 @@ public class SetUpAlarmFragment extends Fragment {
     // Observe changes to the time picker introduced by the user
     // If the time has changed then update the ViewModel
     private  void SetTimePickerObserver(){
-        //title.setOnT
+        //label.setOnT
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
 
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
@@ -179,9 +178,9 @@ public class SetUpAlarmFragment extends Fragment {
         });
     }
 
-    // Observe changes in the title
-    private void TitleObserver(){
-        title.addTextChangedListener(new TextWatcher() {
+    // Observe changes in the label
+    private void LabelObserver(){
+        label.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -191,8 +190,8 @@ public class SetUpAlarmFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 if (s.length()>0)
                 { String t = s.toString();
-                //String t = title.getText().toString();
-               setUpAlarmValues.setTitle(t);
+                //String t = label.getText().toString();
+               setUpAlarmValues.setLabel(t);
                 }
             }
         });
