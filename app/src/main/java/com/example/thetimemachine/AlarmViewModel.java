@@ -31,8 +31,8 @@ public class AlarmViewModel extends ViewModel {
             this.minute = new MutableLiveData<Integer>();
             this.title = new MutableLiveData<String>();
 
-            this.hour.setValue(12);
-            this.minute.setValue(07);
+            this.hour.setValue(00);
+            this.minute.setValue(00);
             this.title.setValue("");
         }
 
@@ -59,7 +59,9 @@ public class AlarmViewModel extends ViewModel {
         }
 
         public void setTitle(String title) {
-            this.title.setValue(title);
+            String t = this.title.getValue().toString();
+            if (!(t.equals(title)))
+                this.title.setValue(title);
         }
 
         public MutableLiveData<Integer> getHour() {

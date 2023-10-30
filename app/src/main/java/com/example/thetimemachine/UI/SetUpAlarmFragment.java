@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +37,23 @@ public class SetUpAlarmFragment extends Fragment {
 
 
     @Override
+    public void onDestroy(){
+
+        // Get the selected values
+        String t = title.getText().toString();
+        int hourOfDay = timePicker.getHour();
+        int minute = timePicker.getMinute();
+
+        // Save the values on the ViewModel
+        setUpAlarmValues.setTitle(t);
+        setUpAlarmValues.setHour(hourOfDay);
+        setUpAlarmValues.setMinute(minute);
+
+
+        super.onDestroy();
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_set_up_alarm, container, false);
@@ -43,6 +62,10 @@ public class SetUpAlarmFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Get instance of SetUpAlarmValues sub-class
+        parent = (MainActivity) getActivity();
+        setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
 
         // Get the handle to the Add Alarm button (FAB)
         // Then define what to do when clicked
@@ -54,14 +77,13 @@ public class SetUpAlarmFragment extends Fragment {
         InitTimePicker(timePicker, true); // newalarm=true for default values
 
         // The Title edit field
-        title = view.findViewById((R.id.alarm_title));
+        title = (EditText) view.findViewById((R.id.alarm_title));
+        title.setText(setUpAlarmValues.getTitle().getValue());
 
-        // Get instance of SetUpAlarmValues sub-class
-        parent = (MainActivity) getActivity();
-        setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
 
-        // Set observers on the time picker
-        SetTimePickerObserver();
+        // Set observers on the time picker fragment
+        // SetTimePickerObserver();
+        // TitleObserver();
 
         // Observers to change in the setup values:
         setUpAlarmValues.getHour().observe(getViewLifecycleOwner(), new Observer<Integer>() {
@@ -83,6 +105,8 @@ public class SetUpAlarmFragment extends Fragment {
         });
 
 
+
+
         setUpAlarmValues.getTitle().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String t) {
@@ -98,6 +122,9 @@ public class SetUpAlarmFragment extends Fragment {
     private void OkClicked(){
         final MainActivity parent = (MainActivity) getActivity();
 
+        /// This part should be replaced by:
+        /// 1. Put new/modified alarm entry in alarm list
+        /// 2. Reset setUpAlarmValues
         // Get the time from the time picker and pass it to the ViewModel
         int h = timePicker.getHour();
         int m = timePicker.getMinute();
@@ -108,9 +135,11 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues.setMinute(m);
         setUpAlarmValues.setTitle(t);
 
+        //TODO: Put new/modified alarm entry in alarm list
 
+        //TODO: Reset setUpAlarmValues in the View Model
 
-        // Go back to the Alarm List Fragment
+        // Display the Alarm List Fragment
         if (parent != null)
             parent.getSupportFragmentManager().
                     beginTransaction().
@@ -129,13 +158,15 @@ public class SetUpAlarmFragment extends Fragment {
 
         if (newalarm)
         { // This is a new alarm - set default values
-            timePicker.setHour(12);
-            timePicker.setMinute(0);
+            timePicker.setHour(setUpAlarmValues.getHour().getValue());
+            timePicker.setMinute(setUpAlarmValues.getMinute().getValue());
             timePicker.animate();
         }
         // TODO: newalarm == false: Modify values of existing alarm.
     }
 
+    // Observe changes to the time picker introduced by the user
+    // If the time has changed then update the ViewModel
     private  void SetTimePickerObserver(){
         //title.setOnT
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
@@ -144,6 +175,25 @@ public class SetUpAlarmFragment extends Fragment {
                 setUpAlarmValues.setHour(hourOfDay);
                 setUpAlarmValues.setMinute(minute);
 
+            }
+        });
+    }
+
+    // Observe changes in the title
+    private void TitleObserver(){
+        title.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length()>0)
+                { String t = s.toString();
+                //String t = title.getText().toString();
+               setUpAlarmValues.setTitle(t);
+                }
             }
         });
     }
