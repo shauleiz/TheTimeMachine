@@ -26,6 +26,7 @@ public class SetUpAlarmFragment extends Fragment {
     private EditText label;
     private Alarm alarm;
     private AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
+    private AlarmViewModel alarmViewModel;
     private MainActivity parent;
 
 
@@ -65,6 +66,7 @@ public class SetUpAlarmFragment extends Fragment {
         // Get instance of SetUpAlarmValues sub-class
         parent = (MainActivity) getActivity();
         setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
+        alarmViewModel = parent.alarmViewModel;
 
         // Get the handle to the Add Alarm button (FAB)
         // Then define what to do when clicked
@@ -135,6 +137,8 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues.setLabel(t);
 
         //TODO: Put new/modified alarm entry in alarm list
+        alarmViewModel.AddAlarm(h,m,t,true);
+
 
         //TODO: Reset setUpAlarmValues in the View Model
 
