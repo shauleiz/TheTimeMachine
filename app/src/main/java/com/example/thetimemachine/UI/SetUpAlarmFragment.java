@@ -171,7 +171,6 @@ public class SetUpAlarmFragment extends Fragment {
     // Observe changes to the time picker introduced by the user
     // If the time has changed then update the ViewModel
     private  void SetTimePickerObserver(){
-        //label.setOnT
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
 
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {

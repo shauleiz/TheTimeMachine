@@ -51,6 +51,10 @@ public class AlarmViewModel extends ViewModel {
 
         // TODO: Implement getters and setters
 
+        public int getHour() {return hour;}
+        public int getMinute() {return minute;}
+        public String getLabel() {return label;}
+        public boolean isActive() {return active;}
     }
 
 
