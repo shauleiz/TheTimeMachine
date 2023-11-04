@@ -103,6 +103,10 @@ public class AlarmListFragment extends Fragment {
 
     void AddAlarmClicked()
     {
+
+        // Reset the setup alarm values
+        parent.alarmViewModel.setUpAlarmValues.ResetValues();
+
         // Passing parameters to setup fragment
         Bundle b = new Bundle();
         b.putBoolean("INIT_NEWALARM",true);

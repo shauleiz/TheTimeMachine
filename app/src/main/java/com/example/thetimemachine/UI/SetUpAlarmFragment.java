@@ -137,17 +137,16 @@ public class SetUpAlarmFragment extends Fragment {
         int h = timePicker.getHour();
         int m = timePicker.getMinute();
         String t = label.getText().toString();
-        //alarm = new Alarm(h, m, t);
-        //parent.alarmViewModel.AddAlarm(alarm);
-        setUpAlarmValues.setHour(h);
-        setUpAlarmValues.setMinute(m);
-        setUpAlarmValues.setLabel(t);
+//        alarm = new Alarm(h, m, t);
+//        parent.alarmViewModel.AddAlarm(alarm);
+//        setUpAlarmValues.setHour(h);
+//        setUpAlarmValues.setMinute(m);
+//        setUpAlarmValues.setLabel(t);
 
         //Put new/modified alarm entry in alarm list
         alarmViewModel.AddAlarm(h,m,t,true);
 
 
-        //TODO: Reset setUpAlarmValues in the View Model
 
         // Display the Alarm List Fragment
         if (parent != null)
