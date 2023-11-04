@@ -28,6 +28,7 @@ public class SetUpAlarmFragment extends Fragment {
     private AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
     private AlarmViewModel alarmViewModel;
     private MainActivity parent;
+    private Bundle initParams;
 
 
     // Default constructor
@@ -54,6 +55,12 @@ public class SetUpAlarmFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initParams = getArguments();
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_set_up_alarm, container, false);
@@ -75,7 +82,7 @@ public class SetUpAlarmFragment extends Fragment {
 
         // Get Time Picker and modify it
         timePicker = view.findViewById(R.id.time_picker);
-        InitTimePicker(timePicker, true); // newalarm=true for default values
+        InitTimePicker(timePicker, initParams);
 
         // The Label edit field
         label = (EditText) view.findViewById((R.id.alarm_label));
@@ -136,7 +143,7 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues.setMinute(m);
         setUpAlarmValues.setLabel(t);
 
-        //TODO: Put new/modified alarm entry in alarm list
+        //Put new/modified alarm entry in alarm list
         alarmViewModel.AddAlarm(h,m,t,true);
 
 
@@ -155,11 +162,12 @@ public class SetUpAlarmFragment extends Fragment {
 
     // Initialize the time picker to default setup
     // TODO Initialize time picker to time values when it is called to modify values
-    private void InitTimePicker(TimePicker timePicker, boolean newalarm){
+    private void InitTimePicker(TimePicker timePicker, Bundle b){
         // TODO: Replace hardcoded default values by values defined by the user
         timePicker.setIs24HourView(true);
 
-        if (newalarm)
+        boolean newAlarm = b.getBoolean("INIT_NEWALARM",true);
+        if (newAlarm)
         { // This is a new alarm - set default values
             timePicker.setHour(setUpAlarmValues.getHour().getValue());
             timePicker.setMinute(setUpAlarmValues.getMinute().getValue());

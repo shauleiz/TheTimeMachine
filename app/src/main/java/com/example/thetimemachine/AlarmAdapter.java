@@ -4,9 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,13 +17,28 @@ import java.util.List;
 // Contains the ViewHolder for the Alarm item
 public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder> {
 
+
     private List<AlarmViewModel.AlarmItem> alarmList;
+
+    // Define clickListener member variable
+    private OnItemClickListener clickListener;
+
+    // Define the clickListener interface
+    // The clickListener itself is defined in the fragment
+    // and will be passed by onViewCreated()
+    public interface OnItemClickListener { void onItemClick(View itemView, int position);}
+
+    // Define the method that allows the parent fragment to define the clickListener
+    public void setOnItemClickListener(OnItemClickListener _listener) {clickListener = _listener;}
+
+    // Constructor: Gets the list of alarms (if exists)
     public AlarmAdapter(List<AlarmViewModel.AlarmItem> _alarmList){
         if (_alarmList == null)
             alarmList = new ArrayList<AlarmViewModel.AlarmItem>();
         else
             alarmList = new ArrayList<AlarmViewModel.AlarmItem>(_alarmList);
     }
+
 
     // Called when the RecyclerView needs to create a new entry
     // Here it is provided with the item's layout
@@ -35,6 +50,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
         // Inflate the custom layout
         View contactView = inflater.inflate(R.layout.recycler_view_item, parent, false);
+
 
         // Return a new holder instance
         AlarmViewHolder viewHolder = new AlarmViewHolder(contactView);
@@ -53,7 +69,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         holder.AlarmLabel.setText(alarmItem.getLabel());
 
         // Time
-        String alarmTime = alarmItem.getHour() +":" + alarmItem.getMinute();
+        String alarmTime = String.format("%d:%02d",alarmItem.getHour(),alarmItem.getMinute());
         holder.AlarmTime.setText(alarmTime);
 
         // Active
@@ -71,18 +87,35 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         // for any view that will be set as you render a row
         public TextView AlarmLabel, WeekDays, AlarmTime;
         public CheckBox AlarmActive;
+        public View itemView;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
-        public AlarmViewHolder(View itemView) {
+        public AlarmViewHolder(View _itemView) {
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
-            super(itemView);
+            super(_itemView);
+
+            itemView = _itemView;
 
             AlarmLabel = (TextView) itemView.findViewById(R.id.AlarmLabel);
             WeekDays = (TextView) itemView.findViewById(R.id.WeekDays);
             AlarmTime = (TextView) itemView.findViewById(R.id.AlarmTime);
             AlarmActive = (CheckBox) itemView.findViewById(R.id.AlarmActive);
+
+            // Setup the click listener
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Triggers click upwards to the adapter on click
+                    if (clickListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            clickListener.onItemClick(itemView, position);
+                        }
+                    }
+                }
+            });
         }
     }
 }

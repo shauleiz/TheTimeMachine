@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.thetimemachine.AlarmAdapter;
 import com.example.thetimemachine.AlarmViewModel;
@@ -30,6 +32,7 @@ public class AlarmListFragment extends Fragment {
     private MainActivity parent;
     private AlarmAdapter alarmAdapter;
 
+    private List<AlarmViewModel.AlarmItem> alarmList;
     // Default constructor
     public AlarmListFragment() {
         // Required empty public constructor
@@ -41,7 +44,7 @@ public class AlarmListFragment extends Fragment {
 
         parent = (MainActivity) getActivity();
         // Create Adapter for the Recycler View
-        List<AlarmViewModel.AlarmItem> alarmList = parent.alarmViewModel.getAlarmList().getValue();
+        alarmList = parent.alarmViewModel.getAlarmList().getValue();
         alarmAdapter = new AlarmAdapter(alarmList);
 
     }
@@ -69,6 +72,7 @@ public class AlarmListFragment extends Fragment {
 
         // Set layout manager to position the items
         rvAlarms.setLayoutManager(new LinearLayoutManager(getContext()));
+
         // Attach the adapter to the recyclerview to populate items
         rvAlarms.setAdapter(alarmAdapter);
 
@@ -77,9 +81,20 @@ public class AlarmListFragment extends Fragment {
             @Override
             public void onChanged(ArrayList<AlarmViewModel.AlarmItem> m) {
                 if (m != null) {
-                    alarmAdapter.notifyItemChanged(0, null);
-                    //alarmAdapter.notifyDataSetChanged();
+                    //alarmAdapter.notifyItemChanged(0, null);
+                    alarmAdapter.notifyDataSetChanged();
                 }
+            }
+        });
+
+
+        // Define the Item Click listener - What to do when user clicks on an alarm
+        alarmAdapter.setOnItemClickListener(new AlarmAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                String label = alarmList.get(position).getLabel();
+                String alarmTime = String.format("%d:%02d",alarmList.get(position).getHour(),alarmList.get(position).getMinute());
+                Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -88,12 +103,16 @@ public class AlarmListFragment extends Fragment {
 
     void AddAlarmClicked()
     {
+        // Passing parameters to setup fragment
+        Bundle b = new Bundle();
+        b.putBoolean("INIT_NEWALARM",true);
+
         // Replace current fragment with the Setup Alarm fragment
         parent = (MainActivity) getActivity();
         if (parent != null)
             parent.getSupportFragmentManager().
                 beginTransaction().
-                replace(R.id.fragment_container_view, SetUpAlarmFragment.class, null).
+                replace(R.id.fragment_container_view, SetUpAlarmFragment.class, b).
                     addToBackStack("tag2").
                     commit();
     }
