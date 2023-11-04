@@ -95,12 +95,31 @@ public class AlarmListFragment extends Fragment {
                 String label = alarmList.get(position).getLabel();
                 String alarmTime = String.format("%d:%02d",alarmList.get(position).getHour(),alarmList.get(position).getMinute());
                 Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
+                AlarmItemClicked(position);
             }
         });
 
     }
 
 
+    void AlarmItemClicked(int position){
+        // Copy values from the item to the setup values
+        parent.alarmViewModel.setUpAlarmValues.GetValuesFromList(position);
+
+        // Passing parameters to setup fragment
+        Bundle b = new Bundle();
+        b.putBoolean("INIT_NEWALARM",false);
+        b.putInt("INIT_POSITION", position);
+
+        // Replace current fragment with the Setup Alarm fragment
+        parent = (MainActivity) getActivity();
+        if (parent != null)
+            parent.getSupportFragmentManager().
+                    beginTransaction().
+                    replace(R.id.fragment_container_view, SetUpAlarmFragment.class, b).
+                    addToBackStack("tag2").
+                    commit();
+    }
     void AddAlarmClicked()
     {
 

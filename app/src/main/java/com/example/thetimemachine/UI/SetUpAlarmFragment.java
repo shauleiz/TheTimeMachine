@@ -137,15 +137,14 @@ public class SetUpAlarmFragment extends Fragment {
         int h = timePicker.getHour();
         int m = timePicker.getMinute();
         String t = label.getText().toString();
-//        alarm = new Alarm(h, m, t);
-//        parent.alarmViewModel.AddAlarm(alarm);
-//        setUpAlarmValues.setHour(h);
-//        setUpAlarmValues.setMinute(m);
-//        setUpAlarmValues.setLabel(t);
 
-        //Put new/modified alarm entry in alarm list
-        alarmViewModel.AddAlarm(h,m,t,true);
-
+        // Get the position and the status of the entry to be created/updated
+        // And Add or Update the entry on the list
+        int position = initParams.getInt("INIT_POSITION");
+        if (initParams.getBoolean("INIT_NEWALARM", true) || position<0)
+            alarmViewModel.AddAlarm(h,m,t,true);
+        else
+            alarmViewModel.UpdateAlarm(h,m,t,true, position);
 
 
         // Display the Alarm List Fragment
@@ -161,18 +160,13 @@ public class SetUpAlarmFragment extends Fragment {
 
     // Initialize the time picker to default setup
     // TODO Initialize time picker to time values when it is called to modify values
-    private void InitTimePicker(TimePicker timePicker, Bundle b){
+    private void InitTimePicker(TimePicker timePicker, Bundle b) {
         // TODO: Replace hardcoded default values by values defined by the user
         timePicker.setIs24HourView(true);
 
-        boolean newAlarm = b.getBoolean("INIT_NEWALARM",true);
-        if (newAlarm)
-        { // This is a new alarm - set default values
-            timePicker.setHour(setUpAlarmValues.getHour().getValue());
-            timePicker.setMinute(setUpAlarmValues.getMinute().getValue());
-            timePicker.animate();
-        }
-        // TODO: newalarm == false: Modify values of existing alarm.
+        timePicker.setHour(setUpAlarmValues.getHour().getValue());
+        timePicker.setMinute(setUpAlarmValues.getMinute().getValue());
+        timePicker.animate();
     }
 
     // Observe changes to the time picker introduced by the user

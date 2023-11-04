@@ -33,6 +33,15 @@ public class AlarmViewModel extends ViewModel {
         LivealarmList.setValue(AlarmList);
     }
 
+    public void UpdateAlarm(int _hour, int _minute, String _label, boolean _active, int _position) {
+        AlarmList = LivealarmList.getValue();
+        AlarmItem item = AlarmList.get(_position);
+        item.hour = _hour;
+        item.minute = _minute;
+        item.label = _label;
+        LivealarmList.setValue(AlarmList);
+    }
+
     public MutableLiveData<ArrayList<AlarmItem>> getAlarmList() {
         return LivealarmList;
     }
@@ -107,9 +116,18 @@ public class AlarmViewModel extends ViewModel {
 
         public void ResetValues(){
             // TODO: Reset to user defined values
-            this.hour.setValue(00);
-            this.minute.setValue(00);
-            this.label.setValue("");
+            hour.setValue(00);
+            minute.setValue(00);
+            label.setValue("");
+        }
+
+        public void GetValuesFromList(int position){
+            // Sanity check
+            if (position<0)
+                return;
+            hour.setValue(AlarmList.get(position).getHour());
+            minute.setValue(AlarmList.get(position).getMinute());
+            label.setValue(AlarmList.get(position).getLabel());
         }
 
         /* Getter Methods */
