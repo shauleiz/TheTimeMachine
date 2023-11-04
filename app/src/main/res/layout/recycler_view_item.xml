@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/material_dynamic_primary80"
+    android:backgroundTint="?android:attr/textColorHighlightInverse">
 
     <ImageView
         android:id="@+id/BellView"
@@ -45,10 +47,10 @@
         android:id="@+id/AlarmTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@tools:sample/date/hhmm"
-        app:layout_constraintTop_toTopOf="@+id/BellView"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="8dp" />
+        app:layout_constraintTop_toTopOf="@+id/BellView"
+        tools:text="@tools:sample/date/hhmm" />
 
     <CheckBox
         android:id="@+id/AlarmActive"

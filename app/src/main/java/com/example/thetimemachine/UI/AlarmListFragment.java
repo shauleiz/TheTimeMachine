@@ -5,7 +5,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,15 +45,20 @@ public class AlarmListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         parent = (MainActivity) getActivity();
-        // Create Adapter for the Recycler View
-        alarmList = parent.alarmViewModel.getAlarmList().getValue();
-        alarmAdapter = new AlarmAdapter(alarmList);
+
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        // Create Adapter for the Recycler View
+        AlarmViewModel avm = parent.alarmViewModel;
+        MutableLiveData<ArrayList<AlarmViewModel.AlarmItem>> al= avm.getAlarmList();
+        alarmList = al.getValue();
+        alarmList = parent.alarmViewModel.getAlarmList().getValue();
+        alarmAdapter = new AlarmAdapter(alarmList);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_alarm_list, container, false);
     }
@@ -99,6 +106,9 @@ public class AlarmListFragment extends Fragment {
             }
         });
 
+        // Decoration
+        RecyclerView.ItemDecoration itemDecoration = new  DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        rvAlarms.addItemDecoration(itemDecoration);
     }
 
 

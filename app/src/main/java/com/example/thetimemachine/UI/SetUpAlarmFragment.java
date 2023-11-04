@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import com.example.thetimemachine.Alarm;
 import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.R;
 
@@ -24,7 +23,6 @@ public class SetUpAlarmFragment extends Fragment {
     private Button Ok_Button;
     private TimePicker timePicker;
     private EditText label;
-    private Alarm alarm;
     private AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
     private AlarmViewModel alarmViewModel;
     private MainActivity parent;
@@ -36,9 +34,8 @@ public class SetUpAlarmFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
-    public void onDestroy(){
+    public void onStop() {
 
         // Get the selected values
         String t = label.getText().toString();
@@ -49,10 +46,9 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues.setLabel(t);
         setUpAlarmValues.setHour(hourOfDay);
         setUpAlarmValues.setMinute(minute);
-
-
-        super.onDestroy();
+        super.onStop();
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,7 +78,7 @@ public class SetUpAlarmFragment extends Fragment {
 
         // Get Time Picker and modify it
         timePicker = view.findViewById(R.id.time_picker);
-        InitTimePicker(timePicker, initParams);
+        InitTimePicker(timePicker);
 
         // The Label edit field
         label = (EditText) view.findViewById((R.id.alarm_label));
@@ -160,7 +156,7 @@ public class SetUpAlarmFragment extends Fragment {
 
     // Initialize the time picker to default setup
     // TODO Initialize time picker to time values when it is called to modify values
-    private void InitTimePicker(TimePicker timePicker, Bundle b) {
+    private void InitTimePicker(TimePicker timePicker) {
         // TODO: Replace hardcoded default values by values defined by the user
         timePicker.setIs24HourView(true);
 
@@ -169,7 +165,7 @@ public class SetUpAlarmFragment extends Fragment {
         timePicker.animate();
     }
 
-    // Observe changes to the time picker introduced by the user
+ /*   // Observe changes to the time picker introduced by the user
     // If the time has changed then update the ViewModel
     private  void SetTimePickerObserver(){
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
@@ -180,9 +176,9 @@ public class SetUpAlarmFragment extends Fragment {
 
             }
         });
-    }
+    }*/
 
-    // Observe changes in the label
+    /*// Observe changes in the label
     private void LabelObserver(){
         label.addTextChangedListener(new TextWatcher() {
 
@@ -199,5 +195,5 @@ public class SetUpAlarmFragment extends Fragment {
                 }
             }
         });
-    }
+    }*/
 }
