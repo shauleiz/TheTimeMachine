@@ -17,38 +17,46 @@ import java.util.ArrayList;
 public class AlarmViewModel extends ViewModel {
 
     public SetUpAlarmValues setUpAlarmValues;
-    public MutableLiveData<ArrayList<AlarmItem>> LivealarmList;
+    public MutableLiveData<ArrayList<AlarmItem>> LiveAlarmList;
     private ArrayList<AlarmItem> AlarmList;
 
     // Constructor
     public AlarmViewModel() {
         setUpAlarmValues = new SetUpAlarmValues();
-        LivealarmList = new MutableLiveData<ArrayList<AlarmItem>>();
-        AlarmList = new ArrayList<AlarmItem>();
+        LiveAlarmList = new MutableLiveData<>();
+        AlarmList = new ArrayList<>();
     }
 
     public void AddAlarm(int _hour, int _minute, String _label, boolean _active) {
         AlarmItem item = new AlarmItem(_hour, _minute, _label, _active);
         AlarmList.add(item);
-        LivealarmList.setValue(AlarmList);
+        LiveAlarmList.setValue(AlarmList);
+    }
+
+    public void DeleteAlarm(int _position){
+        AlarmList = LiveAlarmList.getValue();
+        if (AlarmList==null) return;
+        AlarmList.remove(_position);
+        LiveAlarmList.setValue(AlarmList);
     }
 
     public void UpdateAlarm(int _hour, int _minute, String _label, boolean _active, int _position) {
-        AlarmList = LivealarmList.getValue();
+        AlarmList = LiveAlarmList.getValue();
+        if (AlarmList==null) return;
         AlarmItem item = AlarmList.get(_position);
         item.hour = _hour;
         item.minute = _minute;
         item.label = _label;
-        LivealarmList.setValue(AlarmList);
+        LiveAlarmList.setValue(AlarmList);
     }
 
     public MutableLiveData<ArrayList<AlarmItem>> getAlarmList() {
-        return LivealarmList;
+        return LiveAlarmList;
     }
 
     // This class hold an item in the Alarm List
     public class AlarmItem {
-        long createtime;
+        long createTime;
         private int hour, minute;
         private String label;
         private boolean active;
@@ -65,7 +73,7 @@ public class AlarmViewModel extends ViewModel {
 
             // Add time of creation in milliseconds
             Calendar calendar = Calendar.getInstance();
-            createtime = calendar.getTimeInMillis();
+            createTime = calendar.getTimeInMillis();
         }
 
         // TODO: Implement getters and setters
@@ -94,16 +102,16 @@ public class AlarmViewModel extends ViewModel {
 
         // Default constructor
         public SetUpAlarmValues() {
-            this.hour = new MutableLiveData<Integer>();
-            this.minute = new MutableLiveData<Integer>();
-            this.label = new MutableLiveData<String>();
+            this.hour = new MutableLiveData<>();
+            this.minute = new MutableLiveData<>();
+            this.label = new MutableLiveData<>();
             ResetValues();
         }
 
         public SetUpAlarmValues(int hour, int minute, String label, boolean newAlarm) {
-            this.hour = new MutableLiveData<Integer>();
-            this.minute = new MutableLiveData<Integer>();
-            this.label = new MutableLiveData<String>();
+            this.hour = new MutableLiveData<>();
+            this.minute = new MutableLiveData<>();
+            this.label = new MutableLiveData<>();
 
             if (newAlarm) { // Add new alarm
                 // TODO: Get the default values and ignore the passed values
@@ -116,8 +124,8 @@ public class AlarmViewModel extends ViewModel {
 
         public void ResetValues(){
             // TODO: Reset to user defined values
-            hour.setValue(00);
-            minute.setValue(00);
+            hour.setValue(0);
+            minute.setValue(0);
             label.setValue("");
         }
 
@@ -142,7 +150,7 @@ public class AlarmViewModel extends ViewModel {
         }
 
         public MutableLiveData<Integer> getMinute() {
-            return minute;
+           return minute;
         }
 
         public void setMinute(int minute) {
@@ -151,10 +159,11 @@ public class AlarmViewModel extends ViewModel {
 
         public MutableLiveData<String> getLabel() {
             return label;
-        }
+      }
 
         public void setLabel(String label) {
-            String t = this.label.getValue().toString();
+            String t = this.label.getValue();
+            assert t != null;
             if (!(t.equals(label)))
                 this.label.setValue(label);
         }

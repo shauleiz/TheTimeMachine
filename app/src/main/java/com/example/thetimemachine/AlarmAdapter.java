@@ -5,8 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,9 +34,9 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     // Constructor: Gets the list of alarms (if exists)
     public AlarmAdapter(List<AlarmViewModel.AlarmItem> _alarmList){
         if (_alarmList == null)
-            alarmList = new ArrayList<AlarmViewModel.AlarmItem>();
+            alarmList = new ArrayList<>();
         else
-            alarmList = new ArrayList<AlarmViewModel.AlarmItem>(_alarmList);
+            alarmList = new ArrayList<>(_alarmList);
     }
 
 
@@ -86,6 +86,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView AlarmLabel, WeekDays, AlarmTime;
+        public ImageView BellView;
         public CheckBox AlarmActive;
         public View itemView;
 
@@ -98,6 +99,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
             itemView = _itemView;
 
+            BellView = (ImageView) itemView.findViewById(R.id.BellView);
             AlarmLabel = (TextView) itemView.findViewById(R.id.AlarmLabel);
             WeekDays = (TextView) itemView.findViewById(R.id.WeekDays);
             AlarmTime = (TextView) itemView.findViewById(R.id.AlarmTime);

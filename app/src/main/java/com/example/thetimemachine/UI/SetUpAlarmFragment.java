@@ -4,10 +4,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import com.example.thetimemachine.R;
 
 public class SetUpAlarmFragment extends Fragment {
 
-    private Button Ok_Button;
+    private Button Ok_Button, Delete_Button;
     private TimePicker timePicker;
     private EditText label;
     private AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
@@ -59,6 +58,7 @@ public class SetUpAlarmFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.fragment_set_up_alarm, container, false);
     }
 
@@ -68,13 +68,23 @@ public class SetUpAlarmFragment extends Fragment {
 
         // Get instance of SetUpAlarmValues sub-class
         parent = (MainActivity) getActivity();
+        if (parent == null) return;
         setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
         alarmViewModel = parent.alarmViewModel;
 
-        // Get the handle to the Add Alarm button (FAB)
+        // Get the handle to the Add Alarm button
         // Then define what to do when clicked
         Ok_Button = view.findViewById(R.id.OK);
         Ok_Button.setOnClickListener(v -> OkClicked());
+
+        // Get the handle to the Delete Alarm button
+        // Then define what to do when clicked
+        Delete_Button = view.findViewById(R.id.Delete);
+
+        if (!initParams.getBoolean("INIT_NEWALARM", false))
+            Delete_Button.setOnClickListener(v -> DeleteClicked());
+        else
+            Delete_Button.setVisibility(View.GONE);
 
         // Get Time Picker and modify it
         timePicker = view.findViewById(R.id.time_picker);
@@ -153,6 +163,25 @@ public class SetUpAlarmFragment extends Fragment {
 
     }
 
+    // Delete Button Clicked
+    private void DeleteClicked() {
+
+        // Get position of alarm to delete and check that it exists
+        int position = initParams.getInt("INIT_POSITION");
+        if (position<0 || alarmViewModel == null)
+            return;
+
+        alarmViewModel.DeleteAlarm(position);
+
+        // Display the Alarm List Fragment
+        if (parent != null)
+            parent.getSupportFragmentManager().
+                    beginTransaction().
+                    replace(R.id.fragment_container_view, AlarmListFragment.class, null).
+                    //addToBackStack("tag3").
+                            commit();
+
+    }
 
     // Initialize the time picker to default setup
     // TODO Initialize time picker to time values when it is called to modify values
@@ -160,8 +189,13 @@ public class SetUpAlarmFragment extends Fragment {
         // TODO: Replace hardcoded default values by values defined by the user
         timePicker.setIs24HourView(true);
 
-        timePicker.setHour(setUpAlarmValues.getHour().getValue());
-        timePicker.setMinute(setUpAlarmValues.getMinute().getValue());
+        if (setUpAlarmValues == null) return;
+        MutableLiveData<Integer>  h = setUpAlarmValues.getHour();
+        MutableLiveData<Integer>  m = setUpAlarmValues.getMinute();
+        if (h==null || m==null || h.getValue()==null || m.getValue()==null) return;
+
+        timePicker.setHour(h.getValue());
+        timePicker.setMinute(m.getValue());
         timePicker.animate();
     }
 
