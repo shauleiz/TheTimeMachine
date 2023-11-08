@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
     // Define clickListener member variable
     private OnItemClickListener clickListener;
+
+    private Context context;
 
     // Define the clickListener interface
     // The clickListener itself is defined in the fragment
@@ -43,9 +46,10 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     // Called when the RecyclerView needs to create a new entry
     // Here it is provided with the item's layout
     @Override
+    @NonNull
     public AlarmAdapter.AlarmViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Item Layout
-        Context context = parent.getContext();
+        context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
@@ -69,7 +73,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         holder.AlarmLabel.setText(alarmItem.getLabel());
 
         // Time
-        String alarmTime = String.format("%d:%02d",alarmItem.getHour(),alarmItem.getMinute());
+        String fmt = context.getResources().getString(R.string.alarm_format);
+        String alarmTime = String.format(fmt,alarmItem.getHour(),alarmItem.getMinute());
         holder.AlarmTime.setText(alarmTime);
 
         // Active

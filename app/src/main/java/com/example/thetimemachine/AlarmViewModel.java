@@ -19,23 +19,40 @@ public class AlarmViewModel extends ViewModel {
     public SetUpAlarmValues setUpAlarmValues;
     public MutableLiveData<ArrayList<AlarmItem>> LiveAlarmList;
     private ArrayList<AlarmItem> AlarmList;
+    private AlarmRepository repo;
 
     // Constructor
     public AlarmViewModel() {
         setUpAlarmValues = new SetUpAlarmValues();
         LiveAlarmList = new MutableLiveData<>();
         AlarmList = new ArrayList<>();
+        repo = new AlarmRepository();
+    }
+
+    @Override
+    protected void onCleared() {
+        repo = null;
+        super.onCleared();
     }
 
     public void AddAlarm(int _hour, int _minute, String _label, boolean _active) {
         AlarmItem item = new AlarmItem(_hour, _minute, _label, _active);
         AlarmList.add(item);
         LiveAlarmList.setValue(AlarmList);
+
+        // Repository
+        repo.AddAlarm( _hour,  _minute,  _label,  _active, item.getCreateTime());
     }
 
     public void DeleteAlarm(int _position){
+
+
         AlarmList = LiveAlarmList.getValue();
         if (AlarmList==null) return;
+
+        // Repository
+        repo.DeleteAlarm(AlarmList.get(_position).getCreateTime());
+
         AlarmList.remove(_position);
         LiveAlarmList.setValue(AlarmList);
     }
@@ -48,9 +65,13 @@ public class AlarmViewModel extends ViewModel {
         item.minute = _minute;
         item.label = _label;
         LiveAlarmList.setValue(AlarmList);
+
+        // Repository
+        repo.AddAlarm( _hour,  _minute,  _label,  _active, item.getCreateTime());
     }
 
     public MutableLiveData<ArrayList<AlarmItem>> getAlarmList() {
+        MutableLiveData<ArrayList<AlarmRepository.RawAlarmItem>> rawAlarmList = repo.getAlarmList();
         return LiveAlarmList;
     }
 
@@ -93,6 +114,8 @@ public class AlarmViewModel extends ViewModel {
         public boolean isActive() {
             return active;
         }
+
+        public long getCreateTime(){return  createTime;}
     }
 
     // This Class holds the values of the alarm that is being added/modified
@@ -169,4 +192,6 @@ public class AlarmViewModel extends ViewModel {
         }
 
     }
+
+
 }
