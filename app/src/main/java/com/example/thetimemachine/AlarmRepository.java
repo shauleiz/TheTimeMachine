@@ -1,7 +1,5 @@
 package com.example.thetimemachine;
 
-import android.app.Activity;
-
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
@@ -49,7 +47,7 @@ public class AlarmRepository {
     }
     public void DeleteAlarm(long _id){
         // Empty list? NO-OP
-        if (rawAlarmItems.size()>=0)
+        if (rawAlarmItems.size()<0)
             return;
 
         // Find entry by ID. If found then remove it
@@ -78,20 +76,15 @@ public class AlarmRepository {
         // Creates a Raw Alarm entry
         public RawAlarmItem(int _hour, int _minute, String _label, boolean _active, long _id){
 
-            // Convert time HH:MM to milliseconds
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR, _hour);
-            calendar.set(Calendar.MINUTE, _minute);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            timeInMilli = calendar.get(Calendar.MILLISECOND);
+            // Convert time HH:MM to minutes-since-midnight
+            minutesSinceMidnight = _hour*60+_minute;
 
             // Copy rest of items
             id = _id;
             label = _label;
             active = _active;
         };
-        public int timeInMilli;
+        public int minutesSinceMidnight;
         public long id;
         public boolean active=true; // TODO: Should be set by constructor
         public boolean oneTime = true;// TODO: Should be set by constructor
