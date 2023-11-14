@@ -4,6 +4,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+
 
 /**
  * This is the repository of the Alarms and the relevant settings
@@ -68,7 +71,8 @@ public class AlarmRepository {
 
     //public void UpdateAlarm(){}
     public MutableLiveData<ArrayList<RawAlarmItem>> getAlarmList() {return liveRawAlarmItemList;}
-    public class RawAlarmItem{
+   //@Entity(tableName = "alarm_table")
+   public class RawAlarmItem{
 
         public RawAlarmItem(){};
 

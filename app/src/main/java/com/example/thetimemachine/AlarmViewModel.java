@@ -22,21 +22,25 @@ public class AlarmViewModel extends ViewModel {
    private ArrayList<AlarmItem> AlarmList;
    private AlarmRepository repo;
 
+   Observer<ArrayList<AlarmRepository.RawAlarmItem>> ObsFrevr;
+
    // Constructor
    public AlarmViewModel() {
       setUpAlarmValues = new SetUpAlarmValues();
       LiveAlarmList = new MutableLiveData<>();
-      AlarmList = new ArrayList<>();
+      //AlarmList = new ArrayList<>();
       repo = new AlarmRepository();
 
-      repo.getAlarmList().observeForever(new Observer<ArrayList<AlarmRepository.RawAlarmItem>>() {
+      ObsFrevr = new Observer<ArrayList<AlarmRepository.RawAlarmItem>>() {
          @Override
          public void onChanged(ArrayList<AlarmRepository.RawAlarmItem> rawAlarmItems) {
             // TODO: Read repo and reconstruct Alarm List
             AlarmList = convertRawList(rawAlarmItems);
             LiveAlarmList.setValue(AlarmList);
          }
-      });
+      };
+      repo.getAlarmList().observeForever(ObsFrevr);
+
    }
 
    private ArrayList<AlarmItem> convertRawList(ArrayList<AlarmRepository.RawAlarmItem> rawAlarmItems){
@@ -55,6 +59,7 @@ public class AlarmViewModel extends ViewModel {
    @Override
    protected void onCleared() {
       repo = null;
+      // TODO: Fix this: LiveAlarmList.removeObserver((Observer<ArrayList<AlarmItem>>) ObsFrevr);
       super.onCleared();
    }
 
