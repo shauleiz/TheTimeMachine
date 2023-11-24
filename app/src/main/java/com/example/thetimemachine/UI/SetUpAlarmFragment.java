@@ -4,8 +4,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.loader.app.LoaderManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -154,12 +156,13 @@ public class SetUpAlarmFragment extends Fragment {
 
 
         // Display the Alarm List Fragment
-        if (parent != null)
-            parent.getSupportFragmentManager().
-                    beginTransaction().
+        if (parent != null){
+            FragmentManager lm = parent.getSupportFragmentManager();
+                    lm. beginTransaction().
                     replace(R.id.fragment_container_view, AlarmListFragment.class, null).
                     //addToBackStack("tag3").
                     commit();
+        }
 
     }
 
