@@ -1,4 +1,4 @@
-package com.example.thetimemachine;
+package com.example.thetimemachine.Data;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 
 /**
@@ -71,7 +72,7 @@ public class AlarmRepository {
 
     //public void UpdateAlarm(){}
     public MutableLiveData<ArrayList<RawAlarmItem>> getAlarmList() {return liveRawAlarmItemList;}
-   //@Entity(tableName = "alarm_table")
+   @Entity(tableName = "raw_alarm_table")
    public class RawAlarmItem{
 
         public RawAlarmItem(){};
@@ -89,6 +90,8 @@ public class AlarmRepository {
             active = _active;
         };
         public int minutesSinceMidnight;
+      @PrimaryKey
+      @NonNull
         public long id;
         public boolean active=true; // TODO: Should be set by constructor
         public boolean oneTime = true;// TODO: Should be set by constructor
