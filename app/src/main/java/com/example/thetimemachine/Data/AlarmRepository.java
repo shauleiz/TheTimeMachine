@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class AlarmRepository {
        // Room Database
        alarmRoomDatabase = AlarmRoomDatabase.getDatabase(application);
        alarmDao = alarmRoomDatabase.alarmDao();
+       LiveData<List<AlarmRepository.RawAlarmItem>>  myList = alarmDao.getRawAlarm();
        rawAlarmItems =  alarmDao.getRawAlarm().getValue();
        if (rawAlarmItems == null)
           rawAlarmItems = new ArrayList<>();
@@ -65,9 +67,8 @@ public class AlarmRepository {
         liveRawAlarmItemList.setValue(rawAlarmItems);
 
         // Add item to Room Database
-
-
-
+       AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(item));
+      LiveData<List<RawAlarmItem>> Items =  alarmDao.getRawAlarm(); // Debug
     }
     public void DeleteAlarm(long _id){
         // Empty list? NO-OP
