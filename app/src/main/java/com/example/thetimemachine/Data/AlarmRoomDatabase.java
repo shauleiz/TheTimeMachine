@@ -22,9 +22,9 @@ public abstract class AlarmRoomDatabase extends RoomDatabase {
       if (alarmRoomDatabase == null) {
          synchronized (AlarmRoomDatabase.class) {
             if (alarmRoomDatabase == null) {
-               alarmRoomDatabase = Room.databaseBuilder(context.getApplicationContext(),
-                           AlarmRoomDatabase.class, "raw_alarm_database")
-                     .build();
+               Context context1 = context.getApplicationContext();
+               Builder<AlarmRoomDatabase> db = Room.databaseBuilder(context1, AlarmRoomDatabase.class, "raw_alarm_database");
+               alarmRoomDatabase = db.build();
             }
          }
       }

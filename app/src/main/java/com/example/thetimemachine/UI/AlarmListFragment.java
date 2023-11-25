@@ -52,7 +52,7 @@ public class AlarmListFragment extends Fragment {
 
         // Create Adapter for the Recycler View
         AlarmViewModel avm = parent.alarmViewModel;
-        MutableLiveData<ArrayList<AlarmViewModel.AlarmItem>> al= avm.getAlarmList();
+        MutableLiveData<List<AlarmViewModel.AlarmItem>> al= avm.getAlarmList();
         alarmList = al.getValue();
         alarmList = parent.alarmViewModel.getAlarmList().getValue();
         alarmAdapter = new AlarmAdapter(alarmList);
@@ -81,9 +81,9 @@ public class AlarmListFragment extends Fragment {
         rvAlarms.setAdapter(alarmAdapter);
 
         // Create observer to inform recycler view that there was a change in the list
-        parent.alarmViewModel.getAlarmList().observe(getViewLifecycleOwner(), new Observer<ArrayList<AlarmViewModel.AlarmItem>>() {
+        parent.alarmViewModel.getAlarmList().observe(getViewLifecycleOwner(), new Observer<List<AlarmViewModel.AlarmItem>>() {
             @Override
-            public void onChanged(ArrayList<AlarmViewModel.AlarmItem> m) {
+            public void onChanged(List<AlarmViewModel.AlarmItem> m) {
                 if (m != null) {
                     //alarmAdapter.notifyItemChanged(0, null);
                     alarmAdapter.notifyDataSetChanged();

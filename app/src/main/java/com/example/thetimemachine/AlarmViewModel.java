@@ -1,13 +1,16 @@
 package com.example.thetimemachine;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 
 import com.example.thetimemachine.Data.AlarmRepository;
 
 import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.List;
 
 /*
  *      Alarm Clock ViewModel Class
@@ -17,25 +20,26 @@ import java.util.ArrayList;
  *
  *  Also interacts with the backup data base (Room)
  */
-public class AlarmViewModel extends ViewModel {
+public class AlarmViewModel extends AndroidViewModel {
 
    public SetUpAlarmValues setUpAlarmValues;
-   public MutableLiveData<ArrayList<AlarmItem>> LiveAlarmList;
-   private ArrayList<AlarmItem> AlarmList;
+   public MutableLiveData<List<AlarmItem>> LiveAlarmList;
+   private List<AlarmItem> AlarmList;
    private AlarmRepository repo;
-
-   Observer<ArrayList<AlarmRepository.RawAlarmItem>> ObsFrevr;
+  Observer<List<AlarmRepository.RawAlarmItem>> ObsFrevr;
 
    // Constructor
-   public AlarmViewModel() {
-      setUpAlarmValues = new SetUpAlarmValues();
-      LiveAlarmList = new MutableLiveData<>();
-      //AlarmList = new ArrayList<>();
-      repo = new AlarmRepository();
+   public AlarmViewModel(Application application) {
+      super(application);
 
-      ObsFrevr = new Observer<ArrayList<AlarmRepository.RawAlarmItem>>() {
+      setUpAlarmValues = new SetUpAlarmValues();
+      LiveAlarmList = new MutableLiveData<List<AlarmItem>>();
+      repo = new AlarmRepository(application);
+
+
+      ObsFrevr = new Observer<List<AlarmRepository.RawAlarmItem>>() {
          @Override
-         public void onChanged(ArrayList<AlarmRepository.RawAlarmItem> rawAlarmItems) {
+         public void onChanged(List<AlarmRepository.RawAlarmItem> rawAlarmItems) {
             // TODO: Read repo and reconstruct Alarm List
             AlarmList = convertRawList(rawAlarmItems);
             LiveAlarmList.setValue(AlarmList);
@@ -45,8 +49,8 @@ public class AlarmViewModel extends ViewModel {
 
    }
 
-   private ArrayList<AlarmItem> convertRawList(ArrayList<AlarmRepository.RawAlarmItem> rawAlarmItems){
-      ArrayList<AlarmItem> out = new ArrayList<>();
+   private List<AlarmItem> convertRawList(List<AlarmRepository.RawAlarmItem> rawAlarmItems){
+      List<AlarmItem> out = new ArrayList<>();
 
       for (int i = 0; i < rawAlarmItems.size(); i++) {
          AlarmRepository.RawAlarmItem rawItem =  rawAlarmItems.get(i);
@@ -100,7 +104,7 @@ public class AlarmViewModel extends ViewModel {
       repo.AddAlarm( _hour,  _minute,  _label,  _active, item.getCreateTime());
    }
 
-   public MutableLiveData<ArrayList<AlarmItem>> getAlarmList() {
+   public MutableLiveData<List<AlarmItem>> getAlarmList() {
 
       return LiveAlarmList;
    }

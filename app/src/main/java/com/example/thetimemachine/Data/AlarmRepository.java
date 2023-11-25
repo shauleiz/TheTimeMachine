@@ -1,10 +1,17 @@
 package com.example.thetimemachine.Data;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.ContextWrapper;
+
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
 import androidx.annotation.NonNull;
+import androidx.room.Dao;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -19,13 +26,22 @@ import androidx.room.PrimaryKey;
  */
 public class AlarmRepository {
 
-    private ArrayList<RawAlarmItem> rawAlarmItems;
-    private MutableLiveData<ArrayList<RawAlarmItem>> liveRawAlarmItemList;
+    private List<RawAlarmItem> rawAlarmItems;
+    private MutableLiveData<List<RawAlarmItem>> liveRawAlarmItemList;
+   AlarmRoomDatabase alarmRoomDatabase;
+   AlarmDao alarmDao;
 
-
-    public AlarmRepository(){
+    public AlarmRepository(Application application){
         rawAlarmItems = new ArrayList<>();
         liveRawAlarmItemList = new MutableLiveData<>();
+
+       // Room Database
+       alarmRoomDatabase = AlarmRoomDatabase.getDatabase(application);
+       alarmDao = alarmRoomDatabase.alarmDao();
+       rawAlarmItems =  alarmDao.getRawAlarm().getValue();
+       if (rawAlarmItems == null)
+          rawAlarmItems = new ArrayList<>();
+
     }
 
    // Input is Alarm details
@@ -47,6 +63,10 @@ public class AlarmRepository {
         // Add item
         rawAlarmItems.add(item);
         liveRawAlarmItemList.setValue(rawAlarmItems);
+
+        // Add item to Room Database
+
+
 
     }
     public void DeleteAlarm(long _id){
@@ -71,9 +91,9 @@ public class AlarmRepository {
     }
 
     //public void UpdateAlarm(){}
-    public MutableLiveData<ArrayList<RawAlarmItem>> getAlarmList() {return liveRawAlarmItemList;}
+    public MutableLiveData<List<RawAlarmItem>> getAlarmList() {return liveRawAlarmItemList;}
    @Entity(tableName = "raw_alarm_table")
-   public class RawAlarmItem{
+   public static class RawAlarmItem{
 
         public RawAlarmItem(){};
 
