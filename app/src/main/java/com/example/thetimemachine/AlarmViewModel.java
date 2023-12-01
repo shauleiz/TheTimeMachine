@@ -3,12 +3,14 @@ package com.example.thetimemachine;
 import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.LiveData;
 
+import androidx.lifecycle.MutableLiveData;
+
+
+import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.Data.AlarmRepository;
 
-import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,21 +25,21 @@ import java.util.List;
 public class AlarmViewModel extends AndroidViewModel {
 
    public SetUpAlarmValues setUpAlarmValues;
-   public MutableLiveData<List<AlarmItem>> LiveAlarmList;
+   public LiveData<List<AlarmItem>> LiveAlarmList;
    private List<AlarmItem> AlarmList;
    private AlarmRepository repo;
-  Observer<List<AlarmRepository.RawAlarmItem>> ObsFrevr;
+ // Observer<List<AlarmRepository.RawAlarmItem>> ObsFrevr;
 
    // Constructor
    public AlarmViewModel(Application application) {
       super(application);
 
       setUpAlarmValues = new SetUpAlarmValues();
-      LiveAlarmList = new MutableLiveData<List<AlarmItem>>();
       repo = new AlarmRepository(application);
+      LiveAlarmList = repo.getAlarmList();
 
 
-      ObsFrevr = new Observer<List<AlarmRepository.RawAlarmItem>>() {
+    /*  ObsFrevr = new Observer<List<AlarmRepository.RawAlarmItem>>() {
          @Override
          public void onChanged(List<AlarmRepository.RawAlarmItem> rawAlarmItems) {
             // TODO: Read repo and reconstruct Alarm List
@@ -45,10 +47,10 @@ public class AlarmViewModel extends AndroidViewModel {
             LiveAlarmList.setValue(AlarmList);
          }
       };
-      repo.getAlarmList().observeForever(ObsFrevr);
+      repo.getAlarmList().observeForever(ObsFrevr);*/
 
    }
-
+/*
    private List<AlarmItem> convertRawList(List<AlarmRepository.RawAlarmItem> rawAlarmItems){
       List<AlarmItem> out = new ArrayList<>();
 
@@ -61,7 +63,7 @@ public class AlarmViewModel extends AndroidViewModel {
       }
       return out;
    }
-
+*/
    @Override
    protected void onCleared() {
       repo = null;
@@ -69,13 +71,9 @@ public class AlarmViewModel extends AndroidViewModel {
       super.onCleared();
    }
 
-   public void AddAlarm(int _hour, int _minute, String _label, boolean _active) {
-      AlarmItem item = new AlarmItem(_hour, _minute, _label, _active);
-      //AlarmList.add(item);
-      //LiveAlarmList.setValue(AlarmList);
-
+   public void AddAlarm(AlarmItem item) {
       // Repository
-      repo.AddAlarm( _hour,  _minute,  _label,  _active, item.getCreateTime());
+      repo.AddAlarm( item);
    }
 
    public void DeleteAlarm(int _position){
@@ -85,88 +83,17 @@ public class AlarmViewModel extends AndroidViewModel {
       if (AlarmList==null) return;
 
       // Repository
-      repo.DeleteAlarm(AlarmList.get(_position).getCreateTime());
-
-      //AlarmList.remove(_position);
-      //LiveAlarmList.setValue(AlarmList);
+      repo.DeleteAlarm(AlarmList.get(_position));
    }
 
-   public void UpdateAlarm(int _hour, int _minute, String _label, boolean _active, int _position) {
-      AlarmList = LiveAlarmList.getValue();
-      if (AlarmList==null) return;
-      AlarmItem item = AlarmList.get(_position);
-      //item.hour = _hour;
-      //item.minute = _minute;
-      //item.label = _label;
-      //LiveAlarmList.setValue(AlarmList);
-
+   public void UpdateAlarm(AlarmItem item) {
       // Repository
-      repo.AddAlarm( _hour,  _minute,  _label,  _active, item.getCreateTime());
+      repo.UpdateAlarm(item);
    }
 
-   public MutableLiveData<List<AlarmItem>> getAlarmList() {
+   public LiveData<List<AlarmItem>> getAlarmList() {
 
       return LiveAlarmList;
-   }
-
-   // This class hold an item in the Alarm List
-   public class AlarmItem {
-      long createTime;
-      private int hour, minute;
-      private String label;
-      private boolean active;
-
-      // Constructor of Alarm Item - create time calculated internally
-      public AlarmItem(int _hour, int _minute, String _label, boolean _active) {
-         hour = _hour;
-         minute = _minute;
-         label = _label;
-         active = _active;
-
-         // Sanity check
-         if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
-            active = false;
-
-         // Add time of creation in milliseconds
-         Calendar calendar = Calendar.getInstance();
-         createTime = calendar.getTimeInMillis();
-      }
-
-      // Constructor of Alarm Item - create time pushed from outside
-      public AlarmItem(int _hour, int _minute, String _label, boolean _active, long _createTime) {
-         hour = _hour;
-         minute = _minute;
-         label = _label;
-         active = _active;
-
-         // Sanity check
-         if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
-            active = false;
-
-         // Add time of creation (of original alarm) in milliseconds
-         createTime = _createTime;
-      }
-
-
-      // TODO: Implement getters and setters
-
-      public int getHour() {
-         return hour;
-      }
-
-      public int getMinute() {
-         return minute;
-      }
-
-      public String getLabel() {
-         return label;
-      }
-
-      public boolean isActive() {
-         return active;
-      }
-
-      public long getCreateTime(){return  createTime;}
    }
 
    // This Class holds the values of the alarm that is being added/modified
@@ -174,6 +101,7 @@ public class AlarmViewModel extends AndroidViewModel {
       MutableLiveData<Integer> hour, minute;
       MutableLiveData<String> label;
       MutableLiveData<Boolean> active;
+      MutableLiveData<Long>  createTime;
 
       // Default constructor
       public SetUpAlarmValues() {
@@ -181,6 +109,7 @@ public class AlarmViewModel extends AndroidViewModel {
          this.minute = new MutableLiveData<>();
          this.label = new MutableLiveData<>();
          this.active = new MutableLiveData<>();
+         this.createTime = new MutableLiveData<>();
          ResetValues();
       }
 
@@ -210,10 +139,15 @@ public class AlarmViewModel extends AndroidViewModel {
          // Sanity check
          if (position<0)
             return;
+         AlarmList = LiveAlarmList.getValue();
          hour.setValue(AlarmList.get(position).getHour());
          minute.setValue(AlarmList.get(position).getMinute());
          label.setValue(AlarmList.get(position).getLabel());
          active.setValue(AlarmList.get(position).isActive());
+
+         AlarmItem ai = AlarmList.get(position);
+         long c = ai.getCreateTime();
+         createTime.setValue(c);
       }
 
       /* Getter Methods */

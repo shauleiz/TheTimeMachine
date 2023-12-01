@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.thetimemachine.AlarmViewModel;
+import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.List;
 public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder> {
 
 
-    private List<AlarmViewModel.AlarmItem> alarmList;
+    private List<AlarmItem> alarmList;
 
     // Define clickListener member variable
     private OnItemClickListener clickListener;
@@ -38,16 +38,19 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     public void setOnItemClickListener(OnItemClickListener _listener) {clickListener = _listener;}
 
     // Constructor: Gets the list of alarms (if exists)
-    public AlarmAdapter(List<AlarmViewModel.AlarmItem> _alarmList){
+    public AlarmAdapter(List<AlarmItem> _alarmList){
         if (_alarmList == null)
             alarmList = new ArrayList<>();
         else
             alarmList = _alarmList;
-        //alarmList = new ArrayList<>(_alarmList);
     }
-     public void UpdateAlarmAdapter(List<AlarmViewModel.AlarmItem> _alarmList){
-         if (_alarmList != null)
+
+    // Replace list of alarms and notify
+    public void UpdateAlarmAdapter(List<AlarmItem> _alarmList){
+         if (_alarmList != null) {
              alarmList = _alarmList;
+             notifyDataSetChanged();
+         }
      }
 
     // Called when the RecyclerView needs to create a new entry
@@ -72,9 +75,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     @Override
     public void onBindViewHolder(AlarmAdapter.AlarmViewHolder holder, int position) {
         // Get the data model based on position
-        AlarmViewModel.AlarmItem alarmItem = alarmList.get(position);
-
-        // Set item views from data in the ViewModel
+        AlarmItem alarmItem = alarmList.get(position);
 
         // Label
         holder.AlarmLabel.setText(alarmItem.getLabel());
@@ -94,6 +95,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     public int getItemCount() {
         return alarmList.size();
     }
+
+    // ViewHolder Class - Holds one recycler line (One Alarm)
     public class AlarmViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
@@ -119,7 +122,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
 
 
-            // Setup the click listener
+            // Setup the click listener to the item (not specific control)
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -133,8 +136,9 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                 }
             });
 
+            // Setup the click listener to the Active checkbox of an item
             AlarmActive.setOnClickListener(new View.OnClickListener() {
-                @Override
+            @Override
             public void onClick(View v) {
                     // Triggers click upwards to the adapter on click
                     if (clickListener != null) {

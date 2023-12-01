@@ -2,6 +2,7 @@ package com.example.thetimemachine.Data;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -13,14 +14,17 @@ import java.util.List;
 @Dao
 public interface AlarmDao {
    @Insert(onConflict = OnConflictStrategy.REPLACE)
-   void insert(AlarmRepository.RawAlarmItem rawAlarm);
+   void insert(AlarmItem alarm);
 
    @Update
-   void update(AlarmRepository.RawAlarmItem rawAlarm);
+   void update(AlarmItem alarm);
 
-   @Query("SELECT * from raw_alarm_table ORDER By id Asc")
-   LiveData<List<AlarmRepository.RawAlarmItem>> getRawAlarm();
+   @Query("SELECT * from raw_alarm_table ORDER By createTime Asc")
+   LiveData<List<AlarmItem>> getAlarms();
 
    @Query("DELETE from raw_alarm_table")
    void deleteAll();
+
+   @Delete
+   void delete(AlarmItem alarm);
 }

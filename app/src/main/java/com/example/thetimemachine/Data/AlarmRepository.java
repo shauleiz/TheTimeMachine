@@ -27,74 +27,50 @@ import androidx.room.PrimaryKey;
  */
 public class AlarmRepository {
 
-    private List<RawAlarmItem> rawAlarmItems;
-    private MutableLiveData<List<RawAlarmItem>> liveRawAlarmItemList;
+    //private List<RawAlarmItem> rawAlarmItems;
+   private LiveData<List<AlarmItem>> liveAlarmItemList;
    AlarmRoomDatabase alarmRoomDatabase;
    AlarmDao alarmDao;
 
     public AlarmRepository(Application application){
-        rawAlarmItems = new ArrayList<>();
-        liveRawAlarmItemList = new MutableLiveData<>();
-
-       // Room Database
-       alarmRoomDatabase = AlarmRoomDatabase.getDatabase(application);
-       alarmDao = alarmRoomDatabase.alarmDao();
-       LiveData<List<AlarmRepository.RawAlarmItem>>  myList = alarmDao.getRawAlarm();
-       rawAlarmItems =  alarmDao.getRawAlarm().getValue();
-       if (rawAlarmItems == null)
-          rawAlarmItems = new ArrayList<>();
+       AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(application);
+       alarmDao = db.alarmDao();
+       liveAlarmItemList = alarmDao.getAlarms();
 
     }
 
    // Input is Alarm details
-   // If ID does NOT exist - create new entry and add it to the list
-   // If ID DOES exist - change entry values and put it back on the list
-    public void AddAlarm(int _hour, int _minute, String _label, boolean _active, long _id){
-        // Create the item to add/replace
-        RawAlarmItem item = new RawAlarmItem( _hour,  _minute,  _label,  _active,  _id);
-
-        // If list not empty - check if item exist (same ID)
-        if (rawAlarmItems.size()>=0) {
-            long inId = _id;
-            int index = FindItemById(inId);
-
-            // Index >-1 means this item does exist in the list - replace it
-            if (index >= 0)
-                rawAlarmItems.set(index, item);
-            else // Index <0 - add item to list
-               rawAlarmItems.add(item);
-        }
-        // Update list
-        liveRawAlarmItemList.setValue(rawAlarmItems);
-
+    public void AddAlarm(AlarmItem item){
         // Add item to Room Database
        AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(item));
-      LiveData<List<RawAlarmItem>> Items =  alarmDao.getRawAlarm(); // Debug
     }
-    public void DeleteAlarm(long _id){
-        // Empty list? NO-OP
-        if (rawAlarmItems.size()<0)
-            return;
-
+    public void DeleteAlarm(AlarmItem item){
+       AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.delete(item));
         // Find entry by ID. If found then remove it
-        int index = FindItemById(_id);
-        if (index >= 0)
-            rawAlarmItems.remove(index);
-        liveRawAlarmItemList.setValue(rawAlarmItems);
+       // int index = FindItemById(_id);
+       // if (index >= 0)
+        //    AlarmItems.remove(index);
+      //  liveRawAlarmItemList.setValue(rawAlarmItems);
     }
 
-    // Return index of item that corresponds to the given ID
+   public void UpdateAlarm(AlarmItem item)
+   {
+      AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(item));
+   }
+
+   /* // Return index of item that corresponds to the given ID
     // Return -1 if not found
     private int FindItemById(long id) {
         for (int i = 0; i < rawAlarmItems.size(); i++)
             if (id == rawAlarmItems.get(i).id)
                 return i;
         return -1;
-    }
+    }*/
 
     //public void UpdateAlarm(){}
-    public MutableLiveData<List<RawAlarmItem>> getAlarmList() {return liveRawAlarmItemList;}
-   @Entity(tableName = "raw_alarm_table")
+    public LiveData<List<AlarmItem>> getAlarmList() {
+       return liveAlarmItemList;}
+   /*
    public static class RawAlarmItem{
 
         public RawAlarmItem(){};
@@ -112,11 +88,10 @@ public class AlarmRepository {
             active = _active;
         };
         public int minutesSinceMidnight;
-      @PrimaryKey
-      @NonNull
+
         public long id;
         public boolean active=true; // TODO: Should be set by constructor
         public boolean oneTime = true;// TODO: Should be set by constructor
         public String label;
-    }
+    }*/
 }

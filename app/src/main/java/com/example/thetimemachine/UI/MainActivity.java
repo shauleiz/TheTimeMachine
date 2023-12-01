@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Brute Force removal of Room database
+       // getApplication().getApplicationContext().deleteDatabase("raw_alarm_database");
+
         // Create/acquire the ViewModel object of class AlarmViewModel
         alarmViewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
 

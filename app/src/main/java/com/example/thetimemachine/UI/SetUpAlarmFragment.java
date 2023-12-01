@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import com.example.thetimemachine.AlarmViewModel;
+import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
 
 public class SetUpAlarmFragment extends Fragment {
@@ -145,14 +146,17 @@ public class SetUpAlarmFragment extends Fragment {
         int h = timePicker.getHour();
         int m = timePicker.getMinute();
         String t = label.getText().toString();
+        long c = initParams.getLong("INIT_CREATETIME");
+
+        AlarmItem item = new AlarmItem(h, m,t, true, c);
 
         // Get the position and the status of the entry to be created/updated
         // And Add or Update the entry on the list
         int position = initParams.getInt("INIT_POSITION");
-        if (initParams.getBoolean("INIT_NEWALARM", true) || position<0)
-            alarmViewModel.AddAlarm(h,m,t,true);
+       if (initParams.getBoolean("INIT_NEWALARM", true) || position<0)
+            alarmViewModel.AddAlarm(item);
         else
-            alarmViewModel.UpdateAlarm(h,m,t,true, position);
+            alarmViewModel.UpdateAlarm(item);
 
 
         // Display the Alarm List Fragment

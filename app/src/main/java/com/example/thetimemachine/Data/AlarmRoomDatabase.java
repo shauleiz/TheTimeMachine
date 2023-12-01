@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {AlarmRepository.RawAlarmItem.class}, version = 1, exportSchema = false)
+@Database(entities = {AlarmItem.class}, version = 1, exportSchema = false)
 public abstract class AlarmRoomDatabase extends RoomDatabase {
    public abstract AlarmDao alarmDao();
 
