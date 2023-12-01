@@ -58,12 +58,13 @@ public class AlarmRepository {
             long inId = _id;
             int index = FindItemById(inId);
 
-            // Index >-1 means this item does exist in the list - remove it
+            // Index >-1 means this item does exist in the list - replace it
             if (index >= 0)
-                rawAlarmItems.remove(index);
+                rawAlarmItems.set(index, item);
+            else // Index <0 - add item to list
+               rawAlarmItems.add(item);
         }
-        // Add item
-        rawAlarmItems.add(item);
+        // Update list
         liveRawAlarmItemList.setValue(rawAlarmItems);
 
         // Add item to Room Database

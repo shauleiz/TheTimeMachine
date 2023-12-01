@@ -173,12 +173,14 @@ public class AlarmViewModel extends AndroidViewModel {
    public class SetUpAlarmValues {
       MutableLiveData<Integer> hour, minute;
       MutableLiveData<String> label;
+      MutableLiveData<Boolean> active;
 
       // Default constructor
       public SetUpAlarmValues() {
          this.hour = new MutableLiveData<>();
          this.minute = new MutableLiveData<>();
          this.label = new MutableLiveData<>();
+         this.active = new MutableLiveData<>();
          ResetValues();
       }
 
@@ -186,6 +188,7 @@ public class AlarmViewModel extends AndroidViewModel {
          this.hour = new MutableLiveData<>();
          this.minute = new MutableLiveData<>();
          this.label = new MutableLiveData<>();
+         //this.active = new MutableLiveData<>();
 
          if (newAlarm) { // Add new alarm
             // TODO: Get the default values and ignore the passed values
@@ -210,6 +213,7 @@ public class AlarmViewModel extends AndroidViewModel {
          hour.setValue(AlarmList.get(position).getHour());
          minute.setValue(AlarmList.get(position).getMinute());
          label.setValue(AlarmList.get(position).getLabel());
+         active.setValue(AlarmList.get(position).isActive());
       }
 
       /* Getter Methods */
@@ -234,6 +238,8 @@ public class AlarmViewModel extends AndroidViewModel {
       public MutableLiveData<String> getLabel() {
          return label;
       }
+
+      public MutableLiveData<Boolean> isActive() {return active;}
 
       public void setLabel(String label) {
          String t = this.label.getValue();

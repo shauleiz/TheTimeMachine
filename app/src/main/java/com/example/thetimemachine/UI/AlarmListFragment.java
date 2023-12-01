@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.R;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -86,6 +88,7 @@ public class AlarmListFragment extends Fragment {
             public void onChanged(List<AlarmViewModel.AlarmItem> m) {
                 if (m != null) {
                     //alarmAdapter.notifyItemChanged(0, null);
+                    alarmAdapter.UpdateAlarmAdapter(m);
                     alarmAdapter.notifyDataSetChanged();
                 }
             }
@@ -96,10 +99,20 @@ public class AlarmListFragment extends Fragment {
         alarmAdapter.setOnItemClickListener(new AlarmAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                String label = alarmList.get(position).getLabel();
-                String alarmTime = String.format("%d:%02d",alarmList.get(position).getHour(),alarmList.get(position).getMinute());
-                Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
-                AlarmItemClicked(position);
+                int id = view.getId();
+                if (id == R.id.AlarmActive) {// Alarm Active checkbox has been clicked
+                    int h = alarmList.get(position).getHour();
+                    int m = alarmList.get(position).getMinute();
+                    String t = alarmList.get(position).getLabel();
+                    boolean active = ((CheckBox)view).isChecked();
+                    parent.alarmViewModel.UpdateAlarm(h,m,t,active, position);
+                     }
+                else{ // The Alarm item itself has been clicked
+                    String label = alarmList.get(position).getLabel();
+                    String alarmTime = String.format("%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
+                    Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
+                    AlarmItemClicked(position);
+                }
             }
         });
 

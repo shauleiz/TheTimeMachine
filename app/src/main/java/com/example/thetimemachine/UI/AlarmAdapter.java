@@ -42,9 +42,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         if (_alarmList == null)
             alarmList = new ArrayList<>();
         else
-            alarmList = new ArrayList<>(_alarmList);
+            alarmList = _alarmList;
+        //alarmList = new ArrayList<>(_alarmList);
     }
-
+     public void UpdateAlarmAdapter(List<AlarmViewModel.AlarmItem> _alarmList){
+         if (_alarmList != null)
+             alarmList = _alarmList;
+     }
 
     // Called when the RecyclerView needs to create a new entry
     // Here it is provided with the item's layout
@@ -113,6 +117,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             AlarmTime = (TextView) itemView.findViewById(R.id.AlarmTime);
             AlarmActive = (CheckBox) itemView.findViewById(R.id.AlarmActive);
 
+
+
             // Setup the click listener
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -122,6 +128,19 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             clickListener.onItemClick(itemView, position);
+                        }
+                    }
+                }
+            });
+
+            AlarmActive.setOnClickListener(new View.OnClickListener() {
+                @Override
+            public void onClick(View v) {
+                    // Triggers click upwards to the adapter on click
+                    if (clickListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            clickListener.onItemClick(AlarmActive, position);
                         }
                     }
                 }
