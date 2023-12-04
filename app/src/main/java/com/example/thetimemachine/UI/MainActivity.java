@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.example.thetimemachine.AlarmViewModel;
 
 import com.example.thetimemachine.R;
+import com.example.thetimemachine.Scheduler;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Brute Force removal of Room database
        // getApplication().getApplicationContext().deleteDatabase("raw_alarm_database");
+
+        // Create time scheduler
+        Scheduler scheduler = new Scheduler(getApplicationContext());
 
         // Create/acquire the ViewModel object of class AlarmViewModel
         alarmViewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
