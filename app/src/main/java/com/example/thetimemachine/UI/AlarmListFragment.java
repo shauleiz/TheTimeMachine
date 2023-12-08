@@ -111,6 +111,7 @@ public class AlarmListFragment extends Fragment {
     // Get Item's info from Alarm list
     // Get new state of checkbox
     // Send update to this item down to the ViewModel
+    // Schedule/cancel alarm
     void ActiveCheckboxChanged(View view, int position) {
         int h = alarmList.get(position).getHour();
         int m = alarmList.get(position).getMinute();
@@ -119,6 +120,9 @@ public class AlarmListFragment extends Fragment {
         long c = alarmList.get(position).getCreateTime();
         AlarmItem item = new AlarmItem(h, m, l, active, c);
         parent.alarmViewModel.UpdateAlarm(item);
+        if (active==true)
+            item.Schedule(getContext());
+        // TODO: Cancel
     }
     /*
      *   Called when user clicks on Alarm item in recycler

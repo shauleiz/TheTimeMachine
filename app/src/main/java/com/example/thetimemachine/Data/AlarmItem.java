@@ -1,8 +1,19 @@
 package com.example.thetimemachine.Data;
 
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.thetimemachine.AlarmReceiver;
 
 import java.util.Calendar;
 
@@ -81,5 +92,52 @@ public class AlarmItem {
    public void setMinute(int minute) {this.minute = minute;}
 
    public void setCreateTime(long createTime) {this.createTime = createTime;}
+
+
+
+   /*
+    * Schedule a new alarm
+    * */
+   public void Schedule(Context context) {
+      AlarmManager alarmManager;
+
+
+      // Get Alarm Manager and test (For newer versions) if device supports Exact Alarms
+      // TODO: If not supported - do something or abort
+      alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+         boolean isExact = alarmManager.canScheduleExactAlarms();
+         if (isExact)
+            Log.d("Alarm", "Exact Alarm - SUPPORTED");
+         else
+            Log.w("Alarm", "Exact Alarm - NOT SUPPORTED");
+      }
+
+
+      // Create an intent that will hold all the necessary EXTRA data
+      // Encapsulate the intent inside a Pending intent
+      Intent intent = new Intent(context, AlarmReceiver.class);
+      intent.putExtra("LABEL", label); // TODO: Replace by string from XML
+      // TODO: Pass additional info such as days of week
+      PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int)createTime, intent, FLAG_IMMUTABLE);
+
+      // Get the time for the next Alarm, in Milliseconds
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTimeInMillis(System.currentTimeMillis());
+      calendar.set(Calendar.HOUR_OF_DAY, hour);
+      calendar.set(Calendar.MINUTE, minute);
+      calendar.set(Calendar.SECOND, 0);
+      calendar.set(Calendar.MILLISECOND, 0);
+
+      // if alarm time has already passed, increment day by 1
+      if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+         calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
+      }
+
+      // Set Alarm Clock
+      //TODO: Use correct alarmManager.setXXX fncton according to Android version
+      AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), null);
+      alarmManager.setAlarmClock(info , alarmIntent );
+   }
 
 }
