@@ -118,8 +118,14 @@ public class AlarmItem {
       // Encapsulate the intent inside a Pending intent
       Intent intent = new Intent(context, AlarmReceiver.class);
       intent.putExtra("LABEL", label); // TODO: Replace by string from XML
-      // TODO: Pass additional info such as days of week
-      PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int)createTime, intent, FLAG_IMMUTABLE);
+      intent.putExtra("HOUR", hour);
+      intent.putExtra("MINUTE", minute);
+
+      // TODO: Pass additional info such as days of week and status of Alarm
+      PendingIntent alarmIntent = PendingIntent.getBroadcast(context,
+            (int)createTime,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
       // Get the time for the next Alarm, in Milliseconds
       Calendar calendar = Calendar.getInstance();
@@ -136,8 +142,11 @@ public class AlarmItem {
 
       // Set Alarm Clock
       //TODO: Use correct alarmManager.setXXX fncton according to Android version
-      AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), null);
-      alarmManager.setAlarmClock(info , alarmIntent );
+      //AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), null);
+      alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            calendar.getTimeInMillis(),
+            alarmIntent);
    }
 
 }
