@@ -3,11 +3,20 @@ package com.example.thetimemachine;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
+   private void startAlarmService(Context context, Intent intent) {
+      Intent intentService = new Intent(context, AlarmService.class);
+      intentService.putExtra("LABEL", intent.getStringExtra("LABEL")); // TODO: Replace by XML string
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+         context.startForegroundService(intentService);
+      else
+         context.startService(intentService);
+   }
 
    /*
    * Receive broadcast messages destined to this Application
@@ -26,7 +35,7 @@ public class AlarmReceiver extends BroadcastReceiver {
          String toastText = String.format("Alarm Reboot");
          Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
          //startRescheduleAlarmsService(context);
-         Log.i("SIMPLE_ALARM_CLOCK", "Alarm Reboot");
+         Log.i("THE_TIME_MACHINE", "Alarm Reboot");
       }
       // Message from Alarm manager - Get alarm parameters and start alarm service
       else {
@@ -36,9 +45,13 @@ public class AlarmReceiver extends BroadcastReceiver {
          int m = intent.getIntExtra("MINUTE", -1);
 
          // Debug information
-         String txt = new String("Label: " + Label + h + ":" + m);
+         String txt = new String("Label: " + Label + "  "+ h + ": " + m);
          Toast.makeText(context, txt, Toast.LENGTH_LONG).show();
-         Log.i("SIMPLE_ALARM_CLOCK", txt);
+         Log.i("THE_TIME_MACHINE", txt);
+
+         // Start the service that Displays Snooze/Stop Page
+         // Sounds alarm and vibration
+         startAlarmService( context,  intent);
       }
    }
 }

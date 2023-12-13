@@ -108,9 +108,9 @@ public class AlarmItem {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
          boolean isExact = alarmManager.canScheduleExactAlarms();
          if (isExact)
-            Log.d("Alarm", "Exact Alarm - SUPPORTED");
+            Log.d("THE_TIME_MACHINE", "Exact Alarm - SUPPORTED");
          else
-            Log.w("Alarm", "Exact Alarm - NOT SUPPORTED");
+            Log.w("THE_TIME_MACHINE", "Exact Alarm - NOT SUPPORTED");
       }
 
 
@@ -141,7 +141,7 @@ public class AlarmItem {
       }
 
       // Set Alarm Clock
-      //TODO: Use correct alarmManager.setXXX fncton according to Android version
+      //TODO: Use correct alarmManager.setXXX function according to Android version
       //AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), null);
       alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
