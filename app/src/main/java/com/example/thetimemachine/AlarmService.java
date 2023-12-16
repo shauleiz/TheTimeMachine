@@ -1,5 +1,6 @@
 package com.example.thetimemachine;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
 import static com.example.thetimemachine.Application.TheTimeMachineApp.CHANNEL_ID;
 
 import android.app.Notification;
@@ -38,9 +39,10 @@ public class AlarmService  extends Service {
             .setContentTitle(alarmTitle)
             .setContentText("Ring Ring .. Ring Ring")
             .setSmallIcon(R.drawable.baseline_alarm_add_24)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
             .setFullScreenIntent(pendingIntent, true)
             .setContentIntent(pendingIntent)
+            .setDefaults(Notification.DEFAULT_ALL)
             .build();
 
 
@@ -48,7 +50,7 @@ public class AlarmService  extends Service {
       Log.i("THE_TIME_MACHINE", alarmTitle);
       // Display Notification
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-         startForeground( 1, notification, 0);
+         startForeground( 1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
       }
       else
          startForeground(1,notification);

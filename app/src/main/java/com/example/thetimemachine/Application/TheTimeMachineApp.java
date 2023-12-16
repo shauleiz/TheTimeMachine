@@ -12,15 +12,16 @@ public class TheTimeMachineApp extends Application {
    public void onCreate() {
       super.onCreate();
 
-      createNotificationChannnel();
+      createNotificationChannel();
    }
 
-   private void createNotificationChannnel() {
+   private void createNotificationChannel() {
+
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
          NotificationChannel serviceChannel = new NotificationChannel(
                CHANNEL_ID,
-               "Alarm Service Channel",
-               NotificationManager.IMPORTANCE_DEFAULT
+               "The Time Machine: Alarm Service Channel",
+               NotificationManager.IMPORTANCE_HIGH
          );
 
          NotificationManager manager = getSystemService(NotificationManager.class);

@@ -7,6 +7,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
 
     <application
         android:name=".Application.TheTimeMachineApp"
@@ -36,9 +39,9 @@
         </receiver>
         <service
             android:name=".AlarmService"
+            android:foregroundServiceType="systemExempted"
             android:exported="false">
         </service>
-        <service android:name=".RescheduleAlarmsService" />
     </application>
 
 
