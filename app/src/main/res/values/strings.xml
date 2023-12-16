@@ -8,4 +8,10 @@
     <string name="alarm_format">%d:%02d</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="stop">Stop</string>
+    <string name="notification_title">Alarm</string>
+    <string name="title_activity_stop_snooze">StopSnoozeActivity</string>
+    <string name="stop_button">Stop</string>
+    <string name="snooze_button">Snooze</string>
+    <string name="dummy_content">TODO: Change This Later</string>
 </resources>

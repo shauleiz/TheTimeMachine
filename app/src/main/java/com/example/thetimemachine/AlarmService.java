@@ -3,11 +3,13 @@ package com.example.thetimemachine;
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
 import static com.example.thetimemachine.Application.TheTimeMachineApp.CHANNEL_ID;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.VibrationEffect;
@@ -18,10 +20,13 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.example.thetimemachine.UI.MainActivity;
+import com.example.thetimemachine.UI.StopSnoozeActivity;
 
 public class AlarmService  extends Service {
 
    private Vibrator vibrator;
+   private MediaPlayer mediaPlayer;
+
 
    @Override
    public int onStartCommand(Intent intent, int flags, int startId) {
@@ -31,23 +36,10 @@ public class AlarmService  extends Service {
       // TODO: Define activity Intent notificationIntent = new Intent(this, RingActivity.class);
       //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-      // Display notification: With Text, Icon and option to call activity
-      String alarmTitle = String.format("Alarm:  %s", intent.getStringExtra("LABEL"));
-      // request code and flags not added for demo purposes
-      PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-      Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(alarmTitle)
-            .setContentText("Ring Ring .. Ring Ring")
-            .setSmallIcon(R.drawable.baseline_alarm_add_24)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setFullScreenIntent(pendingIntent, true)
-            .setContentIntent(pendingIntent)
-            .setDefaults(Notification.DEFAULT_ALL)
-            .build();
 
-
-
-      Log.i("THE_TIME_MACHINE", alarmTitle);
+      // TODO: Add full screen activity
+      // Create notification: With Text, Icon and Stop button
+      Notification notification = CreateNotification(intent);
       // Display Notification
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
          startForeground( 1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
@@ -56,15 +48,17 @@ public class AlarmService  extends Service {
          startForeground(1,notification);
 
       Log.i("THE_TIME_MACHINE", "Service Started.2");
-      // mediaPlayer.start();
- /*
+
+
+      // Start audio and vibration
+      mediaPlayer.start();
       if (Build.VERSION.SDK_INT >= 26) {
          ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150,10));
       } else {
          ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
       }
 
-
+/*
       Intent i = new Intent();
       i.setClass(this, MainActivity.class);
       i.setAction(Intent.ACTION_MAIN);
@@ -81,25 +75,81 @@ public class AlarmService  extends Service {
    public void onCreate() {
       super.onCreate();
 
-      //startForeground(1, null);
-      //mediaPlayer = MediaPlayer.create(this, R.raw.alarm);
-      //mediaPlayer.setLooping(true);
+      // Create Media player - Plays Alarm
+      // TODO: Select MP3 to play
+      mediaPlayer = MediaPlayer.create(this, R.raw.rooster);
+      mediaPlayer.setLooping(true);
 
-      Log.i("THE_TIME_MACHINE", "Service Created");
+      // Create vibrator
       vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
+      Log.i("THE_TIME_MACHINE", "Service Created");
    }
 
    @Override
    public void onDestroy() {
       super.onDestroy();
 
-     // mediaPlayer.stop();
+      mediaPlayer.stop();
       vibrator.cancel();
+      Log.i("THE_TIME_MACHINE", "Service Destroys");
+
    }
    @Nullable
    @Override
    public IBinder onBind(Intent intent) {
       return null;
+   }
+
+   // Create Pending intent for the Stop button that is on the notification
+   static public PendingIntent createStopPendingIntent(Context context){
+      Intent stopIntent = new Intent(context, AlarmReceiver.class);
+      stopIntent.setAction("stop");
+      PendingIntent stopPendingIntent =
+            PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE);
+      return stopPendingIntent;
+   }
+
+   // Craete notification to display when Alarm goes off
+   // Will be called from onStartCommand()
+   private Notification CreateNotification(Intent intent){
+
+      // Strings to show as alarm text and Title
+      String label = intent.getStringExtra("LABEL");
+      int h = intent.getIntExtra("HOUR", -1);
+      int m = intent.getIntExtra("MINUTE", -1);
+      @SuppressLint("DefaultLocale") String alarmText = String.format("%s - %d:%02d", label, h, m);
+      String alarmTitle = getResources().getString(R.string.notification_title);
+      Log.i("THE_TIME_MACHINE", alarmText);
+
+      // Prepare intent for a Stop/Snooze fullscreen activity
+      Intent fullScreenIntent = new Intent(this, StopSnoozeActivity.class);
+      fullScreenIntent.putExtra("APP_NAME", "The Time Machine");
+      fullScreenIntent.putExtra("HOUR", h);
+      fullScreenIntent.putExtra("MINUTE", m);
+      fullScreenIntent.putExtra("LABEL", label);
+      PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
+            fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE );
+
+      // Create the Stop action
+      PendingIntent stopIntent = createStopPendingIntent(this);
+      NotificationCompat.Action action = new NotificationCompat.Action.Builder(
+            R.drawable.baseline_alarm_off_24, getString(R.string.stop), stopIntent).build();
+
+      // Notification
+      Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+            /* Title */                .setContentTitle(alarmTitle)
+            /* Content */              .setContentText(alarmText)
+            /* Statusbar Icon */       .setSmallIcon(R.drawable.baseline_alarm_add_24)
+            /* Always on top */        .setPriority(NotificationCompat.PRIORITY_MAX)
+            /* Set category */         .setCategory(NotificationCompat.CATEGORY_ALARM)
+            /* Full screen activity */ .setFullScreenIntent(fullScreenPendingIntent, true)
+            /* View on locked screen*/ .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            //.setContentIntent(pendingIntent)
+            /* Audio and vibration */  .setDefaults(Notification.DEFAULT_ALL)
+            /* Stop Button */          .addAction(action)
+            .setTimeoutAfter(-1)
+            .build();
+
+      return notification;
    }
 }

@@ -7,11 +7,15 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.Objects;
+
 public class AlarmReceiver extends BroadcastReceiver {
 
    private void startAlarmService(Context context, Intent intent) {
       Intent intentService = new Intent(context, AlarmService.class);
       intentService.putExtra("LABEL", intent.getStringExtra("LABEL")); // TODO: Replace by XML string
+      intentService.putExtra("HOUR", intent.getIntExtra("HOUR", -1));
+      intentService.putExtra("MINUTE", intent.getIntExtra("MINUTE", -1));
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
          context.startForegroundService(intentService);
       else
@@ -29,6 +33,7 @@ public class AlarmReceiver extends BroadcastReceiver {
    @Override
    public void onReceive(Context context, Intent intent) {
       String action = intent.getAction();
+      Log.i("THE_TIME_MACHINE", String.format("Action = %s", action));
 
       // Machine boot finished - must reschedule all active Alarms
       if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
@@ -36,6 +41,11 @@ public class AlarmReceiver extends BroadcastReceiver {
          Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
          //startRescheduleAlarmsService(context);
          Log.i("THE_TIME_MACHINE", "Alarm Reboot");
+
+         // Stop the alarm by killing the Alarm Service
+      } else if (Objects.equals(action,"stop")) {
+         Log.i("THE_TIME_MACHINE", "Action is STOP");
+         context.stopService(new Intent(context, AlarmService.class));
       }
       // Message from Alarm manager - Get alarm parameters and start alarm service
       else {
@@ -45,7 +55,7 @@ public class AlarmReceiver extends BroadcastReceiver {
          int m = intent.getIntExtra("MINUTE", -1);
 
          // Debug information
-         String txt = new String("Label: " + Label + "  "+ h + ": " + m);
+         String txt = new String("Label: " + Label + "  "+ h + ":" + m);
          Toast.makeText(context, txt, Toast.LENGTH_LONG).show();
          Log.i("THE_TIME_MACHINE", txt);
 
