@@ -2,18 +2,23 @@ package com.example.thetimemachine.Data;
 
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
 
+import static com.google.android.material.internal.ContextUtils.getActivity;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import com.example.thetimemachine.AlarmReceiver;
+import com.example.thetimemachine.Application.TheTimeMachineApp;
+import com.example.thetimemachine.R;
 
 import java.util.Calendar;
 
@@ -98,9 +103,11 @@ public class AlarmItem {
    /*
     * Schedule a new alarm
     * */
-   public void Schedule(Context context) {
+   public void Schedule() {
       AlarmManager alarmManager;
 
+      Context context = TheTimeMachineApp.appContext;
+      if (context == null) return;
 
       // Get Alarm Manager and test (For newer versions) if device supports Exact Alarms
       // TODO: If not supported - do something or abort
@@ -117,7 +124,7 @@ public class AlarmItem {
       // Create an intent that will hold all the necessary EXTRA data
       // Encapsulate the intent inside a Pending intent
       Intent intent = new Intent(context, AlarmReceiver.class);
-      intent.putExtra("LABEL", label); // TODO: Replace by string from XML
+      intent.putExtra("LABEL", label);
       intent.putExtra("HOUR", hour);
       intent.putExtra("MINUTE", minute);
 
@@ -141,12 +148,52 @@ public class AlarmItem {
       }
 
       // Set Alarm Clock
-      //TODO: Use correct alarmManager.setXXX function according to Android version
-      //AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), null);
-      alarmManager.setExactAndAllowWhileIdle(
+       alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.getTimeInMillis(),
             alarmIntent);
+
+      // Toast and Log
+      // TODO: Change toast to tell user the duration until the alarm goes off
+      String toastText = String.format(context.getResources().getString(R.string.msg_alarm_set), hour, minute);
+      Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
+      Log.d("THE_TIME_MACHINE", toastText);
+   }
+
+   // Cancel an Alarm
+   public void cancelAlarm() {
+
+      Context context = TheTimeMachineApp.appContext;
+      if (context == null) return;
+
+      // Get Alarm Manager and test (For newer versions) if device supports Exact Alarms
+      // TODO: If not supported - do something or abort
+      AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+         boolean isExact = alarmManager.canScheduleExactAlarms();
+         if (isExact)
+            Log.d("THE_TIME_MACHINE", "Exact Alarm - SUPPORTED");
+         else
+            Log.w("THE_TIME_MACHINE", "Exact Alarm - NOT SUPPORTED");
+      }
+
+
+      // Create an intent then
+      // Encapsulate the intent inside a Pending intent
+      Intent intent = new Intent(context, AlarmReceiver.class);
+      PendingIntent alarmIntent = PendingIntent.getBroadcast(context,
+            (int)createTime,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+      // Cancel
+      alarmManager.cancel(alarmIntent);
+      //this.started = false;
+
+      // Toast and Log
+      String toastText = String.format(context.getResources().getString(R.string.msg_alarm_canceled), hour, minute);
+      Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
+      Log.d("THE_TIME_MACHINE", toastText);
    }
 
 }

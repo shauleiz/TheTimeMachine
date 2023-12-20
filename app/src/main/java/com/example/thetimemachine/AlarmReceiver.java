@@ -35,7 +35,7 @@ public class AlarmReceiver extends BroadcastReceiver {
       String action = intent.getAction();
       Log.i("THE_TIME_MACHINE", String.format("Action = %s", action));
 
-      // Machine boot finished - must reschedule all active Alarms
+      // TODO: Machine boot finished - must reschedule all active Alarms
       if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
          String toastText = String.format("Alarm Reboot");
          Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();

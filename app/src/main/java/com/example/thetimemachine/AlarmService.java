@@ -19,7 +19,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.example.thetimemachine.UI.MainActivity;
+
 import com.example.thetimemachine.UI.StopSnoozeActivity;
 
 public class AlarmService  extends Service {
@@ -109,7 +109,7 @@ public class AlarmService  extends Service {
       return stopPendingIntent;
    }
 
-   // Craete notification to display when Alarm goes off
+   // Create notification to display when Alarm goes off
    // Will be called from onStartCommand()
    private Notification CreateNotification(Intent intent){
 
@@ -139,7 +139,7 @@ public class AlarmService  extends Service {
       Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
             /* Title */                .setContentTitle(alarmTitle)
             /* Content */              .setContentText(alarmText)
-            /* Statusbar Icon */       .setSmallIcon(R.drawable.baseline_alarm_add_24)
+            /* Status bar Icon */      .setSmallIcon(R.drawable.baseline_alarm_add_24)
             /* Always on top */        .setPriority(NotificationCompat.PRIORITY_MAX)
             /* Set category */         .setCategory(NotificationCompat.CATEGORY_ALARM)
             /* Full screen activity */ .setFullScreenIntent(fullScreenPendingIntent, true)

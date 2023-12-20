@@ -12,6 +12,7 @@ import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.Data.AlarmRepository;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /*
@@ -78,12 +79,17 @@ public class AlarmViewModel extends AndroidViewModel {
 
    public void DeleteAlarm(int _position){
 
-
+      // Get List
       AlarmList = LiveAlarmList.getValue();
       if (AlarmList==null) return;
 
+      // Get alarm item and cancel the alarm
+      AlarmItem item = (AlarmList.get(_position));
+      item.cancelAlarm();
+
       // Repository
-      repo.DeleteAlarm(AlarmList.get(_position));
+      repo.DeleteAlarm(item);
+
    }
 
    public void UpdateAlarm(AlarmItem item) {
@@ -129,9 +135,11 @@ public class AlarmViewModel extends AndroidViewModel {
       }
 
       public void ResetValues(){
-         // TODO: Reset to user defined values
-         hour.setValue(0);
-         minute.setValue(0);
+         Calendar calendar = Calendar.getInstance();
+         calendar.setTimeInMillis(System.currentTimeMillis());
+
+         hour.setValue(calendar.get(Calendar.HOUR));
+         minute.setValue(calendar.get(Calendar.MINUTE));
          label.setValue("");
       }
 

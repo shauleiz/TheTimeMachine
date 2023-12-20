@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".UI.AlarmListFragment">
 
-    <!-- TODO: Update blank fragment layout -->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/alarmListRecyclerView"
@@ -16,11 +15,10 @@
         android:layout_marginStart="9dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="9dp"
-        android:layout_marginBottom="150dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/Add_Alarm_fab"
@@ -34,15 +32,4 @@
         android:tooltipText="Add Alarm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/hello_blank_fragment"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

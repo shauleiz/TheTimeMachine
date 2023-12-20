@@ -113,16 +113,22 @@ public class AlarmListFragment extends Fragment {
     // Send update to this item down to the ViewModel
     // Schedule/cancel alarm
     void ActiveCheckboxChanged(View view, int position) {
+
+        // Get alarm item data from list
         int h = alarmList.get(position).getHour();
         int m = alarmList.get(position).getMinute();
         String l = alarmList.get(position).getLabel();
-        boolean active = ((CheckBox)view).isChecked();
         long c = alarmList.get(position).getCreateTime();
+
+        // Get 'active' checkbox state
+        boolean active = ((CheckBox)view).isChecked();
+        // Create a new alarm, update View Model and schedule/cancel alarm
         AlarmItem item = new AlarmItem(h, m, l, active, c);
         parent.alarmViewModel.UpdateAlarm(item);
         if (active==true)
-            item.Schedule(getContext());
-        // TODO: Cancel
+            item.Schedule();
+        else
+            item.cancelAlarm();
     }
     /*
      *   Called when user clicks on Alarm item in recycler
@@ -139,7 +145,7 @@ public class AlarmListFragment extends Fragment {
         Bundle b = new Bundle();
         b.putBoolean("INIT_NEWALARM",false);
         b.putInt("INIT_POSITION", position);
-        b.putLong("INIT_CREATETIME", parent.alarmViewModel.getAlarmList().getValue().get(position).getCreateTime());
+        b.putLong("INIT_CREATE_TIME", parent.alarmViewModel.getAlarmList().getValue().get(position).getCreateTime());
 
         // Replace current fragment with the Setup Alarm fragment
         parent = (MainActivity) getActivity();

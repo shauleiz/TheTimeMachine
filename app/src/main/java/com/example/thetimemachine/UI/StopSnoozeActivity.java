@@ -99,8 +99,11 @@ public class StopSnoozeActivity extends AppCompatActivity {
                if (AUTO_HIDE) {
                   delayedHide(AUTO_HIDE_DELAY_MILLIS);
                }
+               // Stop the Alarm by stopping the Alarm Service
                Context context = getApplicationContext();
                context.stopService(new Intent(context, AlarmService.class));
+
+               // Kill this activity
                finish();
                break;
             case MotionEvent.ACTION_UP:
@@ -132,6 +135,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
    };
    private ActivityStopSnoozeBinding binding;
 
+   @SuppressLint("ClickableViewAccessibility")
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
