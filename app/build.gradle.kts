@@ -24,6 +24,8 @@ android {
                 "proguard-rules.pro"
             )
         }
+        create("REL01") {
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

@@ -134,11 +134,12 @@ public class AlarmViewModel extends AndroidViewModel {
          // TODO: Modify alarm
       }
 
+      // Reset Setup Values: Time is the current time. Label is empty
       public void ResetValues(){
          Calendar calendar = Calendar.getInstance();
          calendar.setTimeInMillis(System.currentTimeMillis());
 
-         hour.setValue(calendar.get(Calendar.HOUR));
+         hour.setValue(calendar.get(Calendar.HOUR_OF_DAY));
          minute.setValue(calendar.get(Calendar.MINUTE));
          label.setValue("");
       }
