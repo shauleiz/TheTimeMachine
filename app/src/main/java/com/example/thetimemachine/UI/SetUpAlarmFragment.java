@@ -137,6 +137,7 @@ public class SetUpAlarmFragment extends Fragment {
     }
 
     // OK Button clicked
+    //@RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void OkClicked(){
         final MainActivity parent = (MainActivity) getActivity();
 
@@ -172,6 +173,7 @@ public class SetUpAlarmFragment extends Fragment {
         if (active)
             item.Schedule();
 
+
         // Display the Alarm List Fragment
         if (parent != null){
             FragmentManager lm = parent.getSupportFragmentManager();
@@ -182,6 +184,9 @@ public class SetUpAlarmFragment extends Fragment {
         }
 
     }
+
+
+
 
     // Delete Button Clicked
     private void DeleteClicked() {

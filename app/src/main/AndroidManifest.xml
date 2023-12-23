@@ -50,6 +50,9 @@
             android:name=".AlarmService"
             android:exported="false"
             android:foregroundServiceType="systemExempted"></service>
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>
