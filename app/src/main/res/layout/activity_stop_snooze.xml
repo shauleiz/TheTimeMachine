@@ -44,11 +44,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/white"
+                android:autoSizeMinTextSize="14sp"
                 android:text="@string/stop_button"
+                android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@android:color/holo_red_light"
-                app:icon="@drawable/baseline_alarm_off_24" />
+                android:textSize="24sp"
+                app:icon="@drawable/baseline_alarm_off_24"
+                app:iconGravity="textStart"
+                app:iconPadding="6dp"
+                app:iconSize="24dp"
+                app:iconTint="@android:color/holo_red_light" />
 
             <Button
                 android:id="@+id/snooze_button"
@@ -56,9 +62,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:autoSizeMinTextSize="14sp"
                 android:text="@string/snooze_button"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="@android:color/holo_orange_dark" />
+                android:textColor="@android:color/holo_orange_dark"
+                android:textSize="24sp"
+                app:iconGravity="textStart"
+                app:iconPadding="6dp"
+                app:iconSize="24dp"
+                app:iconTint="@android:color/holo_orange_dark"
+                app:icon="@drawable/snooze_fill0_wght400_grad0_opsz24" />
 
         </LinearLayout>
     </FrameLayout>

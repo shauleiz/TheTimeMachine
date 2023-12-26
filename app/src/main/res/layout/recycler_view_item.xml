@@ -10,40 +10,38 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
         android:adjustViewBounds="true"
         android:contentDescription="@string/temp_icon"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
         app:srcCompat="@android:drawable/ic_lock_idle_alarm" />
 
     <TextView
         android:id="@+id/AlarmLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="236dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="6dp"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/black"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/WeekDays"
+        app:layout_constraintBottom_toBottomOf="@id/AlarmTime"
         app:layout_constraintStart_toEndOf="@+id/AlarmActive"
-        app:layout_constraintTop_toTopOf="@+id/BellView"
-        app:layout_constraintVertical_bias="0.0"
         tools:text="@tools:sample/full_names" />
 
     <TextView
         android:id="@+id/WeekDays"
         android:layout_width="285dp"
         android:layout_height="20dp"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/BellView"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:textAlignment="textEnd"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.15"
-        app:layout_constraintStart_toEndOf="@+id/BellView"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="@tools:sample/lorem[4:10]" />
 
     <TextView
@@ -51,14 +49,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="1dp"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/BellView"
         tools:text="@tools:sample/date/hhmm" />
 
     <CheckBox
         android:id="@+id/AlarmActive"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@+id/BellView"
-        app:layout_constraintTop_toTopOf="@+id/BellView" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.example.thetimemachine.UI;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thetimemachine.Data.AlarmItem;
@@ -80,13 +82,33 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         // Label
         holder.AlarmLabel.setText(alarmItem.getLabel());
 
+        // Weekdays
+        holder.WeekDays.setText("Su Mo Tu We Th Fr Sa");
+
         // Time
         String fmt = context.getResources().getString(R.string.alarm_format);
         String alarmTime = String.format(fmt,alarmItem.getHour(),alarmItem.getMinute());
         holder.AlarmTime.setText(alarmTime);
 
         // Active
-        holder.AlarmActive.setChecked(alarmItem.isActive());
+        boolean isActive = alarmItem.isActive();
+        holder.AlarmActive.setChecked(isActive);
+        if (isActive) {
+            holder.AlarmTime.setTextColor(ContextCompat.getColor(context,
+                  com.google.android.material.R.color.design_default_color_primary_variant));
+            holder.AlarmLabel.setTextColor(ContextCompat.getColor(context, R.color.black));
+            holder.WeekDays.setTextColor(ContextCompat.getColor(context, R.color.black));
+        }
+        else {
+            holder.AlarmTime.setTextColor(ContextCompat.getColor(context,
+                  com.google.android.material.R.color.material_dynamic_tertiary80));
+            holder.AlarmLabel.setTextColor(ContextCompat.getColor(context, R.color.black_overlay));
+            holder.WeekDays.setTextColor(ContextCompat.getColor(context, R.color.black_overlay));
+
+        }
+
+
+        //
 
     }
 
