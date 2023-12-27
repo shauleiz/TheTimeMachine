@@ -35,33 +35,51 @@ public class AlarmReceiver extends BroadcastReceiver {
       String action = intent.getAction();
       Log.i("THE_TIME_MACHINE", String.format("Action = %s", action));
 
-      // TODO: Machine boot finished - must reschedule all active Alarms
-      if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
-         String toastText = String.format("Alarm Reboot");
-         Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
-         //startRescheduleAlarmsService(context);
-         Log.i("THE_TIME_MACHINE", "Alarm Reboot");
+      // Just to prevent a crash
+      if (action == null)
+         return;
 
-         // Stop the alarm by killing the Alarm Service
-      } else if (Objects.equals(action,"stop")) {
-         Log.i("THE_TIME_MACHINE", "Action is STOP");
-         context.stopService(new Intent(context, AlarmService.class));
+      switch (action){
+         case Intent.ACTION_BOOT_COMPLETED:
+            // TODO: Machine boot finished - must reschedule all active Alarms
+            String toastText = String.format("Alarm Reboot");
+            Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
+            //startRescheduleAlarmsService(context);
+            Log.i("THE_TIME_MACHINE", "Alarm Reboot");
+            break;
+
+         case "action_stop":
+            // Stop the alarm by killing the Alarm Service
+            Log.i("THE_TIME_MACHINE", "Action is STOP");
+            context.stopService(new Intent(context, AlarmService.class));
+            break;
+
+         case "action_snooze":
+            String sLabel = intent.getStringExtra("LABEL");
+            String stxt = new String("Snooze Label: " + sLabel);
+            Log.i("THE_TIME_MACHINE", stxt);
+            break;
+
+         case "action_alarm":
+            // Message from Alarm manager - Get alarm parameters and start alarm service
+
+            // Get Extra Data
+            String Label = intent.getStringExtra("LABEL");
+            int h = intent.getIntExtra("HOUR", -1);
+            int m = intent.getIntExtra("MINUTE", -1);
+
+            // Debug information
+            String txt = new String("Label: " + Label + "  "+ h + ":" + m);
+            Toast.makeText(context, txt, Toast.LENGTH_LONG).show();
+            Log.i("THE_TIME_MACHINE", txt);
+
+            // Start the service that Displays Snooze/Stop Page
+            // and Sounds alarm and vibration
+            startAlarmService( context,  intent);
+
+         default:
+            Log.w("THE_TIME_MACHINE", "Action not recognized");
       }
-      // Message from Alarm manager - Get alarm parameters and start alarm service
-      else {
-         // Get Extra Data
-         String Label = intent.getStringExtra("LABEL");
-         int h = intent.getIntExtra("HOUR", -1);
-         int m = intent.getIntExtra("MINUTE", -1);
 
-         // Debug information
-         String txt = new String("Label: " + Label + "  "+ h + ":" + m);
-         Toast.makeText(context, txt, Toast.LENGTH_LONG).show();
-         Log.i("THE_TIME_MACHINE", txt);
-
-         // Start the service that Displays Snooze/Stop Page
-         // Sounds alarm and vibration
-         startAlarmService( context,  intent);
-      }
    }
 }
