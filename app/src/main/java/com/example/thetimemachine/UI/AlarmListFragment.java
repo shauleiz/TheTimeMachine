@@ -23,12 +23,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -153,7 +151,7 @@ public class AlarmListFragment extends Fragment {
             if (shouldShow) {
                 // Need to show a pop-up window that explains why it is important to grant permissions
                 // Display the pop-up window
-                PopupWindow popupWindow =  DisplayPopUp();
+                PopupWindow popupWindow =  displayPopUpNotifPemis();
 
                 // Define action to do when pop-up window is dismissed -
                 // Request permission to show notifications
@@ -199,7 +197,7 @@ public class AlarmListFragment extends Fragment {
 
                 });
 
-    private PopupWindow DisplayPopUp(){
+    private PopupWindow displayPopUpNotifPemis(){
         LayoutInflater inflater = (LayoutInflater) parent.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_notification_permission, null);
 

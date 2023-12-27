@@ -109,6 +109,15 @@ public class AlarmService  extends Service {
       return stopPendingIntent;
    }
 
+   // Create Pending intent for the Stop button that is on the notification
+   static public PendingIntent createSnoozePendingIntent(Context context){
+      Intent snoozeIntent = new Intent(context, AlarmReceiver.class);
+      snoozeIntent.setAction("snooze");
+      PendingIntent snoozePendingIntent =
+            PendingIntent.getBroadcast(context, 0, snoozeIntent, PendingIntent.FLAG_IMMUTABLE);
+      return snoozePendingIntent;
+   }
+
    // Create notification to display when Alarm goes off
    // Will be called from onStartCommand()
    private Notification CreateNotification(Intent intent){
@@ -132,8 +141,13 @@ public class AlarmService  extends Service {
 
       // Create the Stop action
       PendingIntent stopIntent = createStopPendingIntent(this);
-      NotificationCompat.Action action = new NotificationCompat.Action.Builder(
+      NotificationCompat.Action stopAction = new NotificationCompat.Action.Builder(
             R.drawable.baseline_alarm_off_24, getString(R.string.stop), stopIntent).build();
+
+      // Create the Snooze action
+      PendingIntent snoozeIntent = createSnoozePendingIntent(this);
+      NotificationCompat.Action snoozeAction = new NotificationCompat.Action.Builder(
+            R.drawable.snooze_fill0_wght400_grad0_opsz24, getString(R.string.snooze), snoozeIntent).build();
 
       // Notification
       Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -146,7 +160,8 @@ public class AlarmService  extends Service {
             /* View on locked screen*/ .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             //.setContentIntent(pendingIntent)
             /* Audio and vibration */  .setDefaults(Notification.DEFAULT_ALL)
-            /* Stop Button */          .addAction(action)
+            /* Stop Button */          .addAction(stopAction)
+            /* Stop Button */          .addAction(snoozeAction)
             .setTimeoutAfter(-1)
             .build();
 
