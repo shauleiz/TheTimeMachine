@@ -2,6 +2,8 @@ package com.example.thetimemachine.Data;
 
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
 
+import static com.example.thetimemachine.AlarmService.ALARM;
+import static com.example.thetimemachine.AlarmService.K_TYPE;
 import static com.google.android.material.internal.ContextUtils.getActivity;
 
 import android.app.AlarmManager;
@@ -9,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,8 +35,34 @@ public class AlarmItem {
    private String label;
    private boolean active;
 
+   public static final String K_HOUR = "HOUR";
+   public static final String K_MINUTE = "MINUTE";
+   public static final String K_LABEL = "LABEL";
+   public static final String K_ACTIVE = "ACTIVE";
+   public static final String K_CTIME = "C_TIME";
 
-   // Constructor of Alarm Item - create time calculated internally
+
+
+   // Constructor of Alarm Item - Create from a bundle
+   public AlarmItem(@NonNull Bundle inBundle){
+      hour = inBundle.getInt(K_HOUR);
+      minute = inBundle.getInt(K_MINUTE);
+      label = inBundle.getString(K_LABEL);
+      active = inBundle.getBoolean(K_ACTIVE);
+      createTime = inBundle.getLong(K_CTIME, -1);
+
+      // Sanity check
+      if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
+         active = false;
+
+      if (createTime<0){
+         Calendar calendar = Calendar.getInstance();
+         createTime = calendar.getTimeInMillis();
+      }
+
+   }
+
+                    // Constructor of Alarm Item - create time calculated internally
    public AlarmItem(int _hour, int _minute, String _label, boolean _active) {
       hour = _hour;
       minute = _minute;
@@ -86,6 +115,19 @@ public class AlarmItem {
       return createTime;
    }
 
+   public Bundle getBundle(){
+      Bundle b = new Bundle();
+
+      b.putInt(K_HOUR, hour);
+      b.putInt(K_MINUTE, minute);
+      b.putString(K_LABEL,label);
+      b.putBoolean(K_ACTIVE, active);
+      b.putLong(K_CTIME,createTime);
+
+      return b;
+   }
+
+
    public void setActive(boolean active) {
       this.active = active;
    }
@@ -124,9 +166,11 @@ public class AlarmItem {
       // Create an intent that will hold all the necessary EXTRA data
       // Encapsulate the intent inside a Pending intent
       Intent intent = new Intent(context, AlarmReceiver.class);
-      intent.putExtra("LABEL", label);
-      intent.putExtra("HOUR", hour);
-      intent.putExtra("MINUTE", minute);
+      //intent.putExtra("LABEL", label);
+      //intent.putExtra("HOUR", hour);
+      //intent.putExtra("MINUTE", minute);
+      intent.putExtra(K_TYPE, ALARM);
+      intent.putExtras(getBundle());
 
       // TODO: Pass additional info such as days of week and status of Alarm
       PendingIntent alarmIntent = PendingIntent.getBroadcast(context,
