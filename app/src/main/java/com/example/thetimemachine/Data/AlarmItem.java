@@ -9,7 +9,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,13 +31,6 @@ public class AlarmItem {
    private int hour, minute;
    private String label;
    private boolean active;
-
-   public static final String K_CREATE_TIME = "CREATE_TIME";
-   public static final String K_HOUR = "HOUR";
-   public static final String K_MINUTE = "MINUTE";
-   public static final String K_LABEL = "LABEL";
-   public static final String K_ACTIVE = "ACTIVE";
-
 
 
    // Constructor of Alarm Item - create time calculated internally
@@ -132,7 +124,6 @@ public class AlarmItem {
       // Create an intent that will hold all the necessary EXTRA data
       // Encapsulate the intent inside a Pending intent
       Intent intent = new Intent(context, AlarmReceiver.class);
-      intent.setAction("action_alarm");
       intent.putExtra("LABEL", label);
       intent.putExtra("HOUR", hour);
       intent.putExtra("MINUTE", minute);
@@ -190,7 +181,6 @@ public class AlarmItem {
       // Create an intent then
       // Encapsulate the intent inside a Pending intent
       Intent intent = new Intent(context, AlarmReceiver.class);
-      intent.setAction("action_cancel");
       PendingIntent alarmIntent = PendingIntent.getBroadcast(context,
             (int)createTime,
             intent,
@@ -205,18 +195,5 @@ public class AlarmItem {
       Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
       Log.d("THE_TIME_MACHINE", toastText);
    }
-
-   // Convert Alarm Item data to bundle
-   public Bundle getBundle() {
-      Bundle b = new Bundle();
-      b.putLong(K_CREATE_TIME, createTime);
-      b.putInt(K_HOUR, hour);
-      b.putInt(K_MINUTE, minute);
-      b.putString(K_LABEL,label);
-      b.putBoolean(K_ACTIVE, active);
-
-      return b;
-   }
-
 
 }

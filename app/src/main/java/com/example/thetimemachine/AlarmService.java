@@ -34,6 +34,7 @@ public class AlarmService  extends Service {
       Log.i("THE_TIME_MACHINE", "Service Started");
       // Display Activity: Stop, Snooze and general data
       // TODO: Define activity Intent notificationIntent = new Intent(this, RingActivity.class);
+      //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 
       // TODO: Add full screen activity
@@ -57,6 +58,14 @@ public class AlarmService  extends Service {
          ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
       }
 
+/*
+      Intent i = new Intent();
+      i.setClass(this, MainActivity.class);
+      i.setAction(Intent.ACTION_MAIN);
+      i.addCategory(Intent.CATEGORY_LAUNCHER);
+      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      startActivity(i);
+       */
 
       Log.i("THE_TIME_MACHINE", "Service Started.3");
 
@@ -94,20 +103,10 @@ public class AlarmService  extends Service {
    // Create Pending intent for the Stop button that is on the notification
    static public PendingIntent createStopPendingIntent(Context context){
       Intent stopIntent = new Intent(context, AlarmReceiver.class);
-      stopIntent.setAction("action_stop");
+      stopIntent.setAction("stop");
       PendingIntent stopPendingIntent =
             PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE);
       return stopPendingIntent;
-   }
-
-   // Create Pending intent for the Stop button that is on the notification
-   static public PendingIntent createSnoozePendingIntent(Context context, Intent intent){
-      Intent snoozeIntent = new Intent(context, AlarmReceiver.class);
-      snoozeIntent.setAction("action_snooze");
-      snoozeIntent.putExtra("LABEL", intent.getStringExtra("LABEL"));
-      PendingIntent snoozePendingIntent =
-            PendingIntent.getBroadcast(context, 0, snoozeIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-      return snoozePendingIntent;
    }
 
    // Create notification to display when Alarm goes off
@@ -133,13 +132,8 @@ public class AlarmService  extends Service {
 
       // Create the Stop action
       PendingIntent stopIntent = createStopPendingIntent(this);
-      NotificationCompat.Action stopAction = new NotificationCompat.Action.Builder(
+      NotificationCompat.Action action = new NotificationCompat.Action.Builder(
             R.drawable.baseline_alarm_off_24, getString(R.string.stop), stopIntent).build();
-
-      // Create the Snooze action
-      PendingIntent snoozeIntent = createSnoozePendingIntent(this, intent);
-      NotificationCompat.Action snoozeAction = new NotificationCompat.Action.Builder(
-            R.drawable.snooze_fill0_wght400_grad0_opsz24, getString(R.string.snooze), snoozeIntent).build();
 
       // Notification
       Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -152,8 +146,7 @@ public class AlarmService  extends Service {
             /* View on locked screen*/ .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             //.setContentIntent(pendingIntent)
             /* Audio and vibration */  .setDefaults(Notification.DEFAULT_ALL)
-            /* Stop Button */          .addAction(stopAction)
-            /* Snooze Button */         .addAction(snoozeAction)
+            /* Stop Button */          .addAction(action)
             .setTimeoutAfter(-1)
             .build();
 
