@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Brute Force removal of Room database
-       // getApplication().getApplicationContext().deleteDatabase("raw_alarm_database");
+        // getApplication().getApplicationContext().deleteDatabase("raw_alarm_database");
 
 
 

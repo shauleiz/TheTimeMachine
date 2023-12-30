@@ -1,10 +1,8 @@
 package com.example.thetimemachine.Data;
 
-import static android.app.PendingIntent.FLAG_IMMUTABLE;
-
 import static com.example.thetimemachine.AlarmService.ALARM;
 import static com.example.thetimemachine.AlarmService.K_TYPE;
-import static com.google.android.material.internal.ContextUtils.getActivity;
+import static com.example.thetimemachine.AlarmService.SNOOZE;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -31,7 +29,7 @@ public class AlarmItem {
    @PrimaryKey
    @NonNull
    private long createTime;
-   private int hour, minute;
+   private int hour, minute, snoozeCounter;
    private String label;
    private boolean active;
 
@@ -40,6 +38,7 @@ public class AlarmItem {
    public static final String K_LABEL = "LABEL";
    public static final String K_ACTIVE = "ACTIVE";
    public static final String K_CTIME = "C_TIME";
+   public static final String K_CSNOOZE = "COUNTER_SNOOZE";
 
 
 
@@ -50,6 +49,9 @@ public class AlarmItem {
       label = inBundle.getString(K_LABEL);
       active = inBundle.getBoolean(K_ACTIVE);
       createTime = inBundle.getLong(K_CTIME, -1);
+
+      // Uninitialized Snooze Counter
+      snoozeCounter = -1;
 
       // Sanity check
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
@@ -69,6 +71,9 @@ public class AlarmItem {
       label = _label;
       active = _active;
 
+      // Uninitialized Snooze Counter
+      snoozeCounter = -1;
+
       // Sanity check
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
          active = false;
@@ -84,6 +89,9 @@ public class AlarmItem {
       minute = _minute;
       label = _label;
       active = _active;
+
+      // Uninitialized Snooze Counter
+      snoozeCounter = -1;
 
       // Sanity check
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
@@ -115,6 +123,10 @@ public class AlarmItem {
       return createTime;
    }
 
+   public int getSnoozeCounter(){
+      return snoozeCounter;
+   }
+
    public Bundle getBundle(){
       Bundle b = new Bundle();
 
@@ -139,6 +151,45 @@ public class AlarmItem {
    public void setMinute(int minute) {this.minute = minute;}
 
    public void setCreateTime(long createTime) {this.createTime = createTime;}
+
+   public void setSnoozeCounter(int snoozeCounter){ this.snoozeCounter = snoozeCounter;}
+
+   public int incSnoozeCounter(){return snoozeCounter++;}
+
+   private long alarmTimeInMillis() {
+      // Get the time for the next Alarm, in Milliseconds
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTimeInMillis(System.currentTimeMillis());
+      calendar.set(Calendar.HOUR_OF_DAY, hour);
+      calendar.set(Calendar.MINUTE, minute);
+      calendar.set(Calendar.SECOND, 0);
+      calendar.set(Calendar.MILLISECOND, 0);
+
+      // if alarm time has already passed, increment day by 1
+      if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+         calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
+      }
+
+      return calendar.getTimeInMillis();
+   }
+   public void Snooze(int delay){
+      // Increment the snooze counter
+      incSnoozeCounter();
+
+      // Make sure that the snooze action does not go on forever
+      if (snoozeCounter>6) return; // TODO: Allow user to setup the snooze limit
+
+      // Add Delay to the alarm schedule (Increments by 'delay' Minutes with every snooze)
+      minute+=delay;
+      if (minute>59){
+         minute-=delay;
+         hour++;
+         if (hour==24)
+            hour = 0;
+      }
+
+      Schedule();
+   }
 
 
 
@@ -166,11 +217,9 @@ public class AlarmItem {
       // Create an intent that will hold all the necessary EXTRA data
       // Encapsulate the intent inside a Pending intent
       Intent intent = new Intent(context, AlarmReceiver.class);
-      //intent.putExtra("LABEL", label);
-      //intent.putExtra("HOUR", hour);
-      //intent.putExtra("MINUTE", minute);
-      intent.putExtra(K_TYPE, ALARM);
+
       intent.putExtras(getBundle());
+      intent.putExtra(K_TYPE, ALARM);
 
       // TODO: Pass additional info such as days of week and status of Alarm
       PendingIntent alarmIntent = PendingIntent.getBroadcast(context,

@@ -119,10 +119,12 @@ public class AlarmService  extends Service {
       return stopPendingIntent;
    }
 
-   // Create Pending intent for the Stop button that is on the notification
-   static public PendingIntent createSnoozePendingIntent(Context context){
+   // Create Pending intent for the Snooze button that is on the notification
+   static public PendingIntent createSnoozePendingIntent(Context context, Bundle bundle){
       Intent snoozeIntent = new Intent(context, AlarmReceiver.class);
       snoozeIntent.setAction("snooze");
+      snoozeIntent.putExtras(bundle);
+      snoozeIntent.removeExtra(K_TYPE);
       snoozeIntent.putExtra(K_TYPE, "snooze");
       PendingIntent snoozePendingIntent =
             PendingIntent.getBroadcast(context, 0, snoozeIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
@@ -135,9 +137,6 @@ public class AlarmService  extends Service {
 
       // Strings to show as alarm text and Title
       Bundle inBundle = intent.getExtras();
-      //String label = intent.getStringExtra("LABEL");
-      //int h = intent.getIntExtra("HOUR", -1);
-      //int m = intent.getIntExtra("MINUTE", -1);
       String label = inBundle.getString(K_LABEL);
       int h = inBundle.getInt(K_HOUR, -1);
       int m = inBundle.getInt(K_MINUTE, -1);
@@ -148,9 +147,6 @@ public class AlarmService  extends Service {
       // Prepare intent for a Stop/Snooze fullscreen activity
       Intent fullScreenIntent = new Intent(this, StopSnoozeActivity.class);
       fullScreenIntent.putExtra("APP_NAME", "The Time Machine");
-      //fullScreenIntent.putExtra("HOUR", h);
-      //fullScreenIntent.putExtra("MINUTE", m);
-      //fullScreenIntent.putExtra("LABEL", label);
       fullScreenIntent.putExtras(inBundle);
       PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
             fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE );
@@ -161,7 +157,7 @@ public class AlarmService  extends Service {
             R.drawable.baseline_alarm_off_24, getString(R.string.stop), stopIntent).build();
 
       // Create the Snooze action
-      PendingIntent snoozeIntent = createSnoozePendingIntent(this);
+      PendingIntent snoozeIntent = createSnoozePendingIntent(this, inBundle);
       NotificationCompat.Action snoozeAction = new NotificationCompat.Action.Builder(
             R.drawable.snooze_fill0_wght400_grad0_opsz24, getString(R.string.snooze), snoozeIntent).build();
 
