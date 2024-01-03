@@ -15,7 +15,9 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
@@ -24,12 +26,16 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 
+import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.UI.StopSnoozeActivity;
 
 public class AlarmService  extends Service {
 
    private Vibrator vibrator;
    private MediaPlayer mediaPlayer;
+   private boolean selfKill;
+   Handler handler;
+   Runnable autoSnooze;
 
    public static final String K_TYPE = "TYPE";
    public static final String SNOOZE = "snooze";
@@ -67,14 +73,23 @@ public class AlarmService  extends Service {
          ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
       }
 
-/*
-      Intent i = new Intent();
-      i.setClass(this, MainActivity.class);
-      i.setAction(Intent.ACTION_MAIN);
-      i.addCategory(Intent.CATEGORY_LAUNCHER);
-      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(i);
-       */
+
+      // Start auto-snooze timer
+      handler = new Handler(Looper.getMainLooper());
+      int delayMillis = 30000; // TODO: Take this from setup (3 Sec)
+      int snoozePeriod = 10 ; // TODO: Take this from setup (10 Minute)
+      autoSnooze = new Runnable() {
+         @Override
+         public void run() {
+            Log.i("THE_TIME_MACHINE", delayMillis/1000 + " Sec Delay");
+            Bundle b = intent.getExtras();
+            AlarmItem alarm = new AlarmItem(b);
+            alarm.Snooze(snoozePeriod);
+            selfKill = true;
+            stopSelf();
+         }
+      };
+      handler.postDelayed(autoSnooze, delayMillis);
 
       Log.i("THE_TIME_MACHINE", "Service Started.3");
 
@@ -91,6 +106,8 @@ public class AlarmService  extends Service {
 
       // Create vibrator
       vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+      selfKill = false;
+
       Log.i("THE_TIME_MACHINE", "Service Created");
    }
 
@@ -100,8 +117,12 @@ public class AlarmService  extends Service {
 
       mediaPlayer.stop();
       vibrator.cancel();
-      Log.i("THE_TIME_MACHINE", "Service Destroys");
+      Log.i("THE_TIME_MACHINE", "Service Destroyed. Self Kill = " + selfKill);
 
+      // If the service was killed by user (NOT by auto-snooze)
+      // then kill the auto-snooze callback
+      if (!selfKill)
+         handler.removeCallbacks(autoSnooze);
    }
    @Nullable
    @Override
