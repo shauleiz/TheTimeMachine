@@ -5,6 +5,8 @@
     android:id="@+id/SetUpAlarmFrag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
+    android:minHeight="50dp"
     tools:context=".UI.SetUpAlarmFragment">
 
     <TimePicker
@@ -54,5 +56,36 @@
         app:icon="@android:drawable/ic_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/RepeatText"
+        android:layout_width="403dp"
+        android:layout_height="67dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:autoSizeMinTextSize="24sp"
+        android:background="?attr/colorPrimaryFixedDim"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:text="Repeating Alarm"
+        android:textAlignment="textStart"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_min="55dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/alarm_label" />
+
+    <Switch
+        android:id="@+id/RepeateSwitch"
+        android:layout_width="75dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:switchMinWidth="55dp"
+        app:layout_constraintBottom_toBottomOf="@+id/RepeatText"
+        app:layout_constraintEnd_toEndOf="@+id/RepeatText"
+        app:layout_constraintTop_toTopOf="@+id/RepeatText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
