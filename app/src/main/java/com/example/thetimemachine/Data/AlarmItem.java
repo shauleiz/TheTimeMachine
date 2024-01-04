@@ -2,7 +2,6 @@ package com.example.thetimemachine.Data;
 
 import static com.example.thetimemachine.AlarmService.ALARM;
 import static com.example.thetimemachine.AlarmService.K_TYPE;
-import static com.example.thetimemachine.AlarmService.SNOOZE;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -32,6 +31,7 @@ public class AlarmItem {
    private int hour, minute, snoozeCounter;
    private String label;
    private boolean active;
+   private int weekDays;
 
    public static final String K_HOUR = "HOUR";
    public static final String K_MINUTE = "MINUTE";
@@ -39,6 +39,19 @@ public class AlarmItem {
    public static final String K_ACTIVE = "ACTIVE";
    public static final String K_CTIME = "C_TIME";
    public static final String K_CSNOOZE = "COUNTER_SNOOZE";
+
+
+   // Masks for days of the week.
+   // If ONEOFF is set, the rest of the fields are to be ignored
+   public static final int ONEOFF = 0x80;
+   public static final int SUNDAY = 0x01;
+   public static final int MONDAY = 0x02;
+   public static final int TUESDAY = 0x04;
+   public static final int WEDNESDAY = 0x08;
+   public static final int THURSDAY = 0x10;
+   public static final int FRIDAY = 0x20;
+   public static final int SATURDAY = 0x40;
+
 
 
 
@@ -78,6 +91,9 @@ public class AlarmItem {
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
          active = false;
 
+      // By default - One-off alarm
+      weekDays = ONEOFF;
+
       // Add time of creation in milliseconds
       Calendar calendar = Calendar.getInstance();
       createTime = calendar.getTimeInMillis();
@@ -99,6 +115,9 @@ public class AlarmItem {
 
       // Add time of creation (of original alarm) in milliseconds
       createTime = _createTime;
+
+      // By default - One-off alarm
+      weekDays = ONEOFF;
    }
 
    public AlarmItem() {}
@@ -139,6 +158,9 @@ public class AlarmItem {
       return b;
    }
 
+   // This is a One-Off alarm if the ONEOFF bit is set or (by default) none of the days is set
+   public boolean isOneOff(){ return ((weekDays&ONEOFF) == ONEOFF) || (weekDays==0);}
+   public int getWeekDays(){return weekDays;}
 
    public void setActive(boolean active) {
       this.active = active;
@@ -155,6 +177,21 @@ public class AlarmItem {
    public void setSnoozeCounter(int snoozeCounter){ this.snoozeCounter = snoozeCounter;}
 
    public int incSnoozeCounter(){return snoozeCounter++;}
+
+   // Set/reset One-of bit
+   public void setOneOff(boolean set){
+      if (set)
+         weekDays = weekDays|ONEOFF;
+      else
+         weekDays = weekDays&(~ONEOFF);
+   }
+
+   // Copy the days mask without affecting the one-off bit
+   public void setWeekDays(int mask){
+      int myMask = mask & ~ONEOFF;
+      weekDays = weekDays & ONEOFF;
+      weekDays = weekDays | myMask;
+   }
 
    private long alarmTimeInMillis() {
       // Get the time for the next Alarm, in Milliseconds
