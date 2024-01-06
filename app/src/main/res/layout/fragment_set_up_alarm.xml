@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/SetUpAlarmFrag"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_centerHorizontal="true"
     android:minHeight="50dp"
@@ -57,35 +57,152 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/RepeatText"
-        android:layout_width="403dp"
-        android:layout_height="67dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:autoSizeMinTextSize="24sp"
-        android:background="?attr/colorPrimaryFixedDim"
-        android:gravity="center_vertical"
-        android:paddingStart="8dp"
-        android:text="Repeating Alarm"
-        android:textAlignment="textStart"
-        android:textSize="18sp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_min="55dp"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/alarm_label" />
+        app:layout_constraintTop_toBottomOf="@+id/alarm_label">
 
-    <Switch
-        android:id="@+id/RepeateSwitch"
-        android:layout_width="75dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="16dp"
-        android:switchMinWidth="55dp"
-        app:layout_constraintBottom_toBottomOf="@+id/RepeatText"
-        app:layout_constraintEnd_toEndOf="@+id/RepeatText"
-        app:layout_constraintTop_toTopOf="@+id/RepeatText" />
+        <TextView
+            android:id="@+id/RepeatText"
+            android:layout_width="403dp"
+            android:layout_height="67dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:autoSizeMinTextSize="24sp"
+            android:background="?attr/colorPrimaryFixedDim"
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="Repeating Alarm"
+            android:textAlignment="textStart"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Switch
+            android:id="@+id/RepeateSwitch"
+            android:layout_width="75dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:switchMinWidth="55dp"
+            app:layout_constraintBottom_toBottomOf="@+id/RepeatText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ToggleButton
+            android:id="@+id/SundayButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="Su"
+            android:textAllCaps="false"
+            android:textDirection="inherit"
+            android:textOff="Su"
+            android:textOn="Su"
+            app:layout_constraintEnd_toStartOf="@+id/MondayButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/RepeatText"
+            app:layout_constraintWidth_max="70dp" />
+
+        <ToggleButton
+            android:id="@+id/MondayButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textDirection="inherit"
+            android:textOff="Mo"
+            android:textOn="Mo"
+            app:layout_constraintEnd_toStartOf="@+id/TuesdayButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/SundayButton"
+            app:layout_constraintTop_toTopOf="@+id/SundayButton"
+            app:layout_constraintWidth_max="70dp" />
+
+        <ToggleButton
+            android:id="@+id/TuesdayButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textDirection="inherit"
+            android:textOff="Tu"
+            android:textOn="Tu"
+            app:layout_constraintEnd_toStartOf="@+id/WednesdayButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/MondayButton"
+            app:layout_constraintTop_toTopOf="@+id/MondayButton"
+            app:layout_constraintWidth_max="70dp" />
+
+        <ToggleButton
+            android:id="@+id/WednesdayButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textDirection="inherit"
+            android:textOff="We"
+            android:textOn="We"
+            app:layout_constraintEnd_toStartOf="@+id/ThursdayButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/TuesdayButton"
+            app:layout_constraintTop_toTopOf="@+id/TuesdayButton"
+            app:layout_constraintWidth_max="70dp" />
+
+        <ToggleButton
+            android:id="@+id/ThursdayButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textDirection="inherit"
+            android:textOff="We"
+            android:textOn="We"
+            app:layout_constraintEnd_toStartOf="@+id/FridayButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/WednesdayButton"
+            app:layout_constraintTop_toTopOf="@+id/WednesdayButton"
+            app:layout_constraintWidth_max="70dp" />
+
+        <ToggleButton
+            android:id="@+id/FridayButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textDirection="inherit"
+            android:textOff="We"
+            android:textOn="We"
+            app:layout_constraintEnd_toStartOf="@+id/SaturdayButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/ThursdayButton"
+            app:layout_constraintTop_toTopOf="@+id/ThursdayButton"
+            app:layout_constraintWidth_max="70dp" />
+
+
+        <ToggleButton
+            android:id="@+id/SaturdayButton"
+            android:textOff="Sa"
+            android:textOn="Sa"
+            app:layout_constraintStart_toEndOf="@+id/FridayButton"
+            app:layout_constraintTop_toTopOf="@+id/FridayButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textDirection="inherit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintWidth_max="70dp" />
+
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
