@@ -1,5 +1,7 @@
 package com.example.thetimemachine;
 
+import static com.example.thetimemachine.Data.AlarmItem.ONEOFF;
+
 import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
@@ -108,6 +110,7 @@ public class AlarmViewModel extends AndroidViewModel {
       MutableLiveData<String> label;
       MutableLiveData<Boolean> active;
       MutableLiveData<Long>  createTime;
+      MutableLiveData<Integer> weekDays;
 
       // Default constructor
       public SetUpAlarmValues() {
@@ -116,6 +119,7 @@ public class AlarmViewModel extends AndroidViewModel {
          this.label = new MutableLiveData<>();
          this.active = new MutableLiveData<>();
          this.createTime = new MutableLiveData<>();
+         this.weekDays = new MutableLiveData<>();
          ResetValues();
       }
 
@@ -142,6 +146,8 @@ public class AlarmViewModel extends AndroidViewModel {
          hour.setValue(calendar.get(Calendar.HOUR_OF_DAY));
          minute.setValue(calendar.get(Calendar.MINUTE));
          label.setValue("");
+
+         weekDays.setValue(ONEOFF);
       }
 
       public void GetValuesFromList(int position){
@@ -157,6 +163,8 @@ public class AlarmViewModel extends AndroidViewModel {
          AlarmItem ai = AlarmList.get(position);
          long c = ai.getCreateTime();
          createTime.setValue(c);
+
+         weekDays.setValue(AlarmList.get(position).getWeekDays());
       }
 
       /* Getter Methods */
@@ -174,10 +182,13 @@ public class AlarmViewModel extends AndroidViewModel {
          return minute;
       }
 
+      public MutableLiveData<Integer> getWeekDays(){return  weekDays;}
+
       public void setMinute(int minute) {
          this.minute.setValue(minute);
       }
 
+      public void setWeekDays(int weekDays){this.weekDays.setValue(weekDays);}
       public MutableLiveData<String> getLabel() {
          return label;
       }
