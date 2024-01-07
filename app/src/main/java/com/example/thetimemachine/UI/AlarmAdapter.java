@@ -1,7 +1,22 @@
 package com.example.thetimemachine.UI;
 
+import static android.widget.TextView.BufferType.SPANNABLE;
+
+import static androidx.core.content.ContextCompat.getColor;
+
+import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
+import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
+import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
+import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
+import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
+import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
+import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
+
 import android.content.Context;
 import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +99,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
         // Weekdays
         holder.WeekDays.setText("Su Mo Tu We Th Fr Sa");
-
+        //holder.WeekDays.setText(prepareWeekdaysSpan(alarmItem));
+        prepareWeekdaysSpan(alarmItem, holder.WeekDays);
         // Time
         String fmt = context.getResources().getString(R.string.alarm_format);
         String alarmTime = String.format(fmt,alarmItem.getHour(),alarmItem.getMinute());
@@ -94,22 +110,87 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         boolean isActive = alarmItem.isActive();
         holder.AlarmActive.setChecked(isActive);
         if (isActive) {
-            holder.AlarmTime.setTextColor(ContextCompat.getColor(context,
+            holder.AlarmTime.setTextColor(getColor(context,
                   com.google.android.material.R.color.design_default_color_primary_variant));
-            holder.AlarmLabel.setTextColor(ContextCompat.getColor(context, R.color.black));
-            holder.WeekDays.setTextColor(ContextCompat.getColor(context, R.color.black));
+            holder.AlarmLabel.setTextColor(getColor(context, R.color.black));
+            holder.WeekDays.setTextColor(getColor(context, R.color.black));
         }
         else {
-            holder.AlarmTime.setTextColor(ContextCompat.getColor(context,
+            holder.AlarmTime.setTextColor(getColor(context,
                   com.google.android.material.R.color.material_dynamic_tertiary80));
-            holder.AlarmLabel.setTextColor(ContextCompat.getColor(context, R.color.black_overlay));
-            holder.WeekDays.setTextColor(ContextCompat.getColor(context, R.color.black_overlay));
+            holder.AlarmLabel.setTextColor(getColor(context, R.color.black_overlay));
+            holder.WeekDays.setTextColor(getColor(context, R.color.black_overlay));
 
         }
 
 
         //
 
+    }
+
+    // Prepare the string to show Today/Tomorrow or the selected days of the week
+    // The info is gotten from the Alarm item
+    // The function returns a spanable string for display
+    private void prepareWeekdaysSpan(AlarmItem alarmItem, TextView textView) {
+        Spannable word = new SpannableString("");
+        textView.setText(word, SPANNABLE);
+        textView.setText(word);
+
+
+
+        // Alarm activated? If not, return an empty string
+        if (!alarmItem.isActive())
+            return;
+
+        // Is it a One-Off case? If so, is the alarm set for today or tomorrow?
+        if (alarmItem.isOneOff()){
+            if (alarmItem.isToday()) {
+                word = new SpannableString("Today");
+                word.setSpan(new ForegroundColorSpan(Color.RED),
+                      0, word.length(),
+                      Spannable.SPAN_INCLUSIVE_INCLUSIVE);}
+            else {
+                word = new SpannableString("Tomorrow");
+                word.setSpan(new ForegroundColorSpan(getColor(context,
+                            R.color.light_blue_600)),
+                      0, word.length(),
+                      Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            }
+        }
+        // This is a repeating alarm - print the weekdays
+        else{
+            // By default - all days are grayed
+            word = new SpannableString("Su Mo Tu We Th Fr Sa");
+            word.setSpan(new ForegroundColorSpan(getColor(context, R.color.medium_gray)),
+                  0, word.length(),
+                  Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+            int weekdays = alarmItem.getWeekDays();
+            if ((weekdays&SUNDAY) >0)
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),0, 2,
+                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if ((weekdays&MONDAY) >0)
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),3, 5,
+                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if ((weekdays&TUESDAY) >0)
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),6, 8,
+                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if ((weekdays&WEDNESDAY) >0)
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),9, 11,
+                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if ((weekdays&THURSDAY) >0)
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),12, 14,
+                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if ((weekdays&FRIDAY) >0)
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),15, 17,
+                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if ((weekdays&SATURDAY) >0)
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),18, 20,
+                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+
+        textView.setText(word);
     }
 
     // Returns the total count of items in the list

@@ -209,6 +209,19 @@ public class AlarmItem {
 
       return calendar.getTimeInMillis();
    }
+
+   public boolean isToday(){
+      // Get time of today's midnight (minus a second)
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTimeInMillis(System.currentTimeMillis());
+      calendar.set(Calendar.HOUR_OF_DAY, 23);
+      calendar.set(Calendar.MINUTE, 59);
+      calendar.set(Calendar.SECOND, 59);
+
+      return  (calendar.getTimeInMillis() >= alarmTimeInMillis());
+
+   }
+
    public void Snooze(int delay){
       // Increment the snooze counter
       incSnoozeCounter();
