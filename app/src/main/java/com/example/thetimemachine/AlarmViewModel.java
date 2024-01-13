@@ -1,7 +1,5 @@
 package com.example.thetimemachine;
 
-import static com.example.thetimemachine.Data.AlarmItem.ONEOFF;
-
 import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
@@ -13,7 +11,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.Data.AlarmRepository;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -111,6 +108,7 @@ public class AlarmViewModel extends AndroidViewModel {
       MutableLiveData<Boolean> active;
       MutableLiveData<Long>  createTime;
       MutableLiveData<Integer> weekDays;
+      MutableLiveData<Boolean> oneOff;
 
       // Default constructor
       public SetUpAlarmValues() {
@@ -120,6 +118,7 @@ public class AlarmViewModel extends AndroidViewModel {
          this.active = new MutableLiveData<>();
          this.createTime = new MutableLiveData<>();
          this.weekDays = new MutableLiveData<>();
+         this.oneOff = new MutableLiveData<>();
          ResetValues();
       }
 
@@ -147,7 +146,10 @@ public class AlarmViewModel extends AndroidViewModel {
          minute.setValue(calendar.get(Calendar.MINUTE));
          label.setValue("");
 
-         weekDays.setValue(ONEOFF);
+         weekDays.setValue(0);
+         oneOff.setValue(true);
+
+         //weekDays.setValue(ONEOFF);
       }
 
       public void GetValuesFromList(int position){
@@ -165,6 +167,7 @@ public class AlarmViewModel extends AndroidViewModel {
          createTime.setValue(c);
 
          weekDays.setValue(AlarmList.get(position).getWeekDays());
+         oneOff.setValue((AlarmList.get(position).isOneOff()));
       }
 
       /* Getter Methods */
@@ -184,16 +187,22 @@ public class AlarmViewModel extends AndroidViewModel {
 
       public MutableLiveData<Integer> getWeekDays(){return  weekDays;}
 
+
       public void setMinute(int minute) {
          this.minute.setValue(minute);
       }
 
       public void setWeekDays(int weekDays){this.weekDays.setValue(weekDays);}
+
+      public void setOneOff(boolean oneOff){this.oneOff.setValue(oneOff);}
+
+
       public MutableLiveData<String> getLabel() {
          return label;
       }
 
       public MutableLiveData<Boolean> isActive() {return active;}
+      public MutableLiveData<Boolean> isOneOff() {return oneOff;}
 
       public void setLabel(String label) {
          String t = this.label.getValue();

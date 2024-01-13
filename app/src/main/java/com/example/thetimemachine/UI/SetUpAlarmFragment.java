@@ -2,7 +2,6 @@ package com.example.thetimemachine.UI;
 
 import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
 import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
-import static com.example.thetimemachine.Data.AlarmItem.ONEOFF;
 import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
 import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
 import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
@@ -64,6 +63,10 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues.setLabel(t);
         setUpAlarmValues.setHour(hourOfDay);
         setUpAlarmValues.setMinute(minute);
+
+        setUpAlarmValues.setWeekDays(getDaysValues());
+        setUpAlarmValues.setOneOff(!repeating.isChecked());
+
         super.onStop();
     }
 
@@ -115,13 +118,12 @@ public class SetUpAlarmFragment extends Fragment {
         label.setText(setUpAlarmValues.getLabel().getValue());
 
         // Get the Repeating button and set the weekdays button visibility
-        int weekDays = setUpAlarmValues.getWeekDays().getValue();
-        boolean oneOff = (weekDays&ONEOFF) != 0;
-
         repeating = view.findViewById(R.id.RepeateSwitch);
-        repeating.setChecked(!oneOff);
+        int weekDays = setUpAlarmValues.getWeekDays().getValue();
         setDaysValues(weekDays,view);
-        setDaysVisible(repeating.isChecked(), view);
+        boolean oneOff = setUpAlarmValues.isOneOff().getValue();
+        repeating.setChecked(!oneOff);
+        setDaysVisible(!oneOff, view);
 
 
         // Listener to the Repeating button (set the weekdays button visibility)
@@ -153,10 +155,27 @@ public class SetUpAlarmFragment extends Fragment {
 
 
 
+        setUpAlarmValues.getWeekDays().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer m) {
+                if (m != null) {
+                    setDaysValues(m, view);
+                }
+            }
+        });
+
+        setUpAlarmValues.isOneOff().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean t) {
+                if (t != null) {
+                    repeating.setChecked(!t);
+                }
+            }
+        });
 
 
 
-            setUpAlarmValues.getLabel().observe(getViewLifecycleOwner(), new Observer<String>() {
+        setUpAlarmValues.getLabel().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String t) {
                 if (t != null) {
@@ -251,8 +270,9 @@ public class SetUpAlarmFragment extends Fragment {
             item = new AlarmItem(h, m,t, active);
 
         // Weekdays
-        item.setOneOff(!repeating.isChecked());
-        item.setWeekDays(getDaysValues());
+        int weekdays = getDaysValues();
+        item.setWeekDays(weekdays);
+        item.setOneOff(!repeating.isChecked() || (weekdays==0));
 
         // Get the position and the status of the entry to be created/updated
         // And Add or Update the entry on the list

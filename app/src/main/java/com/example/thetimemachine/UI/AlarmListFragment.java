@@ -226,16 +226,17 @@ public class AlarmListFragment extends Fragment {
     void ActiveCheckboxChanged(View view, int position) {
 
         // Get alarm item data from list
-        int h = alarmList.get(position).getHour();
-        int m = alarmList.get(position).getMinute();
-        String l = alarmList.get(position).getLabel();
-        long c = alarmList.get(position).getCreateTime();
+        Bundle b = alarmList.get(position).getBundle();
 
-        // Get 'active' checkbox state
+        // Create a new alarm, set active
+        AlarmItem item = new AlarmItem(b);
+        // Get 'active' checkbox state and insert it to the Alarm
         boolean active = ((CheckBox)view).isChecked();
-        // Create a new alarm, update View Model and schedule/cancel alarm
-        AlarmItem item = new AlarmItem(h, m, l, active, c);
+        item.setActive(active);
+        // Update View Model
         parent.alarmViewModel.UpdateAlarm(item);
+
+        // Schedule/Cancel Alarm
         if (active==true)
             item.Schedule();
         else

@@ -30,7 +30,7 @@ public class AlarmItem {
    private long createTime;
    private int hour, minute, snoozeCounter;
    private String label;
-   private boolean active;
+   private boolean active, oneOff;
    private int weekDays;
 
    public static final String K_HOUR = "HOUR";
@@ -40,10 +40,12 @@ public class AlarmItem {
    public static final String K_CTIME = "C_TIME";
    public static final String K_CSNOOZE = "COUNTER_SNOOZE";
 
+   public static final String K_WEEKDAYS = "WEEKDAYS";
+   public static final String K_ONEOFF = "ONE_OFF";
 
    // Masks for days of the week.
    // If ONEOFF is set, the rest of the fields are to be ignored
-   public static final int ONEOFF = 0x80;
+   // public static final int ONEOFF = 0x80;
    public static final int SUNDAY = 0x01;
    public static final int MONDAY = 0x02;
    public static final int TUESDAY = 0x04;
@@ -62,6 +64,8 @@ public class AlarmItem {
       label = inBundle.getString(K_LABEL);
       active = inBundle.getBoolean(K_ACTIVE);
       createTime = inBundle.getLong(K_CTIME, -1);
+      oneOff = inBundle.getBoolean(K_ONEOFF, true);
+      weekDays = inBundle.getInt(K_WEEKDAYS, 0);
 
       // Uninitialized Snooze Counter
       snoozeCounter = -1;
@@ -91,8 +95,9 @@ public class AlarmItem {
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
          active = false;
 
-      // By default - One-off alarm
-      weekDays = ONEOFF;
+      // Default: One-Off (All weekdays disabled)
+      weekDays = 0;
+      oneOff = true;
 
       // Add time of creation in milliseconds
       Calendar calendar = Calendar.getInstance();
@@ -116,8 +121,9 @@ public class AlarmItem {
       // Add time of creation (of original alarm) in milliseconds
       createTime = _createTime;
 
-      // By default - One-off alarm
-      weekDays = ONEOFF;
+      // Default: One-Off (All weekdays disabled)
+      weekDays = 0;
+      oneOff = true;
    }
 
    public AlarmItem() {}
@@ -146,6 +152,8 @@ public class AlarmItem {
       return snoozeCounter;
    }
 
+
+
    public Bundle getBundle(){
       Bundle b = new Bundle();
 
@@ -154,12 +162,13 @@ public class AlarmItem {
       b.putString(K_LABEL,label);
       b.putBoolean(K_ACTIVE, active);
       b.putLong(K_CTIME,createTime);
-
+      b.putBoolean(K_ONEOFF, oneOff);
+      b.putInt(K_WEEKDAYS,weekDays);
       return b;
    }
 
    // This is a One-Off alarm if the ONEOFF bit is set or (by default) none of the days is set
-   public boolean isOneOff(){ return ((weekDays&ONEOFF) == ONEOFF) || (weekDays==0);}
+   public boolean isOneOff(){ return oneOff;}
    public int getWeekDays(){return weekDays;}
 
    public void setActive(boolean active) {
@@ -179,19 +188,10 @@ public class AlarmItem {
    public int incSnoozeCounter(){return snoozeCounter++;}
 
    // Set/reset One-of bit
-   public void setOneOff(boolean set){
-      if (set)
-         weekDays = weekDays|ONEOFF;
-      else
-         weekDays = weekDays&(~ONEOFF);
-   }
+   public void setOneOff(boolean set){ oneOff = set;}
 
    // Copy the days mask without affecting the one-off bit
-   public void setWeekDays(int mask){
-      int myMask = mask & ~ONEOFF;
-      weekDays = weekDays & ONEOFF;
-      weekDays = weekDays | myMask;
-   }
+   public void setWeekDays(int mask){ weekDays = mask;}
 
    private long alarmTimeInMillis() {
       // Get the time for the next Alarm, in Milliseconds

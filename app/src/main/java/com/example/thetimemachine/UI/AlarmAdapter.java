@@ -4,13 +4,13 @@ import static android.widget.TextView.BufferType.SPANNABLE;
 
 import static androidx.core.content.ContextCompat.getColor;
 
-import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
-import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
-import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
 import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
-import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
+import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
 import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
 import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
+import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
+import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
+import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -99,8 +99,9 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
         // Weekdays
         holder.WeekDays.setText("Su Mo Tu We Th Fr Sa");
-        //holder.WeekDays.setText(prepareWeekdaysSpan(alarmItem));
+        // TODO [WEEKDAYS]: Set Weekdays text to Today/Tomorrow/wd and change color scheme
         prepareWeekdaysSpan(alarmItem, holder.WeekDays);
+
         // Time
         String fmt = context.getResources().getString(R.string.alarm_format);
         String alarmTime = String.format(fmt,alarmItem.getHour(),alarmItem.getMinute());
