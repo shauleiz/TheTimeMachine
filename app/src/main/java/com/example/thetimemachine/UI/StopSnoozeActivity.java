@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import com.example.thetimemachine.AlarmReceiver;
 import com.example.thetimemachine.AlarmService;
 import com.example.thetimemachine.databinding.ActivityStopSnoozeBinding;
 import com.example.thetimemachine.R;
@@ -100,9 +101,11 @@ public class StopSnoozeActivity extends AppCompatActivity {
                   delayedHide(AUTO_HIDE_DELAY_MILLIS);
                }
                // Stop the Alarm by stopping the Alarm Service
-               Context context = getApplicationContext();
-               context.stopService(new Intent(context, AlarmService.class));
 
+               Context context = getApplicationContext();
+               Intent stopIntent = new Intent(context, AlarmService.class);
+               stopIntent.putExtras(extras);
+               AlarmReceiver.stopping(context, stopIntent );
                // Kill this activity
                finish();
                break;
@@ -123,6 +126,14 @@ public class StopSnoozeActivity extends AppCompatActivity {
                if (AUTO_HIDE) {
                   delayedHide(AUTO_HIDE_DELAY_MILLIS);
                }
+               // Stop the Alarm by stopping the Alarm Service
+
+               Context context = getApplicationContext();
+               Intent snoozeIntent = new Intent(context, AlarmService.class);
+               snoozeIntent.putExtras(extras);
+               AlarmReceiver.snoozing(context, snoozeIntent );
+               // Kill this activity
+               finish();
                break;
             case MotionEvent.ACTION_UP:
                view.performClick();

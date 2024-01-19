@@ -283,9 +283,11 @@ public class SetUpAlarmFragment extends Fragment {
             alarmViewModel.UpdateAlarm(item);
 
         // Schedule this new/modified alarm
+        item.Exec();
+        /*
         if (active)
             item.Schedule();
-
+        */
 
         // Display the Alarm List Fragment
         if (parent != null){

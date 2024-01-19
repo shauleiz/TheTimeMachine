@@ -237,10 +237,12 @@ public class AlarmListFragment extends Fragment {
         parent.alarmViewModel.UpdateAlarm(item);
 
         // Schedule/Cancel Alarm
+        item.Exec();
+        /*
         if (active==true)
             item.Schedule();
         else
-            item.cancelAlarm();
+            item.cancelAlarm();*/
     }
     /*
      *   Called when user clicks on Alarm item in recycler

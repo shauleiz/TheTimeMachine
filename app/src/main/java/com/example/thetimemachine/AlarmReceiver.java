@@ -7,7 +7,18 @@ import static com.example.thetimemachine.Data.AlarmItem.K_CSNOOZE;
 import static com.example.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.example.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.example.thetimemachine.Data.AlarmItem.K_MINUTE;
+import static com.example.thetimemachine.Data.AlarmItem.K_ONEOFF;
+import static com.example.thetimemachine.Data.AlarmItem.K_WEEKDAYS;
 
+import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
+import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
+import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
+import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
+import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
+import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
+import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
+
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,13 +27,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.thetimemachine.Data.AlarmDao;
 import com.example.thetimemachine.Data.AlarmItem;
+import com.example.thetimemachine.Data.AlarmRoomDatabase;
 
+import java.util.Calendar;
 import java.util.Objects;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
-   private void startSnooze(Context context, Intent intent) {
+   public static void snoozing(Context context, Intent intent) {
       // Stop current alarm service
       context.stopService(new Intent(context, AlarmService.class));
 
@@ -30,16 +44,41 @@ public class AlarmReceiver extends BroadcastReceiver {
       Bundle b = intent.getExtras();
       AlarmItem alarm = new AlarmItem(b);
 
-      // TODO: Replace '10' by a user setup parameter.Limit it to range 1-59 minutes
       // Snooze for 10 minutes
-      alarm.Snooze(10);
+      alarm.Exec();
 
       /* DEBUG */
-      String s = String.format("startSnooze(): Label=%s - Hour=%d - Minute=%d - Snooze Counter=%d",
+      String s = String.format("Receiver.snoozing(): Label=%s - Hour=%d - Minute=%d - Snooze Counter=%d",
             b.getString(K_LABEL), b.getInt(K_HOUR), b.getInt(K_MINUTE), b.getInt(K_CSNOOZE));
-      Log.i("THE_TIME_MACHINE", s);
+      Log.d("THE_TIME_MACHINE", s);
 
    }
+
+   public static void stopping(Context context, Intent intent){
+
+      // Stop current alarm service
+      context.stopService(new Intent(context, AlarmService.class));
+
+      // Create a new alarm item
+      Bundle b = intent.getExtras();
+      AlarmItem alarm = new AlarmItem(b);
+      alarm.resetSnoozeCounter();
+      if (alarm.isOneOff()) {
+         // One-time alarm becomes Inactive after been stopped
+         alarm.setActive(false);
+         AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
+         AlarmDao alarmDao = db.alarmDao();
+         AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
+      }
+      else
+         // Schedule the next alarm
+         alarm.Exec();
+
+      /* DEBUG */
+      Bundle ab = alarm.getBundle();
+      String s = String.format("Receiver.stopping(): Label=%s - Hour=%d - Minute=%d - Snooze Counter=%d = Action=" + intent.getAction(),
+            ab.getString(K_LABEL), ab.getInt(K_HOUR), ab.getInt(K_MINUTE), ab.getInt(K_CSNOOZE));
+      Log.d("THE_TIME_MACHINE", s);   }
 
    private void startAlarmService(Context context, Intent intent) {
 
@@ -55,6 +94,8 @@ public class AlarmReceiver extends BroadcastReceiver {
       Bundle b = intent.getExtras();
       String s = String.format("startAlarmService(): Label=%s - Hour=%d - Minute=%d", b.getString(K_LABEL), b.getInt(K_HOUR), b.getInt(K_MINUTE));
       Log.i("THE_TIME_MACHINE", s);
+
+
    }
 
    /*
@@ -82,10 +123,10 @@ public class AlarmReceiver extends BroadcastReceiver {
          // Stop the alarm by killing the Alarm Service
       } else if (Objects.equals(type, STOP)) {
          Log.i("THE_TIME_MACHINE", "Action is STOP");
-         context.stopService(new Intent(context, AlarmService.class));
+         stopping(context, intent);
       } else if (Objects.equals(type, SNOOZE)) {
          Log.i("THE_TIME_MACHINE", "Action is SNOOZE");
-         startSnooze(context, intent);
+         snoozing(context, intent);
       }
       // Message from Alarm manager - Get alarm parameters and start alarm service
       else {
@@ -101,9 +142,56 @@ public class AlarmReceiver extends BroadcastReceiver {
          Toast.makeText(context, txt, Toast.LENGTH_LONG).show();
          Log.i("THE_TIME_MACHINE", txt);
 
+         // If alarm is intended to sound today then
          // Start the service that Displays Snooze/Stop Page
          // Sounds alarm and vibration
-         startAlarmService(context, intent);
+         if (isToday(inBundle))
+            startAlarmService(context, intent);
+      }
+   }
+
+   private boolean isToday(Bundle bundle){
+      // If this is a one-off alarm then it is for today
+      Boolean oneOff = bundle.getBoolean(K_ONEOFF);
+      if (oneOff)
+         return true;
+
+      // Get the list of weekdays to which the alarm is scheduled
+      int weekdays = bundle.getInt(K_WEEKDAYS);
+
+      // Get today's weekday
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTimeInMillis(System.currentTimeMillis());
+      int today = calendar.get(Calendar.DAY_OF_WEEK);
+
+      Log.i("THE_TIME_MACHINE", String.format("isToday(): Today = %d :: Weekdays = %d", today, weekdays));
+
+      // Compare
+      switch (today){
+         case Calendar.SUNDAY:
+            if ((weekdays & SUNDAY) != 0)
+               return true;
+         case Calendar.MONDAY:
+            if ((weekdays & MONDAY) != 0)
+               return true;
+         case Calendar.TUESDAY:
+            if ((weekdays & TUESDAY) != 0)
+               return true;
+         case Calendar.WEDNESDAY:
+            if ((weekdays & WEDNESDAY) != 0)
+               return true;
+         case Calendar.THURSDAY:
+            if ((weekdays & THURSDAY) != 0)
+               return true;
+         case Calendar.FRIDAY:
+            if ((weekdays & FRIDAY) != 0)
+               return true;
+         case Calendar.SATURDAY:
+            if ((weekdays & SATURDAY) != 0)
+               return true;
+
+         default:
+            return false;
       }
    }
 }

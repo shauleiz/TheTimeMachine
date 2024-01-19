@@ -52,6 +52,7 @@ public class AlarmService  extends Service {
       //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 
+
       // TODO: Add full screen activity
       // Create notification: With Text, Icon and Stop button
       Notification notification = CreateNotification(intent);
@@ -73,15 +74,18 @@ public class AlarmService  extends Service {
          ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
       }
 
+      // TODO: If recurring alarm, schedule next alarm here
+
 
       // Start auto-snooze timer
+      // After a short delay, an alarm is created and alarm.Snooze is called
       handler = new Handler(Looper.getMainLooper());
-      int delayMillis = 30000; // TODO: Take this from setup (3 Sec)
+      int delayMillis = 30000; // TODO: Take this from setup (30 Sec)
       int snoozePeriod = 10 ; // TODO: Take this from setup (10 Minute)
       autoSnooze = new Runnable() {
          @Override
          public void run() {
-            Log.i("THE_TIME_MACHINE", delayMillis/1000 + " Sec Delay");
+            Log.i("THE_TIME_MACHINE", "autoSnooze(): "+ delayMillis/1000 + " Sec Delay");
             Bundle b = intent.getExtras();
             AlarmItem alarm = new AlarmItem(b);
             alarm.Snooze(snoozePeriod);
@@ -89,6 +93,7 @@ public class AlarmService  extends Service {
             stopSelf();
          }
       };
+      // autosnooze starts running after delayMillis milliseconds
       handler.postDelayed(autoSnooze, delayMillis);
 
       Log.i("THE_TIME_MACHINE", "Service Started.3");
@@ -116,6 +121,8 @@ public class AlarmService  extends Service {
       super.onDestroy();
 
       mediaPlayer.stop();
+      mediaPlayer.reset();
+      mediaPlayer.release();
       vibrator.cancel();
       Log.i("THE_TIME_MACHINE", "Service Destroyed. Self Kill = " + selfKill);
 
@@ -131,9 +138,11 @@ public class AlarmService  extends Service {
    }
 
    // Create Pending intent for the Stop button that is on the notification
-   static public PendingIntent createStopPendingIntent(Context context){
+   static public PendingIntent createStopPendingIntent(Context context, Bundle bundle){
       Intent stopIntent = new Intent(context, AlarmReceiver.class);
       stopIntent.setAction("stop");
+      stopIntent.putExtras(bundle);
+      stopIntent.removeExtra(K_TYPE);
       stopIntent.putExtra(K_TYPE, "stop");
       PendingIntent stopPendingIntent =
             PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
@@ -173,7 +182,7 @@ public class AlarmService  extends Service {
             fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE );
 
       // Create the Stop action
-      PendingIntent stopIntent = createStopPendingIntent(this);
+      PendingIntent stopIntent = createStopPendingIntent(this, inBundle);
       NotificationCompat.Action stopAction = new NotificationCompat.Action.Builder(
             R.drawable.baseline_alarm_off_24, getString(R.string.stop), stopIntent).build();
 

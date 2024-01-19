@@ -15,10 +15,10 @@ public abstract class AlarmRoomDatabase extends RoomDatabase {
 
    private static volatile AlarmRoomDatabase alarmRoomDatabase;
    private static final int NUMBER_OF_THREADS = 4;
-   static final ExecutorService databaseWriteExecutor =
+   public static final ExecutorService databaseWriteExecutor =
          Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-   static AlarmRoomDatabase getDatabase(final Context context) {
+   public static AlarmRoomDatabase getDatabase(final Context context) {
       if (alarmRoomDatabase == null) {
          synchronized (AlarmRoomDatabase.class) {
             if (alarmRoomDatabase == null) {

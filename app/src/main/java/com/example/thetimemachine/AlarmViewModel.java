@@ -84,7 +84,8 @@ public class AlarmViewModel extends AndroidViewModel {
 
       // Get alarm item and cancel the alarm
       AlarmItem item = (AlarmList.get(_position));
-      item.cancelAlarm();
+      item.setActive(false);
+      item.Exec();
 
       // Repository
       repo.DeleteAlarm(item);
