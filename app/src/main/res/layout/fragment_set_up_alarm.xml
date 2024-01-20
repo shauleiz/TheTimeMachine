@@ -73,7 +73,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:autoSizeMinTextSize="24sp"
-            android:background="?attr/colorPrimaryFixedDim"
+            android:background="@drawable/rounded_rect"
             android:gravity="center_vertical"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
