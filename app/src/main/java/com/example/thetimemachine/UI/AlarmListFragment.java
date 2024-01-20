@@ -6,12 +6,14 @@ import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -36,6 +38,8 @@ import com.example.thetimemachine.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 
 public class AlarmListFragment extends Fragment {
@@ -121,7 +125,7 @@ public class AlarmListFragment extends Fragment {
                 }
                 else{ // The Alarm item itself has been clicked
                     String label = alarmList.get(position).getLabel();
-                    String alarmTime = String.format("%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
+                    String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
                     Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
                     AlarmItemClicked(position);
                 }
@@ -129,7 +133,7 @@ public class AlarmListFragment extends Fragment {
         });
 
         // Decoration
-        RecyclerView.ItemDecoration itemDecoration = new  DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        RecyclerView.ItemDecoration itemDecoration = new  DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
         rvAlarms.addItemDecoration(itemDecoration);
     }
 
@@ -137,8 +141,8 @@ public class AlarmListFragment extends Fragment {
     // Called while initializing the activity.
     // Checks if Notification is enabled
     // If not enabled - launches request for permission that defines the callback to run
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void CheckPermissions(){
-
         int permission = ContextCompat.checkSelfPermission(parent, POST_NOTIFICATIONS);
         if (permission == PERMISSION_GRANTED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Granted");
@@ -199,7 +203,7 @@ public class AlarmListFragment extends Fragment {
 
     private PopupWindow displayPopUpNotifPemis(){
         LayoutInflater inflater = (LayoutInflater) parent.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_notification_permission, null);
+        View popupView = inflater.inflate(R.layout.popup_notification_permission, (ViewGroup) fragmentView);
 
         // Create the PopupWindow object and set its content view to the inflated layout
         PopupWindow popupWindow = new PopupWindow(popupView, RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -238,11 +242,7 @@ public class AlarmListFragment extends Fragment {
 
         // Schedule/Cancel Alarm
         item.Exec();
-        /*
-        if (active==true)
-            item.Schedule();
-        else
-            item.cancelAlarm();*/
+
     }
     /*
      *   Called when user clicks on Alarm item in recycler
@@ -259,7 +259,9 @@ public class AlarmListFragment extends Fragment {
         Bundle b = new Bundle();
         b.putBoolean("INIT_NEWALARM",false);
         b.putInt("INIT_POSITION", position);
-        b.putLong("INIT_CREATE_TIME", parent.alarmViewModel.getAlarmList().getValue().get(position).getCreateTime());
+        List<AlarmItem> alarmItems = parent.alarmViewModel.getAlarmList().getValue();
+        if (alarmItems==null)return;
+        b.putLong("INIT_CREATE_TIME", alarmItems.get(position).getCreateTime());
 
         // Replace current fragment with the Setup Alarm fragment
         parent = (MainActivity) getActivity();
@@ -280,7 +282,9 @@ public class AlarmListFragment extends Fragment {
     void AddAlarmClicked()
     {
 
-        CheckPermissions();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            CheckPermissions();
+        }
 
         // Reset the setup alarm values
         parent.alarmViewModel.setUpAlarmValues.ResetValues();

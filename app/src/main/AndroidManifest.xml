@@ -14,13 +14,13 @@
         android:name=".Application.TheTimeMachineApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TheTimeMachine"
-        android:enableOnBackInvokedCallback="true"
         tools:targetApi="31">
         <activity
             android:name=".UI.StopSnoozeActivity"
@@ -50,7 +50,7 @@
         <service
             android:name=".AlarmService"
             android:exported="false"
-            android:foregroundServiceType="systemExempted"></service>
+            android:foregroundServiceType="systemExempted"/>
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

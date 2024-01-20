@@ -25,7 +25,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thetimemachine.Data.AlarmItem;
@@ -84,8 +83,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
 
         // Return a new holder instance
-        AlarmViewHolder viewHolder = new AlarmViewHolder(contactView);
-        return viewHolder;
+        return new AlarmViewHolder(contactView);
     }
 
     // Populating data into the item through holder
@@ -98,8 +96,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         holder.AlarmLabel.setText(alarmItem.getLabel());
 
         // Weekdays
-        holder.WeekDays.setText("Su Mo Tu We Th Fr Sa");
-        // TODO [WEEKDAYS]: Set Weekdays text to Today/Tomorrow/wd and change color scheme
+        holder.WeekDays.setText(R.string.list_of_weekdays_SU);
         prepareWeekdaysSpan(alarmItem, holder.WeekDays);
 
         // Time
@@ -117,8 +114,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             holder.WeekDays.setTextColor(getColor(context, R.color.black));
         }
         else {
-            holder.AlarmTime.setTextColor(getColor(context,
-                  com.google.android.material.R.color.material_dynamic_tertiary80));
+            holder.AlarmTime.setTextColor(getColor(context, R.color.faded_violet));
             holder.AlarmLabel.setTextColor(getColor(context, R.color.black_overlay));
             holder.WeekDays.setTextColor(getColor(context, R.color.black_overlay));
 

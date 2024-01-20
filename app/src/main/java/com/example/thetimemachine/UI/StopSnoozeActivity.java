@@ -20,7 +20,9 @@ import android.view.WindowManager;
 import com.example.thetimemachine.AlarmReceiver;
 import com.example.thetimemachine.AlarmService;
 import com.example.thetimemachine.databinding.ActivityStopSnoozeBinding;
-import com.example.thetimemachine.R;
+
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -45,7 +47,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
     * and a change of the status and navigation bar.
     */
    private static final int UI_ANIMATION_DELAY = 300;
-   private final Handler mHideHandler = new Handler(Looper.myLooper());
+   private final Handler mHideHandler = new Handler(Objects.requireNonNull(Looper.myLooper()));
    private View mContentView;
    private final Runnable mHidePart2Runnable = new Runnable() {
       @SuppressLint("InlinedApi")
@@ -53,7 +55,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       public void run() {
          // Delayed removal of status and navigation bar
          if (Build.VERSION.SDK_INT >= 30) {
-            mContentView.getWindowInsetsController().hide(
+            Objects.requireNonNull(mContentView.getWindowInsetsController()).hide(
                   WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
          } else {
             // Note that some of these constants are new as of API 16 (Jelly Bean)
@@ -216,7 +218,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
    private void show() {
       // Show the system bar
       if (Build.VERSION.SDK_INT >= 30) {
-         mContentView.getWindowInsetsController().show(
+         Objects.requireNonNull(mContentView.getWindowInsetsController()).show(
                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
       } else {
          mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -242,16 +244,10 @@ public class StopSnoozeActivity extends AppCompatActivity {
    *  Allow this activity to be displayed on a locked machine and to accept user input.
    */
    private void allowOnLockScreen() {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-         setShowWhenLocked(true);
-         setTurnScreenOn(true);
-         KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
-         keyguardManager.requestDismissKeyguard(this, null);
-      } else {
-         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-               WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-               WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-      }
+      setShowWhenLocked(true);
+      setTurnScreenOn(true);
+      KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
+      keyguardManager.requestDismissKeyguard(this, null);
    }
 
    private void DisplayScreenText()
@@ -265,7 +261,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       int minute = extras.getInt("MINUTE",-1);
       int hour = extras.getInt("HOUR",-1);
       if (minute!=-1 && hour!=-1)
-         time = String.format("%d:%02d", hour, minute);
+         time = String.format(Locale.US,"%d:%02d", hour, minute);
 
       String displayText = String.format("%s\n\n%s%s", appName, label, time);
       binding.fullscreenContent.setText(displayText);

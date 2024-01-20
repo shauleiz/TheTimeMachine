@@ -56,10 +56,12 @@ public class AlarmService  extends Service {
       // TODO: Add full screen activity
       // Create notification: With Text, Icon and Stop button
       Notification notification = CreateNotification(intent);
+      if (notification == null) return START_NOT_STICKY;
       // Display Notification
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
          startForeground( 1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
       }
+
       else
          startForeground(1,notification);
 
@@ -68,11 +70,7 @@ public class AlarmService  extends Service {
 
       // Start audio and vibration
       mediaPlayer.start();
-      if (Build.VERSION.SDK_INT >= 26) {
-         ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150,10));
-      } else {
-         ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
-      }
+      ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150, 10));
 
       // TODO: If recurring alarm, schedule next alarm here
 
@@ -80,20 +78,28 @@ public class AlarmService  extends Service {
       // Start auto-snooze timer
       // After a short delay, an alarm is created and alarm.Snooze is called
       handler = new Handler(Looper.getMainLooper());
-      int delayMillis = 30000; // TODO: Take this from setup (30 Sec)
-      int snoozePeriod = 10 ; // TODO: Take this from setup (10 Minute)
+      int delayMillis = 20000; // TODO: Take this from setup (20 Sec)
       autoSnooze = new Runnable() {
          @Override
          public void run() {
             Log.i("THE_TIME_MACHINE", "autoSnooze(): "+ delayMillis/1000 + " Sec Delay");
             Bundle b = intent.getExtras();
+            if (b==null) return;
             AlarmItem alarm = new AlarmItem(b);
-            alarm.Snooze(snoozePeriod);
+            if (alarm.getSnoozeCounter() > 6) //TODO: Take this from setup (6 times)
+            {
+               alarm.setActive(false);
+               Context context = getApplicationContext();
+               Intent stopIntent = new Intent(context, AlarmService.class);
+               stopIntent.putExtras(b);
+               AlarmReceiver.stopping(context, stopIntent );
+            }
+            alarm.Exec();
             selfKill = true;
             stopSelf();
          }
       };
-      // autosnooze starts running after delayMillis milliseconds
+      // auto-snooze starts running after delayMillis milliseconds
       handler.postDelayed(autoSnooze, delayMillis);
 
       Log.i("THE_TIME_MACHINE", "Service Started.3");
@@ -144,9 +150,7 @@ public class AlarmService  extends Service {
       stopIntent.putExtras(bundle);
       stopIntent.removeExtra(K_TYPE);
       stopIntent.putExtra(K_TYPE, "stop");
-      PendingIntent stopPendingIntent =
-            PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-      return stopPendingIntent;
+      return PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
    }
 
    // Create Pending intent for the Snooze button that is on the notification
@@ -156,9 +160,7 @@ public class AlarmService  extends Service {
       snoozeIntent.putExtras(bundle);
       snoozeIntent.removeExtra(K_TYPE);
       snoozeIntent.putExtra(K_TYPE, "snooze");
-      PendingIntent snoozePendingIntent =
-            PendingIntent.getBroadcast(context, 0, snoozeIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-      return snoozePendingIntent;
+      return PendingIntent.getBroadcast(context, 0, snoozeIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
    }
 
    // Create notification to display when Alarm goes off
@@ -167,6 +169,7 @@ public class AlarmService  extends Service {
 
       // Strings to show as alarm text and Title
       Bundle inBundle = intent.getExtras();
+      if (inBundle == null) return null;
       String label = inBundle.getString(K_LABEL);
       int h = inBundle.getInt(K_HOUR, -1);
       int m = inBundle.getInt(K_MINUTE, -1);
@@ -192,7 +195,7 @@ public class AlarmService  extends Service {
             R.drawable.snooze_fill0_wght400_grad0_opsz24, getString(R.string.snooze), snoozeIntent).build();
 
       // Notification
-      Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+      return  new NotificationCompat.Builder(this, CHANNEL_ID)
             /* Title */                .setContentTitle(alarmTitle)
             /* Content */              .setContentText(alarmText)
             /* Status bar Icon */      .setSmallIcon(R.drawable.baseline_alarm_add_24)
@@ -206,7 +209,5 @@ public class AlarmService  extends Service {
             /* Stop Button */          .addAction(snoozeAction)
             .setTimeoutAfter(-1)
             .build();
-
-      return notification;
    }
 }

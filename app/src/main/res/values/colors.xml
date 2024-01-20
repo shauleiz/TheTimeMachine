@@ -8,4 +8,7 @@
     <color name="light_blue_A400">#FF00B0FF</color>
     <color name="black_overlay">#66000000</color>
     <color name="medium_gray">#460F0F0F</color>
+    <color name="checked_toggle_button">#509C53</color>
+    <color name="unchecked_toggle_button">#4A040404</color>
+    <color name="faded_violet">#E5C7EA</color>
 </resources>

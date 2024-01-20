@@ -14,7 +14,7 @@
         android:fontFamily="@font/tienne"
         android:paddingHorizontal="15dp"
         android:paddingVertical="15dp"
-        android:text="This App needs permission to notify you when an alarm goes off\n\nIf you do not grant it you will be unable to stop the alarm"
+        android:text="@string/this_app_needs"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,7 +30,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginVertical="20dp"
         android:layout_marginTop="48dp"
-        android:text="Got it"
+        android:text="@string/got_it"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/popup_permis_notif" />

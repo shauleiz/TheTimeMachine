@@ -22,6 +22,7 @@ import com.example.thetimemachine.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 // This class hold an item in the Alarm List
 @Entity(tableName = "raw_alarm_table")
@@ -59,7 +60,6 @@ public class AlarmItem {
 
    // 2 Minutes Snooze Delay
    public static final int SNOOZE_DELAY = 2*60*1000; // TODO: Replace by a configurable value
-   public static final int SNOOZE_MAX = 10;// TODO: Replace by a configurable value
 
 
 
@@ -172,7 +172,7 @@ public class AlarmItem {
       return b;
    }
 
-   // This is a One-Off alarm if the ONEOFF bit is set or (by default) none of the days is set
+
    public boolean isOneOff(){ return oneOff;}
    public int getWeekDays(){return weekDays;}
 
@@ -194,7 +194,7 @@ public class AlarmItem {
 
    public void resetSnoozeCounter(){ this.snoozeCounter = 0;}
 
-   public int incSnoozeCounter(){return snoozeCounter++;}
+   public void incSnoozeCounter(){ snoozeCounter++;}
 
    // Set/reset One-of bit
    public void setOneOff(boolean set){ oneOff = set;}
@@ -235,26 +235,6 @@ public class AlarmItem {
       return  (calendar.getTimeInMillis() >= alarmTimeInMillis());
 
    }
-
-   public void Snooze(int delay){
-      // Increment the snooze counter
-      incSnoozeCounter();
-
-      // Make sure that the snooze action does not go on forever
-      if (snoozeCounter>6) return; // TODO: Allow user to setup the snooze limit
-
-      // Add Delay to the alarm schedule (Increments by 'delay' Minutes with every snooze)
-      minute+=delay;
-      if (minute>59){
-         minute-=delay;
-         hour++;
-         if (hour==24)
-            hour = 0;
-      }
-
-      Schedule();
-   }
-
 
    /********** Execute an alarm action according to alarm state **********
    * Actions:
@@ -324,7 +304,7 @@ public class AlarmItem {
 
 
       ////////// Schedule or Cancel?
-      if (isActive() == true) {
+      if (isActive()) {
          ///// Schedule Alarm
 
          // Verify exact alarm is supported - for debugging purpose
@@ -364,7 +344,7 @@ public class AlarmItem {
             }
          }
 
-
+         //  Increment Snooze Counter
          // To the intent, add EXTRAS that hold the entire alarm data in a bundle
          // Also, mark the bundle as ALARM
          snoozeCounter++;
@@ -379,7 +359,7 @@ public class AlarmItem {
                intent,
                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
-         // Set Alarm Clock and increment Snooze Counter
+         // Set Alarm Clock
          alarmManager.setExactAndAllowWhileIdle(
                AlarmManager.RTC_WAKEUP,
                alarmTime,
@@ -390,7 +370,7 @@ public class AlarmItem {
          // Toast & Log
          Calendar calendar = Calendar.getInstance();
          calendar.setTimeInMillis(alarmTime);
-         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a");
+         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a", Locale.US);
          String toastText = String.format(context.getResources().getString(R.string.msg_alarm_set), hour, minute);
          Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
          Log.d("THE_TIME_MACHINE", "Exec(): " + toastText + " " + format.format(calendar.getTime()) );
@@ -417,144 +397,7 @@ public class AlarmItem {
       }
    }
 
-   /*
-    * Schedule a new alarm
-    * */
-   public void Schedule() {
-      AlarmManager alarmManager;
-
-      Context context = TheTimeMachineApp.appContext;
-      if (context == null) return;
-
-      // Get Alarm Manager and test (For newer versions) if device supports Exact Alarms
-      // TODO: If not supported - do something or abort
-      alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-         boolean isExact = alarmManager.canScheduleExactAlarms();
-         if (isExact)
-            Log.d("THE_TIME_MACHINE", "Exact Alarm - SUPPORTED");
-         else
-            Log.w("THE_TIME_MACHINE", "Exact Alarm - NOT SUPPORTED");
-      }
 
 
-      // Create an intent that will hold all the necessary EXTRA data
-      // Encapsulate the intent inside a Pending intent
-      Intent intent = new Intent(context, AlarmReceiver.class);
-
-      intent.putExtras(getBundle());
-      intent.putExtra(K_TYPE, ALARM);
-
-      // TODO: Pass additional info such as days of week and status of Alarm
-      PendingIntent alarmIntent = PendingIntent.getBroadcast(context,
-            (int)createTime,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-
-      // Get the time for the next Alarm, in Milliseconds
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTimeInMillis(System.currentTimeMillis());
-      calendar.set(Calendar.HOUR_OF_DAY, hour);
-      calendar.set(Calendar.MINUTE, minute);
-      calendar.set(Calendar.SECOND, 0);
-      calendar.set(Calendar.MILLISECOND, 0);
-
-      // if alarm time has already passed, increment day by 1
-      if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
-         // TODO: Replace with "add 24*60*60*1000 Milliseconds to alarm time"
-         calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
-      }
-
-      if (oneOff) {
-         // Set Alarm Clock for one-off alarm
-         alarmManager.setExactAndAllowWhileIdle(
-               AlarmManager.RTC_WAKEUP,
-               calendar.getTimeInMillis(),
-               alarmIntent);
-
-         // Toast and Log
-         // TODO: Change toast to tell user the duration until the alarm goes off
-         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a");
-         String toastText = String.format(context.getResources().getString(R.string.msg_alarm_set), hour, minute);
-         Toast.makeText(context, toastText + " " + format.format(calendar.getTime()), Toast.LENGTH_SHORT).show();
-         Log.d("THE_TIME_MACHINE", toastText + " " + format.format(calendar.getTime()) );
-      }
-      else {
-
-         // Get the weekday of the currently assigned alarm time
-         // Convert it to Zero/Sunday based number: Sun=0 --> Sat=6
-         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-1;
-
-         // For each Day in weekDays (Only the ones that are ON):
-         // - Convert it to a number nDay ( One/Sunday based number: Sun=1 --> Sat=7)
-         // - Calculate nDay as the diff between this number and datOfWeek
-         // - If nDay is smaller than dayOfWeek add 7 to it
-         // - Multiple nDay by the number of milliseconds in a day and add it to calendar time
-         // - Set the alarm manager with this calender time
-         int[] days = {SUNDAY, MONDAY, TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY};
-         for (int i=0; i<days.length; i++){
-            if ((weekDays&days[i]) == 0) continue;
-            int nDay=i;
-            if (nDay<dayOfWeek) nDay+=7;
-            long inMillis = nDay*24*60*60*1000+calendar.getTimeInMillis();
-
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(inMillis);
-            SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a");
-            String toastText = String.format("Alarm set to %s : i = %d : dayOffWeek = %d", format.format(cal.getTime()), i, dayOfWeek);
-            Log.d("THE_TIME_MACHINE", toastText);
-
-            alarmManager.setExactAndAllowWhileIdle(
-                  AlarmManager.RTC_WAKEUP,
-                  inMillis,
-                  alarmIntent);
-         }
-
-         Toast.makeText(context, " dayOfWeek  = "+ dayOfWeek, Toast.LENGTH_SHORT).show();
-
-
-         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a");
-         String toastText = String.format("Recurring Alarm %s", format.format(calendar.getTime()));
-         Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
-         Log.d("THE_TIME_MACHINE", toastText);
-
-      }
-   }
-
-   // Cancel an Alarm
-   public void cancelAlarm() {
-
-      Context context = TheTimeMachineApp.appContext;
-      if (context == null) return;
-
-      // Get Alarm Manager and test (For newer versions) if device supports Exact Alarms
-      // TODO: If not supported - do something or abort
-      AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-         boolean isExact = alarmManager.canScheduleExactAlarms();
-         if (isExact)
-            Log.d("THE_TIME_MACHINE", "Exact Alarm - SUPPORTED");
-         else
-            Log.w("THE_TIME_MACHINE", "Exact Alarm - NOT SUPPORTED");
-      }
-
-
-      // Create an intent then
-      // Encapsulate the intent inside a Pending intent
-      Intent intent = new Intent(context, AlarmReceiver.class);
-      PendingIntent alarmIntent = PendingIntent.getBroadcast(context,
-            (int)createTime,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-
-      // Cancel
-      alarmManager.cancel(alarmIntent);
-      //this.started = false;
-
-      // Toast and Log
-      String toastText = String.format(context.getResources().getString(R.string.msg_alarm_canceled), hour, minute);
-      Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
-      Log.d("THE_TIME_MACHINE", toastText);
-   }
 
 }

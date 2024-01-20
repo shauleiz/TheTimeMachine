@@ -39,31 +39,9 @@ public class AlarmViewModel extends AndroidViewModel {
       LiveAlarmList = repo.getAlarmList();
 
 
-    /*  ObsFrevr = new Observer<List<AlarmRepository.RawAlarmItem>>() {
-         @Override
-         public void onChanged(List<AlarmRepository.RawAlarmItem> rawAlarmItems) {
-            // TODO: Read repo and reconstruct Alarm List
-            AlarmList = convertRawList(rawAlarmItems);
-            LiveAlarmList.setValue(AlarmList);
-         }
-      };
-      repo.getAlarmList().observeForever(ObsFrevr);*/
+
 
    }
-/*
-   private List<AlarmItem> convertRawList(List<AlarmRepository.RawAlarmItem> rawAlarmItems){
-      List<AlarmItem> out = new ArrayList<>();
-
-      for (int i = 0; i < rawAlarmItems.size(); i++) {
-         AlarmRepository.RawAlarmItem rawItem =  rawAlarmItems.get(i);
-         int h = rawItem.minutesSinceMidnight/60;
-         int m = rawItem.minutesSinceMidnight%60;
-         AlarmItem item = new AlarmItem(h, m, rawItem.label, rawItem.active, rawItem.id);
-         out.add(item);
-      }
-      return out;
-   }
-*/
    @Override
    protected void onCleared() {
       repo = null;
@@ -158,6 +136,7 @@ public class AlarmViewModel extends AndroidViewModel {
          if (position<0)
             return;
          AlarmList = LiveAlarmList.getValue();
+         assert AlarmList != null;
          hour.setValue(AlarmList.get(position).getHour());
          minute.setValue(AlarmList.get(position).getMinute());
          label.setValue(AlarmList.get(position).getLabel());

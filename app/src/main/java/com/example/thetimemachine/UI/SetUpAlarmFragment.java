@@ -8,6 +8,7 @@ import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
 import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
 import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,7 @@ import java.util.Calendar;
 public class SetUpAlarmFragment extends Fragment {
 
     private TimePicker timePicker;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch repeating;
 
     private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
@@ -88,6 +90,8 @@ public class SetUpAlarmFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        int weekDays;
+        Boolean oneOff;
         // Get instance of SetUpAlarmValues sub-class
         parent = (MainActivity) getActivity();
         if (parent == null) return;
@@ -119,9 +123,15 @@ public class SetUpAlarmFragment extends Fragment {
 
         // Get the Repeating button and set the weekdays button visibility
         repeating = view.findViewById(R.id.RepeateSwitch);
-        int weekDays = setUpAlarmValues.getWeekDays().getValue();
+        Integer WeekDays = setUpAlarmValues.getWeekDays().getValue();
+        if (WeekDays!=null)
+            weekDays = WeekDays;
+        else
+            weekDays = 0;
         setDaysValues(weekDays,view);
-        boolean oneOff = setUpAlarmValues.isOneOff().getValue();
+        oneOff = setUpAlarmValues.isOneOff().getValue();
+        if (oneOff == null)
+            oneOff = false;
         repeating.setChecked(!oneOff);
         setDaysVisible(!oneOff, view);
 
@@ -284,10 +294,7 @@ public class SetUpAlarmFragment extends Fragment {
 
         // Schedule this new/modified alarm
         item.Exec();
-        /*
-        if (active)
-            item.Schedule();
-        */
+
 
         // Display the Alarm List Fragment
         if (parent != null){
@@ -349,36 +356,4 @@ public class SetUpAlarmFragment extends Fragment {
         }
         timePicker.animate();
     }
-
- /*   // Observe changes to the time picker introduced by the user
-    // If the time has changed then update the ViewModel
-    private  void SetTimePickerObserver(){
-        timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                setUpAlarmValues.setHour(hourOfDay);
-                setUpAlarmValues.setMinute(minute);
-
-            }
-        });
-    }*/
-
-    /*// Observe changes in the label
-    private void LabelObserver(){
-        label.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length()>0)
-                { String t = s.toString();
-                //String t = label.getText().toString();
-               setUpAlarmValues.setLabel(t);
-                }
-            }
-        });
-    }*/
 }

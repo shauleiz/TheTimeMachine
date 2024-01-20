@@ -18,11 +18,10 @@ import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
 import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
 import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
 
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -32,6 +31,7 @@ import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.Data.AlarmRoomDatabase;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Objects;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -42,13 +42,14 @@ public class AlarmReceiver extends BroadcastReceiver {
 
       // Create a new alarm item
       Bundle b = intent.getExtras();
+      if (b==null) return;
       AlarmItem alarm = new AlarmItem(b);
 
       // Snooze for 10 minutes
       alarm.Exec();
 
       /* DEBUG */
-      String s = String.format("Receiver.snoozing(): Label=%s - Hour=%d - Minute=%d - Snooze Counter=%d",
+      String s = String.format(Locale.US,"Receiver.snoozing(): Label=%s - Hour=%d - Minute=%d - Snooze Counter=%d",
             b.getString(K_LABEL), b.getInt(K_HOUR), b.getInt(K_MINUTE), b.getInt(K_CSNOOZE));
       Log.d("THE_TIME_MACHINE", s);
 
@@ -61,6 +62,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
       // Create a new alarm item
       Bundle b = intent.getExtras();
+      if (b==null) return;
       AlarmItem alarm = new AlarmItem(b);
       alarm.resetSnoozeCounter();
       if (alarm.isOneOff()) {
@@ -83,16 +85,13 @@ public class AlarmReceiver extends BroadcastReceiver {
    private void startAlarmService(Context context, Intent intent) {
 
       Intent intentService = new Intent(context, AlarmService.class);
-      intentService.putExtras(intent.getExtras());
+      intentService.putExtras(Objects.requireNonNull(intent.getExtras()));
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-         context.startForegroundService(intentService);
-      else
-         context.startService(intentService);
+      context.startForegroundService(intentService);
 
       /* DEBUG */
       Bundle b = intent.getExtras();
-      String s = String.format("startAlarmService(): Label=%s - Hour=%d - Minute=%d", b.getString(K_LABEL), b.getInt(K_HOUR), b.getInt(K_MINUTE));
+      String s = String.format(Locale.US, "startAlarmService(): Label=%s - Hour=%d - Minute=%d", b.getString(K_LABEL), b.getInt(K_HOUR), b.getInt(K_MINUTE));
       Log.i("THE_TIME_MACHINE", s);
 
 
@@ -115,7 +114,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
       // TODO: Machine boot finished - must reschedule all active Alarms
       if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
-         String toastText = String.format("Alarm Reboot");
+         String toastText = "Alarm Reboot";
          Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
          //startRescheduleAlarmsService(context);
          Log.i("THE_TIME_MACHINE", "Alarm Reboot");
@@ -132,13 +131,14 @@ public class AlarmReceiver extends BroadcastReceiver {
       else {
          // Get Extra Data for Log
          Bundle inBundle = intent.getExtras();
+         assert inBundle != null;
          String label = inBundle.getString(K_LABEL);
          int h = inBundle.getInt(K_HOUR, -1);
          int m = inBundle.getInt(K_MINUTE, -1);
 
 
          // Debug information
-         String txt = new String("Label: " + label + "  " + h + ":" + m);
+         String txt = "Label: " + label + "  " + h + ":" + m;
          Toast.makeText(context, txt, Toast.LENGTH_LONG).show();
          Log.i("THE_TIME_MACHINE", txt);
 
@@ -152,7 +152,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
    private boolean isToday(Bundle bundle){
       // If this is a one-off alarm then it is for today
-      Boolean oneOff = bundle.getBoolean(K_ONEOFF);
+      boolean oneOff = bundle.getBoolean(K_ONEOFF);
       if (oneOff)
          return true;
 

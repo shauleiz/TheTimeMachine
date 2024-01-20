@@ -16,4 +16,15 @@
     <string name="msg_alarm_set">Alarm set for %02d:%02d</string>
     <string name="msg_rec_alarm_set">Recurring Alarm set for %02d:%02d</string>
     <string name="msg_alarm_canceled">Alarm cancelled for %02d:%02d</string>
+    <string name="list_of_weekdays_SU">Su Mo Tu We Th Fr Sa</string>
+    <string name="got_it">Got it</string>
+    <string name="this_app_needs">This App needs permission to notify you when an alarm goes off\n\nIf you do not grant it you will be unable to stop the alarm</string>
+    <string name="repeating_alarm">Repeating Alarm</string>
+    <string name="su">Su</string>
+    <string name="mo">Mo</string>
+    <string name="tu">Tu</string>
+    <string name="we">We</string>
+    <string name="th">Th</string>
+    <string name="fr">Fr</string>
+    <string name="sa">Sa</string>
 </resources>
