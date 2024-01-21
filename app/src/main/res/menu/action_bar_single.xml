@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:TheTimeMachine="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Edit -->
+    <item
+        android:id="@+id/edit"
+        android:icon="@drawable/edit_fill0_wght400_grad0_opsz24"
+        android:title="edit"
+        android:visible="true"
+        TheTimeMachine:showAsAction="ifRoom"/>
+
+    <!-- Delete -->
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/delete_fill0_wght400_grad0_opsz24"
+        android:title="@string/delete_alarm"
+        android:visible="true"
+        TheTimeMachine:showAsAction="ifRoom"/>
+
+    <!-- Settings -->
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/settings_fill0_wght400_grad0_opsz24"
+        android:iconTint="@color/faded_violet"
+        android:title="settings"
+        android:visible="true"
+        TheTimeMachine:showAsAction="always" />
+
+
+</menu>

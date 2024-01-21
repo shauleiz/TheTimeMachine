@@ -12,6 +12,8 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
@@ -92,6 +94,12 @@ public class SetUpAlarmFragment extends Fragment {
 
         int weekDays;
         Boolean oneOff;
+
+        // Toolbar: Title + Menu
+        Toolbar AppToolbar = (Toolbar) ((AppCompatActivity)getActivity()).findViewById(R.id.app_toolbar);
+        AppToolbar.setTitle(R.string.alarmlist_title);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(AppToolbar);
+
         // Get instance of SetUpAlarmValues sub-class
         parent = (MainActivity) getActivity();
         if (parent == null) return;

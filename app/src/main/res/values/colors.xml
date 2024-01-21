@@ -11,4 +11,6 @@
     <color name="checked_toggle_button">#509C53</color>
     <color name="unchecked_toggle_button">#4A040404</color>
     <color name="faded_violet">#E5C7EA</color>
+    <color name="faded_violet_1">#40E5C7EA</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>

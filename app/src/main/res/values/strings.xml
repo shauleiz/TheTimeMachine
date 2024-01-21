@@ -27,4 +27,10 @@
     <string name="th">Th</string>
     <string name="fr">Fr</string>
     <string name="sa">Sa</string>
+    <string name="alarmsetup_title">Alarm Set-up</string>
+    <string name="alarmlist_title">Alarms</string>
+    <string name="action_delete">ACTION_DELETE</string>
+    <string name="day_today">Today</string>
+    <string name="day_tomorrow">Tomorrow</string>
+    <string name="su_mo_tu_we_th_fr_sa">Su Mo Tu We Th Fr Sa</string>
 </resources>

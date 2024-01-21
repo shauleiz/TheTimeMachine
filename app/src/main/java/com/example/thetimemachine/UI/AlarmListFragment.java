@@ -14,6 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -37,6 +39,7 @@ import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -53,6 +56,8 @@ public class AlarmListFragment extends Fragment {
     private List<AlarmItem> alarmList;
 
     private View fragmentView;
+
+    private ArrayList<Integer> selectedItems;
 
     // Required empty public constructor
     public AlarmListFragment() {}
@@ -75,11 +80,23 @@ public class AlarmListFragment extends Fragment {
         alarmList = parent.alarmViewModel.getAlarmList().getValue();
         alarmAdapter = new AlarmAdapter(alarmList);
 
+        // Get the list of selected alarm items
+        if (savedInstanceState!=null) {
+            selectedItems = savedInstanceState.getIntegerArrayList("ARRAY_SI");
+        }
+        else {
+            selectedItems = new ArrayList<>();
+        }
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_alarm_list, container, false);
     }
 
-
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putIntegerArrayList("ARRAY_SI", selectedItems);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -87,6 +104,10 @@ public class AlarmListFragment extends Fragment {
 
         fragmentView = view;
 
+        // Toolbar: Title + Menu
+        Toolbar AppToolbar = (Toolbar) ((AppCompatActivity)getActivity()).findViewById(R.id.app_toolbar);
+        AppToolbar.setTitle(R.string.alarmlist_title);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(AppToolbar);
 
         // Add Alarm button (FAB)
         AddAlarm_Button = view.findViewById(R.id.Add_Alarm_fab);
@@ -106,6 +127,16 @@ public class AlarmListFragment extends Fragment {
             public void onChanged(List<AlarmItem> m) {
                 if (m != null) {
                     alarmList = m;
+                    alarmAdapter.UpdateAlarmAdapter(m);
+                }
+            }
+        });
+
+        parent.alarmViewModel.getSelectedItems().observe(getViewLifecycleOwner(), new Observer<ArrayList<Integer>>() {
+            @Override
+            public void onChanged(ArrayList<Integer> m) {
+                if (m != null) {
+                    selectedItems = m;
                     alarmAdapter.UpdateAlarmAdapter(m);
                 }
             }
@@ -132,6 +163,21 @@ public class AlarmListFragment extends Fragment {
             }
         });
 
+        alarmAdapter.setOnItemLongClickListener(new AlarmAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(View view, int position) {
+                int id = view.getId();
+                if (id == R.id.AlarmActive) {// Alarm Active checkbox has been clicked
+                    ActiveCheckboxChanged( view,  position);
+                }
+                else{ // The Alarm item itself has been clicked
+                    String label = alarmList.get(position).getLabel();
+                    String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
+                    Toast.makeText(getContext(), "Alarm Long Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
+                    AlarmItemLongClicked(position);
+                }
+            }
+        });
         // Decoration
         RecyclerView.ItemDecoration itemDecoration = new  DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
         rvAlarms.addItemDecoration(itemDecoration);
@@ -272,6 +318,38 @@ public class AlarmListFragment extends Fragment {
                     addToBackStack("tag2").
                     commit();
     }
+
+    /* When an item is Long-Clicked:
+      - The item is selected/deselected (Visually)
+      - The App bar may take one of the following modes:
+      -- Basic: 0 items selected
+      -- Single: 1 item selected
+      -- Multi: 2 or more items selected
+     */
+    void AlarmItemLongClicked(int position) {
+
+        // get the list of alarms
+        //List<AlarmItem> alarmItems = parent.alarmViewModel.getAlarmList().getValue();
+        //if (alarmItems==null) return;
+
+        // Update the list of the selected items - simply toggle
+        parent.alarmViewModel.toggleSelection(position);
+
+        // Modify toolbar according to number of selected items
+        int len = parent.alarmViewModel.getNofSelectedItems();
+        if (len == 0){
+            parent.setDeleteAction(false);
+            parent.setEditAction( false);
+        } else if (len == 1) {
+            parent.setDeleteAction(true);
+            parent.setEditAction( true);
+        } else {
+            parent.setDeleteAction(true);
+            parent.setEditAction( false);
+        }
+        parent.invalidateOptionsMenu();
+    }
+
 
     /* *
     * Called when user clicks on Add Alarm button

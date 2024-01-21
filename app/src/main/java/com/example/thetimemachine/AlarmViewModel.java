@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.Data.AlarmRepository;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -28,6 +29,10 @@ public class AlarmViewModel extends AndroidViewModel {
    public LiveData<List<AlarmItem>> LiveAlarmList;
    private List<AlarmItem> AlarmList;
    private AlarmRepository repo;
+
+   private MutableLiveData<ArrayList<Integer>> LiveSelectedItems;
+   private ArrayList<Integer> selectedItems;
+
  // Observer<List<AlarmRepository.RawAlarmItem>> ObsFrevr;
 
    // Constructor
@@ -37,10 +42,8 @@ public class AlarmViewModel extends AndroidViewModel {
       setUpAlarmValues = new SetUpAlarmValues();
       repo = new AlarmRepository(application);
       LiveAlarmList = repo.getAlarmList();
-
-
-
-
+      selectedItems = new ArrayList<>();
+      LiveSelectedItems = new MutableLiveData<>();
    }
    @Override
    protected void onCleared() {
@@ -80,6 +83,22 @@ public class AlarmViewModel extends AndroidViewModel {
       return LiveAlarmList;
    }
 
+   public void toggleSelection(int position){
+      int index = selectedItems.indexOf(position);
+      if (index >=0)
+         selectedItems.remove(index);
+      else
+         selectedItems.add(position);
+
+      LiveSelectedItems.setValue(selectedItems);
+   }
+
+   public int getNofSelectedItems(){
+      return selectedItems.size();
+   }
+   public MutableLiveData<ArrayList<Integer>> getSelectedItems(){
+      return LiveSelectedItems;
+   }
    // This Class holds the values of the alarm that is being added/modified
    public class SetUpAlarmValues {
       MutableLiveData<Integer> hour, minute;

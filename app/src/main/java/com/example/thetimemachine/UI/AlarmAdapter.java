@@ -39,19 +39,24 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
 
     private List<AlarmItem> alarmList;
+    private ArrayList<Integer> selectedItems;
+
 
     // Define clickListener member variable
     private OnItemClickListener clickListener;
+    private OnItemLongClickListener clickLongListener;
 
     private Context context;
 
     // Define the clickListener interface
     // The clickListener itself is defined in the fragment
     // and will be passed by onViewCreated()
-    public interface OnItemClickListener { void onItemClick(View itemView, int position);}
+    public interface OnItemClickListener { void onItemClick(View itemView, int position);  }
+    public interface OnItemLongClickListener { void onItemLongClick(View itemView, int position);}
 
     // Define the method that allows the parent fragment to define the clickListener
     public void setOnItemClickListener(OnItemClickListener _listener) {clickListener = _listener;}
+    public void setOnItemLongClickListener(OnItemLongClickListener _listener) {clickLongListener = _listener;}
 
     // Constructor: Gets the list of alarms (if exists)
     public AlarmAdapter(List<AlarmItem> _alarmList){
@@ -68,6 +73,14 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
              notifyDataSetChanged();
          }
      }
+
+    public void UpdateAlarmAdapter(ArrayList<Integer> _selectedItems){
+        if (_selectedItems != null) {
+            selectedItems = _selectedItems;
+            notifyDataSetChanged();
+        }
+    }
+
 
     // Called when the RecyclerView needs to create a new entry
     // Here it is provided with the item's layout
@@ -104,6 +117,16 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         String alarmTime = String.format(fmt,alarmItem.getHour(),alarmItem.getMinute());
         holder.AlarmTime.setText(alarmTime);
 
+        // Marking item as selected (yes/no)
+        if (selectedItems != null) {
+            int index = selectedItems.indexOf(position);
+            if (index >= 0) {
+                holder.itemView.setBackgroundColor(getColor(context, R.color.faded_violet_1));
+            }
+            else
+                holder.itemView.setBackgroundColor(getColor(context, R.color.transparent));
+        }
+
         // Active
         boolean isActive = alarmItem.isActive();
         holder.AlarmActive.setChecked(isActive);
@@ -119,10 +142,6 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             holder.WeekDays.setTextColor(getColor(context, R.color.black_overlay));
 
         }
-
-
-        //
-
     }
 
     // Prepare the string to show Today/Tomorrow or the selected days of the week
@@ -136,18 +155,20 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
 
         // Alarm activated? If not, return an empty string
-        if (!alarmItem.isActive())
-            return;
+        //if (!alarmItem.isActive())
+        //    return;
 
         // Is it a One-Off case? If so, is the alarm set for today or tomorrow?
         if (alarmItem.isOneOff()){
             if (alarmItem.isToday()) {
-                word = new SpannableString("Today");
+                word = new SpannableString(context.getString(R.string.day_today));
+                if (alarmItem.isActive())
                 word.setSpan(new ForegroundColorSpan(Color.RED),
                       0, word.length(),
                       Spannable.SPAN_INCLUSIVE_INCLUSIVE);}
             else {
-                word = new SpannableString("Tomorrow");
+                word = new SpannableString(context.getString(R.string.day_tomorrow));
+                if (alarmItem.isActive())
                 word.setSpan(new ForegroundColorSpan(getColor(context,
                             R.color.light_blue_600)),
                       0, word.length(),
@@ -157,7 +178,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         // This is a repeating alarm - print the weekdays
         else{
             // By default - all days are grayed
-            word = new SpannableString("Su Mo Tu We Th Fr Sa");
+            word = new SpannableString(context.getString(R.string.su_mo_tu_we_th_fr_sa));
             word.setSpan(new ForegroundColorSpan(getColor(context, R.color.medium_gray)),
                   0, word.length(),
                   Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -233,6 +254,20 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                             clickListener.onItemClick(itemView, position);
                         }
                     }
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener(){
+                @Override
+                public boolean onLongClick(View v) {
+                    // Triggers click upwards to the adapter on click
+                    if (clickLongListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            clickLongListener.onItemLongClick(itemView, position);
+                        }
+                    }
+                    return true;
                 }
             });
 
