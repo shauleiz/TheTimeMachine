@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     public void UpdateAlarmAdapter(ArrayList<Integer> _selectedItems){
         if (_selectedItems != null) {
             selectedItems = _selectedItems;
+            Log.d("THE_TIME_MACHINE", "UpdateAlarmAdapter()");
             notifyDataSetChanged();
         }
     }
@@ -118,8 +120,9 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         holder.AlarmTime.setText(alarmTime);
 
         // Marking item as selected (yes/no)
+        int id = (int)alarmItem.getCreateTime();
         if (selectedItems != null) {
-            int index = selectedItems.indexOf(position);
+            int index = selectedItems.indexOf(id);
             if (index >= 0) {
                 holder.itemView.setBackgroundColor(getColor(context, R.color.faded_violet_1));
             }

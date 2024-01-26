@@ -42,7 +42,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class AlarmListFragment extends Fragment {
@@ -67,9 +67,6 @@ public class AlarmListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         parent = (MainActivity)getActivity();
-
-
-
     }
 
     @Override
@@ -136,8 +133,11 @@ public class AlarmListFragment extends Fragment {
             @Override
             public void onChanged(ArrayList<Integer> m) {
                 if (m != null) {
+                    // Modify Alarm List
                     selectedItems = m;
                     alarmAdapter.UpdateAlarmAdapter(m);
+                    // Modify toolbar according to number of selected items
+                    parent.UpdateOptionMenu();
                 }
             }
         });
@@ -158,7 +158,7 @@ public class AlarmListFragment extends Fragment {
                     String label = alarmList.get(position).getLabel();
                     String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
                     Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
-                    AlarmItemClicked(position);
+                    AlarmItemEdit(alarmList.get(position));
                 }
             }
         });
@@ -174,7 +174,7 @@ public class AlarmListFragment extends Fragment {
                     String label = alarmList.get(position).getLabel();
                     String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
                     Toast.makeText(getContext(), "Alarm Long Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
-                    AlarmItemLongClicked(position);
+                    AlarmItemLongClicked(alarmList.get(position).getCreateTime());
                 }
             }
         });
@@ -291,32 +291,34 @@ public class AlarmListFragment extends Fragment {
 
     }
     /*
-     *   Called when user clicks on Alarm item in recycler
+     *   Called when user clicks on Alarm item in recycler or toolbar Edit action
      *   Copy values from the selected item to be used by the setup fragment
      *   Create a bundle with data to be passed to the setup fragment
      *   Replace this fragment by setup fragment
      */
-    void AlarmItemClicked(int position){
+    void AlarmItemEdit(AlarmItem item){
+
+        if (item == null) return;
 
         // Copy values from the selected item to be used by the setup fragment
-        parent.alarmViewModel.setUpAlarmValues.GetValuesFromList(position);
+        parent.alarmViewModel.setUpAlarmValues.GetValuesFromList(item);
 
         // Passing parameters to setup fragment
         Bundle b = new Bundle();
         b.putBoolean("INIT_NEWALARM",false);
-        b.putInt("INIT_POSITION", position);
+        b.putInt("INIT_POSITION", 0);
         List<AlarmItem> alarmItems = parent.alarmViewModel.getAlarmList().getValue();
         if (alarmItems==null)return;
-        b.putLong("INIT_CREATE_TIME", alarmItems.get(position).getCreateTime());
+        b.putLong("INIT_CREATE_TIME", item.getCreateTime());
 
         // Replace current fragment with the Setup Alarm fragment
         parent = (MainActivity) getActivity();
         if (parent != null)
             parent.getSupportFragmentManager().
-                    beginTransaction().
-                    replace(R.id.fragment_container_view, SetUpAlarmFragment.class, b).
-                    addToBackStack("tag2").
-                    commit();
+                  beginTransaction().
+                  replace(R.id.fragment_container_view, SetUpAlarmFragment.class, b).
+                  addToBackStack("tag2").
+                  commit();
     }
 
     /* When an item is Long-Clicked:
@@ -326,28 +328,17 @@ public class AlarmListFragment extends Fragment {
       -- Single: 1 item selected
       -- Multi: 2 or more items selected
      */
-    void AlarmItemLongClicked(int position) {
+    void AlarmItemLongClicked(long id) {
 
         // get the list of alarms
         //List<AlarmItem> alarmItems = parent.alarmViewModel.getAlarmList().getValue();
         //if (alarmItems==null) return;
 
         // Update the list of the selected items - simply toggle
-        parent.alarmViewModel.toggleSelection(position);
+        parent.alarmViewModel.toggleSelection(id);
 
         // Modify toolbar according to number of selected items
-        int len = parent.alarmViewModel.getNofSelectedItems();
-        if (len == 0){
-            parent.setDeleteAction(false);
-            parent.setEditAction( false);
-        } else if (len == 1) {
-            parent.setDeleteAction(true);
-            parent.setEditAction( true);
-        } else {
-            parent.setDeleteAction(true);
-            parent.setEditAction( false);
-        }
-        parent.invalidateOptionsMenu();
+        parent.UpdateOptionMenu();
     }
 
 
@@ -381,6 +372,24 @@ public class AlarmListFragment extends Fragment {
                     commit();
     }
 
+    public void DeleteSelectedAlarms(){
 
+        ArrayList<Integer> tempList;
+        tempList = new ArrayList<Integer>(selectedItems);
+
+        for (int i=0 ; i<tempList.size();i++) {
+            AlarmItem item = parent.alarmViewModel.getAlarmItemById(tempList.get(i));
+            if (item == null) return;
+            parent.alarmViewModel.DeleteAlarm(item);
+        }
+    }
+
+    public void EditSelectedAlarm(){
+        int position;
+
+        // Edit only is exactly one item selected
+        if (selectedItems.size() !=1 ) return;
+        AlarmItemEdit( parent.alarmViewModel.getAlarmItemById(selectedItems.get(0)));
+    }
 
 }

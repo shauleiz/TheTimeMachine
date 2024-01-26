@@ -4,11 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         alarmViewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
 
         // Toolbar: App name + Icons
-        Toolbar AppToolbar = (Toolbar) findViewById(R.id.app_toolbar);
+        Toolbar AppToolbar =  findViewById(R.id.app_toolbar);
         AppToolbar.setTitle("Alarm Clock"); // TODO: Change later - Each fragment should modify this text
         setSupportActionBar(AppToolbar);
 
@@ -94,6 +96,22 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    public void UpdateOptionMenu(){
+        // Modify toolbar according to number of selected items
+        int len = alarmViewModel.getNofSelectedItems();
+        if (len == 0){
+            setDeleteAction(false);
+            setEditAction( false);
+        } else if (len == 1) {
+            setDeleteAction(true);
+            setEditAction( true);
+        } else {
+            setDeleteAction(true);
+            setEditAction( false);
+        }
+        invalidateOptionsMenu();
+    }
+
     public void setDeleteAction(boolean d){deleteAction = d;}
 
     public void setEditAction(boolean editAction) {this.editAction = editAction;}
@@ -111,4 +129,41 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onPrepareOptionsMenu(menu);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment_container_view);
+
+        // Setup Fragment - Only Setting is supported
+        if (frag instanceof SetUpAlarmFragment) {
+            Log.v("THE_TIME_MACHINE", "SetUpAlarmFragment");
+            if (itemId == R.id.settings) {
+                return true;
+            }
+        }
+
+        // Alarm List Fragment - Act according to selected item
+        else if (frag instanceof AlarmListFragment) {
+            Log.v("THE_TIME_MACHINE", "AlarmListFragment");
+            if (itemId == R.id.delete) {
+                ((AlarmListFragment) frag).DeleteSelectedAlarms();
+                return true;
+            } else if (itemId == R.id.edit) {
+                ((AlarmListFragment) frag).EditSelectedAlarm();
+                return true;
+            } else if (itemId == R.id.settings) {
+                return true;
+            }
+        }
+        else
+            Log.v("THE_TIME_MACHINE", "??? Fragment");
+
+
+        // The user's action isn't recognized.
+        // Invoke the superclass to handle it.
+        Log.d("THE_TIME_MACHINE", "??? Pressed");
+        return super.onOptionsItemSelected(item);
+    }
+
 }

@@ -95,14 +95,19 @@ public class SetUpAlarmFragment extends Fragment {
         int weekDays;
         Boolean oneOff;
 
-        // Toolbar: Title + Menu
-        Toolbar AppToolbar = (Toolbar) ((AppCompatActivity)getActivity()).findViewById(R.id.app_toolbar);
-        AppToolbar.setTitle(R.string.alarmlist_title);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(AppToolbar);
-
-        // Get instance of SetUpAlarmValues sub-class
+        // Get the parent Activity
         parent = (MainActivity) getActivity();
         if (parent == null) return;
+
+        // Toolbar: Title + Menu + leave only "settings" icon
+        Toolbar AppToolbar = (Toolbar) ((AppCompatActivity)getActivity()).findViewById(R.id.app_toolbar);
+        AppToolbar.setTitle(R.string.alarmsetup_title);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(AppToolbar);
+        parent.setDeleteAction(false);
+        parent.setEditAction(false);
+        parent.invalidateOptionsMenu();
+
+        // Get instance of SetUpAlarmValues sub-class
         setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
         alarmViewModel = parent.alarmViewModel;
 
@@ -294,8 +299,8 @@ public class SetUpAlarmFragment extends Fragment {
 
         // Get the position and the status of the entry to be created/updated
         // And Add or Update the entry on the list
-        int position = initParams.getInt("INIT_POSITION");
-       if (newAlarm || position<0)
+        //int position = initParams.getInt("INIT_POSITION");
+       if (newAlarm /*|| position<0*/)
             alarmViewModel.AddAlarm(item);
         else
             alarmViewModel.UpdateAlarm(item);
@@ -321,13 +326,21 @@ public class SetUpAlarmFragment extends Fragment {
     // Delete Button Clicked
     private void DeleteClicked() {
 
+        // Create alarm item to be removed
+        int h = timePicker.getHour();
+        int m = timePicker.getMinute();
+        String t = label.getText().toString();
+        boolean active = true; // A new/modified alarm is always active
+        long c = initParams.getLong("INIT_CREATE_TIME");
+        AlarmItem item = new AlarmItem(h, m,t, active, c);
+
+
         // Get position of alarm to delete and check that it exists
-        int position = initParams.getInt("INIT_POSITION");
-        if (position<0 || alarmViewModel == null)
+        if (alarmViewModel == null)
             return;
 
         // Delete Alarm from list in ViewModel
-        alarmViewModel.DeleteAlarm(position);
+        alarmViewModel.DeleteAlarm(item);
 
         // Display the Alarm List Fragment
         if (parent != null)

@@ -1,6 +1,7 @@
 package com.example.thetimemachine;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -57,20 +58,22 @@ public class AlarmViewModel extends AndroidViewModel {
       repo.AddAlarm( item);
    }
 
-   public void DeleteAlarm(int _position){
-
-      // Get List
-      AlarmList = LiveAlarmList.getValue();
-      if (AlarmList==null) return;
+   public void DeleteAlarm(AlarmItem item){
+      // Remove from list of selected alarms
+      int id = (int)item.getCreateTime();
+      int index = selectedItems.indexOf(id);
+      Log.d("THE_TIME_MACHINE", "DeleteAlarm(): by item ");
+      if (index >=0) {
+         selectedItems.remove(index);
+         LiveSelectedItems.setValue(selectedItems);
+      }
 
       // Get alarm item and cancel the alarm
-      AlarmItem item = (AlarmList.get(_position));
       item.setActive(false);
       item.Exec();
 
       // Repository
       repo.DeleteAlarm(item);
-
    }
 
    public void UpdateAlarm(AlarmItem item) {
@@ -78,17 +81,31 @@ public class AlarmViewModel extends AndroidViewModel {
       repo.UpdateAlarm(item);
    }
 
+   public AlarmItem getAlarmItemById(int id){
+
+      // Get List
+      AlarmList = LiveAlarmList.getValue();
+      if (AlarmList==null) return null;
+
+      for (int i=0; i<AlarmList.size();i++){
+         AlarmItem item = AlarmList.get(i);
+         if (((int)item.getCreateTime()) == id)
+            return item;
+      }
+      return null;
+   }
+
    public LiveData<List<AlarmItem>> getAlarmList() {
 
       return LiveAlarmList;
    }
 
-   public void toggleSelection(int position){
-      int index = selectedItems.indexOf(position);
+   public void toggleSelection(long id){
+      int index = selectedItems.indexOf((int)id);
       if (index >=0)
          selectedItems.remove(index);
       else
-         selectedItems.add(position);
+         selectedItems.add((int)id);
 
       LiveSelectedItems.setValue(selectedItems);
    }
@@ -97,6 +114,7 @@ public class AlarmViewModel extends AndroidViewModel {
       return selectedItems.size();
    }
    public MutableLiveData<ArrayList<Integer>> getSelectedItems(){
+      Log.d("THE_TIME_MACHINE", "getSelectedItems()");
       return LiveSelectedItems;
    }
    // This Class holds the values of the alarm that is being added/modified
@@ -167,6 +185,24 @@ public class AlarmViewModel extends AndroidViewModel {
 
          weekDays.setValue(AlarmList.get(position).getWeekDays());
          oneOff.setValue((AlarmList.get(position).isOneOff()));
+      }
+
+      public void GetValuesFromList(AlarmItem item){
+         // Sanity check
+         if (item == null)
+            return;
+
+         hour.setValue(item.getHour());
+         minute.setValue(item.getMinute());
+         label.setValue(item.getLabel());
+         active.setValue(item.isActive());
+
+         AlarmItem ai = item;
+         long c = ai.getCreateTime();
+         createTime.setValue(c);
+
+         weekDays.setValue(item.getWeekDays());
+         oneOff.setValue((item.isOneOff()));
       }
 
       /* Getter Methods */
