@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +21,7 @@ import android.view.WindowManager;
 
 import com.example.thetimemachine.AlarmReceiver;
 import com.example.thetimemachine.AlarmService;
+import com.example.thetimemachine.R;
 import com.example.thetimemachine.databinding.ActivityStopSnoozeBinding;
 
 import java.util.Locale;
@@ -260,8 +263,27 @@ public class StopSnoozeActivity extends AppCompatActivity {
       String time = "";
       int minute = extras.getInt("MINUTE",-1);
       int hour = extras.getInt("HOUR",-1);
+
+      // Time format
+      String ampm;
+      if (MainActivity.is24HourClock())
+         ampm = "";
+      else{
+         if (hour==0) {
+            ampm = getString(R.string.format_am);
+            hour=12;
+         }
+         else if (hour<12)
+            ampm = getString(R.string.format_am);
+         else {
+            ampm = getString(R.string.format_pm);
+            if (hour!=12)
+               hour-=12;
+         }
+      }
+
       if (minute!=-1 && hour!=-1)
-         time = String.format(Locale.US,"%d:%02d", hour, minute);
+         time = String.format(Locale.US,"%d:%02d %s", hour, minute, ampm);
 
       String displayText = String.format("%s\n\n%s%s", appName, label, time);
       binding.fullscreenContent.setText(displayText);

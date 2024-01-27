@@ -105,6 +105,7 @@ public class AlarmListFragment extends Fragment {
         Toolbar AppToolbar = (Toolbar) ((AppCompatActivity)getActivity()).findViewById(R.id.app_toolbar);
         AppToolbar.setTitle(R.string.alarmlist_title);
         ((AppCompatActivity)getActivity()).setSupportActionBar(AppToolbar);
+        parent.UpdateOptionMenu();
 
         // Add Alarm button (FAB)
         AddAlarm_Button = view.findViewById(R.id.Add_Alarm_fab);

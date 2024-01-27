@@ -27,7 +27,10 @@ import androidx.core.app.NotificationCompat;
 
 
 import com.example.thetimemachine.Data.AlarmItem;
+import com.example.thetimemachine.UI.MainActivity;
 import com.example.thetimemachine.UI.StopSnoozeActivity;
+
+import java.util.Locale;
 
 public class AlarmService  extends Service {
 
@@ -173,7 +176,31 @@ public class AlarmService  extends Service {
       String label = inBundle.getString(K_LABEL);
       int h = inBundle.getInt(K_HOUR, -1);
       int m = inBundle.getInt(K_MINUTE, -1);
-      @SuppressLint("DefaultLocale") String alarmText = String.format("%s - %d:%02d", label, h, m);
+
+      // Time format
+      String ampm;
+      if (MainActivity.is24HourClock())
+         ampm = "";
+      else{
+         if (h==0) {
+            ampm = getString(R.string.format_am);
+            h=12;
+         }
+         else if (h<12)
+            ampm = getString(R.string.format_am);
+         else {
+            ampm = getString(R.string.format_pm);
+            if (h!=12)
+               h-=12;
+         }
+      }
+
+      String alarmText;
+      assert label != null;
+      if (label.length()>0)
+         alarmText = String.format(Locale.ENGLISH,"%s - %d:%02d%s", label, h, m,ampm);
+      else
+         alarmText = String.format(Locale.ENGLISH,"%d:%02d%s", h, m,ampm);
       String alarmTitle = getResources().getString(R.string.notification_title);
       Log.i("THE_TIME_MACHINE", alarmText);
 

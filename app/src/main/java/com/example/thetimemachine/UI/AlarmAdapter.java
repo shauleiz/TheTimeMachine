@@ -13,6 +13,7 @@ import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
 import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -26,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thetimemachine.Data.AlarmItem;
@@ -115,9 +117,27 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         prepareWeekdaysSpan(alarmItem, holder.WeekDays);
 
         // Time
+        int h =  alarmItem.getHour();
+        if (MainActivity.is24HourClock())
+            holder.amPm24h.setText(R.string.format_24h);
+        else{
+            if (h==0) {
+                holder.amPm24h.setText(R.string.format_am);
+                h=12;
+            }
+            else if (h<12)
+                holder.amPm24h.setText(R.string.format_am);
+            else {
+                holder.amPm24h.setText(R.string.format_pm);
+                if (h!=12)
+                    h-=12;
+            }
+        }
+
         String fmt = context.getResources().getString(R.string.alarm_format);
-        String alarmTime = String.format(fmt,alarmItem.getHour(),alarmItem.getMinute());
+        String alarmTime = String.format(fmt,h,alarmItem.getMinute());
         holder.AlarmTime.setText(alarmTime);
+
 
         // Marking item as selected (yes/no)
         int id = (int)alarmItem.getCreateTime();
@@ -138,12 +158,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                   com.google.android.material.R.color.design_default_color_primary_variant));
             holder.AlarmLabel.setTextColor(getColor(context, R.color.black));
             holder.WeekDays.setTextColor(getColor(context, R.color.black));
+            holder.amPm24h.setTextColor(getColor(context, R.color.black));
         }
         else {
             holder.AlarmTime.setTextColor(getColor(context, R.color.faded_violet));
             holder.AlarmLabel.setTextColor(getColor(context, R.color.black_overlay));
             holder.WeekDays.setTextColor(getColor(context, R.color.black_overlay));
-
+            holder.amPm24h.setTextColor(getColor(context, R.color.black_overlay));
         }
     }
 
@@ -166,13 +187,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             if (alarmItem.isToday()) {
                 word = new SpannableString(context.getString(R.string.day_today));
                 if (alarmItem.isActive())
-                word.setSpan(new ForegroundColorSpan(Color.RED),
+                    word.setSpan(new ForegroundColorSpan(Color.RED),
                       0, word.length(),
                       Spannable.SPAN_INCLUSIVE_INCLUSIVE);}
             else {
                 word = new SpannableString(context.getString(R.string.day_tomorrow));
                 if (alarmItem.isActive())
-                word.setSpan(new ForegroundColorSpan(getColor(context,
+                    word.setSpan(new ForegroundColorSpan(getColor(context,
                             R.color.light_blue_600)),
                       0, word.length(),
                       Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -224,7 +245,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     public class AlarmViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
-        public TextView AlarmLabel, WeekDays, AlarmTime;
+        public TextView AlarmLabel, WeekDays, AlarmTime, amPm24h;
         public ImageView BellView;
         public CheckBox AlarmActive;
         public View itemView;
@@ -243,6 +264,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             WeekDays = (TextView) itemView.findViewById(R.id.WeekDays);
             AlarmTime = (TextView) itemView.findViewById(R.id.AlarmTime);
             AlarmActive = (CheckBox) itemView.findViewById(R.id.AlarmActive);
+            amPm24h = (TextView) itemView.findViewById(R.id.am_pm_24h);
 
 
 

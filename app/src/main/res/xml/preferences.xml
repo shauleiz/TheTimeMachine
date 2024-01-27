@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <DropDownPreference
+        android:entries="@array/clock_12_24_entries"
+        android:entryValues="@array/clock_12_24_values"
+        android:key="KEY_H12_24"
+        android:title="@string/clock_format"
+        app:dialogTitle="Select Clock Format"
+        app:enabled="true"
+        app:icon="@drawable/mdi__wrench_clock_outline"
+        app:singleLineTitle="false"
+        app:useSimpleSummaryProvider="true" />
+
+</PreferenceScreen>

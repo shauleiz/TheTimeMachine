@@ -9,6 +9,7 @@ import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
 import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +19,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.preference.PreferenceManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +37,7 @@ import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
 
 import java.util.Calendar;
+import java.util.Map;
 
 public class SetUpAlarmFragment extends Fragment {
 
@@ -104,6 +108,7 @@ public class SetUpAlarmFragment extends Fragment {
         AppToolbar.setTitle(R.string.alarmsetup_title);
         ((AppCompatActivity)getActivity()).setSupportActionBar(AppToolbar);
         parent.setDeleteAction(false);
+        parent.setSettingsAction(true);
         parent.setEditAction(false);
         parent.invalidateOptionsMenu();
 
@@ -125,6 +130,7 @@ public class SetUpAlarmFragment extends Fragment {
             delete_Button.setOnClickListener(v -> DeleteClicked());
         else
             delete_Button.setVisibility(View.GONE);
+
 
         // Get Time Picker and modify it
         timePicker = view.findViewById(R.id.time_picker);
@@ -354,8 +360,11 @@ public class SetUpAlarmFragment extends Fragment {
 
     // Initialize the time picker to default setup
     private void InitTimePicker(TimePicker timePicker, boolean newAlarm) {
-        // TODO: Replace hardcoded default values by values defined by the user
-        timePicker.setIs24HourView(true);
+
+        if (MainActivity.is24HourClock())
+            timePicker.setIs24HourView(true);
+        else
+            timePicker.setIs24HourView(false);
 
         if (newAlarm)
         {

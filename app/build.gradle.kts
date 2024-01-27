@@ -56,6 +56,8 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.6.1")
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
     androidTestImplementation ("androidx.room:room-testing:2.6.1")
+    implementation("androidx.preference:preference-ktx:1.2.1")
+
     //implementation ("android.arch.persistence.room:compiler:2.6.0")
     //kapt  ("androidx.room:room-compiler:2.4.2")
 

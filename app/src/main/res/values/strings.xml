@@ -28,9 +28,30 @@
     <string name="fr">Fr</string>
     <string name="sa">Sa</string>
     <string name="alarmsetup_title">Alarm Set-up</string>
+    <string name="settings_title">Settings</string>
     <string name="alarmlist_title">Alarms</string>
     <string name="action_delete">ACTION_DELETE</string>
     <string name="day_today">Today</string>
     <string name="day_tomorrow">Tomorrow</string>
     <string name="su_mo_tu_we_th_fr_sa">Su Mo Tu We Th Fr Sa</string>
+    <string name="key_h12_24">KEY_H12_24</string>
+    <string name="clock_format">Clock Format</string>
+    <string name="format_24h">24h</string>
+    <string name="format_am">AM</string>
+    <string name="format_pm">PM</string>
+    <string name="description_up_arrow_back">Back</string>
+    <array name="weekday_array">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+    </array>
+    <array name="clock_12_24_entries">
+        <item>24h Clock</item>
+        <item>12h Clock</item>
+    </array>
+    <array name="clock_12_24_values">
+        <item>h24</item>
+        <item>h12</item>
+    </array>
 </resources>
