@@ -11,9 +11,10 @@ import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
 import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
 import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
 import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -27,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thetimemachine.Data.AlarmItem;
@@ -113,12 +113,16 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         holder.AlarmLabel.setText(alarmItem.getLabel());
 
         // Weekdays
-        holder.WeekDays.setText(R.string.list_of_weekdays_SU);
+        if (pref_first_day_of_week().equals("Su"))
+            holder.WeekDays.setText(R.string.list_of_weekdays_SU);
+        else
+            holder.WeekDays.setText(R.string.list_of_weekdays_Mo);
+
         prepareWeekdaysSpan(alarmItem, holder.WeekDays);
 
         // Time
         int h =  alarmItem.getHour();
-        if (MainActivity.is24HourClock())
+        if (pref_is24HourClock())
             holder.amPm24h.setText(R.string.format_24h);
         else{
             if (h==0) {
@@ -133,6 +137,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                     h-=12;
             }
         }
+
+
 
         String fmt = context.getResources().getString(R.string.alarm_format);
         String alarmTime = String.format(fmt,h,alarmItem.getMinute());
@@ -172,6 +178,11 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     // The info is gotten from the Alarm item
     // The function returns a spanable string for display
     private void prepareWeekdaysSpan(AlarmItem alarmItem, TextView textView) {
+
+        final int[] su_array = {0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20};
+        final int[] mo_array = {18, 20, 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20};
+        int[] gen_array;
+
         Spannable word = new SpannableString("");
         textView.setText(word, SPANNABLE);
         textView.setText(word);
@@ -202,32 +213,41 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         // This is a repeating alarm - print the weekdays
         else{
             // By default - all days are grayed
-            word = new SpannableString(context.getString(R.string.su_mo_tu_we_th_fr_sa));
+            if (pref_first_day_of_week().equals("Su")) {
+                word = new SpannableString(context.getString(R.string.su_mo_tu_we_th_fr_sa));
+                gen_array = su_array;
+            }
+            else {
+                word = new SpannableString(context.getString(R.string.mo_tu_we_th_fr_sa_su));
+                gen_array = mo_array;
+            }
+
             word.setSpan(new ForegroundColorSpan(getColor(context, R.color.medium_gray)),
                   0, word.length(),
                   Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
+            int index=0;
             int weekdays = alarmItem.getWeekDays();
             if ((weekdays&SUNDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),0, 2,
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[0], gen_array[1],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&MONDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),3, 5,
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[2], gen_array[3],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&TUESDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),6, 8,
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[4], gen_array[5],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&WEDNESDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),9, 11,
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[6], gen_array[7],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&THURSDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),12, 14,
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[8], gen_array[9],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&FRIDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),15, 17,
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[10], gen_array[11],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&SATURDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),18, 20,
+                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[12], gen_array[13],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         }

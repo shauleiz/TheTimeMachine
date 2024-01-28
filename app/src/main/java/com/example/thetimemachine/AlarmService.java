@@ -5,8 +5,8 @@ import static com.example.thetimemachine.Application.TheTimeMachineApp.CHANNEL_I
 import static com.example.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.example.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.example.thetimemachine.Data.AlarmItem.K_MINUTE;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -27,7 +27,6 @@ import androidx.core.app.NotificationCompat;
 
 
 import com.example.thetimemachine.Data.AlarmItem;
-import com.example.thetimemachine.UI.MainActivity;
 import com.example.thetimemachine.UI.StopSnoozeActivity;
 
 import java.util.Locale;
@@ -179,7 +178,7 @@ public class AlarmService  extends Service {
 
       // Time format
       String ampm;
-      if (MainActivity.is24HourClock())
+      if (pref_is24HourClock())
          ampm = "";
       else{
          if (h==0) {

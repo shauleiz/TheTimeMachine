@@ -213,14 +213,6 @@ public class MainActivity extends AppCompatActivity {
               .commit();
     }
 
-    public static boolean is24HourClock(){
-        Context context = TheTimeMachineApp.appContext;
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String s = preferences.getString(context.getString(R.string.key_h12_24), "");
-        if (s.equals("h24"))
-            return (true);
-        else
-            return (false);
-    }
+
 
 }

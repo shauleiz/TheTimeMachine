@@ -7,9 +7,10 @@ import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
 import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
 import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
 import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,9 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
-import androidx.preference.PreferenceManager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,6 @@ import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
 
 import java.util.Calendar;
-import java.util.Map;
 
 public class SetUpAlarmFragment extends Fragment {
 
@@ -217,19 +215,22 @@ public class SetUpAlarmFragment extends Fragment {
 
     // Set the row of weekday buttons visible/gone
     private void setDaysVisible(boolean visible, View view){
-        int visibility;
-        if (visible)
-            visibility = View.VISIBLE;
-        else
-            visibility = View.GONE;
 
-        view.findViewById(R.id.SundayButton).setVisibility(visibility);
-        view.findViewById(R.id.MondayButton).setVisibility(visibility);
-        view.findViewById(R.id.TuesdayButton).setVisibility(visibility);
-        view.findViewById(R.id.WednesdayButton).setVisibility(visibility);
-        view.findViewById(R.id.ThursdayButton).setVisibility(visibility);
-        view.findViewById(R.id.FridayButton).setVisibility(visibility);
-        view.findViewById(R.id.SaturdayButton).setVisibility(visibility);
+        String firstDay = pref_first_day_of_week();
+
+        if (visible)
+            if (firstDay.equals("Su")) { // TODO: Replace
+                view.findViewById(R.id.day_buttons_layout).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.day_buttons_layout_mo).setVisibility(View.GONE);
+            }
+            else {
+                view.findViewById(R.id.day_buttons_layout).setVisibility(View.GONE);
+                view.findViewById(R.id.day_buttons_layout_mo).setVisibility(View.VISIBLE);
+            }
+        else {
+            view.findViewById(R.id.day_buttons_layout).setVisibility(View.GONE);
+            view.findViewById(R.id.day_buttons_layout_mo).setVisibility(View.GONE);
+        }
 
     }
 
@@ -243,25 +244,44 @@ public class SetUpAlarmFragment extends Fragment {
         boolean isFriday = (weekDays&FRIDAY) >0;
         boolean isSaturday = (weekDays&SATURDAY) >0;
 
-        suToggleButton = ((ToggleButton) view.findViewById(R.id.SundayButton));
-        suToggleButton.setChecked(isSunday);
-        moToggleButton = ((ToggleButton) view.findViewById(R.id.MondayButton));
-        moToggleButton.setChecked(isMonday);
-        tuToggleButton = ((ToggleButton) view.findViewById(R.id.TuesdayButton));
-        tuToggleButton.setChecked(isTuesday);
-        weToggleButton =  ((ToggleButton) view.findViewById(R.id.WednesdayButton));
-        weToggleButton.setChecked(isWednesday);
-        thToggleButton = ((ToggleButton) view.findViewById(R.id.ThursdayButton));
-        thToggleButton.setChecked(isThursday);
-        frToggleButton = ((ToggleButton) view.findViewById(R.id.FridayButton));
-        frToggleButton.setChecked(isFriday);
-        saToggleButton = ((ToggleButton) view.findViewById(R.id.SaturdayButton));
-        saToggleButton.setChecked(isSaturday);
+        if (pref_first_day_of_week().equals("Su")) {
+            suToggleButton = ((ToggleButton) view.findViewById(R.id.SundayButton));
+            suToggleButton.setChecked(isSunday);
+            moToggleButton = ((ToggleButton) view.findViewById(R.id.MondayButton));
+            moToggleButton.setChecked(isMonday);
+            tuToggleButton = ((ToggleButton) view.findViewById(R.id.TuesdayButton));
+            tuToggleButton.setChecked(isTuesday);
+            weToggleButton = ((ToggleButton) view.findViewById(R.id.WednesdayButton));
+            weToggleButton.setChecked(isWednesday);
+            thToggleButton = ((ToggleButton) view.findViewById(R.id.ThursdayButton));
+            thToggleButton.setChecked(isThursday);
+            frToggleButton = ((ToggleButton) view.findViewById(R.id.FridayButton));
+            frToggleButton.setChecked(isFriday);
+            saToggleButton = ((ToggleButton) view.findViewById(R.id.SaturdayButton));
+            saToggleButton.setChecked(isSaturday);
+        }
+        else {
+            suToggleButton = ((ToggleButton) view.findViewById(R.id.SundayButton_2));
+            suToggleButton.setChecked(isSunday);
+            moToggleButton = ((ToggleButton) view.findViewById(R.id.MondayButton_2));
+            moToggleButton.setChecked(isMonday);
+            tuToggleButton = ((ToggleButton) view.findViewById(R.id.TuesdayButton_2));
+            tuToggleButton.setChecked(isTuesday);
+            weToggleButton = ((ToggleButton) view.findViewById(R.id.WednesdayButton_2));
+            weToggleButton.setChecked(isWednesday);
+            thToggleButton = ((ToggleButton) view.findViewById(R.id.ThursdayButton_2));
+            thToggleButton.setChecked(isThursday);
+            frToggleButton = ((ToggleButton) view.findViewById(R.id.FridayButton_2));
+            frToggleButton.setChecked(isFriday);
+            saToggleButton = ((ToggleButton) view.findViewById(R.id.SaturdayButton_2));
+            saToggleButton.setChecked(isSaturday);
+        }
     }
 
     private int getDaysValues(){
 
         int mask = 0;
+
         if (suToggleButton.isChecked())  mask|=SUNDAY;
         if (moToggleButton.isChecked())  mask|=MONDAY;
         if (tuToggleButton.isChecked())  mask|=TUESDAY;
@@ -361,7 +381,7 @@ public class SetUpAlarmFragment extends Fragment {
     // Initialize the time picker to default setup
     private void InitTimePicker(TimePicker timePicker, boolean newAlarm) {
 
-        if (MainActivity.is24HourClock())
+        if (pref_is24HourClock())
             timePicker.setIs24HourView(true);
         else
             timePicker.setIs24HourView(false);

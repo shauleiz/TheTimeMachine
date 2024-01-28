@@ -1,15 +1,15 @@
 package com.example.thetimemachine.UI;
 
+import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
+
 import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +17,6 @@ import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
-import android.view.WindowManager;
 
 import com.example.thetimemachine.AlarmReceiver;
 import com.example.thetimemachine.AlarmService;
@@ -266,7 +265,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
       // Time format
       String ampm;
-      if (MainActivity.is24HourClock())
+      if (pref_is24HourClock())
          ampm = "";
       else{
          if (hour==0) {

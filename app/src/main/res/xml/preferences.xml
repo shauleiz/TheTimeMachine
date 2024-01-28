@@ -1,15 +1,59 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!--        Clock Format - 24/12 Hours -->
     <DropDownPreference
+        android:layout_width="wrap_content"
         android:entries="@array/clock_12_24_entries"
         android:entryValues="@array/clock_12_24_values"
-        android:key="KEY_H12_24"
+        android:key="@string/key_h12_24"
         android:title="@string/clock_format"
+        app:defaultValue="@string/clock_format_def"
         app:dialogTitle="Select Clock Format"
         app:enabled="true"
         app:icon="@drawable/mdi__wrench_clock_outline"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
 
+    <!--        First Day Of the week  -->
+    <DropDownPreference
+        android:layout_width="wrap_content"
+        android:entries="@array/first_day_week_entries"
+        android:entryValues="@array/first_day_week_values"
+        android:key="@string/key_first_day"
+        android:title="@string/first_day_of_week"
+        app:defaultValue="@string/first_day_week_def"
+        app:icon="@drawable/today_fill0_wght400_grad0_opsz24"
+        app:enabled="true"
+        app:singleLineTitle="false"
+        app:useSimpleSummaryProvider="true" />
+
+    <!--        Ring Duration  -->
+    <DropDownPreference
+        android:layout_width="wrap_content"
+        android:entries="@array/ring_duration_entries"
+        android:entryValues="@array/ring_duration_values"
+        android:key="@string/key_ring_duration"
+        android:title="@string/ring_duration"
+        app:defaultValue="@string/ring_duration_def"
+        app:dialogTitle="Select Clock Format"
+        app:enabled="true"
+        app:icon="@drawable/music_note_fill0_wght400_grad0_opsz24"
+        app:singleLineTitle="false"
+        app:useSimpleSummaryProvider="true" />
+
+    <!--  Repeat rings -->
+    <DropDownPreference
+        android:layout_width="wrap_content"
+        android:entries="@array/ring_repeat_entries"
+        android:entryValues="@array/ring_repeat_values"
+        android:key="@string/key_ring_repeat"
+        android:title="@string/times_to_keep_on_ringing"
+        app:defaultValue="@string/times_5t"
+        app:dialogTitle="Select Clock Format"
+        app:enabled="true"
+        app:icon="@drawable/music_note_fill0_wght400_grad0_opsz24"
+        app:singleLineTitle="false"
+        app:useSimpleSummaryProvider="true" />
 </PreferenceScreen>
+

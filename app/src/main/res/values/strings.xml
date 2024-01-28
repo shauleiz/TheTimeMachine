@@ -17,6 +17,7 @@
     <string name="msg_rec_alarm_set">Recurring Alarm set for %02d:%02d</string>
     <string name="msg_alarm_canceled">Alarm cancelled for %02d:%02d</string>
     <string name="list_of_weekdays_SU">Su Mo Tu We Th Fr Sa</string>
+    <string name="list_of_weekdays_Mo">Mo Tu We Th Fr Sa Su</string>
     <string name="got_it">Got it</string>
     <string name="this_app_needs">This App needs permission to notify you when an alarm goes off\n\nIf you do not grant it you will be unable to stop the alarm</string>
     <string name="repeating_alarm">Repeating Alarm</string>
@@ -34,24 +35,77 @@
     <string name="day_today">Today</string>
     <string name="day_tomorrow">Tomorrow</string>
     <string name="su_mo_tu_we_th_fr_sa">Su Mo Tu We Th Fr Sa</string>
-    <string name="key_h12_24">KEY_H12_24</string>
+    <string name="mo_tu_we_th_fr_sa_su">Mo Tu We Th Fr Sa Su</string>
     <string name="clock_format">Clock Format</string>
     <string name="format_24h">24h</string>
     <string name="format_am">AM</string>
     <string name="format_pm">PM</string>
     <string name="description_up_arrow_back">Back</string>
-    <array name="weekday_array">
-        <item>Sunday</item>
-        <item>Monday</item>
-        <item>Tuesday</item>
-        <item>Wednesday</item>
-    </array>
+    <string name="key_h12_24">KEY_H12_24</string>
+    <string name="key_ring_duration">KEY_RING_DURATION</string>
+    <string name="key_first_day">KEY_FIRST_DAY</string>
+    <string name="key_ring_repeat">KEY_RING_REPEAT</string>
+    <string name="ring_duration">Ring for</string>
+    <string name="ring_duration_def">30Seconds</string>
+    <string name="clock_format_def">h24</string>
+    <string name="first_day_week_def">Su</string>
+    <string name="ring_repeat_def">2T</string>
+    <string name="first_day_of_week">First Day of Week</string>
+    <string name="times_to_keep_on_ringing">If not stopped, number of times to keep on ringing</string>
+    <string name="times_5t">5T</string>
+
+
     <array name="clock_12_24_entries">
-        <item>24h Clock</item>
         <item>12h Clock</item>
+        <item>24h Clock</item>
     </array>
     <array name="clock_12_24_values">
-        <item>h24</item>
         <item>h12</item>
+        <item>h24</item>
+    </array>
+    <array name="first_day_week_entries">
+        <item>Sunday</item>
+        <item>Monday</item>
+    </array>
+    <array name="first_day_week_values">
+        <item>Su</item>
+        <item>Mo</item>
+    </array>
+
+    <array name="ring_duration_entries">
+        <item>15 Seconds</item>
+        <item>30 Seconds</item>
+        <item>45 Seconds</item>
+        <item>1 Minute</item>
+        <item>2 Minute</item>
+        <item>5 Minute</item>
+    </array>
+    <array name="ring_duration_values">
+        <item>15Seconds</item>
+        <item>30Seconds</item>
+        <item>45Seconds</item>
+        <item>60Seconds</item>
+        <item>120Seconds</item>
+        <item>300Seconds</item>
+    </array>
+
+<!--
+    Alarm max repeating before giving up: 0,1,2,5,10, no-limit(Marked as 100)
+-->
+    <array name="ring_repeat_entries">
+        <item>Never</item>
+        <item>1 Time</item>
+        <item>2 Times</item>
+        <item>5 Times</item>
+        <item>10 Times</item>
+        <item>Forever</item>
+    </array>
+    <array name="ring_repeat_values">
+        <item>0T</item>
+        <item>1T</item>
+        <item>2T</item>
+        <item>5T</item>
+        <item>10T</item>
+        <item>100T</item>
     </array>
 </resources>
