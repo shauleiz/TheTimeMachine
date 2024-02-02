@@ -110,6 +110,11 @@ public class StopSnoozeActivity extends AppCompatActivity {
                Intent stopIntent = new Intent(context, AlarmService.class);
                stopIntent.putExtras(extras);
                AlarmReceiver.stopping(context, stopIntent );
+
+               // Leave this activity to main activity
+               Intent intent = new Intent(context, MainActivity.class);
+               startActivity(intent);
+
                // Kill this activity
                finish();
                break;
@@ -195,6 +200,12 @@ public class StopSnoozeActivity extends AppCompatActivity {
       DisplayScreenText();
    }
 
+   @Override
+   protected void onResume() {
+      super.onResume();
+      allowOnLockScreen();
+   }
+
    private void toggle() {
       if (mVisible) {
          hide();
@@ -248,8 +259,10 @@ public class StopSnoozeActivity extends AppCompatActivity {
    private void allowOnLockScreen() {
       setShowWhenLocked(true);
       setTurnScreenOn(true);
-      KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
-      keyguardManager.requestDismissKeyguard(this, null);
+      if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
+         KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+         keyguardManager.requestDismissKeyguard(this, null); // API 28 Only
+      }
    }
 
    private void DisplayScreenText()
