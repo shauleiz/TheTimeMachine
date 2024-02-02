@@ -72,7 +72,15 @@ public class AlarmService  extends Service {
 
       // Start audio and vibration
       mediaPlayer.start();
-      ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150, 10));
+
+
+      // TODO: Improve vibration timing , Add Vibration control (On/Off) and selection of patterns
+      // this effect creates the vibration of default amplitude for 1000ms(1 sec)
+      final VibrationEffect vibrationEffect1 = VibrationEffect.createOneShot(15000, VibrationEffect.DEFAULT_AMPLITUDE);
+
+      // it is safe to cancel other vibrations currently taking place
+      vibrator.cancel();
+      vibrator.vibrate(vibrationEffect1);
 
       // TODO: If recurring alarm, schedule next alarm here
 
@@ -114,7 +122,7 @@ public class AlarmService  extends Service {
 
       // Create Media player - Plays Alarm
       // TODO: Select MP3 to play
-      mediaPlayer = MediaPlayer.create(this, R.raw.rooster);
+      mediaPlayer = MediaPlayer.create(this, R.raw.alarm1000);
       mediaPlayer.setLooping(true);
 
       // Create vibrator
