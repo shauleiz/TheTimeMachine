@@ -255,6 +255,8 @@ public class AlarmListFragment extends Fragment {
         // Create the PopupWindow object and set its content view to the inflated layout
         PopupWindow popupWindow = new PopupWindow(popupView, RelativeLayout.LayoutParams.WRAP_CONTENT,
               RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        ((ViewGroup) fragmentView.getParent()).removeView(popupView);
         popupWindow.setFocusable(true);
 
         popupWindow.showAtLocation(fragmentView, Gravity.CENTER, 0, 0);
