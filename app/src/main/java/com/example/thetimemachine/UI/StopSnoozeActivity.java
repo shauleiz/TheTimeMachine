@@ -212,6 +212,14 @@ public class StopSnoozeActivity extends AppCompatActivity {
       allowOnLockScreen();
    }
 
+   @Override
+   protected void onDestroy() {
+      super.onDestroy();
+      setShowWhenLocked(false);
+      setTurnScreenOn(false);
+
+   }
+
    private void toggle() {
       if (mVisible) {
          hide();
