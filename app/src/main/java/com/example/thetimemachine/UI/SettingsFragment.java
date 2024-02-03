@@ -23,6 +23,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
    static String ringRepeat;
    static String ringDuration;
+
+   static String snoozeDuration;
    static String nHoursClock;
    static String firstDayWeek;
 
@@ -62,6 +64,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
       if (key.equals(context.getString(R.string.key_ring_repeat))) ringRepeat = newPref;
       else
       if (key.equals(context.getString(R.string.key_ring_duration))) ringDuration = newPref;
+      else
+      if (key.equals(context.getString(R.string.key_snooze_duration))) snoozeDuration = newPref;
       else
       if (key.equals(context.getString(R.string.key_h12_24)))  nHoursClock = newPref;
       else
@@ -145,11 +149,33 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
       return Integer.parseInt(intValue)*1000;
    }
 
+   // Preference: Duration of snooze
+   // Returns:
+   // Duration in milliseconds - Default is 60000 (1 Minute)
+   public static int pref_snooze_duration() {
+      Log.d("THE_TIME_MACHINE", "pref_snooze_duration() Called[1]: KEY= key_snooze_duration" + " Value="+ snoozeDuration);
+      if (snoozeDuration == null || snoozeDuration.length() == 0) {
+         Context context = TheTimeMachineApp.appContext;
+         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+         snoozeDuration = preferences.getString(context.getString(R.string.key_snooze_duration), "");
+         Log.d("THE_TIME_MACHINE", "pref_snooze_duration() Called[1.5]: KEY= key_snooze_duration" + " Value="+ snoozeDuration);
+
+         // String is of type 15000Seconds
+         if (snoozeDuration.length() < 4)
+            return 60000;
+      }
+      Log.d("THE_TIME_MACHINE", "pref_snooze_duration() Called[2]: KEY= key_snooze_duration" + " Value="+ snoozeDuration);
+
+      // Extract the numeral part and convert from seconds to milliseconds
+      String intValue = snoozeDuration.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue)*1000;
+   }
+
    // Preference: Number of times the alarm rings before it stops
    // Returns:
    // Number of times (Default is 5) - 100 means forever
    public static int pref_ring_repeat(){
-      Log.d("THE_TIME_MACHINE", "pref_ring_repeat() Called[1]: KEY= key_" + " Value="+ ringRepeat);
+      Log.d("THE_TIME_MACHINE", "pref_ring_repeat() Called[1]: KEY= key_ring_repeat" + " Value="+ ringRepeat);
       if (ringRepeat == null || ringRepeat.length() == 0) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);

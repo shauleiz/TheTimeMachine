@@ -6,6 +6,8 @@ import static com.example.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.example.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.example.thetimemachine.Data.AlarmItem.K_MINUTE;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_duration;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_repeat;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -88,15 +90,18 @@ public class AlarmService  extends Service {
       // Start auto-snooze timer
       // After a short delay, an alarm is created and alarm.Snooze is called
       handler = new Handler(Looper.getMainLooper());
-      int delayMillis = 20000; // TODO: Take this from setup (20 Sec)
+      int delayMillis = pref_ring_duration();
+      int nRepeat = pref_ring_repeat();
       autoSnooze = new Runnable() {
          @Override
          public void run() {
-            Log.i("THE_TIME_MACHINE", "autoSnooze(): "+ delayMillis/1000 + " Sec Delay");
+
             Bundle b = intent.getExtras();
             if (b==null) return;
             AlarmItem alarm = new AlarmItem(b);
-            if (alarm.getSnoozeCounter() > 6) //TODO: Take this from setup (6 times)
+
+            // Check if the alarm has exceeded the number of times it should go off
+            if (nRepeat<100 && alarm.getSnoozeCounter() > nRepeat)
             {
                alarm.setActive(false);
                Context context = getApplicationContext();
@@ -110,6 +115,7 @@ public class AlarmService  extends Service {
          }
       };
       // auto-snooze starts running after delayMillis milliseconds
+      Log.i("THE_TIME_MACHINE", "autoSnooze(): Ring for "+ delayMillis/1000 + " Seconds");
       handler.postDelayed(autoSnooze, delayMillis);
 
       Log.i("THE_TIME_MACHINE", "Service Started.3");

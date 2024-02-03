@@ -45,7 +45,6 @@ public class AlarmReceiver extends BroadcastReceiver {
       if (b==null) return;
       AlarmItem alarm = new AlarmItem(b);
 
-      // Snooze for 10 minutes
       alarm.Exec();
 
       /* DEBUG */

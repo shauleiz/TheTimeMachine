@@ -117,10 +117,10 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
                // Kill this activity
                finish();
-               break;
+               return true;
             case MotionEvent.ACTION_UP:
                view.performClick();
-               break;
+               return true;
             default:
                break;
          }
@@ -141,12 +141,18 @@ public class StopSnoozeActivity extends AppCompatActivity {
                Intent snoozeIntent = new Intent(context, AlarmService.class);
                snoozeIntent.putExtras(extras);
                AlarmReceiver.snoozing(context, snoozeIntent );
+
+               // Leave this activity to main activity
+               Intent intent = new Intent(context, MainActivity.class);
+               startActivity(intent);
+
                // Kill this activity
                finish();
-               break;
+               return true;
+
             case MotionEvent.ACTION_UP:
                view.performClick();
-               break;
+               return true;
             default:
                break;
          }

@@ -2,6 +2,7 @@ package com.example.thetimemachine.Data;
 
 import static com.example.thetimemachine.AlarmService.ALARM;
 import static com.example.thetimemachine.AlarmService.K_TYPE;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_snooze_duration;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -211,10 +212,17 @@ public class AlarmItem {
       calendar.set(Calendar.SECOND, 0);
       calendar.set(Calendar.MILLISECOND, 0);
 
+      // Calculate the snooze delay (if needed)
+      int snoozeDelay;
+      if (snoozeCounter >0)
+         snoozeDelay = pref_snooze_duration();
+      else
+         snoozeDelay = 0;
+
       // Everytime this alarm goes off - snoozeCounter is incremented
       // The alarm should then scheduled to snooze
       // The next time it will go off will be after the next delay
-      calendar.setTimeInMillis(calendar.getTimeInMillis() + (long) snoozeCounter *SNOOZE_DELAY);
+      calendar.setTimeInMillis(calendar.getTimeInMillis() + (long) snoozeCounter *snoozeDelay);
 
       // if alarm time has already passed, increment day by 1
       if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {

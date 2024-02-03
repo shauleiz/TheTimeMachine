@@ -55,5 +55,18 @@
         app:icon="@drawable/music_note_fill0_wght400_grad0_opsz24"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
+
+    <!--  Snooze for X Seconds -->
+    <DropDownPreference
+        android:layout_width="wrap_content"
+        android:entries="@array/snooze_duration_entries"
+        android:entryValues="@array/snooze_duration_values"
+        android:key="@string/key_snooze_duration"
+        android:title="@string/snooze_for"
+        app:defaultValue="@string/one_minute"
+        app:enabled="true"
+        app:icon="@drawable/music_note_fill0_wght400_grad0_opsz24"
+        app:singleLineTitle="false"
+        app:useSimpleSummaryProvider="true" />
 </PreferenceScreen>
 

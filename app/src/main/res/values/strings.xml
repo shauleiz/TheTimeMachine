@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">The Time Machine</string>
     <string name="alarm_add">Add Alarm</string>
     <string name="Text_Clock">Text Clock - 2nd Frame</string>
@@ -45,14 +45,17 @@
     <string name="key_ring_duration">KEY_RING_DURATION</string>
     <string name="key_first_day">KEY_FIRST_DAY</string>
     <string name="key_ring_repeat">KEY_RING_REPEAT</string>
-    <string name="ring_duration">Ring for</string>
+    <string name="key_snooze_duration">KEY_SNOOZE_DURATION</string>
+    <string name="ring_duration">Ring for:</string>
     <string name="ring_duration_def">30Seconds</string>
     <string name="clock_format_def">h24</string>
     <string name="first_day_week_def">Su</string>
     <string name="ring_repeat_def">2T</string>
     <string name="first_day_of_week">First Day of Week</string>
     <string name="times_to_keep_on_ringing">If not stopped, number of times to keep on ringing</string>
+    <string name="snooze_for">Snooze for:</string>
     <string name="times_5t">5T</string>
+    <string name="one_minute">60Seconds</string>
 
 
     <array name="clock_12_24_entries">
@@ -107,5 +110,27 @@
         <item>5T</item>
         <item>10T</item>
         <item>100T</item>
+    </array>
+
+<!--    Snooze Time: Duration between two alarms (for Snooze & Auto-Snooze)-->
+        <array name="snooze_duration_entries">
+        <item>30 Seconds</item>
+        <item>1 Minute</item>
+        <item>2 Minute</item>
+        <item>3 Minute</item>
+        <item>5 Minutes</item>
+        <item>6 Minutes</item>
+        <item>7 Minutes</item>
+        <item>10 Minutes</item>
+    </array>
+    <array name="snooze_duration_values">
+        <item>30Seconds</item>
+        <item>60Seconds</item>
+        <item>120Seconds</item>
+        <item>180Seconds</item>
+        <item>300Seconds</item>
+        <item>360Seconds</item>
+        <item>420Seconds</item>
+        <item>600Seconds</item>
     </array>
 </resources>
