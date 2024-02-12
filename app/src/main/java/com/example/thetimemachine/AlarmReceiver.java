@@ -22,12 +22,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.thetimemachine.Data.AlarmDao;
 import com.example.thetimemachine.Data.AlarmItem;
+import com.example.thetimemachine.Data.AlarmRepository;
 import com.example.thetimemachine.Data.AlarmRoomDatabase;
 
 import java.util.Calendar;
@@ -96,6 +98,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
    }
 
+   private void booting(Context context){
+      Log.d("THE_TIME_MACHINE", "booting()");
+      Intent intentService = new Intent(context, BootService.class);
+      context.startService(intentService);
+   }
+
    /*
    * Receive broadcast messages destined to this Application
    * The Application does not have to run for this method to be activated
@@ -112,10 +120,11 @@ public class AlarmReceiver extends BroadcastReceiver {
       Log.i("THE_TIME_MACHINE", String.format("Type = %s", type));
 
       // TODO: Machine boot finished - must reschedule all active Alarms
-      if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+      if (Intent.ACTION_BOOT_COMPLETED.equals(action) ||
+            "android.intent.action.LOCKED_BOOT_COMPLETED".equals(action)) {
          String toastText = "Alarm Reboot";
          Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
-         //startRescheduleAlarmsService(context);
+         booting(context);
          Log.i("THE_TIME_MACHINE", "Alarm Reboot");
 
          // Stop the alarm by killing the Alarm Service
