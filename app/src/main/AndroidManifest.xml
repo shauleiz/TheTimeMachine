@@ -22,6 +22,7 @@
         android:roundIcon="@mipmap/ic_launcher_01_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TheTimeMachine"
+        android:directBootAware="true"
         tools:targetApi="31">
         <activity
             android:name=".UI.StopSnoozeActivity"
@@ -55,8 +56,7 @@
         <service
             android:name=".BootService"
             android:exported="false"
-            android:directBootAware="true"
-            android:foregroundServiceType="systemExempted"/>
+            android:directBootAware="true"/>
         <service
             android:name=".AlarmService"
             android:exported="false"
