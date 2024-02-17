@@ -14,7 +14,7 @@
     <item
         android:id="@+id/settings"
         android:icon="@drawable/settings_fill0_wght400_grad0_opsz24"
-        android:iconTint="@color/faded_violet"
+        android:iconTint="?attr/colorPrimaryContainer"
         android:title="settings"
         android:visible="true"
         TheTimeMachine:showAsAction="always" />

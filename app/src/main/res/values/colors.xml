@@ -7,10 +7,12 @@
     <color name="light_blue_A200">#FF40C4FF</color>
     <color name="light_blue_A400">#FF00B0FF</color>
     <color name="black_overlay">#66000000</color>
-    <color name="medium_gray">#460F0F0F</color>
+    <color name="medium_gray">#FF808080</color>
+    <color name="light_gray">#ffbFbFbF</color>
     <color name="checked_toggle_button">#509C53</color>
     <color name="unchecked_toggle_button">#4A040404</color>
     <color name="faded_violet">#E5C7EA</color>
     <color name="faded_violet_1">#40E5C7EA</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="dark_gray">#ff0F0F0F</color>
 </resources>

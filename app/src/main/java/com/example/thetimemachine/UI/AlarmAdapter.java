@@ -15,6 +15,7 @@ import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_w
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -28,10 +29,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RawRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
+import com.google.android.material.color.MaterialColors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,20 +160,15 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         }
 
         // Active
+        int AlarmTimeCheckedTextColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, Color.BLACK);
+        int AlarmTimeUncheckedTextColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimaryInverse, Color.BLACK);
         boolean isActive = alarmItem.isActive();
         holder.AlarmActive.setChecked(isActive);
         if (isActive) {
-            holder.AlarmTime.setTextColor(getColor(context,
-                  com.google.android.material.R.color.design_default_color_primary_variant));
-            holder.AlarmLabel.setTextColor(getColor(context, R.color.black));
-            holder.WeekDays.setTextColor(getColor(context, R.color.black));
-            holder.amPm24h.setTextColor(getColor(context, R.color.black));
+            holder.AlarmTime.setTextColor(AlarmTimeCheckedTextColor);
         }
         else {
-            holder.AlarmTime.setTextColor(getColor(context, R.color.faded_violet));
-            holder.AlarmLabel.setTextColor(getColor(context, R.color.black_overlay));
-            holder.WeekDays.setTextColor(getColor(context, R.color.black_overlay));
-            holder.amPm24h.setTextColor(getColor(context, R.color.black_overlay));
+            holder.AlarmTime.setTextColor(AlarmTimeUncheckedTextColor);
         }
     }
 
@@ -222,32 +220,36 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                 gen_array = mo_array;
             }
 
-            word.setSpan(new ForegroundColorSpan(getColor(context, R.color.medium_gray)),
+            // Color of days that are selected / not selected
+            int notSelectedTextColor = MaterialColors.getColor(context, R.attr.faded_text, Color.BLACK);
+            int selectedTextColor = MaterialColors.getColor(context, R.attr.primary_text, Color.BLACK);
+
+                  word.setSpan(new ForegroundColorSpan(notSelectedTextColor),
                   0, word.length(),
-                  Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                  Spannable.SPAN_INCLUSIVE_INCLUSIVE);/* */
 
             int index=0;
             int weekdays = alarmItem.getWeekDays();
             if ((weekdays&SUNDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[0], gen_array[1],
+                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[0], gen_array[1],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&MONDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[2], gen_array[3],
+                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[2], gen_array[3],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&TUESDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[4], gen_array[5],
+                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[4], gen_array[5],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&WEDNESDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[6], gen_array[7],
+                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[6], gen_array[7],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&THURSDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[8], gen_array[9],
+                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[8], gen_array[9],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&FRIDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[10], gen_array[11],
+                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[10], gen_array[11],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if ((weekdays&SATURDAY) >0)
-                word.setSpan(new ForegroundColorSpan(Color.BLACK),gen_array[12], gen_array[13],
+                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[12], gen_array[13],
                       Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         }

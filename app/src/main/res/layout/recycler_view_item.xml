@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:whatever="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -27,7 +29,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="6dp"
         android:textAlignment="viewStart"
-        android:textColor="@android:color/black"
+        android:textColor="?android:attr/textColorPrimaryNoDisable"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@id/AlarmTime"
         app:layout_constraintStart_toEndOf="@+id/AlarmActive"
@@ -41,6 +43,7 @@
         android:paddingStart="6dp"
         android:paddingEnd="6dp"
         android:textAlignment="textEnd"
+        android:textColor="?attr/faded_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@tools:sample/lorem[4:10]" />
@@ -70,6 +73,7 @@
         android:gravity="bottom|center_horizontal"
         android:paddingBottom="8dp"
         android:text="@string/format_24h"
+        android:textColor="?android:attr/textColorPrimaryNoDisable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

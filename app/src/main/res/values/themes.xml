@@ -2,10 +2,14 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.TheTimeMachine" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
     </style>
 
-    <style name="Theme.TheTimeMachine" parent="Base.Theme.TheTimeMachine" />
+    <style name="Theme.TheTimeMachine" parent="Base.Theme.TheTimeMachine" >
+        <item name="faded_text">@color/light_gray</item>
+        <item name="blue_text">@color/light_blue_900</item>
+        <item name="primary_text">@color/black</item>
+    </style>
 
     <style name="ThemeOverlay.TheTimeMachine.FullscreenContainer" parent="">
         <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
