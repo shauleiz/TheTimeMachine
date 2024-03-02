@@ -17,6 +17,7 @@ import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
+import android.widget.TextView;
 
 import com.example.thetimemachine.AlarmReceiver;
 import com.example.thetimemachine.AlarmService;
@@ -309,9 +310,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
       }
 
       if (minute!=-1 && hour!=-1)
-         time = String.format(Locale.US,"%d:%02d %s", hour, minute, ampm);
+         time = String.format(Locale.US,"%d:%02d%s", hour, minute, ampm);
 
-      String displayText = String.format("%s\n\n%s%s", appName, label, time);
-      binding.fullscreenContent.setText(displayText);
+      String displayText = String.format(Locale.US,"%s\n%s%s", appName, label, time);
+      ((TextView)mContentView).setText(displayText);
    }
 }

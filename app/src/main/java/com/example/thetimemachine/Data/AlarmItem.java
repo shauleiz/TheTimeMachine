@@ -371,7 +371,7 @@ public class AlarmItem {
                intent,
                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
-         // TODO: Notification does not show - not rally needed
+         // TODO: Notification does not show - not really needed
          // What to do when user clicks on the Alarm Clock notification
          Intent targetIntent = new Intent(context , MainActivity.class);
          PendingIntent targetPending = PendingIntent.getActivity(

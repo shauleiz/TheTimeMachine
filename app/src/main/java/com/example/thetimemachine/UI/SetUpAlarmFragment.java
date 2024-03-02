@@ -34,6 +34,7 @@ import android.widget.ToggleButton;
 import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Calendar;
 
@@ -41,7 +42,7 @@ public class SetUpAlarmFragment extends Fragment {
 
     private TimePicker timePicker;
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    private Switch repeating;
+    private SwitchMaterial repeating;
 
     private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
           weToggleButton, thToggleButton,frToggleButton, saToggleButton;

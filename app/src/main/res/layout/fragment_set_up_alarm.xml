@@ -81,22 +81,24 @@
             android:paddingEnd="8dp"
             android:text="@string/repeating_alarm"
             android:textAlignment="viewStart"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorPrimaryContainer"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Switch
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/RepeateSwitch"
-            android:layout_width="75dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:switchMinWidth="55dp"
             app:layout_constraintBottom_toBottomOf="@+id/RepeatText"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/RepeatText"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -221,7 +223,6 @@
                 android:id="@+id/SaturdayButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/toggle_button_bg_color"
                 android:textAllCaps="false"
