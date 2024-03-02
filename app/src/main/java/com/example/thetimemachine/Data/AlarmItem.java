@@ -4,6 +4,7 @@ import static com.example.thetimemachine.AlarmService.ALARM;
 import static com.example.thetimemachine.AlarmService.K_TYPE;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_snooze_duration;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -20,6 +21,7 @@ import androidx.room.PrimaryKey;
 import com.example.thetimemachine.AlarmReceiver;
 import com.example.thetimemachine.Application.TheTimeMachineApp;
 import com.example.thetimemachine.R;
+import com.example.thetimemachine.UI.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -308,8 +310,9 @@ public class AlarmItem {
 
       // Create an intent for the Alarm Receiver then
       Intent intent = new Intent(context, AlarmReceiver.class);
-      int id = (int)createTime;
 
+      // Extract id from alarm's creation time
+      int id = (int)createTime;
 
       ////////// Schedule or Cancel?
       if (isActive()) {
@@ -352,6 +355,7 @@ public class AlarmItem {
             }
          }
 
+
          //  Increment Snooze Counter
          // To the intent, add EXTRAS that hold the entire alarm data in a bundle
          // Also, mark the bundle as ALARM
@@ -367,11 +371,20 @@ public class AlarmItem {
                intent,
                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
+         // TODO: Notification does not show - not rally needed
+         // What to do when user clicks on the Alarm Clock notification
+         Intent targetIntent = new Intent(context , MainActivity.class);
+         PendingIntent targetPending = PendingIntent.getActivity(
+               context, 0,
+               targetIntent,
+               PendingIntent.FLAG_IMMUTABLE);
+
+
          // Set Alarm Clock
-         alarmManager.setExactAndAllowWhileIdle(
-               AlarmManager.RTC_WAKEUP,
-               alarmTime,
-               alarmIntent);
+         AlarmManager.AlarmClockInfo ac= new AlarmManager.AlarmClockInfo(alarmTime, targetPending);
+         alarmManager.setAlarmClock(ac, alarmIntent);
+
+
 
 
 
