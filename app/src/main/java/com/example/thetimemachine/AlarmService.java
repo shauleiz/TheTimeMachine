@@ -219,6 +219,7 @@ public class AlarmService  extends Service {
 
       // Prepare intent for a Stop/Snooze fullscreen activity
       Intent fullScreenIntent = new Intent(this, StopSnoozeActivity.class);
+      fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       fullScreenIntent.putExtra("APP_NAME", "The Time Machine");
       fullScreenIntent.putExtras(inBundle);
       PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
@@ -238,7 +239,7 @@ public class AlarmService  extends Service {
       return  new NotificationCompat.Builder(this, CHANNEL_ID)
             /* Title */                .setContentTitle(alarmTitle)
             /* Content */              .setContentText(alarmText)
-            /* Status bar Icon */      .setSmallIcon(R.drawable.baseline_alarm_add_24)
+            /* Status bar Icon */      .setSmallIcon(R.drawable.baseline_alarm_24)
             /* Always on top */        .setPriority(NotificationCompat.PRIORITY_MAX)
             /* Set category */         .setCategory(NotificationCompat.CATEGORY_ALARM)
             /* Full screen activity */ .setFullScreenIntent(fullScreenPendingIntent, true)

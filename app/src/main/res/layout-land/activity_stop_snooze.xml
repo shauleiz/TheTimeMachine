@@ -36,11 +36,11 @@
         android:id="@+id/fullscreen_content_controls"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="16dp"
 
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/light_blue_600"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -53,7 +53,6 @@
             android:id="@+id/stop_button"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_marginTop="64dp"
             android:autoSizeMinTextSize="14sp"
             android:backgroundTint="@android:color/holo_red_light"
             android:gravity="center_horizontal|center_vertical"
@@ -61,11 +60,10 @@
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/snooze_button" />
+            app:layout_constraintStart_toEndOf="@+id/snooze_button"
+            app:layout_constraintTop_toTopOf="@+id/snooze_button" />
 
         <Button
             android:id="@+id/snooze_button"
@@ -76,9 +74,10 @@
             android:text="@string/snooze_button"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="30sp"
-            app:layout_constraintBottom_toTopOf="@+id/stop_button"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/stop_button"
             app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

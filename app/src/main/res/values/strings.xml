@@ -37,7 +37,7 @@
     <string name="su_mo_tu_we_th_fr_sa">Su Mo Tu We Th Fr Sa</string>
     <string name="mo_tu_we_th_fr_sa_su">Mo Tu We Th Fr Sa Su</string>
     <string name="clock_format">Clock Format</string>
-    <string name="format_24h">24h</string>
+    <string name="format_24h"></string>
     <string name="format_am">AM</string>
     <string name="format_pm">PM</string>
     <string name="description_up_arrow_back">Back</string>

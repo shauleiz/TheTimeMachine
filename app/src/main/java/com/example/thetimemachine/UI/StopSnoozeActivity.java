@@ -6,6 +6,10 @@ import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -27,15 +31,8 @@ import com.example.thetimemachine.databinding.ActivityStopSnoozeBinding;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 public class StopSnoozeActivity extends AppCompatActivity {
-   /**
-    * Whether or not the system UI should be auto-hidden after
-    * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-    */
+
    private static final boolean AUTO_HIDE = false;
    private Bundle extras = null;
 
@@ -177,13 +174,22 @@ public class StopSnoozeActivity extends AppCompatActivity {
       // Allow this activity on a locked screen
       allowOnLockScreen();
 
+      // Hide Navigation Bar
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+         getWindow().getInsetsController().hide(WindowInsets.Type.navigationBars());
+      }
+      else
+         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+
+
+
       // Set up the user interaction to manually show or hide the system UI.
-      mContentView.setOnClickListener(new View.OnClickListener() {
+      /*mContentView.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
             toggle();
          }
-      });
+      });*/
 
       // Upon interacting with UI controls, delay any scheduled hide()
       // operations to prevent the jarring behavior of controls going away
@@ -198,7 +204,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       super.onPostCreate(savedInstanceState);
 
       // Make controls, status bar and navigation visible
-      show();
+      //show();
 
       // Get the data passed from calling service
       extras = getIntent().getExtras();
@@ -247,7 +253,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       // Show the system bar
       if (Build.VERSION.SDK_INT >= 30) {
          Objects.requireNonNull(mContentView.getWindowInsetsController()).show(
-               WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+               WindowInsets.Type.statusBars()/* | WindowInsets.Type.navigationBars()*/);
       } else {
          mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
