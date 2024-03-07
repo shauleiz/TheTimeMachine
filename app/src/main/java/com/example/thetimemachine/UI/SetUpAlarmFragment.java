@@ -12,6 +12,15 @@ import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TimePicker;
+import android.widget.ToggleButton;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,16 +29,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.Switch;
-import android.widget.TimePicker;
-import android.widget.ToggleButton;
 
 import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.Data.AlarmItem;
@@ -103,7 +102,7 @@ public class SetUpAlarmFragment extends Fragment {
         if (parent == null) return;
 
         // Toolbar: Title + Menu + leave only "settings" icon
-        Toolbar AppToolbar = (Toolbar) ((AppCompatActivity)getActivity()).findViewById(R.id.app_toolbar);
+        Toolbar AppToolbar = getActivity().findViewById(R.id.app_toolbar);
         AppToolbar.setTitle(R.string.alarmsetup_title);
         ((AppCompatActivity)getActivity()).setSupportActionBar(AppToolbar);
         parent.setDeleteAction(false);
@@ -246,35 +245,35 @@ public class SetUpAlarmFragment extends Fragment {
         boolean isSaturday = (weekDays&SATURDAY) >0;
 
         if (pref_first_day_of_week().equals("Su")) {
-            suToggleButton = ((ToggleButton) view.findViewById(R.id.SundayButton));
+            suToggleButton = view.findViewById(R.id.SundayButton);
             suToggleButton.setChecked(isSunday);
-            moToggleButton = ((ToggleButton) view.findViewById(R.id.MondayButton));
+            moToggleButton = view.findViewById(R.id.MondayButton);
             moToggleButton.setChecked(isMonday);
-            tuToggleButton = ((ToggleButton) view.findViewById(R.id.TuesdayButton));
+            tuToggleButton = view.findViewById(R.id.TuesdayButton);
             tuToggleButton.setChecked(isTuesday);
-            weToggleButton = ((ToggleButton) view.findViewById(R.id.WednesdayButton));
+            weToggleButton = view.findViewById(R.id.WednesdayButton);
             weToggleButton.setChecked(isWednesday);
-            thToggleButton = ((ToggleButton) view.findViewById(R.id.ThursdayButton));
+            thToggleButton = view.findViewById(R.id.ThursdayButton);
             thToggleButton.setChecked(isThursday);
-            frToggleButton = ((ToggleButton) view.findViewById(R.id.FridayButton));
+            frToggleButton = view.findViewById(R.id.FridayButton);
             frToggleButton.setChecked(isFriday);
-            saToggleButton = ((ToggleButton) view.findViewById(R.id.SaturdayButton));
+            saToggleButton = view.findViewById(R.id.SaturdayButton);
             saToggleButton.setChecked(isSaturday);
         }
         else {
-            suToggleButton = ((ToggleButton) view.findViewById(R.id.SundayButton_2));
+            suToggleButton = view.findViewById(R.id.SundayButton_2);
             suToggleButton.setChecked(isSunday);
-            moToggleButton = ((ToggleButton) view.findViewById(R.id.MondayButton_2));
+            moToggleButton = view.findViewById(R.id.MondayButton_2);
             moToggleButton.setChecked(isMonday);
-            tuToggleButton = ((ToggleButton) view.findViewById(R.id.TuesdayButton_2));
+            tuToggleButton = view.findViewById(R.id.TuesdayButton_2);
             tuToggleButton.setChecked(isTuesday);
-            weToggleButton = ((ToggleButton) view.findViewById(R.id.WednesdayButton_2));
+            weToggleButton = view.findViewById(R.id.WednesdayButton_2);
             weToggleButton.setChecked(isWednesday);
-            thToggleButton = ((ToggleButton) view.findViewById(R.id.ThursdayButton_2));
+            thToggleButton = view.findViewById(R.id.ThursdayButton_2);
             thToggleButton.setChecked(isThursday);
-            frToggleButton = ((ToggleButton) view.findViewById(R.id.FridayButton_2));
+            frToggleButton = view.findViewById(R.id.FridayButton_2);
             frToggleButton.setChecked(isFriday);
-            saToggleButton = ((ToggleButton) view.findViewById(R.id.SaturdayButton_2));
+            saToggleButton = view.findViewById(R.id.SaturdayButton_2);
             saToggleButton.setChecked(isSaturday);
         }
     }
@@ -382,10 +381,7 @@ public class SetUpAlarmFragment extends Fragment {
     // Initialize the time picker to default setup
     private void InitTimePicker(TimePicker timePicker, boolean newAlarm) {
 
-        if (pref_is24HourClock())
-            timePicker.setIs24HourView(true);
-        else
-            timePicker.setIs24HourView(false);
+       timePicker.setIs24HourView(pref_is24HourClock());
 
         if (newAlarm)
         {

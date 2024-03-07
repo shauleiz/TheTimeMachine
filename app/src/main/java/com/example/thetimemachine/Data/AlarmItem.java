@@ -4,7 +4,6 @@ import static com.example.thetimemachine.AlarmService.ALARM;
 import static com.example.thetimemachine.AlarmService.K_TYPE;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_snooze_duration;
 
-import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -250,20 +249,20 @@ public class AlarmItem {
    * Actions:
    * Schedule - alarmManager.setExactAndAllowWhileIdle to the correct time marking the alarm
    * with (int)createTime. This will override former alarm set with the same createTime.
-   *
+   * <p>
    * Cancel - alarmManager.cancel marked with (int)createTime.
    * This will remove former alarm set with the same createTime.
-   *
+   *<p>
    * Snooze - Change alarm time to current time + delay and increase snooze counter.
    * When snooze counter is over a certain number, alarm becomes inactive and thus canceled.
-   *
+   *<p>
    * Calculating the time of the alarm (Original, not snooze):
    *  Case: One Off:
    *  1. Calculate alarm time based on current time, then replace Hour+Minute and
    *     set Seconds+millis to zero.
    *  2. If alarm time is smaller than current time then set the alarm for tomorrow:
    *     add 24*60*60*1000 Milliseconds to alarm time
-   *
+   *<p>
    *  Case Recurring:
    *  + Verify that the weekdays holds a valid pattern (128> weekdays >0)
    *  + Calculate alarm time based on current time, then replace Hour+Minute and
@@ -274,23 +273,23 @@ public class AlarmItem {
    *  + From weekdays, get the first day that is equal or bigger than the weekday of the alarm time.
    *    Note that the day might be from the beginning of the next week
    *  + Calculate the diff between the days ( 0 =< diff <7), multiply by dayInMillis
-   *
+   *<p>
    *  Snooze & Auto-Snooze
    *  By snooze I refer to the case where the user activates SNOOZE while
    *  the Alarm Service is running. This triggers scheduling a new alarm at a later time.
    *  The Hour+Minute value of the Alarm is not changed.
    *  The number of times the user can Snooze is unlimited
-   *
+   *<p>
    *  By Auto-Snooze I refer to the case where the Alarm Service activates SNOOZE when it reaches
    *  timeout. This triggers scheduling a new alarm at a later time.
    *  The Hour+Minute value of the Alarm is not changed.
    *  The number of times that the item can auto-snooze is limited.
    *  When the limit has reached the alarm in deactivated and canceled.
-   *
+   *<p>
    *  The Snooze Counter member variable is set to 0 when an alarm is created.
    *  The counter is incremented every time alarmManager.setExactAndAllowWhileIdle is called.
    *  The counter is reset to 0 when the user activates an alarm.
-   *
+   *<p>
    *  In both Snooze & Auto-Snooze the alarm time is calculated as an offset from the
    *  original alarm time. The offset is delay*snoozecounter.
    *  In the case of auto-snooze, when the snooze counter reaches the limit -

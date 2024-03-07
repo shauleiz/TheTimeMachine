@@ -27,7 +27,6 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.UI.StopSnoozeActivity;
 
@@ -210,7 +209,7 @@ public class AlarmService  extends Service {
 
       String alarmText;
       assert label != null;
-      if (label.length()>0)
+      if (!label.isEmpty())
          alarmText = String.format(Locale.ENGLISH,"%s - %d:%02d%s", label, h, m,ampm);
       else
          alarmText = String.format(Locale.ENGLISH,"%d:%02d%s", h, m,ampm);

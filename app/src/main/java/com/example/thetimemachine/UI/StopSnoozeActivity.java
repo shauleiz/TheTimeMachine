@@ -3,14 +3,6 @@ package com.example.thetimemachine.UI;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.annotation.SuppressLint;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
-
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +14,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thetimemachine.AlarmReceiver;
 import com.example.thetimemachine.AlarmService;
@@ -83,12 +78,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       }
    };
    private boolean mVisible;
-   private final Runnable mHideRunnable = new Runnable() {
-      @Override
-      public void run() {
-         hide();
-      }
-   };
+   private final Runnable mHideRunnable = () -> hide();
    /**
     * Touch listener to use for in-layout UI controls to delay hiding the
     * system UI. This is to prevent the jarring behavior of controls going away
@@ -176,7 +166,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
       // Hide Navigation Bar
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-         getWindow().getInsetsController().hide(WindowInsets.Type.navigationBars());
+         Objects.requireNonNull(getWindow().getInsetsController()).hide(WindowInsets.Type.navigationBars());
       }
       else
          getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
@@ -290,7 +280,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
    {
       String appName = extras.getString("APP_NAME","");
       String label = extras.getString("LABEL","");
-      if (label.length() > 0)
+      if (!label.isEmpty())
          label+=" - ";
 
       String time = "";

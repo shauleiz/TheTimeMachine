@@ -1,21 +1,18 @@
 package com.example.thetimemachine.UI;
 
 import static android.widget.TextView.BufferType.SPANNABLE;
-
 import static androidx.core.content.ContextCompat.getColor;
-
-import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
+import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
 import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
+import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
+import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
+import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
 import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
 import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
-import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
-import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
-import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -29,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RawRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thetimemachine.Data.AlarmItem;
@@ -228,7 +224,6 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                   0, word.length(),
                   Spannable.SPAN_INCLUSIVE_INCLUSIVE);/* */
 
-            int index=0;
             int weekdays = alarmItem.getWeekDays();
             if ((weekdays&SUNDAY) >0)
                 word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[0], gen_array[1],
@@ -281,12 +276,12 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
             itemView = _itemView;
 
-            BellView = (ImageView) itemView.findViewById(R.id.BellView);
-            AlarmLabel = (TextView) itemView.findViewById(R.id.AlarmLabel);
-            WeekDays = (TextView) itemView.findViewById(R.id.WeekDays);
-            AlarmTime = (TextView) itemView.findViewById(R.id.AlarmTime);
-            AlarmActive = (CheckBox) itemView.findViewById(R.id.AlarmActive);
-            amPm24h = (TextView) itemView.findViewById(R.id.am_pm_24h);
+            BellView = itemView.findViewById(R.id.BellView);
+            AlarmLabel = itemView.findViewById(R.id.AlarmLabel);
+            WeekDays = itemView.findViewById(R.id.WeekDays);
+            AlarmTime = itemView.findViewById(R.id.AlarmTime);
+            AlarmActive = itemView.findViewById(R.id.AlarmActive);
+            amPm24h = itemView.findViewById(R.id.am_pm_24h);
 
 
 

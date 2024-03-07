@@ -37,7 +37,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
       // Display the Up arrow
       parent = (MainActivity)getActivity();
-      ActionBar actionBar = parent.getSupportActionBar();
+
+      ActionBar actionBar = Objects.requireNonNull(parent).getSupportActionBar();
+      assert actionBar != null;
       actionBar.setHomeAsUpIndicator(R.drawable.arrow_back_fill0_wght400_grad0_opsz24);
       actionBar.setHomeActionContentDescription(R.string.description_up_arrow_back);
       actionBar.setDisplayHomeAsUpEnabled(true);
@@ -113,7 +115,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    // False: 12h Clock (Am/Pm)
    public static boolean pref_is24HourClock(){
       Log.d("THE_TIME_MACHINE", "pref_is24HourClock() Called[1]: KEY= key_h12_24" + " Value="+ nHoursClock);
-      if (nHoursClock == null || nHoursClock.length() == 0) {
+      if (nHoursClock == null || nHoursClock.isEmpty()) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          nHoursClock = preferences.getString(context.getString(R.string.key_h12_24), "");
@@ -121,10 +123,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
       }
       Log.d("THE_TIME_MACHINE", "pref_is24HourClock() Called[2]: KEY= key_h12_24" + " Value="+ nHoursClock);
 
-      if (nHoursClock.equals("h24"))
-         return (true);
-      else
-         return (false);
+      return nHoursClock.equals("h24");
    }
 
    // Preference: Duration of ringing until it stops
@@ -133,7 +132,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    public static int pref_ring_duration(){
       Log.d("THE_TIME_MACHINE", "pref_ring_duration() Called[1]: KEY= key_ring_duration" + " Value="+ ringDuration);
 
-      if (ringDuration == null || ringDuration.length() == 0) {
+      if (ringDuration == null || ringDuration.isEmpty()) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          ringDuration = preferences.getString(context.getString(R.string.key_ring_duration), "");
@@ -154,7 +153,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    // Duration in milliseconds - Default is 60000 (1 Minute)
    public static int pref_snooze_duration() {
       Log.d("THE_TIME_MACHINE", "pref_snooze_duration() Called[1]: KEY= key_snooze_duration" + " Value="+ snoozeDuration);
-      if (snoozeDuration == null || snoozeDuration.length() == 0) {
+      if (snoozeDuration == null || snoozeDuration.isEmpty()) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          snoozeDuration = preferences.getString(context.getString(R.string.key_snooze_duration), "");
@@ -176,7 +175,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    // Number of times (Default is 5) - 100 means forever
    public static int pref_ring_repeat(){
       Log.d("THE_TIME_MACHINE", "pref_ring_repeat() Called[1]: KEY= key_ring_repeat" + " Value="+ ringRepeat);
-      if (ringRepeat == null || ringRepeat.length() == 0) {
+      if (ringRepeat == null || ringRepeat.isEmpty()) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          ringRepeat = preferences.getString(context.getString(R.string.key_ring_repeat), "");
@@ -199,7 +198,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    // Su or Mo (Default is Su)
    public static String pref_first_day_of_week(){
       Log.d("THE_TIME_MACHINE", "pref_first_day_of_week() Called[1]: KEY= key_first_day_week" + " Value="+ firstDayWeek);
-      if (firstDayWeek == null || firstDayWeek.length() == 0) {
+      if (firstDayWeek == null || firstDayWeek.isEmpty()) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          firstDayWeek = preferences.getString(context.getString(R.string.key_first_day), "");

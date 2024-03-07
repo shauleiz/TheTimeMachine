@@ -5,9 +5,7 @@ import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-
 import androidx.lifecycle.MutableLiveData;
-
 
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.Data.AlarmRepository;
@@ -31,8 +29,8 @@ public class AlarmViewModel extends AndroidViewModel {
    private List<AlarmItem> AlarmList;
    private AlarmRepository repo;
 
-   private MutableLiveData<ArrayList<Integer>> LiveSelectedItems;
-   private ArrayList<Integer> selectedItems;
+   private final MutableLiveData<ArrayList<Integer>> LiveSelectedItems;
+   private final ArrayList<Integer> selectedItems;
 
  // Observer<List<AlarmRepository.RawAlarmItem>> ObsFrevr;
 

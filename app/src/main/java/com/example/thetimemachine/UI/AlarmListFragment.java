@@ -4,10 +4,19 @@ import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -24,17 +33,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -42,7 +40,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class AlarmListFragment extends Fragment {
@@ -70,7 +67,7 @@ public class AlarmListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Create Adapter for the Recycler View
@@ -102,7 +99,7 @@ public class AlarmListFragment extends Fragment {
         fragmentView = view;
 
         // Toolbar: Title + Menu
-        Toolbar AppToolbar = (Toolbar) ((AppCompatActivity)getActivity()).findViewById(R.id.app_toolbar);
+        Toolbar AppToolbar = requireActivity().findViewById(R.id.app_toolbar);
         AppToolbar.setTitle(R.string.alarmlist_title);
         ((AppCompatActivity)getActivity()).setSupportActionBar(AppToolbar);
         parent.UpdateOptionMenu();
@@ -197,7 +194,7 @@ public class AlarmListFragment extends Fragment {
         }
         if (permission == PERMISSION_DENIED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Denied");
-            boolean shouldShow = ActivityCompat.shouldShowRequestPermissionRationale((Activity) parent, POST_NOTIFICATIONS);
+            boolean shouldShow = ActivityCompat.shouldShowRequestPermissionRationale(parent, POST_NOTIFICATIONS);
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Should Show Request Permission - " + shouldShow);
             if (shouldShow) {
                 // Need to show a pop-up window that explains why it is important to grant permissions
@@ -378,7 +375,7 @@ public class AlarmListFragment extends Fragment {
     public void DeleteSelectedAlarms(){
 
         ArrayList<Integer> tempList;
-        tempList = new ArrayList<Integer>(selectedItems);
+        tempList = new ArrayList<>(selectedItems);
 
         for (int i=0 ; i<tempList.size();i++) {
             AlarmItem item = parent.alarmViewModel.getAlarmItemById(tempList.get(i));
@@ -388,7 +385,6 @@ public class AlarmListFragment extends Fragment {
     }
 
     public void EditSelectedAlarm(){
-        int position;
 
         // Edit only is exactly one item selected
         if (selectedItems.size() !=1 ) return;

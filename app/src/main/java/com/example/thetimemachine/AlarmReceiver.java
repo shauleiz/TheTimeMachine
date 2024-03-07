@@ -3,33 +3,29 @@ package com.example.thetimemachine;
 import static com.example.thetimemachine.AlarmService.K_TYPE;
 import static com.example.thetimemachine.AlarmService.SNOOZE;
 import static com.example.thetimemachine.AlarmService.STOP;
+import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
 import static com.example.thetimemachine.Data.AlarmItem.K_CSNOOZE;
 import static com.example.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.example.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.example.thetimemachine.Data.AlarmItem.K_MINUTE;
 import static com.example.thetimemachine.Data.AlarmItem.K_ONEOFF;
 import static com.example.thetimemachine.Data.AlarmItem.K_WEEKDAYS;
-
-import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
 import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
+import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
+import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
+import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
 import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
 import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
-import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
-import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
-import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.thetimemachine.Data.AlarmDao;
 import com.example.thetimemachine.Data.AlarmItem;
-import com.example.thetimemachine.Data.AlarmRepository;
 import com.example.thetimemachine.Data.AlarmRoomDatabase;
 
 import java.util.Calendar;

@@ -3,12 +3,10 @@ package com.example.thetimemachine;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.thetimemachine.Data.AlarmItem;
@@ -25,10 +23,7 @@ public class BootService extends LifecycleService{
       Log.d("THE_TIME_MACHINE", "onStartCommand(): StartId="+ startId);
       //android.os.Debug.waitForDebugger();
       AlarmRepository repo = new AlarmRepository(getApplication());
-      if (repo == null) {
-         Log.d("THE_TIME_MACHINE", "onStartCommand(): repo is null");
-         return START_STICKY;
-      }
+
 
       // Create repository observer.Will be twice called on BOOT
       // On machine boot (LOCKED_BOOT_COMPLETED) and after the user enters the
@@ -39,10 +34,12 @@ public class BootService extends LifecycleService{
             if (alarms == null)
                Log.d("THE_TIME_MACHINE", "onStartCommand(): alarms  is null");
             else Log.d("THE_TIME_MACHINE", "onStartCommand(): alarms size=" + alarms.size());
-            for ( AlarmItem item : alarms) {
-               if (item.isActive()) {
-                  item.Exec();
-                  Log.d("THE_TIME_MACHINE", "Schedule Alarm: " + item.getLabel());
+            if (alarms != null) {
+               for ( AlarmItem item : alarms) {
+                  if (item.isActive()) {
+                     item.Exec();
+                     Log.d("THE_TIME_MACHINE", "Schedule Alarm: " + item.getLabel());
+                  }
                }
             }
             stopSelf();
