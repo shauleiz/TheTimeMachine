@@ -11,7 +11,10 @@ import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_w
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -311,12 +315,24 @@ public class SetUpAlarmFragment extends Fragment {
         boolean newAlarm = initParams.getBoolean("INIT_NEWALARM", true);
         AlarmItem item;
 
+        // Prevent creation of a duplicate alarm item
+        if (alarmViewModel.isDuplicate(h,m,c)){
+            String txt = "Duplicate: " + h+":"+m;
+            Log.d("THE_TIME_MACHINE", txt);
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext())
+                  .setMessage(R.string.duplicate_alarm_message)
+                  .setTitle(R.string.duplicate_alarm_title);
+            dialog.show();
+            return;
+        }
+
         // If modified alarm then use its old Create Time (id)
         // If new alarm then create it using a new Create Time (id)
         if (!newAlarm)
             item = new AlarmItem(h, m,t, active, c);
         else
-            item = new AlarmItem(h, m,t, active);
+            item = new AlarmItem(h, m, t, active);
+
 
         // Weekdays
         int weekdays = getDaysValues();

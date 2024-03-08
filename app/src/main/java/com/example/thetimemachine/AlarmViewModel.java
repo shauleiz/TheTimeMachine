@@ -108,6 +108,18 @@ public class AlarmViewModel extends AndroidViewModel {
       LiveSelectedItems.setValue(selectedItems);
    }
 
+   public boolean isDuplicate(int hour, int minute, long createTime) {
+      // Get List
+      AlarmList = LiveAlarmList.getValue();
+      if (AlarmList==null) return false;
+
+      for (int i=0; i<AlarmList.size();i++){
+         AlarmItem item = AlarmList.get(i);
+         if ((item.getHour()) == hour && (item.getMinute()==minute) && (item.getCreateTime()!=createTime))
+            return true;
+      }
+      return false;
+   }
    public int getNofSelectedItems(){
       return selectedItems.size();
    }
@@ -150,6 +162,8 @@ public class AlarmViewModel extends AndroidViewModel {
          }
          // TODO: Modify alarm
       }
+
+
 
       // Reset Setup Values: Time is the current time. Label is empty
       public void ResetValues(){

@@ -56,6 +56,8 @@
     <string name="snooze_for">Snooze for:</string>
     <string name="times_5t">5T</string>
     <string name="one_minute">60Seconds</string>
+    <string name="duplicate_alarm_title">"Duplicate Alarm"</string>
+    <string name="duplicate_alarm_message">"Only one alarm can be scheduled to a specified time"</string>
 
 
     <array name="clock_12_24_entries">
