@@ -117,7 +117,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 
       // TODO: Machine boot finished - must reschedule all active Alarms
       if (Intent.ACTION_BOOT_COMPLETED.equals(action) ||
-            "android.intent.action.LOCKED_BOOT_COMPLETED".equals(action)) {
+            "android.intent.action.LOCKED_BOOT_COMPLETED".equals(action) ||
+            Intent.ACTION_PACKAGE_REPLACED.equals(action) ||
+            Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
          String toastText = "Alarm Reboot";
          Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
          booting(context);
