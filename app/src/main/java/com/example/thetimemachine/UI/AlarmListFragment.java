@@ -5,6 +5,7 @@ import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +34,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.thetimemachine.AlarmReceiver;
+import com.example.thetimemachine.AlarmService;
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -288,6 +291,15 @@ public class AlarmListFragment extends Fragment {
 
         // Schedule/Cancel Alarm
         item.Exec();
+
+        // Stop ringing if unchecked
+        if (!active){
+            Context context = requireContext();
+            Intent stopIntent = new Intent(context, AlarmService.class);
+            stopIntent.putExtras(b);
+            AlarmReceiver.stopping(context, stopIntent );
+        }
+
 
     }
     /*

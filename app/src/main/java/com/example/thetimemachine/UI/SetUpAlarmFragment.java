@@ -37,6 +37,7 @@ import androidx.lifecycle.Observer;
 import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Calendar;
@@ -319,10 +320,11 @@ public class SetUpAlarmFragment extends Fragment {
         if (alarmViewModel.isDuplicate(h,m,c)){
             String txt = "Duplicate: " + h+":"+m;
             Log.d("THE_TIME_MACHINE", txt);
-            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext())
+
+            new MaterialAlertDialogBuilder(getContext())
                   .setMessage(R.string.duplicate_alarm_message)
-                  .setTitle(R.string.duplicate_alarm_title);
-            dialog.show();
+                  .setTitle(R.string.duplicate_alarm_title)
+                  .show();
             return;
         }
 
