@@ -199,7 +199,7 @@ public class AlarmViewModel extends AndroidViewModel {
          oneOff.setValue((AlarmList.get(position).isOneOff()));
       }
 
-      public void GetValuesFromList(AlarmItem item){
+      public void GetValuesFromList(AlarmItem item, boolean edit){
          // Sanity check
          if (item == null)
             return;
@@ -210,12 +210,20 @@ public class AlarmViewModel extends AndroidViewModel {
          active.setValue(item.isActive());
 
          AlarmItem ai = item;
-         long c = ai.getCreateTime();
+         long c;
+         if (edit)
+            c = ai.getCreateTime();
+         else
+            c=0;
          createTime.setValue(c);
 
          weekDays.setValue(item.getWeekDays());
          oneOff.setValue((item.isOneOff()));
       }
+      public void GetValuesFromList(AlarmItem item){
+         GetValuesFromList( item, true);
+      }
+
 
       /* Getter Methods */
       public MutableLiveData<Integer> getHour() {

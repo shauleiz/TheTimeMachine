@@ -113,6 +113,7 @@ public class SetUpAlarmFragment extends Fragment {
         parent.setDeleteAction(false);
         parent.setSettingsAction(true);
         parent.setEditAction(false);
+        parent.setDuplicateAction(false);
         parent.invalidateOptionsMenu();
 
         // Get instance of SetUpAlarmValues sub-class

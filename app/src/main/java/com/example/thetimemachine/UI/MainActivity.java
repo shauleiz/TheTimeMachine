@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     static final String action_delete = "ACTION_DELETE";
     static final String action_edit = "ACTION_EDIT";
     static final String action_settings = "ACTION_SETTINGS";
+    static final String action_duplicate = "ACTION_DUPLICATE";
 
 
     // ViewModel object of class MyViewModel
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     public AlarmViewModel alarmViewModel;
     private boolean deleteAction = false;
     private boolean editAction = false;
+    private boolean duplicateAction = false;
     private boolean settingsAction = true;
 
     public MainActivity() {
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putBoolean(action_delete, deleteAction);
         outState.putBoolean(action_edit, editAction);
         outState.putBoolean(action_settings, settingsAction);
+        outState.putBoolean(action_duplicate, duplicateAction);
 
         //Toast.makeText(getApplicationContext(), "MainActivity::onSaveInstanceState Called", Toast.LENGTH_SHORT).show();
     }
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             deleteAction = savedInstanceState.getBoolean(action_delete, false);
             editAction = savedInstanceState.getBoolean(action_edit, false);
             settingsAction =  savedInstanceState.getBoolean(action_settings,false);
+            duplicateAction = savedInstanceState.getBoolean(action_duplicate,false);
             //Toast.makeText(getApplicationContext(), "MainActivity::onCreate Called - deleteAction=" + deleteAction, Toast.LENGTH_SHORT).show();
         }
 
@@ -111,12 +115,15 @@ public class MainActivity extends AppCompatActivity {
         if (len == 0){
             setDeleteAction(false);
             setEditAction( false);
+            setDuplicateAction(false);
         } else if (len == 1) {
             setDeleteAction(true);
             setEditAction( true);
+            setDuplicateAction(true);
         } else {
             setDeleteAction(true);
             setEditAction( false);
+            setDuplicateAction(false);
         }
         invalidateOptionsMenu();
     }
@@ -124,12 +131,14 @@ public class MainActivity extends AppCompatActivity {
     public void setDeleteAction(boolean d){deleteAction = d;}
 
     public void setEditAction(boolean editAction) {this.editAction = editAction;}
+    public void setDuplicateAction(boolean editAction) {this.duplicateAction = editAction;}
 
     public void setSettingsAction(boolean settingsAction){this.settingsAction = settingsAction;}
 
     public boolean isDeleteAction() {return deleteAction;}
 
     public boolean isEditAction() {return editAction;}
+    public boolean isDuplicateAction() {return duplicateAction;}
 
     public boolean isSettingsAction() {return settingsAction;}
 
@@ -139,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
         deleteItem.setVisible(deleteAction);
         MenuItem editItem = menu.findItem(R.id.edit);
         editItem.setVisible(editAction);
+        MenuItem duplicateItem = menu.findItem(R.id.duplicate);
+        duplicateItem.setVisible(duplicateAction);
         MenuItem settingsItem =  menu.findItem(R.id.settings);
         settingsItem.setVisible(settingsAction);
 
@@ -167,6 +178,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.edit) {
                 ((AlarmListFragment) frag).EditSelectedAlarm();
+                return true;
+            } else if (itemId == R.id.duplicate) {
+                ((AlarmListFragment) frag).DuplicateSelectedAlarm();
                 return true;
             } else if (itemId == R.id.settings) {
                 Settings();
@@ -197,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
         setDeleteAction(false);
         setEditAction( false);
         setSettingsAction(false);
+        setDuplicateAction(false);
 
         getSupportFragmentManager()
               .beginTransaction()

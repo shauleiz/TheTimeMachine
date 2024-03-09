@@ -159,7 +159,7 @@ public class AlarmListFragment extends Fragment {
                     String label = alarmList.get(position).getLabel();
                     String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
                     Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
-                    AlarmItemEdit(alarmList.get(position));
+                    AlarmItemEdit(alarmList.get(position),true);
                 }
             }
         });
@@ -302,26 +302,37 @@ public class AlarmListFragment extends Fragment {
 
 
     }
+
     /*
      *   Called when user clicks on Alarm item in recycler or toolbar Edit action
      *   Copy values from the selected item to be used by the setup fragment
      *   Create a bundle with data to be passed to the setup fragment
      *   Replace this fragment by setup fragment
+     *
+     *   If parameter edit if false - this means that this item should be duplicated
+     *   rather than edited
      */
-    void AlarmItemEdit(AlarmItem item){
+    void AlarmItemEdit(AlarmItem item, boolean edit){
 
         if (item == null) return;
 
         // Copy values from the selected item to be used by the setup fragment
-        parent.alarmViewModel.setUpAlarmValues.GetValuesFromList(item);
+        parent.alarmViewModel.setUpAlarmValues.GetValuesFromList(item, edit);
 
         // Passing parameters to setup fragment
         Bundle b = new Bundle();
-        b.putBoolean("INIT_NEWALARM",false);
+
         b.putInt("INIT_POSITION", 0);
         List<AlarmItem> alarmItems = parent.alarmViewModel.getAlarmList().getValue();
         if (alarmItems==null)return;
-        b.putLong("INIT_CREATE_TIME", item.getCreateTime());
+        if (edit) {
+            b.putLong("INIT_CREATE_TIME", item.getCreateTime());
+            b.putBoolean("INIT_NEWALARM",false);
+        }
+        else {
+            b.putLong("INIT_CREATE_TIME", 0);
+            b.putBoolean("INIT_NEWALARM",true);
+        }
 
         // Replace current fragment with the Setup Alarm fragment
         parent = (MainActivity) getActivity();
@@ -332,6 +343,8 @@ public class AlarmListFragment extends Fragment {
                   addToBackStack("tag2").
                   commit();
     }
+
+
 
     /* When an item is Long-Clicked:
       - The item is selected/deselected (Visually)
@@ -400,7 +413,12 @@ public class AlarmListFragment extends Fragment {
 
         // Edit only is exactly one item selected
         if (selectedItems.size() !=1 ) return;
-        AlarmItemEdit( parent.alarmViewModel.getAlarmItemById(selectedItems.get(0)));
+        AlarmItemEdit( parent.alarmViewModel.getAlarmItemById(selectedItems.get(0)), true);
     }
 
+    public void DuplicateSelectedAlarm(){
+        // Duplicate only is exactly one item selected
+        if (selectedItems.size() !=1 ) return;
+        AlarmItemEdit( parent.alarmViewModel.getAlarmItemById(selectedItems.get(0)), false);
+    }
 }

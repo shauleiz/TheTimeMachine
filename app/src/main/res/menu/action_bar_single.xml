@@ -2,13 +2,22 @@
 <menu xmlns:TheTimeMachine="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Duplicate -->
+    <item
+        android:id="@+id/duplicate"
+        android:icon="@drawable/octicon__duplicate_24"
+        android:iconTint="?attr/colorPrimaryContainer"
+        android:title="Duplicate"
+        android:visible="true"
+        TheTimeMachine:showAsAction="always" />
+
     <!-- Edit -->
     <item
         android:id="@+id/edit"
         android:icon="@drawable/edit_fill0_wght400_grad0_opsz24"
         android:title="edit"
         android:visible="true"
-        TheTimeMachine:showAsAction="ifRoom"/>
+        TheTimeMachine:showAsAction="always"/>
 
     <!-- Delete -->
     <item
@@ -16,7 +25,9 @@
         android:icon="@drawable/delete_fill0_wght400_grad0_opsz24"
         android:title="@string/delete_alarm"
         android:visible="true"
-        TheTimeMachine:showAsAction="ifRoom"/>
+        TheTimeMachine:showAsAction="always"/>
+
+
 
     <!-- Settings -->
     <item

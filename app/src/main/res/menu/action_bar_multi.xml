@@ -10,6 +10,15 @@
         android:visible="true"
         TheTimeMachine:showAsAction="ifRoom"/>
 
+    <!-- Duplicate -->
+    <item
+        android:id="@+id/duplicate"
+        android:icon="@drawable/octicon__duplicate_24"
+        android:iconTint="?attr/colorPrimaryContainer"
+        android:title="Duplicate"
+        android:visible="true"
+        TheTimeMachine:showAsAction="ifRoom" />
+
     <!-- Settings -->
     <item
         android:id="@+id/settings"
