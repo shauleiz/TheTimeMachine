@@ -11,8 +11,6 @@ import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_w
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,11 +20,11 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -41,6 +39,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 public class SetUpAlarmFragment extends Fragment {
 
@@ -81,7 +80,6 @@ public class SetUpAlarmFragment extends Fragment {
         super.onStop();
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +112,15 @@ public class SetUpAlarmFragment extends Fragment {
         parent.setSettingsAction(true);
         parent.setEditAction(false);
         parent.setDuplicateAction(false);
+        parent.setCheckmarkAction(true);
         parent.invalidateOptionsMenu();
+
+        ActionBar actionBar = Objects.requireNonNull(parent).getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setHomeAsUpIndicator(R.drawable.arrow_back_fill0_wght400_grad0_opsz24);
+        actionBar.setHomeActionContentDescription(R.string.description_up_arrow_back);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
 
         // Get instance of SetUpAlarmValues sub-class
         setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
@@ -122,18 +128,23 @@ public class SetUpAlarmFragment extends Fragment {
 
         // Get the handle to the Add Alarm button
         // Then define what to do when clicked
-        Button ok_Button = view.findViewById(R.id.OK);
+        Button ok_Button = view.findViewById(R.id.OK_Btn);
         ok_Button.setOnClickListener(v -> OkClicked());
 
         // Get the handle to the Delete Alarm button
         // Then define what to do when clicked
-        Button delete_Button = view.findViewById(R.id.Delete);
+        Button delete_Button = view.findViewById(R.id.Delete_Btn);
 
         boolean isNewAlarm = initParams.getBoolean("INIT_NEWALARM", false);
-        if (!isNewAlarm)
+
+
+        // No buttons needed
+        delete_Button.setVisibility(View.GONE);
+        ok_Button.setVisibility(View.GONE);
+      /*  if (!isNewAlarm)
             delete_Button.setOnClickListener(v -> DeleteClicked());
         else
-            delete_Button.setVisibility(View.GONE);
+            delete_Button.setVisibility(View.GONE);*/
 
 
         // Get Time Picker and modify it
@@ -302,7 +313,7 @@ public class SetUpAlarmFragment extends Fragment {
 
     // OK Button clicked
     //@RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    private void OkClicked(){
+    public void OkClicked(){
         final MainActivity parent = (MainActivity) getActivity();
 
         /// This part should be replaced by:

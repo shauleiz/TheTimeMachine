@@ -7,7 +7,7 @@
         android:id="@+id/duplicate"
         android:icon="@drawable/octicon__duplicate_24"
         android:iconTint="?attr/colorPrimaryContainer"
-        android:title="Duplicate"
+        android:title="@string/duplicate"
         android:visible="true"
         TheTimeMachine:showAsAction="always" />
 
@@ -15,7 +15,7 @@
     <item
         android:id="@+id/edit"
         android:icon="@drawable/edit_fill0_wght400_grad0_opsz24"
-        android:title="edit"
+        android:title="@string/edit"
         android:visible="true"
         TheTimeMachine:showAsAction="always"/>
 
@@ -27,14 +27,20 @@
         android:visible="true"
         TheTimeMachine:showAsAction="always"/>
 
-
+    <!-- Checkmark to indicate "OK" -->
+    <item
+        android:id="@+id/checkmark"
+        android:icon="@drawable/ic__baseline_check"
+        android:title="@string/check"
+        android:visible="true"
+        TheTimeMachine:showAsAction="always"/>
 
     <!-- Settings -->
     <item
         android:id="@+id/settings"
         android:icon="@drawable/settings_fill0_wght400_grad0_opsz24"
         android:iconTint="?attr/colorPrimaryContainer"
-        android:title="settings"
+        android:title="@string/settings"
         android:visible="true"
         TheTimeMachine:showAsAction="always" />
 
