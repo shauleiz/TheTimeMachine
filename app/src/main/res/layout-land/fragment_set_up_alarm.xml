@@ -4,59 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/SetUpAlarmFrag"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_centerHorizontal="true"
     android:minHeight="50dp"
     tools:context=".UI.SetUpAlarmFragment">
 
     <TimePicker
         android:id="@+id/time_picker"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="280dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="420dp" />
 
     <EditText
         android:id="@+id/alarm_label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:autofillHints="@string/label_hint"
         android:hint="@string/label_hint"
         android:inputType="textCapSentences|textAutoCorrect"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_picker" />
+        app:layout_constraintStart_toEndOf="@+id/time_picker"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/OK"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:text="@android:string/ok"
         app:icon="@android:drawable/ic_input_add"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/repeating_layout" />
-
-    <Button
-        android:id="@+id/Delete"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/delete_alarm"
-        app:icon="@android:drawable/ic_delete"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/OK" />
+        app:layout_constraintEnd_toEndOf="@id/repeating_layout" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/repeating_layout"
@@ -64,8 +49,7 @@
         android:layout_height="wrap_content"
         android:outlineProvider="paddedBounds"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/time_picker"
         app:layout_constraintTop_toBottomOf="@+id/alarm_label">
 
         <TextView
@@ -73,7 +57,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:autoSizeMinTextSize="24sp"
             android:background="@drawable/rounded_rect"
@@ -379,5 +362,16 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/Delete"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/delete_alarm"
+        app:icon="@android:drawable/ic_delete"
+        app:layout_constraintBottom_toBottomOf="@+id/OK"
+        app:layout_constraintStart_toStartOf="@+id/repeating_layout"
+        app:layout_constraintTop_toTopOf="@+id/OK" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
