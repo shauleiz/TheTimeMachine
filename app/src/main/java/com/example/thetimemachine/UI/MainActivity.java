@@ -1,6 +1,7 @@
 package com.example.thetimemachine.UI;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -166,6 +167,12 @@ public class MainActivity extends AppCompatActivity {
             Log.d("THE_TIME_MACHINE", "SetUpAlarmFragment");
             if (itemId == R.id.settings) {
                 Settings();
+                return true;
+            }
+            else if (itemId == android.R.id.home) {
+                Intent homeIntent = new Intent(this, MainActivity.class);
+                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(homeIntent);
                 return true;
             }
         }

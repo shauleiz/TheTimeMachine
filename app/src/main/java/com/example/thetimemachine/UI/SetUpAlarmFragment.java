@@ -27,6 +27,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -41,6 +42,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 public class SetUpAlarmFragment extends Fragment {
 
@@ -81,7 +83,6 @@ public class SetUpAlarmFragment extends Fragment {
         super.onStop();
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +116,13 @@ public class SetUpAlarmFragment extends Fragment {
         parent.setEditAction(false);
         parent.setDuplicateAction(false);
         parent.invalidateOptionsMenu();
+
+        ActionBar actionBar = Objects.requireNonNull(parent).getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setHomeAsUpIndicator(R.drawable.arrow_back_fill0_wght400_grad0_opsz24);
+        actionBar.setHomeActionContentDescription(R.string.description_up_arrow_back);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
 
         // Get instance of SetUpAlarmValues sub-class
         setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
