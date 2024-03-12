@@ -159,7 +159,8 @@ public class AlarmListFragment extends Fragment {
                     String label = alarmList.get(position).getLabel();
                     String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
                     Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
-                    AlarmItemEdit(alarmList.get(position),true);
+                    if (!parent.alarmViewModel.clearSelection(alarmList.get(position).getCreateTime()))
+                        AlarmItemEdit(alarmList.get(position),true);
                 }
             }
         });
