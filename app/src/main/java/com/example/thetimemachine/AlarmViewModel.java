@@ -108,6 +108,16 @@ public class AlarmViewModel extends AndroidViewModel {
       LiveSelectedItems.setValue(selectedItems);
    }
 
+   public boolean clearSelection(long id){
+      int index = selectedItems.indexOf((int)id);
+      if (index >=0) {
+         selectedItems.remove(index);
+         LiveSelectedItems.setValue(selectedItems);
+         return true;
+      }
+      return false;
+   }
+
    public boolean isDuplicate(int hour, int minute, long createTime) {
       // Get List
       AlarmList = LiveAlarmList.getValue();
