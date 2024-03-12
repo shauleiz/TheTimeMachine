@@ -34,7 +34,7 @@
         app:layout_constraintTop_toBottomOf="@+id/time_picker" />
 
     <Button
-        android:id="@+id/OK"
+        android:id="@+id/OK_Btn"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_marginStart="24dp"
@@ -47,7 +47,7 @@
         app:layout_constraintTop_toBottomOf="@id/repeating_layout" />
 
     <Button
-        android:id="@+id/Delete"
+        android:id="@+id/Delete_Btn"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_marginEnd="24dp"
@@ -56,7 +56,7 @@
         app:icon="@android:drawable/ic_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/OK" />
+        app:layout_constraintTop_toTopOf="@+id/OK_Btn" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/repeating_layout"

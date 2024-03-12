@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     static final String action_edit = "ACTION_EDIT";
     static final String action_settings = "ACTION_SETTINGS";
     static final String action_duplicate = "ACTION_DUPLICATE";
+    static final String action_checkmark = "ACTION_CHECKMARK";
 
 
     // ViewModel object of class MyViewModel
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean deleteAction = false;
     private boolean editAction = false;
     private boolean duplicateAction = false;
+    private boolean checkmarkAction = false;
     private boolean settingsAction = true;
 
     public MainActivity() {
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putBoolean(action_edit, editAction);
         outState.putBoolean(action_settings, settingsAction);
         outState.putBoolean(action_duplicate, duplicateAction);
+        outState.putBoolean(action_checkmark, checkmarkAction);
 
         //Toast.makeText(getApplicationContext(), "MainActivity::onSaveInstanceState Called", Toast.LENGTH_SHORT).show();
     }
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
             editAction = savedInstanceState.getBoolean(action_edit, false);
             settingsAction =  savedInstanceState.getBoolean(action_settings,false);
             duplicateAction = savedInstanceState.getBoolean(action_duplicate,false);
+            checkmarkAction = savedInstanceState.getBoolean(action_checkmark,false);
             //Toast.makeText(getApplicationContext(), "MainActivity::onCreate Called - deleteAction=" + deleteAction, Toast.LENGTH_SHORT).show();
         }
 
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
     public void UpdateOptionMenu(){
         // Modify toolbar according to number of selected items
         setSettingsAction(true);
+        setCheckmarkAction(false);
         int len = alarmViewModel.getNofSelectedItems();
         if (len == 0){
             setDeleteAction(false);
@@ -132,7 +137,8 @@ public class MainActivity extends AppCompatActivity {
     public void setDeleteAction(boolean d){deleteAction = d;}
 
     public void setEditAction(boolean editAction) {this.editAction = editAction;}
-    public void setDuplicateAction(boolean editAction) {this.duplicateAction = editAction;}
+    public void setDuplicateAction(boolean duplicateAction) {this.duplicateAction = duplicateAction;}
+    public void setCheckmarkAction(boolean checkmarkAction) {this.checkmarkAction = checkmarkAction;}
 
     public void setSettingsAction(boolean settingsAction){this.settingsAction = settingsAction;}
 
@@ -153,7 +159,8 @@ public class MainActivity extends AppCompatActivity {
         duplicateItem.setVisible(duplicateAction);
         MenuItem settingsItem =  menu.findItem(R.id.settings);
         settingsItem.setVisible(settingsAction);
-
+        MenuItem checkmarkItem = menu.findItem(R.id.checkmark);
+        checkmarkItem.setVisible(checkmarkAction);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -168,11 +175,13 @@ public class MainActivity extends AppCompatActivity {
             if (itemId == R.id.settings) {
                 Settings();
                 return true;
-            }
-            else if (itemId == android.R.id.home) {
+            } else if (itemId == android.R.id.home) {
                 Intent homeIntent = new Intent(this, MainActivity.class);
                 homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(homeIntent);
+                return true;
+            } else if (itemId == R.id.checkmark) {
+                ((SetUpAlarmFragment) frag).OkClicked();
                 return true;
             }
         }
@@ -219,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
         setEditAction( false);
         setSettingsAction(false);
         setDuplicateAction(false);
+        setCheckmarkAction(false);
 
         getSupportFragmentManager()
               .beginTransaction()

@@ -33,7 +33,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/OK"
+        android:id="@+id/OK_Btn"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginEnd="8dp"
@@ -364,14 +364,14 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
-        android:id="@+id/Delete"
+        android:id="@+id/Delete_Btn"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginStart="8dp"
         android:text="@string/delete_alarm"
         app:icon="@android:drawable/ic_delete"
-        app:layout_constraintBottom_toBottomOf="@+id/OK"
+        app:layout_constraintBottom_toBottomOf="@+id/OK_Btn"
         app:layout_constraintStart_toStartOf="@+id/repeating_layout"
-        app:layout_constraintTop_toTopOf="@+id/OK" />
+        app:layout_constraintTop_toTopOf="@+id/OK_Btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
