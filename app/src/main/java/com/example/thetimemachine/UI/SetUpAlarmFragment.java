@@ -77,6 +77,11 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues.setWeekDays(getDaysValues());
         setUpAlarmValues.setOneOff(!repeating.isChecked());
 
+        // Remove the Up arrow
+        ActionBar actionBar = parent.getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(false);
+
         super.onStop();
     }
 
