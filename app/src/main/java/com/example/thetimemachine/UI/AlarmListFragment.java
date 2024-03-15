@@ -43,6 +43,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 
 public class AlarmListFragment extends Fragment {
@@ -104,7 +105,7 @@ public class AlarmListFragment extends Fragment {
         // Toolbar: Title + Menu
         Toolbar AppToolbar = requireActivity().findViewById(R.id.app_toolbar);
         AppToolbar.setTitle(R.string.alarmlist_title);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(AppToolbar);
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(AppToolbar);
         parent.UpdateOptionMenu();
 
         // Add Alarm button (FAB)

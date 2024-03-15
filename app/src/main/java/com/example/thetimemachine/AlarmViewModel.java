@@ -146,6 +146,9 @@ public class AlarmViewModel extends AndroidViewModel {
       MutableLiveData<Integer> weekDays;
       MutableLiveData<Boolean> oneOff;
 
+      MutableLiveData<Integer> dayOfMonth, month, year;
+      MutableLiveData<Boolean>  futureDate;
+
       // Default constructor
       public SetUpAlarmValues() {
          this.hour = new MutableLiveData<>();
@@ -155,6 +158,10 @@ public class AlarmViewModel extends AndroidViewModel {
          this.createTime = new MutableLiveData<>();
          this.weekDays = new MutableLiveData<>();
          this.oneOff = new MutableLiveData<>();
+         this.dayOfMonth = new MutableLiveData<>();
+         this.month= new MutableLiveData<>();
+         this.year= new MutableLiveData<>();
+         this.futureDate = new MutableLiveData<>();
          ResetValues();
       }
 
@@ -187,6 +194,11 @@ public class AlarmViewModel extends AndroidViewModel {
          weekDays.setValue(0);
          oneOff.setValue(true);
 
+         dayOfMonth.setValue(0);
+         month.setValue(0);
+         year.setValue(0);
+         futureDate.setValue(false);
+
          //weekDays.setValue(ONEOFF);
       }
 
@@ -207,6 +219,11 @@ public class AlarmViewModel extends AndroidViewModel {
 
          weekDays.setValue(AlarmList.get(position).getWeekDays());
          oneOff.setValue((AlarmList.get(position).isOneOff()));
+
+         dayOfMonth.setValue(AlarmList.get(position).getDayOfMonth());
+         month.setValue(AlarmList.get(position).getMonth());
+         year.setValue(AlarmList.get(position).getYear());
+         futureDate.setValue(AlarmList.get(position).isFutureDate());
       }
 
       public void GetValuesFromList(AlarmItem item, boolean edit){
@@ -261,6 +278,13 @@ public class AlarmViewModel extends AndroidViewModel {
 
       public void setOneOff(boolean oneOff){this.oneOff.setValue(oneOff);}
 
+      public void setDayOfMonth(MutableLiveData<Integer> dayOfMonth) {this.dayOfMonth = dayOfMonth;}
+
+      public void setMonth(MutableLiveData<Integer> month) {this.month = month;}
+
+      public void setYear(MutableLiveData<Integer> year) {this.year = year;}
+
+      public void setFutureDate(MutableLiveData<Boolean> futureDate) {this.futureDate = futureDate;}
 
       public MutableLiveData<String> getLabel() {
          return label;
@@ -268,6 +292,14 @@ public class AlarmViewModel extends AndroidViewModel {
 
       public MutableLiveData<Boolean> isActive() {return active;}
       public MutableLiveData<Boolean> isOneOff() {return oneOff;}
+
+      public MutableLiveData<Integer> getDayOfMonth() {return dayOfMonth;}
+
+      public MutableLiveData<Integer> getMonth() {return month;}
+
+      public MutableLiveData<Integer> getYear() {return year;}
+
+      public MutableLiveData<Boolean> isFutureDate() {return futureDate;}
 
       public void setLabel(String label) {
          String t = this.label.getValue();

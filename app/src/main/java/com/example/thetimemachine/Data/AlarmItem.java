@@ -37,6 +37,10 @@ public class AlarmItem {
    private boolean active, oneOff;
    private int weekDays;
 
+   private int dayOfMonth, month, year;
+   private boolean futureDate;
+
+
    public static final String K_HOUR = "HOUR";
    public static final String K_MINUTE = "MINUTE";
    public static final String K_LABEL = "LABEL";
@@ -46,6 +50,11 @@ public class AlarmItem {
 
    public static final String K_WEEKDAYS = "WEEKDAYS";
    public static final String K_ONEOFF = "ONE_OFF";
+   public static final String K_DAYOFMONTH = "DAY_OF_MONTH";
+   public static final String K_MONTH = "MONTH";
+   public static final String K_YEAR = "YEAR";
+   public static final String K_FDATE = "FUTURE_DATE";
+
 
    // Masks for days of the week.
    // If ONEOFF is set, the rest of the fields are to be ignored
@@ -75,6 +84,10 @@ public class AlarmItem {
       oneOff = inBundle.getBoolean(K_ONEOFF, true);
       weekDays = inBundle.getInt(K_WEEKDAYS, 0);
       snoozeCounter = inBundle.getInt(K_CSNOOZE,0);
+      dayOfMonth = inBundle.getInt(K_DAYOFMONTH,0);
+      month = inBundle.getInt(K_MONTH,0);
+      year = inBundle.getInt(K_YEAR,0);
+      futureDate = inBundle.getBoolean(K_FDATE, false);
 
       // Sanity check
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
@@ -105,6 +118,12 @@ public class AlarmItem {
       weekDays = 0;
       oneOff = true;
 
+      // Default: No future date
+      dayOfMonth = 0;
+      month = 0;
+      year = 0;
+      futureDate = false;
+
       // Add time of creation in milliseconds
       Calendar calendar = Calendar.getInstance();
       createTime = calendar.getTimeInMillis();
@@ -130,6 +149,13 @@ public class AlarmItem {
       // Default: One-Off (All weekdays disabled)
       weekDays = 0;
       oneOff = true;
+
+      // Default: No future date
+      dayOfMonth = 0;
+      month = 0;
+      year = 0;
+      futureDate = false;
+
    }
 
    public AlarmItem() {}
@@ -158,6 +184,14 @@ public class AlarmItem {
       return snoozeCounter;
    }
 
+   public int getDayOfMonth() {return dayOfMonth;}
+
+   public int getMonth() {return month;}
+
+   public int getYear() {return year;}
+   public boolean isFutureDate() {return futureDate;}
+
+
 
 
    public Bundle getBundle(){
@@ -171,6 +205,10 @@ public class AlarmItem {
       b.putBoolean(K_ONEOFF, oneOff);
       b.putInt(K_WEEKDAYS,weekDays);
       b.putInt(K_CSNOOZE,snoozeCounter);
+      b.putInt(K_DAYOFMONTH,dayOfMonth);
+      b.putInt(K_MONTH,month);
+      b.putInt(K_YEAR,year);
+      b.putBoolean(K_FDATE,futureDate);
       return b;
    }
 
@@ -204,6 +242,14 @@ public class AlarmItem {
    // Copy the days mask without affecting the one-off bit
    public void setWeekDays(int mask){ weekDays = mask;}
 
+   public void setDayOfMonth(int dayOfMonth) {this.dayOfMonth = dayOfMonth;}
+
+   public void setMonth(int month) {this.month = month;}
+
+   public void setYear(int year) {this.year = year;}
+
+   public void setFutureDate(boolean futureDate) {this.futureDate = futureDate;}
+
    private long alarmTimeInMillis() {
       // Get the time for the next Alarm, in Milliseconds
       Calendar calendar = Calendar.getInstance();
@@ -212,6 +258,13 @@ public class AlarmItem {
       calendar.set(Calendar.MINUTE, minute);
       calendar.set(Calendar.SECOND, 0);
       calendar.set(Calendar.MILLISECOND, 0);
+
+      // If this a future date by given calander date
+      if (isFutureDate() && getDayOfMonth()>0 && getMonth()>0 && getYear()>0){
+         calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+         calendar.set(Calendar.MONTH,month);
+         calendar.set(Calendar.YEAR,year);
+      }
 
       // Calculate the snooze delay (if needed)
       int snoozeDelay;
@@ -327,7 +380,7 @@ public class AlarmItem {
          }
 
 
-         // Time of coming alarm (One-Off, possibly snoozing)
+         // Time of coming alarm (One-Off, possibly snoozing, possibly a future date)
          alarmTime = alarmTimeInMillis();
 
          // If recurring alarm - find the nearest one

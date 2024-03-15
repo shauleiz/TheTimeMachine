@@ -333,17 +333,17 @@ public class SetUpAlarmFragment extends Fragment {
         boolean newAlarm = initParams.getBoolean("INIT_NEWALARM", true);
         AlarmItem item;
 
-        // Prevent creation of a duplicate alarm item
+        /*// Prevent creation of a duplicate alarm item
         if (alarmViewModel.isDuplicate(h,m,c)){
             String txt = "Duplicate: " + h+":"+m;
             Log.d("THE_TIME_MACHINE", txt);
 
-            new MaterialAlertDialogBuilder(getContext())
+            new MaterialAlertDialogBuilder(requireContext())
                   .setMessage(R.string.duplicate_alarm_message)
                   .setTitle(R.string.duplicate_alarm_title)
                   .show();
             return;
-        }
+        }*/
 
         // If modified alarm then use its old Create Time (id)
         // If new alarm then create it using a new Create Time (id)
