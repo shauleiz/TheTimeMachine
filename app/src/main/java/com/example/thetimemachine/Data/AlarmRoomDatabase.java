@@ -18,11 +18,20 @@ public abstract class AlarmRoomDatabase extends RoomDatabase {
    public static final ExecutorService databaseWriteExecutor =
          Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
+   static void removeDB(Context context){
+      Context context1 = context.createDeviceProtectedStorageContext();
+      boolean deleted;
+      // Brute Force removal of Room database
+      String[] list =  context1.databaseList ();
+      for (int i=0; i<list.length; i++)
+         deleted = context1.deleteDatabase(list[i]);
+   }
    public static AlarmRoomDatabase getDatabase(final Context context) {
       if (alarmRoomDatabase == null) {
          synchronized (AlarmRoomDatabase.class) {
             if (alarmRoomDatabase == null) {
-               // Context context1 = context.getApplicationContext();
+               // Brute Force removal of Room database
+               // removeDB( context);
                // Direct Boot supported: Place the Room BD in the device encrypted storage
                Context context1 = context.createDeviceProtectedStorageContext();
                Builder<AlarmRoomDatabase> db = Room.databaseBuilder(context1, AlarmRoomDatabase.class, "raw_alarm_database");
