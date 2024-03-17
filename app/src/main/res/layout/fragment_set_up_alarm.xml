@@ -40,6 +40,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:text="@android:string/ok"
+        android:visibility="gone"
         app:icon="@android:drawable/ic_input_add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -53,6 +54,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
         android:text="@string/delete_alarm"
+        android:visibility="gone"
         app:icon="@android:drawable/ic_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -68,48 +70,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/alarm_label">
 
-        <TextView
-            android:id="@+id/RepeatText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:autoSizeMinTextSize="24sp"
-            android:background="@drawable/rounded_rect"
-            android:gravity="start|center_vertical"
-            android:paddingStart="8dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="16dp"
-            android:text="@string/repeating_alarm"
-            android:textAllCaps="false"
-            android:textColor="?attr/colorPrimaryContainer"
-            android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/RepeateSwitch"
+        <CheckBox
+            android:id="@+id/RepeateCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
+            android:layout_marginStart="36dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
             android:switchMinWidth="55dp"
-            app:layout_constraintBottom_toBottomOf="@+id/RepeatText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/RepeatText"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
+            android:text="@string/repeating_alarm"
+            app:layout_constraintStart_toEndOf="@+id/ShowDatePicker_Btn"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/day_buttons_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/RepeatText">
+            app:layout_constraintTop_toBottomOf="@id/RepeateCheckBox">
 
 
             <ToggleButton
@@ -244,9 +222,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/RepeatText">
+            app:layout_constraintTop_toBottomOf="@id/RepeateCheckBox">
 
 
             <ToggleButton
@@ -377,6 +356,17 @@
                 app:layout_constraintTop_toTopOf="@+id/SaturdayButton_2"
                 app:layout_constraintWidth_max="70dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageButton
+            android:id="@+id/ShowDatePicker_Btn"
+            android:layout_width="51dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_rect_pale"
+            android:src="@drawable/calendar_month_fill0_wght400_grad0_opsz24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

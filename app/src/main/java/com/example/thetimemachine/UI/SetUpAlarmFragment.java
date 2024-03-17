@@ -12,11 +12,11 @@ import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -35,7 +35,6 @@ import androidx.lifecycle.Observer;
 import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Calendar;
@@ -44,8 +43,7 @@ import java.util.Objects;
 public class SetUpAlarmFragment extends Fragment {
 
     private TimePicker timePicker;
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
-    private SwitchMaterial repeating;
+    private CheckBox repeating;
 
     private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
           weToggleButton, thToggleButton,frToggleButton, saToggleButton;
@@ -161,7 +159,7 @@ public class SetUpAlarmFragment extends Fragment {
         label.setText(setUpAlarmValues.getLabel().getValue());
 
         // Get the Repeating button and set the weekdays button visibility
-        repeating = view.findViewById(R.id.RepeateSwitch);
+        repeating = view.findViewById(R.id.RepeateCheckBox);
         Integer WeekDays = setUpAlarmValues.getWeekDays().getValue();
         if (WeekDays!=null)
             weekDays = WeekDays;
