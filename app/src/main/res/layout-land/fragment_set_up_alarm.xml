@@ -53,16 +53,18 @@
         app:layout_constraintStart_toEndOf="@+id/time_picker"
         app:layout_constraintTop_toBottomOf="@+id/alarm_label">
 
-        <CheckBox
-            android:id="@+id/RepeateCheckBox"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/RepeateSw"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_marginStart="36dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:showText="true"
             android:switchMinWidth="55dp"
             android:text="@string/repeating_alarm"
-            app:layout_constraintStart_toEndOf="@+id/ShowDatePicker_Btn"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/day_buttons_layout"
@@ -70,7 +72,7 @@
             android:layout_height="56dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/RepeateCheckBox">
+            app:layout_constraintTop_toBottomOf="@id/RepeateSw">
 
 
             <ToggleButton
@@ -208,7 +210,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/RepeateCheckBox">
+            app:layout_constraintTop_toBottomOf="@id/RepeateSw">
 
 
             <ToggleButton

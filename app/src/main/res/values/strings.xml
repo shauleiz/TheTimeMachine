@@ -62,6 +62,7 @@
     <string name="duplicate">Duplicate</string>
     <string name="edit">edit</string>
     <string name="settings">settings</string>
+    <string name="open_date_picker">Open Date Picker</string>
 
 
     <array name="clock_12_24_entries">
