@@ -10,7 +10,6 @@ import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -35,7 +36,6 @@ import androidx.lifecycle.Observer;
 import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Calendar;
 import java.util.Objects;
@@ -43,7 +43,7 @@ import java.util.Objects;
 public class SetUpAlarmFragment extends Fragment {
 
     private TimePicker timePicker;
-    private CheckBox repeating;
+    private SwitchCompat repeating;
 
     private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
           weToggleButton, thToggleButton,frToggleButton, saToggleButton;
@@ -159,7 +159,7 @@ public class SetUpAlarmFragment extends Fragment {
         label.setText(setUpAlarmValues.getLabel().getValue());
 
         // Get the Repeating button and set the weekdays button visibility
-        repeating = view.findViewById(R.id.RepeateCheckBox);
+        repeating = view.findViewById(R.id.RepeateSw);
         Integer WeekDays = setUpAlarmValues.getWeekDays().getValue();
         if (WeekDays!=null)
             weekDays = WeekDays;
