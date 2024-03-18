@@ -114,14 +114,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    // True: 24h Clock (00:00 - 23:59)
    // False: 12h Clock (Am/Pm)
    public static boolean pref_is24HourClock(){
-      Log.d("THE_TIME_MACHINE", "pref_is24HourClock() Called[1]: KEY= key_h12_24" + " Value="+ nHoursClock);
+     // Log.d("THE_TIME_MACHINE", "pref_is24HourClock() Called[1]: KEY= key_h12_24" + " Value="+ nHoursClock);
       if (nHoursClock == null || nHoursClock.isEmpty()) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          nHoursClock = preferences.getString(context.getString(R.string.key_h12_24), "");
-         Log.d("THE_TIME_MACHINE", "pref_is24HourClock() Called[1.5]: KEY= key_h12_24" + " Value="+ nHoursClock);
+       //  Log.d("THE_TIME_MACHINE", "pref_is24HourClock() Called[1.5]: KEY= key_h12_24" + " Value="+ nHoursClock);
       }
-      Log.d("THE_TIME_MACHINE", "pref_is24HourClock() Called[2]: KEY= key_h12_24" + " Value="+ nHoursClock);
+    //  Log.d("THE_TIME_MACHINE", "pref_is24HourClock() Called[2]: KEY= key_h12_24" + " Value="+ nHoursClock);
 
       return nHoursClock.equals("h24");
    }
@@ -130,19 +130,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    // Returns:
    // Duration in milliseconds (Default is 30000)
    public static int pref_ring_duration(){
-      Log.d("THE_TIME_MACHINE", "pref_ring_duration() Called[1]: KEY= key_ring_duration" + " Value="+ ringDuration);
+      //Log.d("THE_TIME_MACHINE", "pref_ring_duration() Called[1]: KEY= key_ring_duration" + " Value="+ ringDuration);
 
       if (ringDuration == null || ringDuration.isEmpty()) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          ringDuration = preferences.getString(context.getString(R.string.key_ring_duration), "");
-         Log.d("THE_TIME_MACHINE", "pref_ring_duration() Called[1.5]: KEY= key_ring_duration" + " Value="+ ringDuration);
+        // Log.d("THE_TIME_MACHINE", "pref_ring_duration() Called[1.5]: KEY= key_ring_duration" + " Value="+ ringDuration);
 
          // String is of type 15000Seconds
          if (ringDuration.length() < 4)
             return 30000;
       }
-      Log.d("THE_TIME_MACHINE", "pref_ring_duration() Called[2]: KEY= key_ring_duration" + " Value="+ ringDuration);
+      //Log.d("THE_TIME_MACHINE", "pref_ring_duration() Called[2]: KEY= key_ring_duration" + " Value="+ ringDuration);
       // Extract the numeral part and convert from seconds to milliseconds
       String intValue = ringDuration.replaceAll("[^0-9]", "");
       return Integer.parseInt(intValue)*1000;
@@ -157,13 +157,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          snoozeDuration = preferences.getString(context.getString(R.string.key_snooze_duration), "");
-         Log.d("THE_TIME_MACHINE", "pref_snooze_duration() Called[1.5]: KEY= key_snooze_duration" + " Value="+ snoozeDuration);
+         //Log.d("THE_TIME_MACHINE", "pref_snooze_duration() Called[1.5]: KEY= key_snooze_duration" + " Value="+ snoozeDuration);
 
          // String is of type 15000Seconds
          if (snoozeDuration.length() < 4)
             return 60000;
       }
-      Log.d("THE_TIME_MACHINE", "pref_snooze_duration() Called[2]: KEY= key_snooze_duration" + " Value="+ snoozeDuration);
+      //Log.d("THE_TIME_MACHINE", "pref_snooze_duration() Called[2]: KEY= key_snooze_duration" + " Value="+ snoozeDuration);
 
       // Extract the numeral part and convert from seconds to milliseconds
       String intValue = snoozeDuration.replaceAll("[^0-9]", "");
@@ -174,14 +174,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    // Returns:
    // Number of times (Default is 5) - 100 means forever
    public static int pref_ring_repeat(){
-      Log.d("THE_TIME_MACHINE", "pref_ring_repeat() Called[1]: KEY= key_ring_repeat" + " Value="+ ringRepeat);
+      //Log.d("THE_TIME_MACHINE", "pref_ring_repeat() Called[1]: KEY= key_ring_repeat" + " Value="+ ringRepeat);
       if (ringRepeat == null || ringRepeat.isEmpty()) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          ringRepeat = preferences.getString(context.getString(R.string.key_ring_repeat), "");
-         Log.d("THE_TIME_MACHINE", "pref_ring_repeat() Called[1.5]: KEY= key_ring_repeat" + " Value="+ ringRepeat);
+         //Log.d("THE_TIME_MACHINE", "pref_ring_repeat() Called[1.5]: KEY= key_ring_repeat" + " Value="+ ringRepeat);
       }
-      Log.d("THE_TIME_MACHINE", "pref_ring_repeat() Called[2]: KEY= key_ring_repeat" + " Value="+ ringRepeat);
+    //  Log.d("THE_TIME_MACHINE", "pref_ring_repeat() Called[2]: KEY= key_ring_repeat" + " Value="+ ringRepeat);
 
 
       // String is of type 15000Seconds
@@ -197,14 +197,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    // Returns:
    // Su or Mo (Default is Su)
    public static String pref_first_day_of_week(){
-      Log.d("THE_TIME_MACHINE", "pref_first_day_of_week() Called[1]: KEY= key_first_day_week" + " Value="+ firstDayWeek);
+     // Log.d("THE_TIME_MACHINE", "pref_first_day_of_week() Called[1]: KEY= key_first_day_week" + " Value="+ firstDayWeek);
       if (firstDayWeek == null || firstDayWeek.isEmpty()) {
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
          firstDayWeek = preferences.getString(context.getString(R.string.key_first_day), "");
-         Log.d("THE_TIME_MACHINE", "pref_first_day_of_week() Called[1.5]: KEY= key_first_day_week" + " Value="+ firstDayWeek);
+         //Log.d("THE_TIME_MACHINE", "pref_first_day_of_week() Called[1.5]: KEY= key_first_day_week" + " Value="+ firstDayWeek);
       }
-      Log.d("THE_TIME_MACHINE", "pref_first_day_of_week() Called[2]: KEY= key_first_day_week" + " Value="+ firstDayWeek);
+     // Log.d("THE_TIME_MACHINE", "pref_first_day_of_week() Called[2]: KEY= key_first_day_week" + " Value="+ firstDayWeek);
 
       // String is Su or Mo
       if (firstDayWeek.length() != 2)

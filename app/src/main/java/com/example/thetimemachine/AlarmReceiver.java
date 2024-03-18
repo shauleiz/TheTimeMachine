@@ -62,16 +62,13 @@ public class AlarmReceiver extends BroadcastReceiver {
       if (b==null) return;
       AlarmItem alarm = new AlarmItem(b);
       alarm.resetSnoozeCounter();
-      if (alarm.isOneOff()) {
+
          // One-time alarm becomes Inactive after been stopped
          alarm.setActive(false);
          AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
          AlarmDao alarmDao = db.alarmDao();
          AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
-      }
-      else
-         // Schedule the next alarm
-         alarm.Exec();
+
 
       /* DEBUG */
       Bundle ab = alarm.getBundle();
