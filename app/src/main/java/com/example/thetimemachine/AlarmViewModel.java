@@ -278,13 +278,13 @@ public class AlarmViewModel extends AndroidViewModel {
 
       public void setOneOff(boolean oneOff){this.oneOff.setValue(oneOff);}
 
-      public void setDayOfMonth(MutableLiveData<Integer> dayOfMonth) {this.dayOfMonth = dayOfMonth;}
+      public void setDayOfMonth(int dayOfMonth) {this.dayOfMonth.setValue(dayOfMonth) ;}
 
-      public void setMonth(MutableLiveData<Integer> month) {this.month = month;}
+      public void setMonth(int month) {this.month.setValue(month);}
 
-      public void setYear(MutableLiveData<Integer> year) {this.year = year;}
+      public void setYear(int year) {this.year.setValue(year);}
 
-      public void setFutureDate(MutableLiveData<Boolean> futureDate) {this.futureDate = futureDate;}
+      public void setFutureDate(boolean futureDate) {this.futureDate.setValue(futureDate) ;}
 
       public MutableLiveData<String> getLabel() {
          return label;

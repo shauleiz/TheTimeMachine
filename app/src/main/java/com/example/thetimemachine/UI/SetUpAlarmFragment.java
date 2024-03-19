@@ -10,15 +10,18 @@ import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
+import android.app.DatePickerDialog;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Switch;
+import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
@@ -36,14 +39,18 @@ import androidx.lifecycle.Observer;
 import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Objects;
 
 public class SetUpAlarmFragment extends Fragment {
 
     private TimePicker timePicker;
+    private DatePickerDialog datePickerDialog;
     private SwitchCompat repeating;
+    private ImageButton callDatePickerButton;
 
     private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
           weToggleButton, thToggleButton,frToggleButton, saToggleButton;
@@ -172,6 +179,9 @@ public class SetUpAlarmFragment extends Fragment {
         repeating.setChecked(!oneOff);
         setDaysVisible(!oneOff, view);
 
+        // This button calls the Date Picker
+        callDatePickerButton = view.findViewById(R.id.ShowDatePicker_Btn);
+        callDatePickerButton.setOnClickListener(this::ShowDatePickerOnClick);
 
         // Listener to the Repeating button (set the weekdays button visibility)
         repeating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -314,6 +324,89 @@ public class SetUpAlarmFragment extends Fragment {
     }
 
 
+    // Called when user clicks on the calendar button to call the Date Picker
+    public void ShowDatePickerOnClick(View view){
+        Calendar calendar;
+        int d, m, y;
+
+        Log.d("THE_TIME_MACHINE", "ShowDatePickerOnClick");
+        datePickerDialog = new DatePickerDialog(requireContext());
+
+        // Get the date stored in the VM.
+        d = setUpAlarmValues.getDayOfMonth().getValue();
+        m = setUpAlarmValues.getMonth().getValue();
+        y = setUpAlarmValues.getYear().getValue();
+
+        // If date not stored, set today's date
+        if (d == 0 || m == 0 || y == 0) {
+            calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            d = calendar.get(Calendar.DAY_OF_MONTH);
+            m = calendar.get(Calendar.MONTH);
+            y = calendar.get(Calendar.YEAR);
+        }
+
+        // Set as cancelable and set a listener that will be called on OK
+        datePickerDialog.setCancelable(true);
+        datePickerDialog.setOnDateSetListener(this::DateWidgetListener);
+
+        // Set the date and show the widget
+        datePickerDialog.updateDate(y,m,d);
+        datePickerDialog.show();
+
+    }
+
+    // Called when user exits the Date Picker with 'OK'
+    // Gets the selected date (
+    public void DateWidgetListener(View v, int year, int month, int day){
+        Calendar calendar;
+        long currentTimeMillis, targetTimeMillis;
+
+        Log.d("THE_TIME_MACHINE", "ShowDatePickerOnClick Selected:" + day+"/"+month+1+"/"+year);
+
+        // Analyze the date/time:
+        //  Is the time in the past? => Error message + Date not changed
+        //  Is the time soon (within 24h) => Set as Today/Tomorrow, leave d/m/y = 0. Clear F Flag
+        //  Is the time in the Future (Later than the next 24h) => set d/m/y Set F Flag
+        int h = timePicker.getHour();
+        int m = timePicker.getMinute();
+        calendar = Calendar.getInstance();
+        currentTimeMillis = System.currentTimeMillis();
+        // Debug:
+        //SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a", Locale.US);
+        //Log.d("THE_TIME_MACHINE", "Current time: " + format.format(currentTimeMillis) );
+
+
+        calendar.set(year,  month,  day,h,m);
+        targetTimeMillis = calendar.getTimeInMillis();
+        //Log.d("THE_TIME_MACHINE", "Target time: " + format.format(targetTimeMillis) );
+
+        if (targetTimeMillis<=currentTimeMillis) // Past or now
+        {
+            new MaterialAlertDialogBuilder(requireContext())
+                  .setMessage(R.string.alarm_in_the_past)
+                  .setTitle(R.string.title_error)
+                  .show();
+        }
+        else if (targetTimeMillis-currentTimeMillis <= 24*60*60*1000) // Soon
+        {
+            setUpAlarmValues.setFutureDate(false);
+            setUpAlarmValues.setOneOff(true);
+            setUpAlarmValues.setDayOfMonth(0);
+            setUpAlarmValues.setMonth(0);
+            setUpAlarmValues.setYear(0);
+            Log.d("THE_TIME_MACHINE", "Target time: " );
+        }
+        else  {
+            setUpAlarmValues.setFutureDate(true);
+            setUpAlarmValues.setOneOff(true);
+            setUpAlarmValues.setDayOfMonth(day);
+            setUpAlarmValues.setMonth(month);
+            setUpAlarmValues.setYear(year);
+        }
+
+    }
+
     // OK Button clicked
     //@RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public void OkClicked(){
@@ -355,6 +448,19 @@ public class SetUpAlarmFragment extends Fragment {
         int weekdays = getDaysValues();
         item.setWeekDays(weekdays);
         item.setOneOff(!repeating.isChecked() || (weekdays==0));
+
+        // Future Date
+        if (setUpAlarmValues.isFutureDate().getValue()  ){
+            int yy = setUpAlarmValues.getYear().getValue();
+            int mm = setUpAlarmValues.getMonth().getValue();
+            int dd = setUpAlarmValues.getDayOfMonth().getValue();
+            if (yy>0 && mm>0 && dd>0) {
+                item.setYear(yy);
+                item.setMonth(mm);
+                item.setDayOfMonth(dd);
+                item.setFutureDate(true);
+            }
+        }
 
         // Get the position and the status of the entry to be created/updated
         // And Add or Update the entry on the list
