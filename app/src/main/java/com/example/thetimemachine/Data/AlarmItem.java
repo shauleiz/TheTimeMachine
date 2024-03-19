@@ -250,7 +250,7 @@ public class AlarmItem {
 
    public void setFutureDate(boolean futureDate) {this.futureDate = futureDate;}
 
-   private long alarmTimeInMillis() {
+   public long alarmTimeInMillis() {
       // Get the time for the next Alarm, in Milliseconds
       Calendar calendar = Calendar.getInstance();
       calendar.setTimeInMillis(System.currentTimeMillis());
@@ -296,6 +296,27 @@ public class AlarmItem {
 
       return  (calendar.getTimeInMillis() >= alarmTimeInMillis());
 
+   }
+
+   public boolean isTomorrow(){
+      long today_midnight, tomorrow_midnight, tomorrow_last_sec, alarm_time;
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTimeInMillis(System.currentTimeMillis());
+
+      // Get today's time in millis at 0:00:00.
+      // Then add 24h to get the time of the beginning of tomorrow.
+      // Then add additional 24h-1sec to get the time of the end of tomorrow.
+      calendar.set(Calendar.HOUR_OF_DAY, 0);
+      calendar.set(Calendar.MINUTE, 0);
+      calendar.set(Calendar.SECOND, 0);
+      today_midnight = calendar.getTimeInMillis();
+      tomorrow_midnight = today_midnight+24*60*60*1000;
+      tomorrow_last_sec = tomorrow_midnight+24*60*60*1000-1000;
+      alarm_time = alarmTimeInMillis();
+      if (alarm_time>=tomorrow_midnight && alarm_time<=tomorrow_last_sec)
+         return true;
+      else
+         return false;
    }
 
    /********** Execute an alarm action according to alarm state **********
