@@ -236,6 +236,7 @@ public class AlarmViewModel extends AndroidViewModel {
          label.setValue(item.getLabel());
          active.setValue(item.isActive());
 
+
          AlarmItem ai = item;
          long c;
          if (edit)
@@ -246,6 +247,11 @@ public class AlarmViewModel extends AndroidViewModel {
 
          weekDays.setValue(item.getWeekDays());
          oneOff.setValue((item.isOneOff()));
+
+         dayOfMonth.setValue(item.getDayOfMonth());
+         month.setValue(item.getMonth());
+         year.setValue(item.getYear());
+         futureDate.setValue(item.isFutureDate());
       }
       public void GetValuesFromList(AlarmItem item){
          GetValuesFromList( item, true);

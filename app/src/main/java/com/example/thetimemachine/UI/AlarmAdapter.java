@@ -32,8 +32,10 @@ import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
 import com.google.android.material.color.MaterialColors;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 // Adapter for RecyclerView of the list of Alarms
 // Contains the ViewHolder for the Alarm item
@@ -195,13 +197,22 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                     word.setSpan(new ForegroundColorSpan(Color.RED),
                       0, word.length(),
                       Spannable.SPAN_INCLUSIVE_INCLUSIVE);}
-            else {
+            else if (alarmItem.isTomorrow()) {
                 word = new SpannableString(context.getString(R.string.day_tomorrow));
                 if (alarmItem.isActive())
                     word.setSpan(new ForegroundColorSpan(getColor(context,
                             R.color.light_blue_600)),
                       0, word.length(),
                       Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            } else {
+                SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.US);
+                long alarmTime = alarmItem.alarmTimeInMillis();
+                word = new SpannableString(format.format(alarmTime));
+                if (alarmItem.isActive())
+                    word.setSpan(new ForegroundColorSpan(getColor(context,
+                                R.color.black)),
+                          0, word.length(),
+                          Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             }
         }
         // This is a repeating alarm - print the weekdays
