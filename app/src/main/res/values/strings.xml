@@ -63,6 +63,8 @@
     <string name="edit">edit</string>
     <string name="settings">settings</string>
     <string name="open_date_picker">Open Date Picker</string>
+    <string name="title_error">Error</string>
+    <string name="alarm_in_the_past">Date and Hour indicate an alarm in the past.\nThis is impossible</string>
 
 
     <array name="clock_12_24_entries">
