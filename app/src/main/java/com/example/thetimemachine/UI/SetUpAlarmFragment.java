@@ -1,5 +1,6 @@
 package com.example.thetimemachine.UI;
 
+import static android.icu.util.TimeZone.getTimeZone;
 import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
 import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
 import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
@@ -10,8 +11,10 @@ import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.icu.text.SimpleDateFormat;
+import android.icu.util.ULocale;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,9 +22,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
@@ -42,6 +45,7 @@ import com.example.thetimemachine.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -55,6 +59,7 @@ public class SetUpAlarmFragment extends Fragment {
     private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
           weToggleButton, thToggleButton,frToggleButton, saToggleButton;
     private EditText label;
+    private TextView targetAlarmText;
     private AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
     private AlarmViewModel alarmViewModel;
     private MainActivity parent;
@@ -165,8 +170,11 @@ public class SetUpAlarmFragment extends Fragment {
         label = view.findViewById((R.id.alarm_label));
         label.setText(setUpAlarmValues.getLabel().getValue());
 
+        // The target time/date text view
+        targetAlarmText = view.findViewById((R.id.target_time_date));
+
         // Get the Repeating button and set the weekdays button visibility
-        repeating = view.findViewById(R.id.RepeateSw);
+        repeating = view.findViewById(R.id.RepeatSw);
         Integer WeekDays = setUpAlarmValues.getWeekDays().getValue();
         if (WeekDays!=null)
             weekDays = WeekDays;
@@ -178,6 +186,7 @@ public class SetUpAlarmFragment extends Fragment {
             oneOff = false;
         repeating.setChecked(!oneOff);
         setDaysVisible(!oneOff, view);
+        setDisplayAreaVisible(oneOff, view);
 
         // This button calls the Date Picker
         callDatePickerButton = view.findViewById(R.id.ShowDatePicker_Btn);
@@ -187,6 +196,7 @@ public class SetUpAlarmFragment extends Fragment {
         repeating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 setDaysVisible(isChecked, view);
+                setDisplayAreaVisible(!isChecked,view);
             }
         });
 
@@ -262,6 +272,49 @@ public class SetUpAlarmFragment extends Fragment {
             view.findViewById(R.id.day_buttons_layout_mo).setVisibility(View.GONE);
         }
 
+    }
+
+    // Set Display Area visible/gone
+    private void setDisplayAreaVisible(boolean visible, View view){
+
+        TextView textView = view.findViewById(R.id.target_time_date);
+        if (visible) {
+            textView.setText(displayTargetAlarm());
+            textView.setVisibility(View.VISIBLE);
+        }
+        else
+            textView.setVisibility(View.GONE);
+    }
+
+    @NonNull
+    private String displayTargetAlarm(){
+        String out = "";
+
+        // Get time/date values
+        int m = setUpAlarmValues.getMinute().getValue();
+        int h = setUpAlarmValues.getHour().getValue();
+        int dd = setUpAlarmValues.getDayOfMonth().getValue();
+        int mm = setUpAlarmValues.getMonth().getValue();
+        int yy = setUpAlarmValues.getYear().getValue();
+
+        // Create a calendar object and modify it
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        if (dd>0 && mm>0 && yy>0)
+            calendar.set(yy, mm, dd,h,m,0);
+        else{
+            calendar.set(Calendar.HOUR_OF_DAY, h);
+            calendar.set(Calendar.MINUTE, m);
+            //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
+        }
+
+
+        // Create a string
+        SimpleDateFormat format;
+        format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' HH:mm", Locale.US);
+        out = format.format(calendar.getTimeInMillis());
+        return out;
     }
 
     // Set/reset the individual day-buttons
@@ -526,7 +579,7 @@ public class SetUpAlarmFragment extends Fragment {
         {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
-            int h =calendar.get(Calendar.HOUR);
+            int h =calendar.get(Calendar.HOUR_OF_DAY);
             int m = calendar.get(Calendar.MINUTE);
             timePicker.setHour(h);
             timePicker.setMinute(m);
