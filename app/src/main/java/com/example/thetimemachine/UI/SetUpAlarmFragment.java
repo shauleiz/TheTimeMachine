@@ -277,13 +277,13 @@ public class SetUpAlarmFragment extends Fragment {
     // Set Display Area visible/gone
     private void setDisplayAreaVisible(boolean visible, View view){
 
-        TextView textView = view.findViewById(R.id.target_time_date);
+        //TextView textView = view.findViewById(R.id.target_time_date);
         if (visible) {
-            textView.setText(displayTargetAlarm());
-            textView.setVisibility(View.VISIBLE);
+            targetAlarmText.setText(displayTargetAlarm());
+            targetAlarmText.setVisibility(View.VISIBLE);
         }
         else
-            textView.setVisibility(View.GONE);
+            targetAlarmText.setVisibility(View.GONE);
     }
 
     @NonNull
@@ -291,8 +291,8 @@ public class SetUpAlarmFragment extends Fragment {
         String out = "";
 
         // Get time/date values
-        int m = setUpAlarmValues.getMinute().getValue();
-        int h = setUpAlarmValues.getHour().getValue();
+        int m = timePicker.getMinute();
+        int h = timePicker.getHour();
         int dd = setUpAlarmValues.getDayOfMonth().getValue();
         int mm = setUpAlarmValues.getMonth().getValue();
         int yy = setUpAlarmValues.getYear().getValue();
@@ -310,10 +310,12 @@ public class SetUpAlarmFragment extends Fragment {
         }
 
 
-        // Create a string
+        // Create an output string
         SimpleDateFormat format;
         format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' HH:mm", Locale.US);
         out = format.format(calendar.getTimeInMillis());
+
+        Log.d("THE_TIME_MACHINE", "displayTargetAlarm(): " + out);
         return out;
     }
 
@@ -458,6 +460,8 @@ public class SetUpAlarmFragment extends Fragment {
             setUpAlarmValues.setYear(year);
         }
 
+        targetAlarmText.setText(displayTargetAlarm());
+
     }
 
     // OK Button clicked
@@ -593,6 +597,14 @@ public class SetUpAlarmFragment extends Fragment {
             timePicker.setHour(h.getValue());//
             timePicker.setMinute(m.getValue());//
         }
+
         timePicker.animate();
+
+        // Set a listener to events in the Time Picker
+        timePicker.setOnTimeChangedListener(this::onTimeChangedListener);
+    }
+
+    private void onTimeChangedListener(TimePicker timePicker, int hourOfDay, int minute) {
+        targetAlarmText.setText(displayTargetAlarm());
     }
 }
