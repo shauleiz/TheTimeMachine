@@ -53,18 +53,38 @@
         app:layout_constraintStart_toEndOf="@+id/time_picker"
         app:layout_constraintTop_toBottomOf="@+id/alarm_label">
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/RepeatSw"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/single_weekly_btngrp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:showText="true"
-            android:switchMinWidth="55dp"
-            android:text="@string/repeating_alarm"
+            android:layout_marginEnd="8dp"
+            android:splitMotionEvents="true"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <Button
+                android:id="@+id/oneoff_btn"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Single" />
+
+            <Button
+                android:id="@+id/futuredate_btn"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Weekly" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/day_buttons_layout"
@@ -72,7 +92,7 @@
             android:layout_height="56dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/RepeatSw">
+            app:layout_constraintTop_toBottomOf="@+id/ShowDatePicker_Btn">
 
 
             <ToggleButton
@@ -209,8 +229,7 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/RepeatSw">
+            app:layout_constraintStart_toStartOf="parent">
 
 
             <ToggleButton
@@ -347,11 +366,10 @@
             android:layout_width="51dp"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
             android:background="@drawable/rounded_rect_pale"
             android:src="@drawable/calendar_month_fill0_wght400_grad0_opsz24"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/single_weekly_btngrp" />
 
         <TextView
             android:id="@+id/target_time_date"
@@ -363,7 +381,7 @@
             android:text="@string/dummy_alarm_date_time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/RepeatSw" />
+            app:layout_constraintTop_toBottomOf="@+id/ShowDatePicker_Btn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

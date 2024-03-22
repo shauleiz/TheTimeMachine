@@ -64,11 +64,12 @@
     <string name="settings">settings</string>
     <string name="open_date_picker">Open Date Picker</string>
     <string name="title_error">Error</string>
-    <string name="alarm_in_the_past">Date and Hour indicate an alarm in the past.\nThis is impossible</string>
+    <string name="alarm_in_the_past">Date and Hour indicate an alarm in the past.</string>
     <string name="dummy_alarm_date_time">Alarm Set to XXX at 00:00</string>
     <string name="time_format_display">EEEE, MMMM d, yyyy \'at\' HH:mm</string>
     <string name="today_in_brackets">" [TODAY]"</string>
     <string name="tomorrow_in_brackets">" [TOMORROW]"</string>
+    <string name="cancel_as_negative">Cancel</string>
 
 
     <array name="clock_12_24_entries">

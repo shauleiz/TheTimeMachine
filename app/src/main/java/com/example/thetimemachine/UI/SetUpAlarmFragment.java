@@ -42,6 +42,7 @@ import androidx.lifecycle.Observer;
 import com.example.thetimemachine.AlarmViewModel;
 import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Calendar;
@@ -53,7 +54,8 @@ public class SetUpAlarmFragment extends Fragment {
 
     private TimePicker timePicker;
     private DatePickerDialog datePickerDialog;
-    private SwitchCompat repeating;
+    //private SwitchCompat repeating;
+    private MaterialButtonToggleGroup repeating;
     private ImageButton callDatePickerButton;
 
     private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
@@ -85,7 +87,10 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues.setMinute(minute);
 
         setUpAlarmValues.setWeekDays(getDaysValues());
-        setUpAlarmValues.setOneOff(!repeating.isChecked());
+        if(repeating.getCheckedButtonId() == R.id.oneoff_btn)
+            setUpAlarmValues.setOneOff(true);
+        else
+            setUpAlarmValues.setOneOff(false);
 
         // Remove the Up arrow
         ActionBar actionBar = parent.getSupportActionBar();
@@ -174,7 +179,7 @@ public class SetUpAlarmFragment extends Fragment {
         targetAlarmText = view.findViewById((R.id.target_time_date));
 
         // Get the Repeating button and set the weekdays button visibility
-        repeating = view.findViewById(R.id.RepeatSw);
+        repeating = view.findViewById(R.id.single_weekly_btngrp);
         Integer WeekDays = setUpAlarmValues.getWeekDays().getValue();
         if (WeekDays!=null)
             weekDays = WeekDays;
@@ -184,7 +189,10 @@ public class SetUpAlarmFragment extends Fragment {
         oneOff = setUpAlarmValues.isOneOff().getValue();
         if (oneOff == null)
             oneOff = false;
-        repeating.setChecked(!oneOff);
+        if (oneOff)
+            repeating.check(R.id.oneoff_btn);
+        else
+            repeating.check(R.id.futuredate_btn);
         setDaysVisible(!oneOff, view);
         setDisplayAreaVisible(oneOff, view);
 
@@ -193,13 +201,19 @@ public class SetUpAlarmFragment extends Fragment {
         callDatePickerButton.setOnClickListener(this::ShowDatePickerOnClick);
 
         // Listener to the Repeating button (set the weekdays button visibility)
-        repeating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                setDaysVisible(isChecked, view);
-                setDisplayAreaVisible(!isChecked,view);
+        repeating.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
+            @Override
+            public void onButtonChecked(MaterialButtonToggleGroup materialButtonToggleGroup, int id, boolean checked) {
+                if (id == R.id.oneoff_btn) {
+                    setDaysVisible(!checked, view);
+                    setDisplayAreaVisible(checked,view);
+                }
+                else {
+                    setDaysVisible(checked, view);
+                    setDisplayAreaVisible(!checked,view);
+                }
             }
         });
-
 
         // Observers to change in the setup values:
         setUpAlarmValues.getHour().observe(getViewLifecycleOwner(), new Observer<Integer>() {
@@ -235,7 +249,10 @@ public class SetUpAlarmFragment extends Fragment {
             @Override
             public void onChanged(Boolean t) {
                 if (t != null) {
-                    repeating.setChecked(!t);
+                    if (t)
+                        repeating.check(R.id.oneoff_btn);
+                    else
+                        repeating.check(R.id.futuredate_btn);
                 }
             }
         });
@@ -494,6 +511,7 @@ public boolean isInThePast(long alarmInMillis){
             new MaterialAlertDialogBuilder(requireContext())
                   .setMessage(R.string.alarm_in_the_past)
                   .setTitle(R.string.title_error)
+                  .setNegativeButton(R.string.cancel_as_negative, null)
                   .show();
         }
         else if (targetTimeMillis-currentTimeMillis <= 24*60*60*1000) // Soon
@@ -557,7 +575,7 @@ public boolean isInThePast(long alarmInMillis){
         // Weekdays
         int weekdays = getDaysValues();
         item.setWeekDays(weekdays);
-        item.setOneOff(!repeating.isChecked() || (weekdays==0));
+        item.setOneOff(repeating.getCheckedButtonId()==R.id.oneoff_btn || (weekdays==0));
 
         // Future Date
         if (setUpAlarmValues.isFutureDate().getValue()  ){

@@ -209,8 +209,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                 long alarmTime = alarmItem.alarmTimeInMillis();
                 word = new SpannableString(format.format(alarmTime));
                 if (alarmItem.isActive())
-                    word.setSpan(new ForegroundColorSpan(getColor(context,
-                                R.color.black)),
+                    word.setSpan(new ForegroundColorSpan(
+                                MaterialColors.getColor(context, R.attr.primary_text, Color.BLACK)),
                           0, word.length(),
                           Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             }
