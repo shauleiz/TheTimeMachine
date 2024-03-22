@@ -377,10 +377,11 @@
             android:layout_height="56dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:gravity="center_vertical"
             android:text="@string/dummy_alarm_date_time"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            android:gravity="center_horizontal|center_vertical"
             app:layout_constraintTop_toBottomOf="@+id/ShowDatePicker_Btn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
