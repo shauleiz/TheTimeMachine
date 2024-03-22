@@ -44,6 +44,8 @@ import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.R;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -60,7 +62,8 @@ public class SetUpAlarmFragment extends Fragment {
 
     private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
           weToggleButton, thToggleButton,frToggleButton, saToggleButton;
-    private EditText label;
+    //private EditText label;
+    private TextInputEditText label;
     private TextView targetAlarmText;
     private AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
     private AlarmViewModel alarmViewModel;

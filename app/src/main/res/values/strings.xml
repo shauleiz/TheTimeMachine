@@ -70,6 +70,8 @@
     <string name="today_in_brackets">" [TODAY]"</string>
     <string name="tomorrow_in_brackets">" [TOMORROW]"</string>
     <string name="cancel_as_negative">Cancel</string>
+    <string name="weekly">Weekly</string>
+    <string name="single">Single</string>
 
 
     <array name="clock_12_24_entries">

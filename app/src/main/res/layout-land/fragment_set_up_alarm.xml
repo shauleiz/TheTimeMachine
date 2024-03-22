@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/SetUpAlarmFrag"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_centerHorizontal="true"
     android:minHeight="50dp"
     tools:context=".UI.SetUpAlarmFragment">
@@ -19,7 +19,28 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_max="420dp" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/alarm_label_layout"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="@string/label_hint"
+        android:textColorHint="@color/material_on_background_disabled"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/repeating_layout"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/alarm_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--<EditText
         android:id="@+id/alarm_label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -29,8 +50,9 @@
         android:inputType="textCapSentences|textAutoCorrect"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@+id/time_picker"
-        app:layout_constraintTop_toTopOf="parent" />
+        />-->
 
     <Button
         android:id="@+id/OK_Btn"
@@ -51,7 +73,7 @@
         android:outlineProvider="paddedBounds"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/time_picker"
-        app:layout_constraintTop_toBottomOf="@+id/alarm_label">
+        app:layout_constraintTop_toBottomOf="@+id/alarm_label_layout">
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/single_weekly_btngrp"
@@ -377,11 +399,11 @@
             android:layout_height="56dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:gravity="center_horizontal|center_vertical"
             android:text="@string/dummy_alarm_date_time"
-            android:textSize="20sp"
+            android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:gravity="center_horizontal|center_vertical"
             app:layout_constraintTop_toBottomOf="@+id/ShowDatePicker_Btn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

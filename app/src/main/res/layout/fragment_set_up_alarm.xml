@@ -13,23 +13,49 @@
         android:id="@+id/time_picker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/alarm_label" />
+        app:layout_constraintTop_toBottomOf="@id/alarm_label_layout" />
 
-    <EditText
-        android:id="@+id/alarm_label"
-        android:layout_width="0dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/alarm_label_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:autofillHints="@string/label_hint"
+        android:layout_marginBottom="8dp"
         android:hint="@string/label_hint"
-        android:inputType="textCapSentences|textAutoCorrect"
-        android:singleLine="true"
+        android:textColorHint="@color/material_on_background_disabled"
+        app:endIconMode="clear_text"
+        app:layout_constraintBottom_toTopOf="@+id/time_picker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/alarm_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+<!--    <EditText-->
+<!--        android:id="@+id/alarm_label"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:autofillHints="@string/label_hint"-->
+<!--        android:hint="@string/label_hint"-->
+<!--        android:inputType="textCapSentences|textAutoCorrect"-->
+<!--        android:singleLine="true"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <Button
         android:id="@+id/OK_Btn"
@@ -375,7 +401,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Single" />
+                android:text="@string/single" />
 
             <Button
                 android:id="@+id/futuredate_btn"
@@ -383,7 +409,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Weekly" />
+                android:text="@string/weekly" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
         <TextView
@@ -393,7 +419,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:gravity="center_horizontal|center_vertical"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:text="@string/dummy_alarm_date_time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
