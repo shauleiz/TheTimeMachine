@@ -274,6 +274,48 @@ public class SetUpAlarmFragment extends Fragment {
 
     }
 
+    public boolean isToday(long alarmInMillis){
+
+        long now = System.currentTimeMillis();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(now);
+
+        // Get time of today's midnight (minus a second)
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        long lastSecondOfDay = calendar.getTimeInMillis();
+
+
+        return  (lastSecondOfDay >= alarmInMillis && now<=alarmInMillis);
+
+    }
+
+    public boolean isTomorrow(long alarmInMillis){
+        long now = System.currentTimeMillis();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(now+24*60*60*1000);
+
+        // Get time of tomorow's midnight (minus a second)
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        long lastSecondOfDay = calendar.getTimeInMillis();
+
+        // Get time of tomorow's first second
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        long firstSecondOfDay = calendar.getTimeInMillis();
+
+        return (alarmInMillis>=firstSecondOfDay && alarmInMillis<=lastSecondOfDay);
+
+    }
+public boolean isInThePast(long alarmInMillis){
+    long now = System.currentTimeMillis();
+    return (alarmInMillis<now);
+}
+
     // Set Display Area visible/gone
     private void setDisplayAreaVisible(boolean visible, View view){
 
@@ -289,6 +331,7 @@ public class SetUpAlarmFragment extends Fragment {
     @NonNull
     private String displayTargetAlarm(){
         String out = "";
+        long nowInMillis, targetInMillis;
 
         // Get time/date values
         int m = timePicker.getMinute();
@@ -298,24 +341,34 @@ public class SetUpAlarmFragment extends Fragment {
         int yy = setUpAlarmValues.getYear().getValue();
 
         // Create a calendar object and modify it
+        nowInMillis = System.currentTimeMillis();
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.setTimeInMillis(nowInMillis);
 
         if (dd>0 && mm>0 && yy>0)
             calendar.set(yy, mm, dd,h,m,0);
         else{
             calendar.set(Calendar.HOUR_OF_DAY, h);
             calendar.set(Calendar.MINUTE, m);
+            if (isInThePast(calendar.getTimeInMillis()))
+                calendar.setTimeInMillis(calendar.getTimeInMillis()+24*60*60*1000);
             //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
         }
 
 
         // Create an output string
         SimpleDateFormat format;
-        format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' HH:mm", Locale.US);
+        format = new SimpleDateFormat(getString(R.string.time_format_display), Locale.US);
         out = format.format(calendar.getTimeInMillis());
 
-        Log.d("THE_TIME_MACHINE", "displayTargetAlarm(): " + out);
+        // Determine Today/Tomorrow
+        if (isToday(calendar.getTimeInMillis()))
+            out+=getString(R.string.today_in_brackets);
+        else if (isTomorrow(calendar.getTimeInMillis())) {
+            out+=getString(R.string.tomorrow_in_brackets);
+        }
+
+        //Log.d("THE_TIME_MACHINE", "displayTargetAlarm(): " + out);
         return out;
     }
 
@@ -604,6 +657,7 @@ public class SetUpAlarmFragment extends Fragment {
         timePicker.setOnTimeChangedListener(this::onTimeChangedListener);
     }
 
+    // Called when Time Picker values change
     private void onTimeChangedListener(TimePicker timePicker, int hourOfDay, int minute) {
         targetAlarmText.setText(displayTargetAlarm());
     }
