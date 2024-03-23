@@ -2,9 +2,12 @@ package com.example.thetimemachine.UI;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.preference.PreferenceFragmentCompat;
@@ -31,19 +34,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
    @Override
    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-      setPreferencesFromResource(R.xml.preferences, rootKey);
 
-      context = TheTimeMachineApp.appContext;
-
-      // Display the Up arrow
       parent = (MainActivity)getActivity();
-
-      ActionBar actionBar = Objects.requireNonNull(parent).getSupportActionBar();
-      assert actionBar != null;
-      actionBar.setHomeAsUpIndicator(R.drawable.arrow_back_fill0_wght400_grad0_opsz24);
-      actionBar.setHomeActionContentDescription(R.string.description_up_arrow_back);
-      actionBar.setDisplayHomeAsUpEnabled(true);
-
+      setPreferencesFromResource(R.xml.preferences, rootKey);
+      context = TheTimeMachineApp.appContext;
 
      /* Context context = TheTimeMachineApp.appContext;
       findPreference(context.getString(R.string.key_h12_24)).setOnPreferenceClickListener(
@@ -54,6 +48,16 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
    }
 
+   @Override
+   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+      super.onViewCreated(view, savedInstanceState);
+      // Display the Up arrow
+      ActionBar actionBar = Objects.requireNonNull(parent).getSupportActionBar();
+      assert actionBar != null;
+      actionBar.setHomeAsUpIndicator(R.drawable.arrow_back_fill0_wght400_grad0_opsz24);
+      actionBar.setHomeActionContentDescription(R.string.description_up_arrow_back);
+      actionBar.setDisplayHomeAsUpEnabled(true);
+   }
 
    @Override
    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
