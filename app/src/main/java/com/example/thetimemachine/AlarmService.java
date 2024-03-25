@@ -27,7 +27,9 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.example.thetimemachine.Data.AlarmDao;
 import com.example.thetimemachine.Data.AlarmItem;
+import com.example.thetimemachine.Data.AlarmRoomDatabase;
 import com.example.thetimemachine.UI.StopSnoozeActivity;
 
 import java.util.Locale;
@@ -98,17 +100,24 @@ public class AlarmService  extends Service {
             Bundle b = intent.getExtras();
             if (b==null) return;
             AlarmItem alarm = new AlarmItem(b);
+            alarm.incSnoozeCounter();
 
             // Check if the alarm has exceeded the number of times it should go off
-            if (nRepeat<100 && alarm.getSnoozeCounter() > nRepeat)
+            if (nRepeat<100 && (alarm.getSnoozeCounter()) > nRepeat)
             {
+               alarm.resetSnoozeCounter();
                alarm.setActive(false);
                Context context = getApplicationContext();
                Intent stopIntent = new Intent(context, AlarmService.class);
                stopIntent.putExtras(b);
                AlarmReceiver.stopping(context, stopIntent );
             }
+
             alarm.Exec();
+            // Force update of UI
+            AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(getApplicationContext());
+            AlarmDao alarmDao = db.alarmDao();
+            AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
             selfKill = true;
             stopSelf();
          }

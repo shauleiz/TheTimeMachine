@@ -288,6 +288,7 @@ public class AlarmListFragment extends Fragment {
         // Get 'active' checkbox state and insert it to the Alarm
         boolean active = ((CheckBox)view).isChecked();
         item.setActive(active);
+        item.resetSnoozeCounter();
         // Update View Model
         parent.alarmViewModel.UpdateAlarm(item);
 

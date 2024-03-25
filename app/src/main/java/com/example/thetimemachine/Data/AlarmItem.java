@@ -108,7 +108,7 @@ public class AlarmItem {
       active = _active;
 
       // Uninitialized Snooze Counter
-      snoozeCounter = 0;
+      setSnoozeCounter(0);
 
       // Sanity check
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
@@ -137,7 +137,7 @@ public class AlarmItem {
       active = _active;
 
       // Uninitialized Snooze Counter
-      snoozeCounter = 0;
+      setSnoozeCounter(0);
 
       // Sanity check
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
@@ -218,7 +218,7 @@ public class AlarmItem {
 
    public void setActive(boolean active) {
       this.active = active;
-      resetSnoozeCounter();
+      //resetSnoozeCounter();
    }
 
    public void setHour(int hour) {this.hour = hour;}
@@ -232,9 +232,9 @@ public class AlarmItem {
    public void setSnoozeCounter(int snoozeCounter){ this.snoozeCounter = snoozeCounter;}
 
 
-   public void resetSnoozeCounter(){ this.snoozeCounter = 0;}
+   public void resetSnoozeCounter(){setSnoozeCounter(0);}
 
-   public void incSnoozeCounter(){ snoozeCounter++;}
+   public void incSnoozeCounter(){ setSnoozeCounter(getSnoozeCounter()+1);}
 
    // Set/reset One-of bit
    public void setOneOff(boolean set){ oneOff = set;}
@@ -404,6 +404,9 @@ public class AlarmItem {
          // Time of coming alarm (One-Off, possibly snoozing, possibly a future date)
          alarmTime = alarmTimeInMillis();
 
+         //  Increment Snooze Counter
+         //  incSnoozeCounter();
+
          // If recurring alarm - find the nearest one
          if (!isOneOff() && (weekDays!=0)) {
             Calendar cal = Calendar.getInstance();
@@ -429,10 +432,9 @@ public class AlarmItem {
          }
 
 
-         //  Increment Snooze Counter
+
          // To the intent, add EXTRAS that hold the entire alarm data in a bundle
          // Also, mark the bundle as ALARM
-         snoozeCounter++;
          intent.putExtras(getBundle());
          intent.putExtra(K_TYPE, ALARM);
 

@@ -46,6 +46,15 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@tools:sample/lorem[4:10]" />
 
+    <ImageView
+        android:id="@+id/Snooze_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:textColor="?android:attr/textColorPrimaryNoDisable"
+        app:layout_constraintTop_toTopOf="parent"
+        whatever:layout_constraintStart_toEndOf="@+id/AlarmActive"
+        whatever:srcCompat="@drawable/snooze_fill0_wght400_grad0_opsz24" />
+
     <TextView
         android:id="@+id/AlarmTime"
         android:layout_width="wrap_content"

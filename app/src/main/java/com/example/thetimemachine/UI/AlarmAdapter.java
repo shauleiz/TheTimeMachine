@@ -113,6 +113,17 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         // Label
         holder.AlarmLabel.setText(alarmItem.getLabel());
 
+        // Snooze Counter
+        int snoozeCounter = alarmItem.getSnoozeCounter();
+        String s = String.format(Locale.US,"Adapter.onBindViewHolder(): Label=%s - Hour=%d - Minute=%d - Snooze Counter=%d",
+              alarmItem.getLabel(), alarmItem.getHour(), alarmItem.getMinute(), snoozeCounter);
+        Log.d("THE_TIME_MACHINE", s);
+
+       if (snoozeCounter>0)
+           holder.SnoozeIcon.setVisibility(View.VISIBLE);
+       else
+           holder.SnoozeIcon.setVisibility(View.INVISIBLE);
+
         // Weekdays
         if (pref_first_day_of_week().equals("Su"))
             holder.WeekDays.setText(R.string.list_of_weekdays_SU);
@@ -274,7 +285,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView AlarmLabel, WeekDays, AlarmTime, amPm24h;
-        public ImageView BellView;
+        public ImageView BellView, SnoozeIcon;
         public CheckBox AlarmActive;
         public View itemView;
 
@@ -293,6 +304,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             AlarmTime = itemView.findViewById(R.id.AlarmTime);
             AlarmActive = itemView.findViewById(R.id.AlarmActive);
             amPm24h = itemView.findViewById(R.id.am_pm_24h);
+            SnoozeIcon = itemView.findViewById(R.id.Snooze_icon);
 
 
 

@@ -43,12 +43,18 @@ public class AlarmReceiver extends BroadcastReceiver {
       if (b==null) return;
       AlarmItem alarm = new AlarmItem(b);
 
+      alarm.incSnoozeCounter();
       alarm.Exec();
 
       /* DEBUG */
       String s = String.format(Locale.US,"Receiver.snoozing(): Label=%s - Hour=%d - Minute=%d - Snooze Counter=%d",
             b.getString(K_LABEL), b.getInt(K_HOUR), b.getInt(K_MINUTE), b.getInt(K_CSNOOZE));
       Log.d("THE_TIME_MACHINE", s);
+
+    // Force update of UI
+      AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
+      AlarmDao alarmDao = db.alarmDao();
+      AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
 
    }
 
