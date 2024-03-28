@@ -65,7 +65,19 @@
         android:title="@string/snooze_for"
         app:defaultValue="@string/one_minute"
         app:enabled="true"
-        app:icon="@drawable/music_note_fill0_wght400_grad0_opsz24"
+        app:icon="@drawable/snooze_fill0_wght400_grad0_opsz24"
+        app:singleLineTitle="false"
+        app:useSimpleSummaryProvider="true" />
+
+    <!-- Vibrate -->
+    <DropDownPreference
+        android:title="Vibration Pattern"
+        android:entries="@array/vibration_pattern_entries"
+        android:entryValues="@array/vibration_pattern_values"
+        android:key="@string/key_vibration_pattern"
+        app:defaultValue="@string/none_vibration"
+        app:icon="@drawable/vibration_opsz24"
+        app:enabled="true"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
 </PreferenceScreen>

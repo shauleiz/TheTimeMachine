@@ -46,6 +46,7 @@
     <string name="key_first_day">KEY_FIRST_DAY</string>
     <string name="key_ring_repeat">KEY_RING_REPEAT</string>
     <string name="key_snooze_duration">KEY_SNOOZE_DURATION</string>
+    <string name="key_vibration_pattern">KEY_VIBRATION_PATTERN</string>
     <string name="ring_duration">Ring for:</string>
     <string name="ring_duration_def">30Seconds</string>
     <string name="clock_format_def">h24</string>
@@ -56,6 +57,7 @@
     <string name="snooze_for">Snooze for:</string>
     <string name="times_5t">5T</string>
     <string name="one_minute">60Seconds</string>
+    <string name="none_vibration">None</string>
     <string name="duplicate_alarm_title">"Duplicate Alarm"</string>
     <string name="duplicate_alarm_message">"Only one alarm can be scheduled to a specified time"</string>
     <string name="check">check</string>
@@ -148,5 +150,25 @@
         <item>360Seconds</item>
         <item>420Seconds</item>
         <item>600Seconds</item>
+    </array>
+
+    <!-- Vibration Pattern  -->
+    <array name="vibration_pattern_entries">
+        <item>None</item>
+        <item>Single short beat</item>
+        <item>Three short beats</item>
+        <item>Single long beat</item>
+        <item>Repeating short beats</item>
+        <item>Repeating long beats</item>
+        <item>Continuous</item>
+    </array>
+    <array name="vibration_pattern_values">
+        <item>none</item>
+        <item>ssb</item>
+        <item>tsb</item>
+        <item>slb</item>
+        <item>rsb</item>
+        <item>rlb</item>
+         <item>cont</item>
     </array>
 </resources>

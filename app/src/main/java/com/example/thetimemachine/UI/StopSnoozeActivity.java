@@ -93,8 +93,8 @@ public class StopSnoozeActivity extends AppCompatActivity {
                   delayedHide(AUTO_HIDE_DELAY_MILLIS);
                }
                // Stop the Alarm by stopping the Alarm Service
-
                Context context = getApplicationContext();
+
                Intent stopIntent = new Intent(context, AlarmService.class);
                stopIntent.putExtras(extras);
                AlarmReceiver.stopping(context, stopIntent );

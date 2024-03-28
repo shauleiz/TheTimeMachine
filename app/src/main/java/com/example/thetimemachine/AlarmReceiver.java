@@ -16,6 +16,7 @@ import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
 import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
 import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
 import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
+import static com.example.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -52,9 +53,10 @@ public class AlarmReceiver extends BroadcastReceiver {
       Log.d("THE_TIME_MACHINE", s);
 
     // Force update of UI
-      AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
-      AlarmDao alarmDao = db.alarmDao();
-      AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
+      insertAlarm(alarm,  context);
+      //AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
+      //AlarmDao alarmDao = db.alarmDao();
+      //AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
 
    }
 
@@ -71,9 +73,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
          // One-time alarm becomes Inactive after been stopped
          alarm.setActive(false);
+         insertAlarm(alarm,  context);
+/*
          AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
          AlarmDao alarmDao = db.alarmDao();
          AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
+*/
 
 
       /* DEBUG */

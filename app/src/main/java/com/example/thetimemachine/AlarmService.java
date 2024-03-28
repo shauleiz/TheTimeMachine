@@ -1,18 +1,23 @@
 package com.example.thetimemachine;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
+import static androidx.core.content.ContextCompat.getSystemService;
 import static com.example.thetimemachine.Application.TheTimeMachineApp.CHANNEL_ID;
+import static com.example.thetimemachine.Application.TheTimeMachineApp.appContext;
 import static com.example.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.example.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.example.thetimemachine.Data.AlarmItem.K_MINUTE;
+import static com.example.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_duration;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_repeat;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_vibration_pattern;
 
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -22,6 +27,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.os.VibratorManager;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -79,11 +85,13 @@ public class AlarmService  extends Service {
 
       // TODO: Improve vibration timing , Add Vibration control (On/Off) and selection of patterns
       // this effect creates the vibration of default amplitude for 1000ms(1 sec)
-      final VibrationEffect vibrationEffect1 = VibrationEffect.createOneShot(15000, VibrationEffect.DEFAULT_AMPLITUDE);
+
 
       // it is safe to cancel other vibrations currently taking place
+      String pattern = pref_vibration_pattern();
       vibrator.cancel();
-      vibrator.vibrate(vibrationEffect1);
+      VibrateEffect(this, pattern);
+
 
       // TODO: If recurring alarm, schedule next alarm here
 
@@ -115,9 +123,10 @@ public class AlarmService  extends Service {
 
             alarm.Exec();
             // Force update of UI
-            AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(getApplicationContext());
+            insertAlarm(alarm,  getApplicationContext());
+            /*AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(getApplicationContext());
             AlarmDao alarmDao = db.alarmDao();
-            AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
+            AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));*/
             selfKill = true;
             stopSelf();
          }
@@ -168,7 +177,7 @@ public class AlarmService  extends Service {
    }
 
    // Create Pending intent for the Stop button that is on the notification
-   static public PendingIntent createStopPendingIntent(Context context, Bundle bundle){
+   public PendingIntent createStopPendingIntent(Context context, Bundle bundle){
       Intent stopIntent = new Intent(context, AlarmReceiver.class);
       stopIntent.setAction("stop");
       stopIntent.putExtras(bundle);
@@ -178,13 +187,134 @@ public class AlarmService  extends Service {
    }
 
    // Create Pending intent for the Snooze button that is on the notification
-   static public PendingIntent createSnoozePendingIntent(Context context, Bundle bundle){
+    public PendingIntent createSnoozePendingIntent(Context context, Bundle bundle){
       Intent snoozeIntent = new Intent(context, AlarmReceiver.class);
       snoozeIntent.setAction("snooze");
       snoozeIntent.putExtras(bundle);
       snoozeIntent.removeExtra(K_TYPE);
       snoozeIntent.putExtra(K_TYPE, "snooze");
       return PendingIntent.getBroadcast(context, 0, snoozeIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+   }
+
+   // Activate vibration effect
+   static public void VibrateEffect(Context context, String effect){
+
+      Vibrator vibrator;
+      long[] timings;
+      int[] amplitudes;
+      int repeatIndex;
+
+      VibrationEffect vibrationEffect;
+
+      // Get the Vibrator according to the Android version
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+         VibratorManager vibratorManager = (VibratorManager) context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
+         vibrator = vibratorManager.getDefaultVibrator();
+      } else {
+         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+      }
+
+      // Stop all other vibrations
+      vibrator.cancel();
+
+      // Create the Vibration Effect
+      boolean hasAmplitudeControl = vibrator.hasAmplitudeControl();
+      vibrationEffect = getVibrationEffect(effect, hasAmplitudeControl);
+
+      // Vibrate
+      vibrator.vibrate(vibrationEffect);
+   }
+
+   private static VibrationEffect getVibrationEffect(String effect, boolean hasAmplitudeControl) {
+      long[] timings;
+      int[] amplitudes;
+      int repeatIndex ;
+
+      if (effect.equals("ssb")) { // Single Short Beat
+         timings = new long[]  { 50, 50, 50, 50,  50,  100 };
+         amplitudes = new int[]{ 33, 51, 75, 113, 170, 255 };
+         repeatIndex = -1; // Do not repeat
+      }
+      else if (effect.equals("tsb")) { // Three Short Beats
+         timings = new long[]  {
+               50,  50,  50,  100, 50,  50,  400,
+               50,  50,  50,  100, 50,  50,  400,
+               50,  50,  50,  100, 50,  50,  400
+         };
+         amplitudes = new int[]{
+               33,  113, 170, 255, 170, 113, 0,
+               33,  113, 170, 255, 170, 113, 0,
+               33,  113, 170, 255, 170, 113, 0
+         };
+         repeatIndex = -1; // Do not repeat
+      }
+      else if (effect.equals("slb")) { // Single Long  Beat
+         timings = new long[]  {50,  50,  50,  400, 50,  50,  400};
+         amplitudes = new int[]{33,  113, 170, 255, 170, 113, 0};
+         repeatIndex = -1; // Do not repeat
+      }
+
+      else if (effect.equals("rsb")) { // Repeating Short Beats
+         timings = new long[]  {
+               50,  50,  50,  100, 50,  50,  400,
+               50,  50,  50,  100, 50,  50,  400,
+               50,  50,  50,  100, 50,  50,  400
+         };
+         amplitudes = new int[]{
+               33,  113, 170, 255, 170, 113, 0,
+               33,  113, 170, 255, 170, 113, 0,
+               33,  113, 170, 255, 170, 113, 0
+         };
+         repeatIndex = 0; // repeat
+      }
+      else if (effect.equals("rlb")) { // Repeating Long  Beats
+         timings = new long[]  {50,  50,  50,  400, 50,  50,  600};
+         amplitudes = new int[]{33,  113, 170, 255, 170, 113, 0};
+         repeatIndex = 0; // repeat
+      }
+
+      else if (effect.equals("cont")) { // Continuous buzz
+         timings = new long[]  { 50, 50, 50, 50,  50,  100 };
+         amplitudes = new int[]{ 33, 51, 75, 113, 170, 255 };
+         repeatIndex = 5; // Stay at max
+      }
+      else { // None
+         timings = new long[]{100};
+         amplitudes = new int[]{0};
+         repeatIndex = -1;
+      }
+
+      return VibrationEffect.createWaveform(timings, amplitudes, repeatIndex);
+
+   }
+
+   private VibrationEffect getCoarseVibrationEffect(String effect) {
+      long[] timings;
+      int[] amplitudes;
+      int repeatIndex;
+
+      if (effect.equals("ssb")) { // Single Short Beat
+         timings = new long[]  { 50, 50, 50, 50,  50,  100 };
+         amplitudes = new int[]{ 33, 51, 75, 113, 170, 255 };
+         repeatIndex = -1; // Stay at max
+      }
+      else if (effect.equals("cont")) { // Single Short Beat
+         timings = new long[]{0, 200};
+         repeatIndex = 1;
+      }
+      else { // None
+         timings = new long[]{0};
+         repeatIndex = 1;
+      }
+
+      return VibrationEffect.createWaveform(timings, repeatIndex);
+   }
+
+   private VibrationEffect getFineVibrationEffect(String effect) {
+      long[] timings = new long[] {50, 50, 50, 50,  50,  100};
+      int[] amplitudes = new int[]{33, 51, 75, 113, 170, 255};
+      int repeatIndex = -1; // Stay at max
+      return VibrationEffect.createWaveform(timings, amplitudes, repeatIndex);
    }
 
    // Create notification to display when Alarm goes off
@@ -259,4 +389,6 @@ public class AlarmService  extends Service {
             .setTimeoutAfter(-1)
             .build();
    }
+
+
 }

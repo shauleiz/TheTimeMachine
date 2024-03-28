@@ -1,25 +1,35 @@
 package com.example.thetimemachine.UI;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import static com.example.thetimemachine.Application.TheTimeMachineApp.appContext;
+
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import com.example.thetimemachine.AlarmService;
 import com.example.thetimemachine.Application.TheTimeMachineApp;
 import com.example.thetimemachine.R;
 
 import java.util.Objects;
 
 
-public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragmentCompat
+    implements SharedPreferences.OnSharedPreferenceChangeListener {
 
    MainActivity parent;
    Context context;
@@ -30,6 +40,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
    static String snoozeDuration;
    static String nHoursClock;
    static String firstDayWeek;
+   static String vibratePattern;
 
 
    @Override
@@ -37,7 +48,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
       parent = (MainActivity)getActivity();
       setPreferencesFromResource(R.xml.preferences, rootKey);
-      context = TheTimeMachineApp.appContext;
+      context = appContext;
+
+     /* Preference  vibrationPreference = findPreference(context.getString(R.string.key_vibration_pattern));
+      vibrationPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+         @Override
+         public boolean onPreferenceClick(Preference p) {
+            String key = p.getKey();
+            Log.d("THE_TIME_MACHINE", "onPreferenceClick() : KEY= "+ key);
+            return true;
+         }
+      });*/
 
      /* Context context = TheTimeMachineApp.appContext;
       findPreference(context.getString(R.string.key_h12_24)).setOnPreferenceClickListener(
@@ -76,10 +97,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
       if (key.equals(context.getString(R.string.key_h12_24)))  nHoursClock = newPref;
       else
       if (key.equals(context.getString(R.string.key_first_day)))  firstDayWeek = newPref;
+      else
+      if (key.equals(context.getString(R.string.key_vibration_pattern))) {
+         vibratePattern = newPref;
+         vibrate(vibratePattern);
+      }
 
       Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
-
-
 
    }
 
@@ -110,8 +134,31 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
       Objects.requireNonNull(getPreferenceManager().getSharedPreferences()).unregisterOnSharedPreferenceChangeListener(this);
    }
 
+   void vibrate(String pattern) {
+      Vibrator vibrator =  (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+      if (vibrator.hasAmplitudeControl())
+         Log.d("THE_TIME_MACHINE", "vibrate(): hasAmplitudeControl");
+      else
+         Log.d("THE_TIME_MACHINE", "vibrate(): No AmplitudeControl");
 
 
+      final Runnable r = new Runnable() {
+         public void run() {
+            Log.d("THE_TIME_MACHINE", "vibrate(): Cancelling Vibrator");
+            vibrator.cancel();
+         }
+      };
+
+      // Vibrate
+      AlarmService.VibrateEffect(getContext(), pattern);
+
+
+
+      Log.d("THE_TIME_MACHINE", "vibrate(): Start Handler");
+      // Call delayed stopping of the vibrator
+      Handler handler = new Handler();
+      handler.postDelayed(r, 5000);
+   }
 
    // Preference: 24h/12h Clock
    // Returns:
@@ -216,6 +263,21 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
       // Return 2 Char day
       return firstDayWeek;
+   }
+
+   public static  String pref_vibration_pattern(){
+      if (vibratePattern == null || vibratePattern.isEmpty()){
+         Context context = TheTimeMachineApp.appContext;
+         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+         vibratePattern = preferences.getString(context.getString(R.string.key_vibration_pattern), "");
+      }
+
+
+
+      if (vibratePattern.isEmpty())
+            return "none";
+         else
+            return vibratePattern;
    }
 
 }

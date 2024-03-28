@@ -41,4 +41,10 @@ public abstract class AlarmRoomDatabase extends RoomDatabase {
       }
       return alarmRoomDatabase;
    }
+
+   public static void insertAlarm(AlarmItem item, Context context){
+      AlarmRoomDatabase db = getDatabase(context);
+      AlarmDao alarmDao = db.alarmDao();
+      AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(item));
+   }
 }
