@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -41,6 +42,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
    static String nHoursClock;
    static String firstDayWeek;
    static String vibratePattern;
+   static String alarmSound;
 
 
    @Override
@@ -102,8 +104,13 @@ public class SettingsFragment extends PreferenceFragmentCompat
          vibratePattern = newPref;
          vibrate(vibratePattern);
       }
+      else
+      if  (key.equals(context.getString(R.string.key_alarm_sound))) {
+         alarmSound = newPref;
+        sound(alarmSound);
+      }
 
-      Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
+         Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
 
    }
 
@@ -159,6 +166,22 @@ public class SettingsFragment extends PreferenceFragmentCompat
       Handler handler = new Handler();
       handler.postDelayed(r, 5000);
    }
+
+  void sound(String pattern) {
+
+     final Runnable r = new Runnable() {
+        public void run() {
+           Log.d("THE_TIME_MACHINE", "vibrate(): Cancelling Vibrator");
+           AlarmService.sound(getContext(), null);
+        }
+     };
+
+     AlarmService.sound(getContext(), null);
+     AlarmService.sound(getContext(), pattern);
+     // Call delayed stopping of the sound
+     Handler handler = new Handler();
+     handler.postDelayed(r, 4000);
+  }
 
    // Preference: 24h/12h Clock
    // Returns:
@@ -278,6 +301,19 @@ public class SettingsFragment extends PreferenceFragmentCompat
             return "none";
          else
             return vibratePattern;
+   }
+
+   public static  String pref_alarm_sound(){
+      if (alarmSound == null || alarmSound.isEmpty()){
+         Context context = TheTimeMachineApp.appContext;
+         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+         alarmSound = preferences.getString(context.getString(R.string.key_alarm_sound), "");
+      }
+
+      if ( alarmSound.isEmpty())
+         return "oversimplified_alarm_clock_113180";
+      else
+         return alarmSound;
    }
 
 }

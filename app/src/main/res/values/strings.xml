@@ -47,6 +47,7 @@
     <string name="key_ring_repeat">KEY_RING_REPEAT</string>
     <string name="key_snooze_duration">KEY_SNOOZE_DURATION</string>
     <string name="key_vibration_pattern">KEY_VIBRATION_PATTERN</string>
+    <string name="key_alarm_sound">KEY_ALARM_SOUND</string>
     <string name="ring_duration">Ring for:</string>
     <string name="ring_duration_def">30Seconds</string>
     <string name="clock_format_def">h24</string>
@@ -57,7 +58,8 @@
     <string name="snooze_for">Snooze for:</string>
     <string name="times_5t">5T</string>
     <string name="one_minute">60Seconds</string>
-    <string name="none_vibration">None</string>
+    <string name="none_vibration">none</string>
+    <string name="rooster_alarm">rooster</string>
     <string name="duplicate_alarm_title">"Duplicate Alarm"</string>
     <string name="duplicate_alarm_message">"Only one alarm can be scheduled to a specified time"</string>
     <string name="check">check</string>
@@ -170,5 +172,27 @@
         <item>rsb</item>
         <item>rlb</item>
          <item>cont</item>
+    </array>
+
+    <!-- Alarm Sounds  -->
+    <array name="alarm_sound_entries">
+        <item>Standard Digital</item>
+        <item>Clock Alarm</item>
+        <item>Digital Alarm</item>
+        <item>Digital Beep-Beep</item>
+        <item>Electronic Alarm Clock</item>
+        <item>Old Mechanic Alarm Clock</item>
+        <item>Oversimplified Alarm Clock</item>
+        <item>Rooster</item>
+    </array>
+    <array name="alarm_sound_values">
+        <item>A30_seconds_alarm_72117</item>
+        <item>clock_alarm_8761</item>
+        <item>digital_alarm_2_151919</item>
+        <item>digital_alarm_clock_151920</item>
+        <item>electronic_alarm_clock_151927</item>
+        <item>old_mechanic_alarm_clock_140410</item>
+        <item>oversimplified_alarm_clock_113180</item>
+        <item>rooster</item>
     </array>
 </resources>

@@ -8,6 +8,7 @@ import static com.example.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.example.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.example.thetimemachine.Data.AlarmItem.K_MINUTE;
 import static com.example.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_alarm_sound;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_duration;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_repeat;
@@ -20,6 +21,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,12 +40,13 @@ import com.example.thetimemachine.Data.AlarmItem;
 import com.example.thetimemachine.Data.AlarmRoomDatabase;
 import com.example.thetimemachine.UI.StopSnoozeActivity;
 
+import java.io.File;
 import java.util.Locale;
 
 public class AlarmService  extends Service {
 
    private Vibrator vibrator;
-   private MediaPlayer mediaPlayer;
+   private static MediaPlayer mp;
    private boolean selfKill;
    Handler handler;
    Runnable autoSnooze;
@@ -80,17 +83,15 @@ public class AlarmService  extends Service {
 
 
       // Start audio and vibration
-      mediaPlayer.start();
+      sound(this, pref_alarm_sound());
 
-
-      // TODO: Improve vibration timing , Add Vibration control (On/Off) and selection of patterns
-      // this effect creates the vibration of default amplitude for 1000ms(1 sec)
 
 
       // it is safe to cancel other vibrations currently taking place
       String pattern = pref_vibration_pattern();
       vibrator.cancel();
       VibrateEffect(this, pattern);
+
 
 
       // TODO: If recurring alarm, schedule next alarm here
@@ -143,10 +144,6 @@ public class AlarmService  extends Service {
    public void onCreate() {
       super.onCreate();
 
-      // Create Media player - Plays Alarm
-      // TODO: Select MP3 to play
-      mediaPlayer = MediaPlayer.create(this, R.raw.alarm1000);
-      mediaPlayer.setLooping(true);
 
       // Create vibrator
       vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -159,9 +156,7 @@ public class AlarmService  extends Service {
    public void onDestroy() {
       super.onDestroy();
 
-      mediaPlayer.stop();
-      mediaPlayer.reset();
-      mediaPlayer.release();
+      sound(this, null);
       vibrator.cancel();
       Log.i("THE_TIME_MACHINE", "Service Destroyed. Self Kill = " + selfKill);
 
@@ -315,6 +310,34 @@ public class AlarmService  extends Service {
       int[] amplitudes = new int[]{33, 51, 75, 113, 170, 255};
       int repeatIndex = -1; // Stay at max
       return VibrationEffect.createWaveform(timings, amplitudes, repeatIndex);
+   }
+
+   public static void sound(Context context, String pattern){
+      //MediaPlayer mp = null;
+
+      if (mp!=null && mp.isPlaying() ) {
+         mp.stop();
+         mp.reset();
+      }
+
+      if (pattern!=null && !pattern.isEmpty()){
+         mp = MediaPlayer.create(context, getUriForMusicFilename(pattern));
+         mp.setLooping(true);
+         mp.start();
+      }
+
+   }
+   private  Uri getUriForMusicFilename(int id){
+
+      // Get Package Name
+      String packageName  = getPackageName();
+      return Uri.parse("android.resource://" + packageName + "/" + id);
+   }
+   static private  Uri getUriForMusicFilename(String filename){
+
+      // Get Package Name
+      String packageName  = appContext.getPackageName();
+      return Uri.parse("android.resource://" + packageName + "/raw/" + filename);
    }
 
    // Create notification to display when Alarm goes off

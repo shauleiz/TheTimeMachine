@@ -80,5 +80,17 @@
         app:enabled="true"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
+
+    <!-- Alarm Sounds -->
+    <DropDownPreference
+        android:title="Alarm Sounds"
+        android:entries="@array/alarm_sound_entries"
+        android:entryValues="@array/alarm_sound_values"
+        android:key="@string/key_alarm_sound"
+        app:defaultValue="@string/rooster_alarm"
+        app:icon="@drawable/library_music_fill0_wght400_grad0_opsz24"
+        app:enabled="true"
+        app:singleLineTitle="false"
+        app:useSimpleSummaryProvider="true" />
 </PreferenceScreen>
 
