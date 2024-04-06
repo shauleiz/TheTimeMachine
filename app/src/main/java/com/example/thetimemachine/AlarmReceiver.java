@@ -72,7 +72,9 @@ public class AlarmReceiver extends BroadcastReceiver {
       alarm.resetSnoozeCounter();
 
          // One-time alarm becomes Inactive after been stopped
+      if (alarm.isOneOff())
          alarm.setActive(false);
+
          insertAlarm(alarm,  context);
 /*
          AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);

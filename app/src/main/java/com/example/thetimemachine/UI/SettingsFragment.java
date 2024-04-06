@@ -44,6 +44,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
    static String vibratePattern;
    static String alarmSound;
 
+   static String sortType;
 
    @Override
    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -109,7 +110,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
          alarmSound = newPref;
         sound(alarmSound);
       }
-
+      else
+      if  (key.equals(context.getString(R.string.key_sort_type))) {
+         sortType = newPref;
+      }
          Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
 
    }
@@ -314,6 +318,19 @@ public class SettingsFragment extends PreferenceFragmentCompat
          return "oversimplified_alarm_clock_113180";
       else
          return alarmSound;
+   }
+
+   public static  String pref_sort_type(){
+      if (sortType == null || sortType.isEmpty()){
+         Context context = TheTimeMachineApp.appContext;
+         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+         sortType = preferences.getString(context.getString(R.string.key_sort_type), "");
+      }
+
+      if ( sortType.isEmpty())
+         return "";
+      else
+         return sortType;
    }
 
 }

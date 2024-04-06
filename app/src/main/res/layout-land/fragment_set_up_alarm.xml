@@ -99,7 +99,7 @@
                 android:text="Single" />
 
             <Button
-                android:id="@+id/futuredate_btn"
+                android:id="@+id/repeate_btn"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

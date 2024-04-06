@@ -11,18 +11,14 @@ import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.icu.text.SimpleDateFormat;
-import android.icu.util.ULocale;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -32,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -45,10 +40,8 @@ import com.example.thetimemachine.R;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -195,7 +188,7 @@ public class SetUpAlarmFragment extends Fragment {
         if (oneOff)
             repeating.check(R.id.oneoff_btn);
         else
-            repeating.check(R.id.futuredate_btn);
+            repeating.check(R.id.repeate_btn);
         setDaysVisible(!oneOff, view);
         setDisplayAreaVisible(oneOff, view);
 
@@ -255,7 +248,7 @@ public class SetUpAlarmFragment extends Fragment {
                     if (t)
                         repeating.check(R.id.oneoff_btn);
                     else
-                        repeating.check(R.id.futuredate_btn);
+                        repeating.check(R.id.repeate_btn);
                 }
             }
         });
@@ -578,10 +571,18 @@ public boolean isInThePast(long alarmInMillis){
         // Weekdays
         int weekdays = getDaysValues();
         item.setWeekDays(weekdays);
-        item.setOneOff(repeating.getCheckedButtonId()==R.id.oneoff_btn || (weekdays==0));
+        int btnChecked = repeating.getCheckedButtonId();
+        item.setOneOff(btnChecked == R.id.oneoff_btn || (weekdays==0));
+
+        // Future Date is true only if Repeating is off and the date picker was previously used
+        if (!item.isOneOff())
+            item.setFutureDate(false);
+        else
+            item.setFutureDate(setUpAlarmValues.isFutureDate().getValue());
+
 
         // Future Date
-        if (setUpAlarmValues.isFutureDate().getValue()  ){
+        if (item.isFutureDate() /* && (weekdays==0)*/){
             int yy = setUpAlarmValues.getYear().getValue();
             int mm = setUpAlarmValues.getMonth().getValue();
             int dd = setUpAlarmValues.getDayOfMonth().getValue();
@@ -589,13 +590,11 @@ public boolean isInThePast(long alarmInMillis){
                 item.setYear(yy);
                 item.setMonth(mm);
                 item.setDayOfMonth(dd);
-                item.setFutureDate(true);
             }
         }
 
-        // Get the position and the status of the entry to be created/updated
-        // And Add or Update the entry on the list
-        //int position = initParams.getInt("INIT_POSITION");
+
+        // Add or Update the entry on the list
        if (newAlarm /*|| position<0*/)
             alarmViewModel.AddAlarm(item);
         else

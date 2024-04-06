@@ -404,7 +404,7 @@
                 android:text="@string/single" />
 
             <Button
-                android:id="@+id/futuredate_btn"
+                android:id="@+id/repeate_btn"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

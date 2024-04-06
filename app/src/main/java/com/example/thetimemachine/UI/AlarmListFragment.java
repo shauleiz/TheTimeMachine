@@ -4,6 +4,8 @@ import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
+import static com.example.thetimemachine.UI.SettingsFragment.pref_sort_type;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -41,6 +43,8 @@ import com.example.thetimemachine.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -126,6 +130,7 @@ public class AlarmListFragment extends Fragment {
             public void onChanged(List<AlarmItem> m) {
                 if (m != null) {
                     alarmList = m;
+                    SortAlarmList(pref_sort_type());
                     alarmAdapter.UpdateAlarmAdapter(m);
                 }
             }
@@ -423,5 +428,82 @@ public class AlarmListFragment extends Fragment {
         // Duplicate only is exactly one item selected
         if (selectedItems.size() !=1 ) return;
         AlarmItemEdit( parent.alarmViewModel.getAlarmItemById(selectedItems.get(0)), false);
+    }
+
+    private void SortAlarmList(String comparatorType){
+        if (comparatorType.equals("alphabetically"))
+            Collections.sort(alarmList, new ascendSortByLabel());
+        else if (comparatorType.equals("by_alarm_time"))
+            Collections.sort(alarmList, new ascendSortByAlarmTime());
+        else
+            Collections.sort(alarmList, new descendSortByCreateTime());
+    }
+
+    class ascendSortByAlarmTime implements Comparator<AlarmItem>
+    {
+        // Used for sorting in ascending order of
+        // Alarm Time
+        public int compare(AlarmItem a, AlarmItem b)
+        {
+            return (int)(a.nextAlarmTimeInMillis() - b.nextAlarmTimeInMillis());
+        }
+    }
+
+    class descendSortByAlarmTime implements Comparator<AlarmItem>
+    {
+        // Used for sorting in descending order of
+        // Alarm Time
+        public int compare(AlarmItem a, AlarmItem b)
+        {
+            return (int)(b.nextAlarmTimeInMillis() - a.nextAlarmTimeInMillis());
+        }
+    }
+
+    class ascendSortByLabel implements Comparator<AlarmItem>
+    {
+        // Used for sorting in ascending order of Labels
+        // If labels are identical - sort by alarm time
+
+        public int compare(AlarmItem a, AlarmItem b)
+        {
+            int compLabel = a.getLabel().compareTo(b.getLabel());
+            if (compLabel!=0)
+                return compLabel;
+
+            return (int)(b.nextAlarmTimeInMillis() - a.nextAlarmTimeInMillis());
+        }
+    }
+
+    class descendSortByLabel implements Comparator<AlarmItem>
+    {
+        // Used for sorting in descending order of Labels
+        // If labels are identical - sort by alarm time
+
+        public int compare(AlarmItem b, AlarmItem a)
+        {
+            int compLabel = a.getLabel().compareTo(b.getLabel());
+            if (compLabel!=0)
+                return compLabel;
+
+            return (int)(b.nextAlarmTimeInMillis() - a.nextAlarmTimeInMillis());
+        }
+    }
+
+    class descendSortByCreateTime implements Comparator<AlarmItem>
+    {
+        // Used for sorting in descending order of Creation Time
+        public int compare(AlarmItem a, AlarmItem b)
+        {
+            return (int)(b.getCreateTime() - a.getCreateTime());
+        }
+    }
+
+    class ascendSortByCreateTime implements Comparator<AlarmItem>
+    {
+        // Used for sorting in descending order of Creation Time
+        public int compare(AlarmItem b, AlarmItem a)
+        {
+            return (int)(b.getCreateTime() - a.getCreateTime());
+        }
     }
 }

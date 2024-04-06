@@ -48,6 +48,7 @@
     <string name="key_snooze_duration">KEY_SNOOZE_DURATION</string>
     <string name="key_vibration_pattern">KEY_VIBRATION_PATTERN</string>
     <string name="key_alarm_sound">KEY_ALARM_SOUND</string>
+    <string name="key_sort_type">KEY_SORT_TYPE</string>
     <string name="ring_duration">Ring for:</string>
     <string name="ring_duration_def">30Seconds</string>
     <string name="clock_format_def">h24</string>
@@ -60,6 +61,7 @@
     <string name="one_minute">60Seconds</string>
     <string name="none_vibration">none</string>
     <string name="rooster_alarm">rooster</string>
+    <string name="by_time_set">by_time_set</string>
     <string name="duplicate_alarm_title">"Duplicate Alarm"</string>
     <string name="duplicate_alarm_message">"Only one alarm can be scheduled to a specified time"</string>
     <string name="check">check</string>
@@ -194,5 +196,17 @@
         <item>old_mechanic_alarm_clock_140410</item>
         <item>oversimplified_alarm_clock_113180</item>
         <item>rooster</item>
+    </array>
+
+    <!-- Sort Type -->
+    <array name="alarm_sort_entries">
+        <item>By time set</item>
+        <item>By alarm time</item>
+        <item>Alphabetically</item>
+    </array>
+    <array name="alarm_sort_values">
+        <item>by_time_set</item>
+        <item>by_alarm_time</item>
+        <item>alphabetically</item>
     </array>
 </resources>

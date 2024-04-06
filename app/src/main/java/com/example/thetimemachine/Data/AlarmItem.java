@@ -265,6 +265,12 @@ public class AlarmItem {
          calendar.set(Calendar.MONTH,month);
          calendar.set(Calendar.YEAR,year);
       }
+      // If this is a repeating alarm then the base date is now.
+      /*else if (!isOneOff()){
+         calendar.set(Calendar.DAY_OF_MONTH,0);
+         calendar.set(Calendar.MONTH,0);
+         calendar.set(Calendar.YEAR,0);
+      }*/
 
       // Calculate the snooze delay (if needed)
       int snoozeDelay;
@@ -284,6 +290,31 @@ public class AlarmItem {
       }
 
       return calendar.getTimeInMillis();
+   }
+
+   public long nextAlarmTimeInMillis(){
+
+      long alarmTime = alarmTimeInMillis();
+         Calendar cal = Calendar.getInstance();
+         cal.setTimeInMillis(alarmTime);
+
+         // Get the weekday of the currently assigned alarm time
+         // Convert it to Zero/Sunday based number: Sun=0 --> Sat=6
+         int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
+
+         // For each Day in weekDays (Only the ones that are ON):
+         // - Convert it to a number nDay ( One/Sunday based number: Sun=1 --> Sat=7)
+         // - Calculate nDay as the diff between this number and datOfWeek
+         // - If nDay is smaller than dayOfWeek add 7 to it
+         // - Multiple nDay by the number of milliseconds in a day and add it to calendar time
+         // - Set the alarm manager with this calender time
+         int[] days = {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY};
+         for (int i = 0; i < days.length; i++) {
+            int nDay = (dayOfWeek +i)%7;
+            if ((weekDays & days[nDay]) == 0) continue;
+            return i * DAY_IN_MILLIS + cal.getTimeInMillis();
+         }
+      return alarmTime;
    }
 
    public boolean isToday(){
@@ -401,35 +432,17 @@ public class AlarmItem {
          }
 
 
-         // Time of coming alarm (One-Off, possibly snoozing, possibly a future date)
-         alarmTime = alarmTimeInMillis();
+
 
          //  Increment Snooze Counter
          //  incSnoozeCounter();
 
          // If recurring alarm - find the nearest one
-         if (!isOneOff() && (weekDays!=0)) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(alarmTime);
-
-            // Get the weekday of the currently assigned alarm time
-            // Convert it to Zero/Sunday based number: Sun=0 --> Sat=6
-            int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
-
-            // For each Day in weekDays (Only the ones that are ON):
-            // - Convert it to a number nDay ( One/Sunday based number: Sun=1 --> Sat=7)
-            // - Calculate nDay as the diff between this number and datOfWeek
-            // - If nDay is smaller than dayOfWeek add 7 to it
-            // - Multiple nDay by the number of milliseconds in a day and add it to calendar time
-            // - Set the alarm manager with this calender time
-            int[] days = {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY};
-            for (int i = 0; i < days.length; i++) {
-               int nDay = (dayOfWeek +i)%7;
-               if ((weekDays & days[nDay]) == 0) continue;
-               alarmTime = i * DAY_IN_MILLIS + cal.getTimeInMillis();
-               break;
-            }
-         }
+         if (!isOneOff() && (weekDays!=0))
+            alarmTime = nextAlarmTimeInMillis();
+         else
+            // Time of coming alarm (One-Off, possibly snoozing, possibly a future date)
+            alarmTime = alarmTimeInMillis();
 
 
 
@@ -468,7 +481,7 @@ public class AlarmItem {
          calendar.setTimeInMillis(alarmTime);
          SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a", Locale.US);
          String toastText = String.format(context.getResources().getString(R.string.msg_alarm_set), hour, minute);
-         Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
+         Toast.makeText(context, format.format(calendar.getTime()), Toast.LENGTH_SHORT).show();
          Log.d("THE_TIME_MACHINE", "Exec(): " + toastText + " " + format.format(calendar.getTime()) );
 
       }

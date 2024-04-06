@@ -92,5 +92,18 @@
         app:enabled="true"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
+
+    <!-- Alarm Sounds -->
+    <DropDownPreference
+        android:title="Sort Alarms"
+        android:entries="@array/alarm_sort_entries"
+        android:entryValues="@array/alarm_sort_values"
+        android:key="@string/key_sort_type"
+        app:defaultValue="@string/by_time_set"
+        app:icon="@drawable/sort_fill0_wght400_grad0_opsz24"
+        app:enabled="true"
+        app:singleLineTitle="false"
+        app:useSimpleSummaryProvider="true" />
+
 </PreferenceScreen>
 
