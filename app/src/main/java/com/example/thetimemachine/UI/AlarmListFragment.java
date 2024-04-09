@@ -303,6 +303,7 @@ public class AlarmListFragment extends Fragment {
 
         // Stop ringing if unchecked
         if (!active){
+            b = item.getBundle();
             Context context = requireContext();
             Intent stopIntent = new Intent(context, AlarmService.class);
             stopIntent.putExtras(b);

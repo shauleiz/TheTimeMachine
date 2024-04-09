@@ -75,7 +75,7 @@ public class AlarmReceiver extends BroadcastReceiver {
       if (alarm.isOneOff())
          alarm.setActive(false);
 
-         insertAlarm(alarm,  context);
+      insertAlarm(alarm,  context);
 /*
          AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
          AlarmDao alarmDao = db.alarmDao();
