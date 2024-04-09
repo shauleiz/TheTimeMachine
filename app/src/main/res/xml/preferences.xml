@@ -69,9 +69,11 @@
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
 
+    <PreferenceCategory
+        android:title="@string/sound_and_vibration">
     <!-- Vibrate -->
     <DropDownPreference
-        android:title="Vibration Pattern"
+        android:title="@string/vibration_pattern"
         android:entries="@array/vibration_pattern_entries"
         android:entryValues="@array/vibration_pattern_values"
         android:key="@string/key_vibration_pattern"
@@ -83,7 +85,7 @@
 
     <!-- Alarm Sounds -->
     <DropDownPreference
-        android:title="Alarm Sounds"
+        android:title="@string/alarm_sounds"
         android:entries="@array/alarm_sound_entries"
         android:entryValues="@array/alarm_sound_values"
         android:key="@string/key_alarm_sound"
@@ -92,10 +94,13 @@
         app:enabled="true"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
+</PreferenceCategory>
 
-    <!-- Alarm Sounds -->
+    <PreferenceCategory
+        android:title="@string/alarm_list_conf">
+    <!-- Sort List -->
     <DropDownPreference
-        android:title="Sort Alarms"
+        android:title="@string/sort_alarms_list"
         android:entries="@array/alarm_sort_entries"
         android:entryValues="@array/alarm_sort_values"
         android:key="@string/key_sort_type"
@@ -104,6 +109,12 @@
         app:enabled="true"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            android:key="@string/key_sort_separate"
+            android:summary="Inactive alarms at the bottom"/>
+    </PreferenceCategory>
 
 </PreferenceScreen>
 

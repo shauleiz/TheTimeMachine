@@ -4,6 +4,7 @@ import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
+import static com.example.thetimemachine.UI.SettingsFragment.pref_sort_separate;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_sort_type;
 
 import android.content.Context;
@@ -130,7 +131,7 @@ public class AlarmListFragment extends Fragment {
             public void onChanged(List<AlarmItem> m) {
                 if (m != null) {
                     alarmList = m;
-                    SortAlarmList(pref_sort_type());
+                    SortAlarmList(pref_sort_type(), pref_sort_separate());
                     alarmAdapter.UpdateAlarmAdapter(m);
                 }
             }
@@ -430,21 +431,35 @@ public class AlarmListFragment extends Fragment {
         AlarmItemEdit( parent.alarmViewModel.getAlarmItemById(selectedItems.get(0)), false);
     }
 
-    private void SortAlarmList(String comparatorType){
+    private void SortAlarmList(String comparatorType, boolean separate){
         if (comparatorType.equals("alphabetically"))
-            Collections.sort(alarmList, new ascendSortByLabel());
+            Collections.sort(alarmList, new ascendSortByLabel(separate));
         else if (comparatorType.equals("by_alarm_time"))
-            Collections.sort(alarmList, new ascendSortByAlarmTime());
+            Collections.sort(alarmList, new ascendSortByAlarmTime(separate));
         else
-            Collections.sort(alarmList, new descendSortByCreateTime());
+            Collections.sort(alarmList, new descendSortByCreateTime(separate));
     }
 
     class ascendSortByAlarmTime implements Comparator<AlarmItem>
     {
         // Used for sorting in ascending order of
         // Alarm Time
+
+        boolean inactiveSeparate = true;
+        ascendSortByAlarmTime(boolean separate){
+            super();
+            inactiveSeparate = separate;
+        }
+
         public int compare(AlarmItem a, AlarmItem b)
         {
+            if (inactiveSeparate) {
+                if (b.isActive() && !a.isActive())
+                    return 1;
+                if (!b.isActive() && a.isActive())
+                    return -1;
+            }
+
             return (int)(a.nextAlarmTimeInMillis() - b.nextAlarmTimeInMillis());
         }
     }
@@ -463,12 +478,27 @@ public class AlarmListFragment extends Fragment {
     {
         // Used for sorting in ascending order of Labels
         // If labels are identical - sort by alarm time
+        boolean inactiveSeparate = true;
+
+        ascendSortByLabel(boolean separate){
+            super();
+            inactiveSeparate = separate;
+        }
+
 
         public int compare(AlarmItem a, AlarmItem b)
         {
+            if (inactiveSeparate) {
+                if (b.isActive() && !a.isActive())
+                    return 1;
+                if (!b.isActive() && a.isActive())
+                    return -1;
+            }
+
             int compLabel = a.getLabel().compareTo(b.getLabel());
             if (compLabel!=0)
                 return compLabel;
+
 
             return (int)(b.nextAlarmTimeInMillis() - a.nextAlarmTimeInMillis());
         }
@@ -492,8 +522,20 @@ public class AlarmListFragment extends Fragment {
     class descendSortByCreateTime implements Comparator<AlarmItem>
     {
         // Used for sorting in descending order of Creation Time
+        boolean inactiveSeparate = true;
+
+        descendSortByCreateTime(boolean separate){
+            super();
+            inactiveSeparate = separate;
+        }
         public int compare(AlarmItem a, AlarmItem b)
         {
+            if (inactiveSeparate) {
+                if (b.isActive() && !a.isActive())
+                    return 1;
+                if (!b.isActive() && a.isActive())
+                    return -1;
+            }
             return (int)(b.getCreateTime() - a.getCreateTime());
         }
     }

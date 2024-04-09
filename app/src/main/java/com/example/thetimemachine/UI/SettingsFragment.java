@@ -45,6 +45,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
    static String alarmSound;
 
    static String sortType;
+   static boolean sortSeparate;
 
    @Override
    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -88,33 +89,29 @@ public class SettingsFragment extends PreferenceFragmentCompat
       // Called everytime one of the Shared Preferences (Setting) has changed
       // Get the shared preferences and using the KEY find its new value
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-      String newPref = preferences.getString(key, "");
-      Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
+      //String newPref = preferences.getString(key, "");
+      //Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
 
-      if (key.equals(context.getString(R.string.key_ring_repeat))) ringRepeat = newPref;
-      else
-      if (key.equals(context.getString(R.string.key_ring_duration))) ringDuration = newPref;
-      else
-      if (key.equals(context.getString(R.string.key_snooze_duration))) snoozeDuration = newPref;
-      else
-      if (key.equals(context.getString(R.string.key_h12_24)))  nHoursClock = newPref;
-      else
-      if (key.equals(context.getString(R.string.key_first_day)))  firstDayWeek = newPref;
-      else
-      if (key.equals(context.getString(R.string.key_vibration_pattern))) {
-         vibratePattern = newPref;
+      if (key.equals(context.getString(R.string.key_ring_repeat))) ringRepeat = preferences.getString(key, "");
+      else if (key.equals(context.getString(R.string.key_ring_duration))) ringDuration = preferences.getString(key, "");
+      else if (key.equals(context.getString(R.string.key_snooze_duration))) snoozeDuration = preferences.getString(key, "");
+      else if (key.equals(context.getString(R.string.key_h12_24)))  nHoursClock = preferences.getString(key, "");
+      else if (key.equals(context.getString(R.string.key_first_day)))  firstDayWeek = preferences.getString(key, "");
+      else if (key.equals(context.getString(R.string.key_vibration_pattern))) {
+         vibratePattern = preferences.getString(key, "");
          vibrate(vibratePattern);
       }
-      else
-      if  (key.equals(context.getString(R.string.key_alarm_sound))) {
-         alarmSound = newPref;
+      else if  (key.equals(context.getString(R.string.key_alarm_sound))) {
+         alarmSound = preferences.getString(key, "");
         sound(alarmSound);
       }
-      else
-      if  (key.equals(context.getString(R.string.key_sort_type))) {
-         sortType = newPref;
+      else if  (key.equals(context.getString(R.string.key_sort_type))) {
+         sortType = preferences.getString(key, "");
       }
-         Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
+      else if (key.equals(context.getString(R.string.key_sort_separate)))
+         sortSeparate = preferences.getBoolean(key, false);
+
+        // Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
 
    }
 
@@ -331,6 +328,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
          return "";
       else
          return sortType;
+   }
+
+   public static boolean pref_sort_separate(){
+      Context context = TheTimeMachineApp.appContext;
+      SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+      return preferences.getBoolean(context.getString(R.string.key_sort_separate), false);
    }
 
 }
