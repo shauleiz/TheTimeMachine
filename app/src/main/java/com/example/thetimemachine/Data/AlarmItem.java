@@ -292,6 +292,16 @@ public class AlarmItem {
       return calendar.getTimeInMillis();
    }
 
+   public int getWeekdayOfNextAlarm(){
+      long alarmTime = nextAlarmTimeInMillis();
+      Calendar cal = Calendar.getInstance();
+      cal.setTimeInMillis(alarmTime);
+
+      // Get the weekday of the currently assigned alarm time
+      // Convert it to Zero/Sunday based number: Sun=0 --> Sat=6
+      return cal.get(Calendar.DAY_OF_WEEK) - 1;
+   }
+
    public long nextAlarmTimeInMillis(){
 
       long alarmTime = alarmTimeInMillis();

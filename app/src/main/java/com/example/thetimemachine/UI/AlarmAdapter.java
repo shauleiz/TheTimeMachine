@@ -14,9 +14,12 @@ import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -246,28 +249,19 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                   0, word.length(),
                   Spannable.SPAN_INCLUSIVE_INCLUSIVE);/* */
 
+
+            int indexOfNextDay = alarmItem.getWeekdayOfNextAlarm();
             int weekdays = alarmItem.getWeekDays();
-            if ((weekdays&SUNDAY) >0)
-                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[0], gen_array[1],
-                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if ((weekdays&MONDAY) >0)
-                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[2], gen_array[3],
-                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if ((weekdays&TUESDAY) >0)
-                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[4], gen_array[5],
-                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if ((weekdays&WEDNESDAY) >0)
-                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[6], gen_array[7],
-                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if ((weekdays&THURSDAY) >0)
-                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[8], gen_array[9],
-                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if ((weekdays&FRIDAY) >0)
-                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[10], gen_array[11],
-                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if ((weekdays&SATURDAY) >0)
-                word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[12], gen_array[13],
-                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            for (int day=0; day<7 ; day++){
+                if ((weekdays&(1<<day)) >0){
+                    word.setSpan(new ForegroundColorSpan(selectedTextColor),gen_array[day*2], gen_array[day*2+1],
+                          Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    // Mark the day of the next alarm
+                    if (day==indexOfNextDay){
+                        word.setSpan(new UnderlineSpan(), gen_array[day*2], gen_array[day*2+1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                }
+            }
 
         }
 
