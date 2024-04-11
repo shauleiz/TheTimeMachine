@@ -44,6 +44,7 @@
     <string name="alarm_list_conf">Alarm List</string>
     <string name="vibration_pattern">Vibration Pattern</string>
     <string name="alarm_sounds">Alarm Sounds</string>
+    <string name="gradual_volume_increase">Gradual Volume Increase</string>
     <string name="sort_alarms_list">Sort Alarms List</string>
     <string name="description_up_arrow_back">Back</string>
     <string name="key_h12_24">KEY_H12_24</string>
@@ -55,6 +56,7 @@
     <string name="key_alarm_sound">KEY_ALARM_SOUND</string>
     <string name="key_sort_type">KEY_SORT_TYPE</string>
     <string name="key_sort_separate">KEY_SORT_SEPARATE</string>
+    <string name="key_gradual_volume">KEY_GRADUAL_VOLUME</string>
     <string name="ring_duration">Ring for:</string>
     <string name="ring_duration_def">30Seconds</string>
     <string name="clock_format_def">h24</string>
@@ -194,7 +196,7 @@
         <item>Rooster</item>
     </array>
     <array name="alarm_sound_values">
-        <item>A30_seconds_alarm_72117</item>
+        <item>a30_seconds_alarm_72117</item>
         <item>clock_alarm_8761</item>
         <item>digital_alarm_2_151919</item>
         <item>digital_alarm_clock_151920</item>
@@ -215,4 +217,21 @@
         <item>by_alarm_time</item>
         <item>alphabetically</item>
     </array>
+
+    <!--    Snooze Time: Duration between two alarms (for Snooze & Auto-Snooze)-->
+    <array name="gradual_volume_entries">
+        <item>None</item>
+        <item>30 Seconds</item>
+        <item>1 Minute</item>
+        <item>2 Minute</item>
+        <item>3 Minutes</item>
+    </array>
+    <array name="gradual_volume_values">
+        <item>00Seconds</item>
+        <item>30Seconds</item>
+        <item>60Seconds</item>
+        <item>120Seconds</item>
+        <item>180Seconds</item>
+    </array>
+
 </resources>

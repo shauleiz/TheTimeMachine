@@ -9,6 +9,7 @@ import static com.example.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.example.thetimemachine.Data.AlarmItem.K_MINUTE;
 import static com.example.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_alarm_sound;
+import static com.example.thetimemachine.UI.SettingsFragment.pref_gradual_volume;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_duration;
 import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_repeat;
@@ -21,6 +22,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.media.VolumeShaper;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -83,7 +85,7 @@ public class AlarmService  extends Service {
 
 
       // Start audio and vibration
-      sound(this, pref_alarm_sound());
+      sound(this, pref_alarm_sound(), pref_gradual_volume());
 
 
 
@@ -313,20 +315,42 @@ public class AlarmService  extends Service {
    }
 
    public static void sound(Context context, String pattern){
-      //MediaPlayer mp = null;
+      sound(context, pattern, 0);
+   }
+   public static void sound(Context context, String pattern, int rampInMillis){
 
+      // Stop currently playing before playing a new pattern
       if (mp!=null && mp.isPlaying() ) {
          mp.stop();
          mp.reset();
       }
 
+
       if (pattern!=null && !pattern.isEmpty()){
          mp = MediaPlayer.create(context, getUriForMusicFilename(pattern));
          mp.setLooping(true);
          mp.start();
+
+         Log.d("THE_TIME_MACHINE", "Sound(): rampInMillis = " + rampInMillis);
+
+         if (rampInMillis>0) {
+            // Create a volume envelop
+            VolumeShaper.Configuration config =
+                  new VolumeShaper.Configuration.Builder()
+                        .setDuration(rampInMillis)
+                        .setCurve(new float[]{0.f, 1.f}, new float[]{0.f, 1.f})
+                        .setInterpolatorType(VolumeShaper.Configuration.INTERPOLATOR_TYPE_LINEAR)
+                        .build();
+
+            VolumeShaper volumeShaper = mp.createVolumeShaper(config);
+            volumeShaper.apply(VolumeShaper.Operation.PLAY);
+         }
+
       }
 
    }
+
+
    private  Uri getUriForMusicFilename(int id){
 
       // Get Package Name

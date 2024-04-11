@@ -46,6 +46,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
    static String sortType;
    static boolean sortSeparate;
+   static String gradualVolume;
 
    @Override
    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -110,8 +111,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
       }
       else if (key.equals(context.getString(R.string.key_sort_separate)))
          sortSeparate = preferences.getBoolean(key, false);
+      else if (key.equals(context.getString(R.string.key_gradual_volume))) {
+         gradualVolume = preferences.getString(key, "");
+      }
 
-        // Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
+      // Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
 
    }
 
@@ -336,4 +340,18 @@ public class SettingsFragment extends PreferenceFragmentCompat
       return preferences.getBoolean(context.getString(R.string.key_sort_separate), false);
    }
 
+   public static int  pref_gradual_volume(){
+      if (gradualVolume== null || gradualVolume.isEmpty()) {
+         Context context = TheTimeMachineApp.appContext;
+         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+         gradualVolume = preferences.getString(context.getString(R.string.key_gradual_volume), "");
+      }
+      // String is of type 15000Seconds
+      if (gradualVolume.length()<2)
+         return 30000;
+
+      // Extract the numeral part
+      String intValue = gradualVolume.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue) * 1000;
+   }
 }

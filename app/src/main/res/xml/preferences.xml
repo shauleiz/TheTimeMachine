@@ -94,6 +94,17 @@
         app:enabled="true"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
+
+        <DropDownPreference
+            android:title="@string/gradual_volume_increase"
+            android:entries="@array/gradual_volume_entries"
+            android:entryValues="@array/gradual_volume_values"
+            android:key="@string/key_gradual_volume"
+            app:defaultValue="30Seconds"
+            app:icon="@drawable/gradual_increase_opsz24"
+            app:singleLineTitle="false"
+            app:enabled="true"
+            app:useSimpleSummaryProvider="true"/>
 </PreferenceCategory>
 
     <PreferenceCategory
