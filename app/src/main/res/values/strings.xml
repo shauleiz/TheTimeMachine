@@ -186,6 +186,7 @@
 
     <!-- Alarm Sounds  -->
     <array name="alarm_sound_entries">
+        <item>No Sound (mute)</item>
         <item>Standard Digital</item>
         <item>Clock Alarm</item>
         <item>Digital Alarm</item>
@@ -196,6 +197,7 @@
         <item>Rooster</item>
     </array>
     <array name="alarm_sound_values">
+        <item>silent</item>
         <item>a30_seconds_alarm_72117</item>
         <item>clock_alarm_8761</item>
         <item>digital_alarm_2_151919</item>

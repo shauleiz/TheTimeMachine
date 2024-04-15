@@ -328,6 +328,8 @@ public class AlarmService  extends Service {
 
       if (pattern!=null && !pattern.isEmpty()){
          mp = MediaPlayer.create(context, getUriForMusicFilename(pattern));
+         if (mp == null)
+            return;
          mp.setLooping(true);
          mp.start();
 
