@@ -25,7 +25,9 @@ public class TheTimeMachineApp extends Application {
             NotificationManager.IMPORTANCE_HIGH
       );
 
+      serviceChannel.setSound(null, null);
       NotificationManager manager = getSystemService(NotificationManager.class);
       manager.createNotificationChannel(serviceChannel);
+
    }
 }

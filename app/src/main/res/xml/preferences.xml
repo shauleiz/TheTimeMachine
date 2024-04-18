@@ -124,7 +124,7 @@
         <SwitchPreferenceCompat
             app:defaultValue="false"
             android:key="@string/key_sort_separate"
-            android:summary="Inactive alarms at the bottom"/>
+            android:title="Inactive alarms at the bottom"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
