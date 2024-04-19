@@ -1,4 +1,4 @@
-package com.example.thetimemachine;
+package com.product.thetimemachine;
 
 import android.content.Intent;
 import android.os.IBinder;
@@ -9,8 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.Observer;
 
-import com.example.thetimemachine.Data.AlarmItem;
-import com.example.thetimemachine.Data.AlarmRepository;
+import com.product.thetimemachine.Data.AlarmItem;
+import com.product.thetimemachine.Data.AlarmRepository;
 
 import java.util.List;
 

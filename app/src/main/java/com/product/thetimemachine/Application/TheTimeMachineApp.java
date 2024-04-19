@@ -1,4 +1,4 @@
-package com.example.thetimemachine.Application;
+package com.product.thetimemachine.Application;
 
 import android.app.Application;
 import android.app.NotificationChannel;

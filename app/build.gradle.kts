@@ -3,15 +3,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.thetimemachine"
+    namespace = "com.product.thetimemachine"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.thetimemachine"
+        applicationId = "com.product.thetimemachine"
         minSdk = 27
         targetSdk = 34
-        versionCode = 1002
-        versionName = "1.0.3"
+        versionCode = 1004
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

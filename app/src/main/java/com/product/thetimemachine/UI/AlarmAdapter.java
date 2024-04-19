@@ -1,24 +1,15 @@
-package com.example.thetimemachine.UI;
+package com.product.thetimemachine.UI;
 
 import static android.widget.TextView.BufferType.SPANNABLE;
 import static androidx.core.content.ContextCompat.getColor;
-import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
-import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
-import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
-import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
-import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
-import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
-import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,8 +22,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.thetimemachine.Data.AlarmItem;
-import com.example.thetimemachine.R;
+import com.product.thetimemachine.Data.AlarmItem;
+import com.product.thetimemachine.R;
 import com.google.android.material.color.MaterialColors;
 
 import java.text.SimpleDateFormat;

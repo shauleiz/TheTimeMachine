@@ -1,4 +1,4 @@
-package com.example.thetimemachine;
+package com.product.thetimemachine;
 
 import android.app.Application;
 import android.util.Log;
@@ -7,8 +7,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.thetimemachine.Data.AlarmItem;
-import com.example.thetimemachine.Data.AlarmRepository;
+import com.product.thetimemachine.Data.AlarmItem;
+import com.product.thetimemachine.Data.AlarmRepository;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -1,22 +1,22 @@
-package com.example.thetimemachine;
+package com.product.thetimemachine;
 
-import static com.example.thetimemachine.AlarmService.K_TYPE;
-import static com.example.thetimemachine.AlarmService.SNOOZE;
-import static com.example.thetimemachine.AlarmService.STOP;
-import static com.example.thetimemachine.Data.AlarmItem.FRIDAY;
-import static com.example.thetimemachine.Data.AlarmItem.K_CSNOOZE;
-import static com.example.thetimemachine.Data.AlarmItem.K_HOUR;
-import static com.example.thetimemachine.Data.AlarmItem.K_LABEL;
-import static com.example.thetimemachine.Data.AlarmItem.K_MINUTE;
-import static com.example.thetimemachine.Data.AlarmItem.K_ONEOFF;
-import static com.example.thetimemachine.Data.AlarmItem.K_WEEKDAYS;
-import static com.example.thetimemachine.Data.AlarmItem.MONDAY;
-import static com.example.thetimemachine.Data.AlarmItem.SATURDAY;
-import static com.example.thetimemachine.Data.AlarmItem.SUNDAY;
-import static com.example.thetimemachine.Data.AlarmItem.THURSDAY;
-import static com.example.thetimemachine.Data.AlarmItem.TUESDAY;
-import static com.example.thetimemachine.Data.AlarmItem.WEDNESDAY;
-import static com.example.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
+import static com.product.thetimemachine.AlarmService.K_TYPE;
+import static com.product.thetimemachine.AlarmService.SNOOZE;
+import static com.product.thetimemachine.AlarmService.STOP;
+import static com.product.thetimemachine.Data.AlarmItem.FRIDAY;
+import static com.product.thetimemachine.Data.AlarmItem.K_CSNOOZE;
+import static com.product.thetimemachine.Data.AlarmItem.K_HOUR;
+import static com.product.thetimemachine.Data.AlarmItem.K_LABEL;
+import static com.product.thetimemachine.Data.AlarmItem.K_MINUTE;
+import static com.product.thetimemachine.Data.AlarmItem.K_ONEOFF;
+import static com.product.thetimemachine.Data.AlarmItem.K_WEEKDAYS;
+import static com.product.thetimemachine.Data.AlarmItem.MONDAY;
+import static com.product.thetimemachine.Data.AlarmItem.SATURDAY;
+import static com.product.thetimemachine.Data.AlarmItem.SUNDAY;
+import static com.product.thetimemachine.Data.AlarmItem.THURSDAY;
+import static com.product.thetimemachine.Data.AlarmItem.TUESDAY;
+import static com.product.thetimemachine.Data.AlarmItem.WEDNESDAY;
+import static com.product.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,9 +25,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.thetimemachine.Data.AlarmDao;
-import com.example.thetimemachine.Data.AlarmItem;
-import com.example.thetimemachine.Data.AlarmRoomDatabase;
+import com.product.thetimemachine.Data.AlarmItem;
 
 import java.util.Calendar;
 import java.util.Locale;

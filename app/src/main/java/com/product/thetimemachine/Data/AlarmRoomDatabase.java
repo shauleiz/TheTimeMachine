@@ -1,4 +1,4 @@
-package com.example.thetimemachine.Data;
+package com.product.thetimemachine.Data;
 
 import android.content.Context;
 

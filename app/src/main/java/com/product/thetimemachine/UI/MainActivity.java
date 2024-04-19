@@ -1,4 +1,4 @@
-package com.example.thetimemachine.UI;
+package com.product.thetimemachine.UI;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -14,8 +14,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.thetimemachine.AlarmViewModel;
-import com.example.thetimemachine.R;
+import com.product.thetimemachine.AlarmViewModel;
+import com.product.thetimemachine.R;
 
 
 public class MainActivity extends AppCompatActivity {

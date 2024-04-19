@@ -1,4 +1,4 @@
-package com.example.thetimemachine;
+package com.product.thetimemachine;
 
 import org.junit.Test;
 

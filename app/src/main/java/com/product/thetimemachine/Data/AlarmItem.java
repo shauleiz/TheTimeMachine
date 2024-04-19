@@ -1,8 +1,8 @@
-package com.example.thetimemachine.Data;
+package com.product.thetimemachine.Data;
 
-import static com.example.thetimemachine.AlarmService.ALARM;
-import static com.example.thetimemachine.AlarmService.K_TYPE;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_snooze_duration;
+import static com.product.thetimemachine.AlarmService.ALARM;
+import static com.product.thetimemachine.AlarmService.K_TYPE;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_snooze_duration;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -17,10 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.example.thetimemachine.AlarmReceiver;
-import com.example.thetimemachine.Application.TheTimeMachineApp;
-import com.example.thetimemachine.R;
-import com.example.thetimemachine.UI.MainActivity;
+import com.product.thetimemachine.AlarmReceiver;
+import com.product.thetimemachine.Application.TheTimeMachineApp;
+import com.product.thetimemachine.R;
+import com.product.thetimemachine.UI.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

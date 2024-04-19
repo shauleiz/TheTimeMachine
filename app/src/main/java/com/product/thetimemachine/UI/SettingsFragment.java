@@ -1,14 +1,9 @@
-package com.example.thetimemachine.UI;
+package com.product.thetimemachine.UI;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
-import static com.example.thetimemachine.Application.TheTimeMachineApp.appContext;
+import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -18,13 +13,12 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-import com.example.thetimemachine.AlarmService;
-import com.example.thetimemachine.Application.TheTimeMachineApp;
-import com.example.thetimemachine.R;
+import com.product.thetimemachine.AlarmService;
+import com.product.thetimemachine.Application.TheTimeMachineApp;
+import com.product.thetimemachine.R;
 
 import java.util.Objects;
 

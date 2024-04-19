@@ -1,25 +1,23 @@
-package com.example.thetimemachine;
+package com.product.thetimemachine;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
-import static androidx.core.content.ContextCompat.getSystemService;
-import static com.example.thetimemachine.Application.TheTimeMachineApp.CHANNEL_ID;
-import static com.example.thetimemachine.Application.TheTimeMachineApp.appContext;
-import static com.example.thetimemachine.Data.AlarmItem.K_HOUR;
-import static com.example.thetimemachine.Data.AlarmItem.K_LABEL;
-import static com.example.thetimemachine.Data.AlarmItem.K_MINUTE;
-import static com.example.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_alarm_sound;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_gradual_volume;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_duration;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_ring_repeat;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_vibration_pattern;
+import static com.product.thetimemachine.Application.TheTimeMachineApp.CHANNEL_ID;
+import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
+import static com.product.thetimemachine.Data.AlarmItem.K_HOUR;
+import static com.product.thetimemachine.Data.AlarmItem.K_LABEL;
+import static com.product.thetimemachine.Data.AlarmItem.K_MINUTE;
+import static com.product.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_alarm_sound;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_gradual_volume;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_ring_duration;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_ring_repeat;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_vibration_pattern;
 
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.VolumeShaper;
@@ -37,12 +35,9 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.example.thetimemachine.Data.AlarmDao;
-import com.example.thetimemachine.Data.AlarmItem;
-import com.example.thetimemachine.Data.AlarmRoomDatabase;
-import com.example.thetimemachine.UI.StopSnoozeActivity;
+import com.product.thetimemachine.Data.AlarmItem;
+import com.product.thetimemachine.UI.StopSnoozeActivity;
 
-import java.io.File;
 import java.util.Locale;
 
 public class AlarmService  extends Service {

@@ -1,4 +1,4 @@
-package com.example.thetimemachine.Data;
+package com.product.thetimemachine.Data;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;

@@ -1,11 +1,11 @@
-package com.example.thetimemachine.UI;
+package com.product.thetimemachine.UI;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
-import static com.example.thetimemachine.UI.SettingsFragment.pref_sort_separate;
-import static com.example.thetimemachine.UI.SettingsFragment.pref_sort_type;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_sort_separate;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_sort_type;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,10 +37,10 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.thetimemachine.AlarmReceiver;
-import com.example.thetimemachine.AlarmService;
-import com.example.thetimemachine.Data.AlarmItem;
-import com.example.thetimemachine.R;
+import com.product.thetimemachine.AlarmReceiver;
+import com.product.thetimemachine.AlarmService;
+import com.product.thetimemachine.Data.AlarmItem;
+import com.product.thetimemachine.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -48,7 +48,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 
 public class AlarmListFragment extends Fragment {

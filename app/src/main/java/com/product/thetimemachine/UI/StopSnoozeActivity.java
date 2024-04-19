@@ -1,6 +1,6 @@
-package com.example.thetimemachine.UI;
+package com.product.thetimemachine.UI;
 
-import static com.example.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
+import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
@@ -18,10 +18,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.thetimemachine.AlarmReceiver;
-import com.example.thetimemachine.AlarmService;
-import com.example.thetimemachine.R;
-import com.example.thetimemachine.databinding.ActivityStopSnoozeBinding;
+import com.product.thetimemachine.AlarmReceiver;
+import com.product.thetimemachine.AlarmService;
+import com.product.thetimemachine.R;
+import com.product.thetimemachine.databinding.ActivityStopSnoozeBinding;
 
 import java.util.Locale;
 import java.util.Objects;
