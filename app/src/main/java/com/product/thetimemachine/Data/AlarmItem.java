@@ -41,8 +41,8 @@ public class AlarmItem {
    private boolean futureDate;
 
 
-   //private String SoundParam1, SoundParam2, SoundParam3;
-   //private String VibrateParam1, VibrateParam2, VibrateParam3;
+   private String SoundParam1, SoundParam2, SoundParam3;
+   private String VibrateParam1, VibrateParam2, VibrateParam3;
 
    public static final String K_HOUR = "HOUR";
    public static final String K_MINUTE = "MINUTE";
@@ -193,7 +193,7 @@ public class AlarmItem {
 
    public int getYear() {return year;}
    public boolean isFutureDate() {return futureDate;}
-/*
+/**/
    public String getSoundParam1() {
       return SoundParam1;
    }
@@ -241,7 +241,7 @@ public class AlarmItem {
    public void setVibrateParam3(String vibrateParam3) {
       VibrateParam3 = vibrateParam3;
    }
-*/
+
 
    public Bundle getBundle(){
       Bundle b = new Bundle();
