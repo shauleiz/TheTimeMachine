@@ -2,6 +2,7 @@ package com.product.thetimemachine.Data;
 
 import android.content.Context;
 
+import androidx.room.AutoMigration;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -9,7 +10,12 @@ import androidx.room.RoomDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {AlarmItem.class}, version = 1, exportSchema = false)
+@Database(
+      entities = {AlarmItem.class},
+      version = 1,
+      //autoMigrations = {@AutoMigration(from = 1, to = 2)},
+      exportSchema = true)
+
 public abstract class AlarmRoomDatabase extends RoomDatabase {
    public abstract AlarmDao alarmDao();
 

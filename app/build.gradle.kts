@@ -1,5 +1,11 @@
 plugins {
     id("com.android.application")
+    kotlin("kapt") version "1.9.23"
+    id ("androidx.room") version "2.6.1"
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 android {
@@ -10,10 +16,18 @@ android {
         applicationId = "com.product.thetimemachine"
         minSdk = 27
         targetSdk = 34
-        versionCode = 1004
-        versionName = "1.0.4"
+        versionCode = 1005
+        versionName = "1.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
+
     }
 
     buildTypes {
@@ -63,6 +77,5 @@ dependencies {
     //implementation ("android.arch.persistence.room:compiler:2.6.0")
     //kapt  ("androidx.room:room-compiler:2.4.2")
     implementation ("com.google.android.material:material:1.11.0")
-
-
+    implementation ("androidx.room:room-gradle-plugin:2.6.1")
 }
