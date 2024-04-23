@@ -61,6 +61,7 @@ dependencies {
     implementation ("androidx.activity:activity:1.8.2")
     implementation ("androidx.fragment:fragment:1.6.2")
     implementation("androidx.lifecycle:lifecycle-service:2.7.0")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
 
     testImplementation("junit:junit:4.13.2")
