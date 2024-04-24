@@ -1,6 +1,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <PreferenceCategory
+        android:title="@string/time_format"
+        android:key="@string/key_time_format">
     <!--        Clock Format - 24/12 Hours -->
     <DropDownPreference
         android:layout_width="wrap_content"
@@ -27,7 +30,10 @@
         app:enabled="true"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/ring_and_snooze">
     <!--        Ring Duration  -->
     <DropDownPreference
         android:layout_width="wrap_content"
@@ -68,7 +74,7 @@
         app:icon="@drawable/snooze_fill0_wght400_grad0_opsz24"
         app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
-
+    </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/sound_and_vibration">
     <!-- Vibrate -->
@@ -108,7 +114,8 @@
 </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/alarm_list_conf">
+        android:title="@string/alarm_list_conf"
+        android:key="@string/key_alarm_list">
     <!-- Sort List -->
     <DropDownPreference
         android:title="@string/sort_alarms_list"

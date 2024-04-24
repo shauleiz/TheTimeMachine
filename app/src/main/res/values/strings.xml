@@ -57,6 +57,7 @@
     <string name="key_sort_type">KEY_SORT_TYPE</string>
     <string name="key_sort_separate">KEY_SORT_SEPARATE</string>
     <string name="key_gradual_volume">KEY_GRADUAL_VOLUME</string>
+    <string name="key_time_format">KEY_TIME_FORMAT</string>
     <string name="ring_duration">Ring for:</string>
     <string name="ring_duration_def">30Seconds</string>
     <string name="clock_format_def">h24</string>
@@ -86,6 +87,9 @@
     <string name="cancel_as_negative">Cancel</string>
     <string name="weekly">Weekly</string>
     <string name="single">Single</string>
+    <string name="time_format">Time Format</string>
+    <string name="ring_and_snooze">Ring and Snooze</string>
+    <string name="key_alarm_list">KEY_ALARM_LIST</string>
 
 
     <array name="clock_12_24_entries">

@@ -142,6 +142,19 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
         alarmViewModel = parent.alarmViewModel;
 
+        // Insert the preference fragment
+        /**/
+        Bundle b = new Bundle();
+        b.putInt("Type", 1);
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.beginTransaction()
+              .replace(R.id.fragment_pref, SettingsFragment.class, b)
+              .setReorderingAllowed(true)
+              .addToBackStack("SettingsFragment")
+              .commit();
+
+
+
         // Get the handle to the Add Alarm button
         // Then define what to do when clicked
         Button ok_Button = view.findViewById(R.id.OK_Btn);

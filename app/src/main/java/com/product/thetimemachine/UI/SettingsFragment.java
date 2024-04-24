@@ -8,11 +8,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
@@ -29,6 +32,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
    MainActivity parent;
    Context context;
 
+   int Type = 0;
+
    static String ringRepeat;
    static String ringDuration;
 
@@ -42,6 +47,33 @@ public class SettingsFragment extends PreferenceFragmentCompat
    static boolean sortSeparate;
    static String gradualVolume;
 
+
+   @Override
+   public void onCreate(@Nullable Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+
+      // Check which type of preference page this is:
+      // 0: App preferences
+      // 1: Item preferences
+      Bundle b =this.getArguments();
+      if (b!=null ) {
+         Type = b.getInt("Type",0);
+      }
+   }
+
+   @NonNull
+   @Override
+   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+      if (Type == 1) { // Item preferences
+         PreferenceCategory mCategory;
+         mCategory= (PreferenceCategory) findPreference(getString(R.string.key_time_format));
+         mCategory.setVisible(false);
+         mCategory = (PreferenceCategory) findPreference(getString(R.string.key_alarm_list));
+         mCategory.setVisible(false);
+      }
+      return super.onCreateView(inflater, container, savedInstanceState);
+   }
+
    @Override
    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
 
@@ -49,22 +81,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
       setPreferencesFromResource(R.xml.preferences, rootKey);
       context = appContext;
 
-     /* Preference  vibrationPreference = findPreference(context.getString(R.string.key_vibration_pattern));
-      vibrationPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-         @Override
-         public boolean onPreferenceClick(Preference p) {
-            String key = p.getKey();
-            Log.d("THE_TIME_MACHINE", "onPreferenceClick() : KEY= "+ key);
-            return true;
-         }
-      });*/
-
-     /* Context context = TheTimeMachineApp.appContext;
-      findPreference(context.getString(R.string.key_h12_24)).setOnPreferenceClickListener(
-            reference -> {
-               Log.d("THE_TIME_MACHINE", "H12/H24 Preference: " + reference.getKey());
-         return true;
-      });*/
 
    }
 
@@ -77,6 +93,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
       actionBar.setHomeAsUpIndicator(R.drawable.arrow_back_fill0_wght400_grad0_opsz24);
       actionBar.setHomeActionContentDescription(R.string.description_up_arrow_back);
       actionBar.setDisplayHomeAsUpEnabled(true);
+
+
+
    }
 
    @Override
