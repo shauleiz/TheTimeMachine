@@ -382,7 +382,7 @@ public class AlarmItem {
       // Calculate the snooze delay (if needed)
       int snoozeDelay;
       if (snoozeCounter >0)
-         snoozeDelay = pref_snooze_duration();
+         snoozeDelay = Str2Int_SnoozeDuration(); // Preference
       else
          snoozeDelay = 0;
 
@@ -399,6 +399,15 @@ public class AlarmItem {
       return calendar.getTimeInMillis();
    }
 
+   public int Str2Int_SnoozeDuration(){
+      // String is of type 15000Seconds
+      if (snoozeDuration.length() < 4)
+         return 60000;
+
+   // Extract the numeral part and convert from seconds to milliseconds
+   String intValue = snoozeDuration.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue)*1000;
+   }
 
    /* Get the weekday of the currently assigned alarm time
     Convert it to Zero/Sunday based number: Sun=0 --> Sat=6 */
