@@ -5,6 +5,7 @@ import static com.product.thetimemachine.Application.TheTimeMachineApp.appContex
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,22 +39,39 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
       // Set the current SharedPreferences file name
       getPreferenceManager().setSharedPreferencesName(getString(R.string.ITEM_PREF_FILENAME));
 
+      // Get the SharedPreferences global parameter
+      preferences = context.getSharedPreferences(getString(R.string.ITEM_PREF_FILENAME), Context.MODE_PRIVATE);
+
+      // Copy the preferences for this item from AlarmItem to Item Preferences
+      SetItemPreferences();
+
       // Load the preferences XML (Global XML - irrelevant entries will be hidden in onCreateView()
       setPreferencesFromResource(R.xml.preferences, rootKey);
 
-      // Get the SharedPreferences global parameter
-      preferences = context.getSharedPreferences(getString(R.string.ITEM_PREF_FILENAME), Context.MODE_PRIVATE);
-      // Populate Item Preferences - data is passed through setUpAlarmValues
-      //preferences.edit().putString(context.getString(R.string.key_snooze_duration),setUpAlarmValues.getSnoozeDuration().getValue());
-      //preferences.edit().commit();
+   }
 
+   private void SetItemPreferences() {
+      // Get the Item Preferences file
+      Context context = getContext();
+      SharedPreferences preferences = context.getSharedPreferences(getString(R.string.ITEM_PREF_FILENAME), Context.MODE_PRIVATE);
+      // Create an Editor
+      SharedPreferences.Editor editor = preferences.edit();
 
+      // Preferences
+      // Copy preferences
+      editor.putString(context.getString(R.string.key_snooze_duration), setUpAlarmValues.getSnoozeDuration().getValue());
+
+      // Now, commit changes
+      editor.commit();
    }
 
    @Override
    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
       // Copy preferences to SetupAlarmValues
-      setUpAlarmValues.setSnoozeDuration(preferences.getString(context.getString(R.string.key_snooze_duration), ""));
+      if (key.equals(context.getString(R.string.key_snooze_duration))) {
+         setUpAlarmValues.setSnoozeDuration(preferences.getString(key, ""));
+         Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged()[1] KEY= "+ key + "   Key from String: " + context.getString(R.string.key_snooze_duration));
+      }
 
    }
    @NonNull

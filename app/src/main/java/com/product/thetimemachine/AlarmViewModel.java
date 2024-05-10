@@ -1,12 +1,16 @@
 package com.product.thetimemachine;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.preference.PreferenceManager;
 
+import com.product.thetimemachine.Application.TheTimeMachineApp;
 import com.product.thetimemachine.Data.AlarmItem;
 import com.product.thetimemachine.Data.AlarmRepository;
 
@@ -192,7 +196,10 @@ public class AlarmViewModel extends AndroidViewModel {
          futureDate.setValue(false);
 
          // Preferences
-         snoozeDuration.setValue("");
+         // Copy default preferences to this item's preferences
+         Context context = TheTimeMachineApp.appContext;
+         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+         snoozeDuration.setValue(preferences.getString(context.getString(R.string.key_snooze_duration), ""));
 
          //weekDays.setValue(ONEOFF);
       }

@@ -147,14 +147,6 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
         alarmViewModel = parent.alarmViewModel;
 
-        // DEBUG
-        Context context = getContext();
-        SharedPreferences preferences = context.getSharedPreferences(getString(R.string.ITEM_PREF_FILENAME), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        String krd = context.getString(R.string.key_snooze_duration);
-        editor.putString(krd, setUpAlarmValues.getSnoozeDuration().getValue());
-        editor.commit();
-
         // Insert the preference fragment
         Bundle b = new Bundle();
         b.putInt("Type", 1);
@@ -290,6 +282,7 @@ public class SetUpAlarmFragment extends Fragment {
         });
 
     }
+
 
     // Set the row of weekday buttons visible/gone
     private void setDaysVisible(boolean visible, View view){
