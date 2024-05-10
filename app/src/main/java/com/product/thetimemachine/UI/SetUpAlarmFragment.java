@@ -12,6 +12,8 @@ import static com.product.thetimemachine.UI.SettingsFragment.pref_first_day_of_w
 import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +35,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.preference.PreferenceManager;
 
 import com.product.thetimemachine.AlarmViewModel;
 import com.product.thetimemachine.Data.AlarmItem;
@@ -88,6 +91,8 @@ public class SetUpAlarmFragment extends Fragment {
         else
             setUpAlarmValues.setOneOff(false);
 
+
+
         // Remove the Up arrow
         ActionBar actionBar = parent.getSupportActionBar();
         assert actionBar != null;
@@ -142,15 +147,22 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
         alarmViewModel = parent.alarmViewModel;
 
+        // DEBUG
+        Context context = getContext();
+        SharedPreferences preferences = context.getSharedPreferences(getString(R.string.ITEM_PREF_FILENAME), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        String krd = context.getString(R.string.key_snooze_duration);
+        editor.putString(krd, setUpAlarmValues.getSnoozeDuration().getValue());
+        editor.commit();
+
         // Insert the preference fragment
-        /**/
         Bundle b = new Bundle();
         b.putInt("Type", 1);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction()
-              .replace(R.id.fragment_pref, SettingsFragment.class, b)
+              .replace(R.id.fragment_pref, ItemSettingsFragment.class, b)
               .setReorderingAllowed(true)
-              .addToBackStack("SettingsFragment")
+              .addToBackStack("ItemSettingsFragment")
               .commit();
 
 
@@ -605,6 +617,9 @@ public boolean isInThePast(long alarmInMillis){
                 item.setDayOfMonth(dd);
             }
         }
+
+        // Preferences
+        item.setSnoozeDuration(setUpAlarmValues.getSnoozeDuration().getValue());
 
 
         // Add or Update the entry on the list

@@ -149,6 +149,9 @@ public class AlarmViewModel extends AndroidViewModel {
       MutableLiveData<Integer> dayOfMonth, month, year;
       MutableLiveData<Boolean>  futureDate;
 
+      // Preferences
+      MutableLiveData<String> snoozeDuration;
+
       // Default constructor
       public SetUpAlarmValues() {
          this.hour = new MutableLiveData<>();
@@ -162,22 +165,11 @@ public class AlarmViewModel extends AndroidViewModel {
          this.month= new MutableLiveData<>();
          this.year= new MutableLiveData<>();
          this.futureDate = new MutableLiveData<>();
+
+         // Preferences
+         this.snoozeDuration = new MutableLiveData<>();
+
          ResetValues();
-      }
-
-      public SetUpAlarmValues(int hour, int minute, String label, boolean newAlarm) {
-         this.hour = new MutableLiveData<>();
-         this.minute = new MutableLiveData<>();
-         this.label = new MutableLiveData<>();
-         //this.active = new MutableLiveData<>();
-
-         if (newAlarm) { // Add new alarm
-            // TODO: Get the default values and ignore the passed values
-            this.hour.setValue(hour);
-            this.minute.setValue(minute);
-            this.label.setValue(label);
-         }
-         // TODO: Modify alarm
       }
 
 
@@ -198,6 +190,9 @@ public class AlarmViewModel extends AndroidViewModel {
          month.setValue(0);
          year.setValue(0);
          futureDate.setValue(false);
+
+         // Preferences
+         snoozeDuration.setValue("");
 
          //weekDays.setValue(ONEOFF);
       }
@@ -224,6 +219,8 @@ public class AlarmViewModel extends AndroidViewModel {
          month.setValue(AlarmList.get(position).getMonth());
          year.setValue(AlarmList.get(position).getYear());
          futureDate.setValue(AlarmList.get(position).isFutureDate());
+
+         // Preferences ???
       }
 
       public void GetValuesFromList(AlarmItem item, boolean edit){
@@ -252,6 +249,9 @@ public class AlarmViewModel extends AndroidViewModel {
          month.setValue(item.getMonth());
          year.setValue(item.getYear());
          futureDate.setValue(item.isFutureDate());
+
+         // Preferences
+         snoozeDuration.setValue(item.getSnoozeDuration());
       }
       public void GetValuesFromList(AlarmItem item){
          GetValuesFromList( item, true);
@@ -292,6 +292,8 @@ public class AlarmViewModel extends AndroidViewModel {
 
       public void setFutureDate(boolean futureDate) {this.futureDate.setValue(futureDate) ;}
 
+      public void setSnoozeDuration(String snoozeDuration) {this.snoozeDuration.setValue(snoozeDuration);}
+
       public MutableLiveData<String> getLabel() {
          return label;
       }
@@ -306,6 +308,8 @@ public class AlarmViewModel extends AndroidViewModel {
       public MutableLiveData<Integer> getYear() {return year;}
 
       public MutableLiveData<Boolean> isFutureDate() {return futureDate;}
+
+      public MutableLiveData<String> getSnoozeDuration() {return snoozeDuration;}
 
       public void setLabel(String label) {
          String t = this.label.getValue();

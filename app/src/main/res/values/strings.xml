@@ -90,6 +90,7 @@
     <string name="time_format">Time Format</string>
     <string name="ring_and_snooze">Ring and Snooze</string>
     <string name="key_alarm_list">KEY_ALARM_LIST</string>
+    <string name="ITEM_PREF_FILENAME">item_pref_filename</string>
 
 
     <array name="clock_12_24_entries">

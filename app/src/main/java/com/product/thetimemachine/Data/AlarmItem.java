@@ -8,12 +8,14 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -26,24 +28,39 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-// This class hold an item in the Alarm List
+
+/*
+   This class hold an item in the Alarm List
+   The object contains all there is to know about the alarm:
+   - Exact Time
+   - Time of original creation: Used as unique ID
+   - Lable (optional) to display with the alarm
+   - Status (active)
+   - Type (one-off or repeating or on a future explicit date)
+   - Week days (For repeating alarm)
+   - Exact date (optional) - for future alarm set on an explicit date
+   - Preferences related to alarm sound and vibration pattern
+   
+   The alarm items are saved in the ROOM database as a table ("raw_alarm_table")
+*/
 @Entity(tableName = "raw_alarm_table")
 public class AlarmItem {
    @PrimaryKey
    @NonNull
-   private long createTime;
-   private int hour, minute, snoozeCounter;
-   private String label;
-   private boolean active, oneOff;
-   private int weekDays;
+   public long createTime;
+   public int hour, minute, snoozeCounter;
+   public String label;
+   public boolean active, oneOff;
+   public int weekDays;
 
-   private int dayOfMonth, month, year;
-   private boolean futureDate;
+   public int dayOfMonth, month, year;
+   public boolean futureDate;
 
 
-   private String SoundParam1, SoundParam2, SoundParam3;
-   private String VibrateParam1, VibrateParam2, VibrateParam3;
+   public String snoozeDuration, SoundParam2, SoundParam3;
+   public String VibrateParam1, VibrateParam2, VibrateParam3;
 
+   /** Key Strings for saving alarm data in bundle  - A key per AlarmItem variable  **/
    public static final String K_HOUR = "HOUR";
    public static final String K_MINUTE = "MINUTE";
    public static final String K_LABEL = "LABEL";
@@ -77,6 +94,23 @@ public class AlarmItem {
 
 
 
+   /***
+    * Constructors
+    *
+    * AlarmItem(@NonNull Bundle inBundle):
+    * Create duplicate of an AlarmItem object from a bundle
+    *
+    * AlarmItem(int _hour, int _minute, String _label, boolean _active):
+    * Create a default AlarmItem object from some basic info -
+    * the cretion time is calculated by the constructor.
+    * Other values are set to default values
+    * Preferences are set to the app default values
+    *
+    * AlarmItem(int _hour, int _minute, String _label, boolean _active, long _createTime):
+    * Create a dummy duplicate
+    *
+    * public AlarmItem() : Place holder only
+   ***/
    // Constructor of Alarm Item - Create from a bundle
    public AlarmItem(@NonNull Bundle inBundle){
       hour = inBundle.getInt(K_HOUR);
@@ -96,14 +130,19 @@ public class AlarmItem {
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
          active = false;
 
+      // Create Time
       if (createTime<0){
          Calendar calendar = Calendar.getInstance();
          createTime = calendar.getTimeInMillis();
       }
 
+      // Preferences
+      Context context = TheTimeMachineApp.appContext;
+      snoozeDuration = inBundle.getString(context.getString(R.string.key_snooze_duration), "");
+
    }
 
-                    // Constructor of Alarm Item - create time calculated internally
+   // Constructor of Alarm Item - create time calculated internally
    public AlarmItem(int _hour, int _minute, String _label, boolean _active) {
       hour = _hour;
       minute = _minute;
@@ -130,6 +169,9 @@ public class AlarmItem {
       // Add time of creation in milliseconds
       Calendar calendar = Calendar.getInstance();
       createTime = calendar.getTimeInMillis();
+
+      // Get preferences from app-defaults
+      resetsetPreferences();
    }
 
    // Constructor of Alarm Item - create time pushed from outside
@@ -159,10 +201,13 @@ public class AlarmItem {
       year = 0;
       futureDate = false;
 
+      // Get preferences from app-defaults
+      resetsetPreferences();
    }
 
    public AlarmItem() {}
 
+   // Getters
    public int getHour() {
       return hour;
    }
@@ -171,9 +216,7 @@ public class AlarmItem {
       return minute;
    }
 
-   public String getLabel() {
-      return label;
-   }
+   public String getLabel() {return label;}
 
    public boolean isActive() {
       return active;
@@ -193,10 +236,9 @@ public class AlarmItem {
 
    public int getYear() {return year;}
    public boolean isFutureDate() {return futureDate;}
-/**/
-   public String getSoundParam1() {
-      return SoundParam1;
-   }
+
+   // Getters (Preferences)
+   public String getSnoozeDuration() {return snoozeDuration;}
 
    public String getSoundParam2() {
       return SoundParam2;
@@ -218,9 +260,7 @@ public class AlarmItem {
       return VibrateParam3;
    }
 
-   public void setSoundParam1(String soundParam1) {
-      SoundParam1 = soundParam1;
-   }
+   // Setters
 
    public void setSoundParam2(String soundParam2) {
       SoundParam2 = soundParam2;
@@ -243,23 +283,7 @@ public class AlarmItem {
    }
 
 
-   public Bundle getBundle(){
-      Bundle b = new Bundle();
 
-      b.putInt(K_HOUR, hour);
-      b.putInt(K_MINUTE, minute);
-      b.putString(K_LABEL,label);
-      b.putBoolean(K_ACTIVE, active);
-      b.putLong(K_CTIME,createTime);
-      b.putBoolean(K_ONEOFF, oneOff);
-      b.putInt(K_WEEKDAYS,weekDays);
-      b.putInt(K_CSNOOZE,snoozeCounter);
-      b.putInt(K_DAYOFMONTH,dayOfMonth);
-      b.putInt(K_MONTH,month);
-      b.putInt(K_YEAR,year);
-      b.putBoolean(K_FDATE,futureDate);
-      return b;
-   }
 
 
    public boolean isOneOff(){ return oneOff;}
@@ -270,6 +294,7 @@ public class AlarmItem {
       //resetSnoozeCounter();
    }
 
+   // Setters
    public void setHour(int hour) {this.hour = hour;}
 
    public void setLabel(String label) {this.label = label;}
@@ -299,6 +324,39 @@ public class AlarmItem {
 
    public void setFutureDate(boolean futureDate) {this.futureDate = futureDate;}
 
+   // Setters (Preferences)
+   public void setSnoozeDuration(String sd) {this.snoozeDuration = sd;}
+
+   /*** Helper Functions ***/
+
+   /*
+   * Encapsulate the AlarmItem in a bundle.
+   * To be used to construct a duplicate AlarmItem
+   */
+   public Bundle getBundle(){
+      Bundle b = new Bundle();
+
+      b.putInt(K_HOUR, hour);
+      b.putInt(K_MINUTE, minute);
+      b.putString(K_LABEL,label);
+      b.putBoolean(K_ACTIVE, active);
+      b.putLong(K_CTIME,createTime);
+      b.putBoolean(K_ONEOFF, oneOff);
+      b.putInt(K_WEEKDAYS,weekDays);
+      b.putInt(K_CSNOOZE,snoozeCounter);
+      b.putInt(K_DAYOFMONTH,dayOfMonth);
+      b.putInt(K_MONTH,month);
+      b.putInt(K_YEAR,year);
+      b.putBoolean(K_FDATE,futureDate);
+
+      // Preferences
+      Context context = TheTimeMachineApp.appContext;
+      b.putString(context.getString(R.string.key_snooze_duration), snoozeDuration);
+
+      return b;
+   }
+
+   /*  Convert alarm time to milliseconds    */
    public long alarmTimeInMillis() {
       // Get the time for the next Alarm, in Milliseconds
       Calendar calendar = Calendar.getInstance();
@@ -341,16 +399,17 @@ public class AlarmItem {
       return calendar.getTimeInMillis();
    }
 
+
+   /* Get the weekday of the currently assigned alarm time
+    Convert it to Zero/Sunday based number: Sun=0 --> Sat=6 */
    public int getWeekdayOfNextAlarm(){
       long alarmTime = nextAlarmTimeInMillis();
       Calendar cal = Calendar.getInstance();
       cal.setTimeInMillis(alarmTime);
-
-      // Get the weekday of the currently assigned alarm time
-      // Convert it to Zero/Sunday based number: Sun=0 --> Sat=6
       return cal.get(Calendar.DAY_OF_WEEK) - 1;
    }
 
+   /*   Get the time of the next alarm in milliseconds    */
    public long nextAlarmTimeInMillis(){
 
       long alarmTime = alarmTimeInMillis();
@@ -376,6 +435,7 @@ public class AlarmItem {
       return alarmTime;
    }
 
+   /* True if the alarm is set for today */
    public boolean isToday(){
       // Get time of today's midnight (minus a second)
       Calendar calendar = Calendar.getInstance();
@@ -388,6 +448,7 @@ public class AlarmItem {
 
    }
 
+   /* True if the alarm is set for tomorrow */
    public boolean isTomorrow(){
       long today_midnight, tomorrow_midnight, tomorrow_last_sec, alarm_time;
       Calendar calendar = Calendar.getInstance();
@@ -407,6 +468,17 @@ public class AlarmItem {
          return true;
       else
          return false;
+   }
+
+   // Copy Global preferences to Item preferences
+   public void resetsetPreferences() {
+      // Get context and Default Shared Preferences
+      Context context = TheTimeMachineApp.appContext;
+      SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+      // Set preferences as strings
+      setSnoozeDuration(preferences.getString(context.getString(R.string.key_snooze_duration), ""));
+
    }
 
    /********** Execute an alarm action according to alarm state **********
@@ -564,8 +636,6 @@ public class AlarmItem {
          Log.d("THE_TIME_MACHINE", "Exec(): " + toastText);
       }
    }
-
-
 
 
 }
