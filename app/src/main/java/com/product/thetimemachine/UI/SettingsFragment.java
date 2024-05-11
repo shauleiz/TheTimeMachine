@@ -32,7 +32,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
    MainActivity parent;
    Context context;
 
-   int Type = 0;
 
    static String ringRepeat;
    static String ringDuration;
@@ -53,24 +52,13 @@ public class SettingsFragment extends PreferenceFragmentCompat
       super.onCreate(savedInstanceState);
 
       // Check which type of preference page this is:
-      // 0: App preferences
-      // 1: Item preferences
       Bundle b =this.getArguments();
-      if (b!=null ) {
-         Type = b.getInt("Type",0);
-      }
    }
 
    @NonNull
    @Override
    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-      if (Type == 1) { // Item preferences
-         PreferenceCategory mCategory;
-         mCategory= (PreferenceCategory) findPreference(getString(R.string.key_time_format));
-         mCategory.setVisible(false);
-         mCategory = (PreferenceCategory) findPreference(getString(R.string.key_alarm_list));
-         mCategory.setVisible(false);
-      }
+
       return super.onCreateView(inflater, container, savedInstanceState);
    }
 

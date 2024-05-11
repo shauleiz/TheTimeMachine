@@ -612,7 +612,12 @@ public boolean isInThePast(long alarmInMillis){
         }
 
         // Preferences
+        item.setRingDuration(setUpAlarmValues.getRingDuration().getValue());
+        item.setRingRepeat(setUpAlarmValues.getRingRepeat().getValue());
         item.setSnoozeDuration(setUpAlarmValues.getSnoozeDuration().getValue());
+        item.setVibrationPattern(setUpAlarmValues.getVibrationPattern().getValue());
+        item.setAlarmSound(setUpAlarmValues.getAlarmSound().getValue());
+        item.setGradualVolume(setUpAlarmValues.getGradualVolume().getValue());
 
 
         // Add or Update the entry on the list

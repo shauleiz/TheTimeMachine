@@ -5,9 +5,16 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 
+import java.util.List;
+
 public class TheTimeMachineApp extends Application {
    public static final String CHANNEL_ID = "ALARM_SERVICE_CHANNEL";
    public static Context appContext;
+
+   public static final String[] PREFS = {
+         "key_ring_duration", "key_ring_repeat", "key_snooze_duration", "key_vibration_pattern",
+         "key_alarm_sound", "kay_gradual_volume"
+   };
 
    @Override
    public void onCreate() {

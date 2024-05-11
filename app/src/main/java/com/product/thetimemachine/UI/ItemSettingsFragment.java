@@ -57,9 +57,13 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
       // Create an Editor
       SharedPreferences.Editor editor = preferences.edit();
 
-      // Preferences
       // Copy preferences
+      editor.putString(context.getString(R.string.key_ring_duration), setUpAlarmValues.getRingDuration().getValue());
+      editor.putString(context.getString(R.string.key_ring_repeat), setUpAlarmValues.getRingRepeat().getValue());
       editor.putString(context.getString(R.string.key_snooze_duration), setUpAlarmValues.getSnoozeDuration().getValue());
+      editor.putString(context.getString(R.string.key_vibration_pattern), setUpAlarmValues.getVibrationPattern().getValue());
+      editor.putString(context.getString(R.string.key_alarm_sound), setUpAlarmValues.getAlarmSound().getValue());
+      editor.putString(context.getString(R.string.key_gradual_volume), setUpAlarmValues.getGradualVolume().getValue());
 
       // Now, commit changes
       editor.commit();
@@ -68,11 +72,18 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
    @Override
    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
       // Copy preferences to SetupAlarmValues
-      if (key.equals(context.getString(R.string.key_snooze_duration))) {
+      if (key.equals(context.getString(R.string.key_ring_duration)))
+         setUpAlarmValues.setRingduration(preferences.getString(key, ""));
+      else if (key.equals(context.getString(R.string.key_ring_repeat)))
+         setUpAlarmValues.setRingRepeat(preferences.getString(key, ""));
+      else if (key.equals(context.getString(R.string.key_snooze_duration)))
          setUpAlarmValues.setSnoozeDuration(preferences.getString(key, ""));
-         Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged()[1] KEY= "+ key + "   Key from String: " + context.getString(R.string.key_snooze_duration));
-      }
-
+      else if (key.equals(context.getString(R.string.key_vibration_pattern)))
+         setUpAlarmValues.setVibrationPattern(preferences.getString(key, ""));
+      else if (key.equals(context.getString(R.string.key_alarm_sound)))
+         setUpAlarmValues.setAlarmSound(preferences.getString(key, ""));
+      else if (key.equals(context.getString(R.string.key_gradual_volume)))
+         setUpAlarmValues.setGradualVolume(preferences.getString(key, ""));
    }
    @NonNull
    @Override
@@ -99,7 +110,12 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
    public void onStop() {
 
       // Copy preferences to SetupAlarmValues
+      setUpAlarmValues.setRingduration(preferences.getString(context.getString(R.string.key_ring_duration), ""));
+      setUpAlarmValues.setRingRepeat(preferences.getString(context.getString(R.string.key_ring_repeat), ""));
       setUpAlarmValues.setSnoozeDuration(preferences.getString(context.getString(R.string.key_snooze_duration), ""));
+      setUpAlarmValues.setVibrationPattern(preferences.getString(context.getString(R.string.key_vibration_pattern), ""));
+      setUpAlarmValues.setAlarmSound(preferences.getString(context.getString(R.string.key_alarm_sound), ""));
+      setUpAlarmValues.setGradualVolume(preferences.getString(context.getString(R.string.key_gradual_volume), ""));
 
       // Clear the preferences  - no need to keep them
       preferences.edit().clear().apply();

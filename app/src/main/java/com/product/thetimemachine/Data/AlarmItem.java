@@ -56,9 +56,8 @@ public class AlarmItem {
    public int dayOfMonth, month, year;
    public boolean futureDate;
 
-
-   public String snoozeDuration, SoundParam2, SoundParam3;
-   public String VibrateParam1, VibrateParam2, VibrateParam3;
+   public String ringRepeat, ringDuration, snoozeDuration;
+   public String vibrationPattern, alarmSound, gradualVolume;
 
    /** Key Strings for saving alarm data in bundle  - A key per AlarmItem variable  **/
    public static final String K_HOUR = "HOUR";
@@ -138,7 +137,12 @@ public class AlarmItem {
 
       // Preferences
       Context context = TheTimeMachineApp.appContext;
+      ringDuration = inBundle.getString(context.getString(R.string.key_ring_duration), "");
+      ringRepeat = inBundle.getString(context.getString(R.string.key_ring_repeat), "");
       snoozeDuration = inBundle.getString(context.getString(R.string.key_snooze_duration), "");
+      vibrationPattern = inBundle.getString(context.getString(R.string.key_vibration_pattern), "");
+      alarmSound = inBundle.getString(context.getString(R.string.key_alarm_sound), "");
+      gradualVolume = inBundle.getString(context.getString(R.string.key_gradual_volume), "");
 
    }
 
@@ -238,53 +242,23 @@ public class AlarmItem {
    public boolean isFutureDate() {return futureDate;}
 
    // Getters (Preferences)
+
+   public String getRingDuration() {
+      return ringDuration;
+   }
+   public String getRingRepeat() {
+      return ringRepeat;
+   }
    public String getSnoozeDuration() {return snoozeDuration;}
-
-   public String getSoundParam2() {
-      return SoundParam2;
+   public String getVibrationPattern() {
+      return vibrationPattern;
    }
-
-   public String getSoundParam3() {
-      return SoundParam3;
+   public String getAlarmSound() {
+      return alarmSound;
    }
-
-   public String getVibrateParam1() {
-      return VibrateParam1;
+   public String getGradualVolume() {
+      return gradualVolume;
    }
-
-   public String getVibrateParam2() {
-      return VibrateParam2;
-   }
-
-   public String getVibrateParam3() {
-      return VibrateParam3;
-   }
-
-   // Setters
-
-   public void setSoundParam2(String soundParam2) {
-      SoundParam2 = soundParam2;
-   }
-
-   public void setSoundParam3(String soundParam3) {
-      SoundParam3 = soundParam3;
-   }
-
-   public void setVibrateParam1(String vibrateParam1) {
-      VibrateParam1 = vibrateParam1;
-   }
-
-   public void setVibrateParam2(String vibrateParam2) {
-      VibrateParam2 = vibrateParam2;
-   }
-
-   public void setVibrateParam3(String vibrateParam3) {
-      VibrateParam3 = vibrateParam3;
-   }
-
-
-
-
 
    public boolean isOneOff(){ return oneOff;}
    public int getWeekDays(){return weekDays;}
@@ -325,7 +299,32 @@ public class AlarmItem {
    public void setFutureDate(boolean futureDate) {this.futureDate = futureDate;}
 
    // Setters (Preferences)
-   public void setSnoozeDuration(String sd) {this.snoozeDuration = sd;}
+
+   public void setRingDuration(String val) {
+      ringDuration = val;
+   }
+
+   public void setRingRepeat(String val) {
+      ringRepeat = val;
+   }
+
+   public void setSnoozeDuration(String val) {
+      snoozeDuration = val;
+   }
+
+   public void setVibrationPattern(String val) {vibrationPattern = val;}
+
+   public void setAlarmSound(String val) {
+      alarmSound = val;
+   }
+
+   public void setGradualVolume(String val) {
+      gradualVolume = val;
+   }
+
+
+
+
 
    /*** Helper Functions ***/
 
@@ -351,7 +350,12 @@ public class AlarmItem {
 
       // Preferences
       Context context = TheTimeMachineApp.appContext;
+      b.putString(context.getString(R.string.key_ring_duration), ringDuration);
+      b.putString(context.getString(R.string.key_ring_repeat), ringRepeat);
       b.putString(context.getString(R.string.key_snooze_duration), snoozeDuration);
+      b.putString(context.getString(R.string.key_vibration_pattern), vibrationPattern);
+      b.putString(context.getString(R.string.key_alarm_sound), alarmSound);
+      b.putString(context.getString(R.string.key_gradual_volume), gradualVolume);
 
       return b;
    }
@@ -399,15 +403,6 @@ public class AlarmItem {
       return calendar.getTimeInMillis();
    }
 
-   public int Str2Int_SnoozeDuration(){
-      // String is of type 15000Seconds
-      if (snoozeDuration.length() < 4)
-         return 60000;
-
-   // Extract the numeral part and convert from seconds to milliseconds
-   String intValue = snoozeDuration.replaceAll("[^0-9]", "");
-      return Integer.parseInt(intValue)*1000;
-   }
 
    /* Get the weekday of the currently assigned alarm time
     Convert it to Zero/Sunday based number: Sun=0 --> Sat=6 */
@@ -486,9 +481,114 @@ public class AlarmItem {
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
       // Set preferences as strings
+      setRingDuration(preferences.getString(context.getString(R.string.key_ring_duration), ""));
+      setRingRepeat(preferences.getString(context.getString(R.string.key_ring_repeat), ""));
       setSnoozeDuration(preferences.getString(context.getString(R.string.key_snooze_duration), ""));
+      setVibrationPattern(preferences.getString(context.getString(R.string.key_vibration_pattern), ""));
+      setAlarmSound(preferences.getString(context.getString(R.string.key_alarm_sound), ""));
+      setGradualVolume(preferences.getString(context.getString(R.string.key_gradual_volume), ""));
 
    }
+
+   // Preferences: Convert from Menu-String to real Value
+   // Preference: Duration of ringing until it stops
+   // Returns:
+   // Duration in milliseconds (Default is 30000)
+   public int Str2Int_ring_duration(){
+         // String is of type 15000Seconds
+         if (ringDuration.length() < 4){
+            return 30000;
+      }
+      String intValue = ringDuration.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue)*1000;
+   }
+
+   public static int Str2Int_ring_duration(String ringDuration){
+      // String is of type 15000Seconds
+      if (ringDuration.length() < 4){
+         return 30000;
+      }
+      String intValue = ringDuration.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue)*1000;
+   }
+   public int Str2Int_ring_repeat(){
+      // String is of type 15000Seconds
+      if (ringRepeat.length()<2)
+         return 5;
+
+      // Extract the numeral part
+      String intValue = ringRepeat.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue);
+   }
+
+   public int Str2Int_SnoozeDuration(){
+      // String is of type 15000Seconds
+      if (snoozeDuration.length() < 4)
+         return 60000;
+
+      // Extract the numeral part and convert from seconds to milliseconds
+      String intValue = snoozeDuration.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue)*1000;
+   }
+
+   public static int Str2Int_ring_repeat(String ringRepeat){
+      // String is of type 15000Seconds
+      if (ringRepeat.length()<2)
+         return 5;
+
+      // Extract the numeral part
+      String intValue = ringRepeat.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue);
+   }
+
+   public String Str2Int_vibration_pattern(){
+      if (vibrationPattern.isEmpty())
+         return "none";
+      else
+         return vibrationPattern;
+   }
+
+   public   String Str2Int_alarm_sound(){
+      if ( alarmSound.isEmpty())
+         return "oversimplified_alarm_clock_113180";
+      else
+         return alarmSound;
+   }
+
+   public static   String Str2Int_vibration_pattern(String pattern){
+      if (pattern == null || pattern.isEmpty())
+         return "none";
+      else
+         return pattern;
+   }
+   public int Str2Int_gradual_volume(){
+      // String is of type 15000Seconds
+      if (gradualVolume.length()<2)
+         return 30000;
+
+      // Extract the numeral part
+      String intValue = gradualVolume.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue) * 1000;
+   }
+
+   public  static String Str2Int_alarm_sound(String alarmSound){
+
+      if ( alarmSound.isEmpty())
+         return "oversimplified_alarm_clock_113180";
+      else
+         return alarmSound;
+   }
+
+   public static int  Str2Int_gradual_volume(String gradualVolume){
+      // String is of type 15000Seconds
+      if (gradualVolume.length()<2)
+         return 30000;
+
+      // Extract the numeral part
+      String intValue = gradualVolume.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue) * 1000;
+   }
+
 
    /********** Execute an alarm action according to alarm state **********
    * Actions:

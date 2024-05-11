@@ -154,7 +154,13 @@ public class AlarmViewModel extends AndroidViewModel {
       MutableLiveData<Boolean>  futureDate;
 
       // Preferences
+      MutableLiveData<String> ringDuration;
+      MutableLiveData<String> ringRepeat;
       MutableLiveData<String> snoozeDuration;
+      MutableLiveData<String> vibrationPattern;
+      MutableLiveData<String> alarmSound;
+      MutableLiveData<String> gradualVolume;
+
 
       // Default constructor
       public SetUpAlarmValues() {
@@ -171,7 +177,13 @@ public class AlarmViewModel extends AndroidViewModel {
          this.futureDate = new MutableLiveData<>();
 
          // Preferences
-         this.snoozeDuration = new MutableLiveData<>();
+         snoozeDuration = new MutableLiveData<>();
+         ringDuration = new MutableLiveData<>();
+         ringRepeat = new MutableLiveData<>();
+         snoozeDuration = new MutableLiveData<>();
+         vibrationPattern = new MutableLiveData<>();
+         alarmSound = new MutableLiveData<>();
+         gradualVolume = new MutableLiveData<>();
 
          ResetValues();
       }
@@ -199,7 +211,14 @@ public class AlarmViewModel extends AndroidViewModel {
          // Copy default preferences to this item's preferences
          Context context = TheTimeMachineApp.appContext;
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+         ringDuration.setValue(preferences.getString(context.getString(R.string.key_ring_duration), ""));
+         ringRepeat.setValue(preferences.getString(context.getString(R.string.key_ring_repeat), ""));
          snoozeDuration.setValue(preferences.getString(context.getString(R.string.key_snooze_duration), ""));
+         vibrationPattern.setValue(preferences.getString(context.getString(R.string.key_vibration_pattern), ""));
+         alarmSound.setValue(preferences.getString(context.getString(R.string.key_alarm_sound), ""));
+         gradualVolume.setValue(preferences.getString(context.getString(R.string.gradual_volume_increase), ""));
+
 
          //weekDays.setValue(ONEOFF);
       }
@@ -258,7 +277,12 @@ public class AlarmViewModel extends AndroidViewModel {
          futureDate.setValue(item.isFutureDate());
 
          // Preferences
+         ringDuration.setValue(item.getRingDuration());
+         ringRepeat.setValue(item.getRingRepeat());
          snoozeDuration.setValue(item.getSnoozeDuration());
+         vibrationPattern.setValue(item.getVibrationPattern());
+         alarmSound.setValue(item.getAlarmSound());
+         gradualVolume.setValue(item.getGradualVolume());
       }
       public void GetValuesFromList(AlarmItem item){
          GetValuesFromList( item, true);
@@ -299,7 +323,12 @@ public class AlarmViewModel extends AndroidViewModel {
 
       public void setFutureDate(boolean futureDate) {this.futureDate.setValue(futureDate) ;}
 
-      public void setSnoozeDuration(String snoozeDuration) {this.snoozeDuration.setValue(snoozeDuration);}
+      public void setRingduration(String val) {this.ringDuration.setValue(val);}
+      public void setRingRepeat(String val) {this.ringRepeat.setValue(val);}
+      public void setSnoozeDuration(String val) {this.snoozeDuration.setValue(val);}
+      public void setVibrationPattern(String val) {this.vibrationPattern.setValue(val);}
+      public void setAlarmSound(String val) {this.alarmSound.setValue(val);}
+      public void setGradualVolume(String val) {this.gradualVolume.setValue(val);}
 
       public MutableLiveData<String> getLabel() {
          return label;
@@ -316,7 +345,12 @@ public class AlarmViewModel extends AndroidViewModel {
 
       public MutableLiveData<Boolean> isFutureDate() {return futureDate;}
 
+      public MutableLiveData<String> getRingDuration() {return  ringDuration;}
+      public MutableLiveData<String> getRingRepeat() {return  ringRepeat;}
       public MutableLiveData<String> getSnoozeDuration() {return snoozeDuration;}
+      public MutableLiveData<String> getVibrationPattern() {return vibrationPattern;}
+      public MutableLiveData<String> getAlarmSound() {return alarmSound;}
+      public MutableLiveData<String> getGradualVolume() {return gradualVolume;}
 
       public void setLabel(String label) {
          String t = this.label.getValue();

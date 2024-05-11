@@ -6,6 +6,11 @@ import static com.product.thetimemachine.Application.TheTimeMachineApp.appContex
 import static com.product.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.product.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.product.thetimemachine.Data.AlarmItem.K_MINUTE;
+import static com.product.thetimemachine.Data.AlarmItem.Str2Int_alarm_sound;
+import static com.product.thetimemachine.Data.AlarmItem.Str2Int_gradual_volume;
+import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_duration;
+import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_repeat;
+import static com.product.thetimemachine.Data.AlarmItem.Str2Int_vibration_pattern;
 import static com.product.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
 import static com.product.thetimemachine.UI.SettingsFragment.pref_alarm_sound;
 import static com.product.thetimemachine.UI.SettingsFragment.pref_gradual_volume;
@@ -78,14 +83,24 @@ public class AlarmService  extends Service {
 
       Log.i("THE_TIME_MACHINE", "Service Started.2");
 
+      // Get Alarm Data
+      Bundle b = intent.getExtras();
+
+
+
+      // Get preferences (Menu String Values)
+      String StrRingDuration = b.getString(appContext.getString(R.string.key_ring_duration));
+      String StrRingRepeat = b.getString(appContext.getString(R.string.key_ring_repeat));
+      String StrVibrationPattern = b.getString(appContext.getString(R.string.key_vibration_pattern));
+      String StrAlarmSound = b.getString(appContext.getString(R.string.key_alarm_sound));
+      String StrGradualVolume = b.getString(appContext.getString(R.string.key_gradual_volume));
+
 
       // Start audio and vibration
-      sound(this, pref_alarm_sound(), pref_gradual_volume());
-
-
+      sound(this, Str2Int_alarm_sound(StrAlarmSound), Str2Int_gradual_volume(StrGradualVolume));
 
       // it is safe to cancel other vibrations currently taking place
-      String pattern = pref_vibration_pattern();
+      String pattern = Str2Int_vibration_pattern(StrVibrationPattern);
       vibrator.cancel();
       VibrateEffect(this, pattern);
 
@@ -97,13 +112,13 @@ public class AlarmService  extends Service {
       // Start auto-snooze timer
       // After a short delay, an alarm is created and alarm.Snooze is called
       handler = new Handler(Looper.getMainLooper());
-      int delayMillis = pref_ring_duration();
-      int nRepeat = pref_ring_repeat();
+      int delayMillis = Str2Int_ring_duration(StrRingDuration);
+      int nRepeat = Str2Int_ring_repeat(StrRingRepeat);
       autoSnooze = new Runnable() {
          @Override
          public void run() {
 
-            Bundle b = intent.getExtras();
+
             if (b==null) return;
             AlarmItem alarm = new AlarmItem(b);
             alarm.incSnoozeCounter();
