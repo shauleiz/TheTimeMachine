@@ -35,6 +35,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import com.product.thetimemachine.AlarmViewModel;
@@ -111,7 +112,20 @@ public class SetUpAlarmFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_set_up_alarm, container, false);
+        View view =  inflater.inflate(R.layout.fragment_set_up_alarm, container, false);
+
+        // Insert the preference fragment
+        Bundle b = new Bundle();
+        b.putInt("Type", 1);
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.beginTransaction()
+              .replace(R.id.fragment_pref, ItemSettingsFragment.class, b)
+              //.setReorderingAllowed(true)
+              .addToBackStack("ItemSettingsFragment")
+              .commit();
+
+        return view;
+
     }
 
     @Override
@@ -143,19 +157,15 @@ public class SetUpAlarmFragment extends Fragment {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
 
-        // Get instance of SetUpAlarmValues sub-class
-        setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
-        alarmViewModel = parent.alarmViewModel;
+        // Create/acquire the ViewModel object of class AlarmViewModel
+        alarmViewModel = new ViewModelProvider(requireActivity()).get(AlarmViewModel.class);
+        setUpAlarmValues = alarmViewModel.setUpAlarmValues;
 
-        // Insert the preference fragment
-        Bundle b = new Bundle();
-        b.putInt("Type", 1);
-        FragmentManager fragmentManager = getChildFragmentManager();
-        fragmentManager.beginTransaction()
-              .replace(R.id.fragment_pref, ItemSettingsFragment.class, b)
-              .setReorderingAllowed(true)
-              .addToBackStack("ItemSettingsFragment")
-              .commit();
+        // DEBUG
+        if (alarmViewModel != null)
+            Log.d("THE_TIME_MACHINE", "SetUpAlarmFragment.onViewCreated():  alarmViewModel is OK ");
+        else
+            Log.d("THE_TIME_MACHINE", "SetUpAlarmFragment.onViewCreated(): alarmViewModel is NULL ");
 
 
 

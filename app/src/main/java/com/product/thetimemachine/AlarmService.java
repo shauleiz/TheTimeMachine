@@ -336,6 +336,7 @@ public class AlarmService  extends Service {
       }
 
 
+      // TODO: Fix according to https://stackoverflow.com/a/8320515/2124624
       if (pattern!=null && !pattern.isEmpty()){
          mp = MediaPlayer.create(context, getUriForMusicFilename(pattern));
          if (mp == null)

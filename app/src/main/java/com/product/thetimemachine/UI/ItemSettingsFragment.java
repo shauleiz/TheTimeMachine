@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -28,13 +29,16 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
    Context context;
    SharedPreferences preferences;
    AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
+   AlarmViewModel alarmViewModel;
 
    @Override
    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
       // Init important global parameters
       context = appContext;
-      parent = (MainActivity)getActivity();
-      setUpAlarmValues = parent.alarmViewModel.setUpAlarmValues;
+
+      // Create/acquire the ViewModel object of class AlarmViewModel
+      alarmViewModel = new ViewModelProvider(requireActivity()).get(AlarmViewModel.class);
+      setUpAlarmValues = alarmViewModel.setUpAlarmValues;
 
       // Set the current SharedPreferences file name
       getPreferenceManager().setSharedPreferencesName(getString(R.string.ITEM_PREF_FILENAME));

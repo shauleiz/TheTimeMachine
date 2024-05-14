@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
@@ -116,7 +115,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
          gradualVolume = preferences.getString(key, "");
       }
 
-      // Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
+      Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+  preferences.getString(key, ""));
 
    }
 
@@ -173,17 +172,17 @@ public class SettingsFragment extends PreferenceFragmentCompat
       handler.postDelayed(r, 5000);
    }
 
-  void sound(String pattern) {
+  static void sound(String pattern) {
 
      final Runnable r = new Runnable() {
         public void run() {
-           Log.d("THE_TIME_MACHINE", "vibrate(): Cancelling Vibrator");
-           AlarmService.sound(getContext(), null);
+           Log.d("THE_TIME_MACHINE", "sound(): Cancelling Sound");
+           AlarmService.sound(appContext, null);
         }
      };
 
-     AlarmService.sound(getContext(), null);
-     AlarmService.sound(getContext(), pattern);
+     AlarmService.sound(appContext, null);
+     AlarmService.sound(appContext, pattern);
      // Call delayed stopping of the sound
      Handler handler = new Handler();
      handler.postDelayed(r, 4000);
