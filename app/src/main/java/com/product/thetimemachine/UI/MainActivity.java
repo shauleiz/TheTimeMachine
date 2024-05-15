@@ -2,6 +2,7 @@ package com.product.thetimemachine.UI;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -79,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
             checkmarkAction = savedInstanceState.getBoolean(action_checkmark,false);
             //Toast.makeText(getApplicationContext(), "MainActivity::onCreate Called - deleteAction=" + deleteAction, Toast.LENGTH_SHORT).show();
         }
+
+        // Set the default volume control as ALARM volume control
+        setVolumeControlStream(AudioManager.STREAM_ALARM);
 
        // Display Fragment
         if (savedInstanceState == null) {

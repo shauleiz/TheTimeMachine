@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -163,6 +164,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
       // Allow this activity on a locked screen
       allowOnLockScreen();
+
+      // Set the default volume control as ALARM volume control
+      setVolumeControlStream(AudioManager.STREAM_ALARM);
 
       // Hide Navigation Bar
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

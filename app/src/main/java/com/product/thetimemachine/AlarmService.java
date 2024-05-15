@@ -12,18 +12,14 @@ import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_duration;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_repeat;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_vibration_pattern;
 import static com.product.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_alarm_sound;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_gradual_volume;
 import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_ring_duration;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_ring_repeat;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_vibration_pattern;
 
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.VolumeShaper;
 import android.net.Uri;
@@ -43,12 +39,13 @@ import androidx.core.app.NotificationCompat;
 import com.product.thetimemachine.Data.AlarmItem;
 import com.product.thetimemachine.UI.StopSnoozeActivity;
 
+import java.io.IOException;
 import java.util.Locale;
 
 public class AlarmService  extends Service {
 
    private Vibrator vibrator;
-   private static MediaPlayer mp;
+   private static MediaPlayer mediaPlayer;
    private boolean selfKill;
    Handler handler;
    Runnable autoSnooze;
@@ -330,19 +327,33 @@ public class AlarmService  extends Service {
    public static void sound(Context context, String pattern, int rampInMillis){
 
       // Stop currently playing before playing a new pattern
-      if (mp!=null && mp.isPlaying() ) {
-         mp.stop();
-         mp.reset();
+      if (mediaPlayer !=null && mediaPlayer.isPlaying() ) {
+         mediaPlayer.stop();
+         mediaPlayer.reset();
       }
 
 
-      // TODO: Fix according to https://stackoverflow.com/a/8320515/2124624
+      // Create a media player and make it stream as ALARM
       if (pattern!=null && !pattern.isEmpty()){
-         mp = MediaPlayer.create(context, getUriForMusicFilename(pattern));
-         if (mp == null)
+         mediaPlayer = new MediaPlayer();
+         //mediaPlayer = MediaPlayer.create(context, getUriForMusicFilename(pattern));
+         if (mediaPlayer == null)
             return;
-         mp.setLooping(true);
-         mp.start();
+
+         try {
+            mediaPlayer.setDataSource(context, getUriForMusicFilename(pattern));
+            mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                                                 .setUsage(AudioAttributes.USAGE_ALARM)
+                                                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                                                 .build());
+            mediaPlayer.prepare();
+         }
+         catch (IOException e) {
+            e.printStackTrace();
+         }
+
+         mediaPlayer.setLooping(true);
+         mediaPlayer.start();
 
          Log.d("THE_TIME_MACHINE", "Sound(): rampInMillis = " + rampInMillis);
 
@@ -355,7 +366,7 @@ public class AlarmService  extends Service {
                         .setInterpolatorType(VolumeShaper.Configuration.INTERPOLATOR_TYPE_LINEAR)
                         .build();
 
-            VolumeShaper volumeShaper = mp.createVolumeShaper(config);
+            VolumeShaper volumeShaper = mediaPlayer.createVolumeShaper(config);
             volumeShaper.apply(VolumeShaper.Operation.PLAY);
          }
 
