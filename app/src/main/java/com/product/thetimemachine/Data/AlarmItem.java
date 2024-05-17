@@ -27,6 +27,7 @@ import com.product.thetimemachine.UI.MainActivity;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Random;
 
 
 /*
@@ -699,17 +700,20 @@ public class AlarmItem {
                intent,
                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
+         // Create a random number for request code
+         Random random = new Random();
+         int requestCode = random.nextInt(10000000);
+
+
          // TODO: Notification does not show - not really needed
          // What to do when user clicks on the Alarm Clock notification
          Intent targetIntent = new Intent(context , MainActivity.class);
          PendingIntent targetPending = PendingIntent.getActivity(
-               context, 0,
-               targetIntent,
-               PendingIntent.FLAG_IMMUTABLE);
+               context, requestCode, targetIntent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
 
 
          // Set Alarm Clock
-         AlarmManager.AlarmClockInfo ac= new AlarmManager.AlarmClockInfo(alarmTime, targetPending);
+         AlarmManager.AlarmClockInfo ac= new AlarmManager.AlarmClockInfo(alarmTime,  targetPending);
          alarmManager.setAlarmClock(ac, alarmIntent);
 
 

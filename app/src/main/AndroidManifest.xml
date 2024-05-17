@@ -33,6 +33,9 @@
             android:exported="false"
             android:label="@string/title_activity_stop_snooze"
             android:keepScreenOn="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
             android:theme="@style/Theme.TheTimeMachine.Fullscreen" />
         <activity
             android:name=".UI.MainActivity"

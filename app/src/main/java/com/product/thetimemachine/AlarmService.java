@@ -41,6 +41,8 @@ import com.product.thetimemachine.UI.StopSnoozeActivity;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Random;
+import java.util.Random.*;
 
 public class AlarmService  extends Service {
 
@@ -426,12 +428,20 @@ public class AlarmService  extends Service {
       String alarmTitle = getResources().getString(R.string.notification_title);
       Log.i("THE_TIME_MACHINE", alarmText);
 
+      // Create a random number for request code
+      Random random = new Random();
+      int requestCode = random.nextInt(10000000);
+
+      Log.d("THE_TIME_MACHINE", "Label: " + alarmText + "  requestCode: " + requestCode);
+
       // Prepare intent for a Stop/Snooze fullscreen activity
       Intent fullScreenIntent = new Intent(this, StopSnoozeActivity.class);
-      fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      fullScreenIntent.putExtra("APP_NAME", "The Time Machine");
+      // Set the Activity to start in a new, empty task.
+      //fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      fullScreenIntent.putExtra("APP_NAME", "The Time Machine"); // TODO: Replace with system string
       fullScreenIntent.putExtras(inBundle);
-      PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
+      PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, requestCode,
             fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE );
 
       // Create the Stop action
