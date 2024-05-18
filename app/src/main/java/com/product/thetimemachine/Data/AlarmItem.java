@@ -532,6 +532,16 @@ public class AlarmItem {
       return Integer.parseInt(intValue)*1000;
    }
 
+   public static int Str2Int_SnoozeDuration(String snoozeDuration){
+      // String is of type 15000Seconds
+      if (snoozeDuration.length() < 4)
+         return 60000;
+
+      // Extract the numeral part and convert from seconds to milliseconds
+      String intValue = snoozeDuration.replaceAll("[^0-9]", "");
+      return Integer.parseInt(intValue)*1000;
+   }
+
    public static int Str2Int_ring_repeat(String ringRepeat){
       // String is of type 15000Seconds
       if (ringRepeat.length()<2)

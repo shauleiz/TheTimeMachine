@@ -1,5 +1,7 @@
 package com.product.thetimemachine.UI;
 
+import static com.product.thetimemachine.AlarmService.snoozeButtonText;
+import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
 import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.annotation.SuppressLint;
@@ -11,11 +13,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
+import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -162,6 +168,8 @@ public class StopSnoozeActivity extends AppCompatActivity {
       mControlsView = binding.fullscreenContentControls;
       mContentView = binding.fullscreenContent;
 
+
+
       // Allow this activity on a locked screen
       allowOnLockScreen();
 
@@ -193,6 +201,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       binding.snoozeButton.setOnTouchListener(mSnoozeTouchListener);
    }
 
+
    @Override
    protected void onPostCreate(Bundle savedInstanceState) {
       super.onPostCreate(savedInstanceState);
@@ -203,8 +212,15 @@ public class StopSnoozeActivity extends AppCompatActivity {
       // Get the data passed from calling service
       extras = getIntent().getExtras();
 
+      // Set the snooze button text
+      View v = binding.getRoot();
+      TextView snoozeButton = v.findViewById(R.id.snooze_button);
+      String strSnoozeDuration = extras.getString(appContext.getString(R.string.key_snooze_duration), "");
+      snoozeButton.setText(snoozeButtonText(strSnoozeDuration));
+
       //  Display the data on the screen
       DisplayScreenText();
+
    }
 
    @Override

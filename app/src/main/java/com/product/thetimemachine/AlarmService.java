@@ -6,6 +6,7 @@ import static com.product.thetimemachine.Application.TheTimeMachineApp.appContex
 import static com.product.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.product.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.product.thetimemachine.Data.AlarmItem.K_MINUTE;
+import static com.product.thetimemachine.Data.AlarmItem.Str2Int_SnoozeDuration;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_alarm_sound;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_gradual_volume;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_duration;
@@ -33,6 +34,7 @@ import android.os.Vibrator;
 import android.os.VibratorManager;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
@@ -390,9 +392,24 @@ public class AlarmService  extends Service {
       return Uri.parse("android.resource://" + packageName + "/raw/" + filename);
    }
 
+   public static String snoozeButtonText(String strSnoozeDuration){
+      String strBase =  appContext.getString(R.string.snooze);
+      if (strSnoozeDuration == null || strSnoozeDuration.length()==0)
+         return strBase;
+
+      String units="Sec"; // TODO: Replace by global string
+      int snoozeDuration =  Str2Int_SnoozeDuration(strSnoozeDuration)/1000;
+      if (snoozeDuration>=60){
+         snoozeDuration=snoozeDuration/60;
+         units = "Min";// TODO: Replace by global string
+      }
+      return strBase + "  "+ snoozeDuration + units;
+   }
+
    // Create notification to display when Alarm goes off
    // Will be called from onStartCommand()
-   private Notification CreateNotification(Intent intent){
+   @Nullable
+   private Notification CreateNotification(@NonNull Intent intent){
 
       // Strings to show as alarm text and Title
       Bundle inBundle = intent.getExtras();
@@ -400,6 +417,10 @@ public class AlarmService  extends Service {
       String label = inBundle.getString(K_LABEL);
       int h = inBundle.getInt(K_HOUR, -1);
       int m = inBundle.getInt(K_MINUTE, -1);
+
+      String strSnoozeDuration = inBundle.getString(appContext.getString(R.string.key_snooze_duration), "");
+
+
 
       // Time format
       String ampm;
@@ -437,7 +458,6 @@ public class AlarmService  extends Service {
       // Prepare intent for a Stop/Snooze fullscreen activity
       Intent fullScreenIntent = new Intent(this, StopSnoozeActivity.class);
       // Set the Activity to start in a new, empty task.
-      //fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       fullScreenIntent.putExtra("APP_NAME", "The Time Machine"); // TODO: Replace with system string
       fullScreenIntent.putExtras(inBundle);
@@ -452,7 +472,7 @@ public class AlarmService  extends Service {
       // Create the Snooze action
       PendingIntent snoozeIntent = createSnoozePendingIntent(this, inBundle);
       NotificationCompat.Action snoozeAction = new NotificationCompat.Action.Builder(
-            R.drawable.snooze_fill0_wght400_grad0_opsz24, getString(R.string.snooze), snoozeIntent).build();
+            R.drawable.snooze_fill0_wght400_grad0_opsz24, snoozeButtonText(strSnoozeDuration), snoozeIntent).build();
 
       // Notification
       return  new NotificationCompat.Builder(this, CHANNEL_ID)
