@@ -106,9 +106,11 @@ public class StopSnoozeActivity extends AppCompatActivity {
                stopIntent.putExtras(extras);
                AlarmReceiver.stopping(context, stopIntent );
 
+               /*
                // Leave this activity to main activity
                Intent intent = new Intent(context, MainActivity.class);
                startActivity(intent);
+                */
 
                // Kill this activity
                finish();
@@ -136,10 +138,10 @@ public class StopSnoozeActivity extends AppCompatActivity {
                Intent snoozeIntent = new Intent(context, AlarmService.class);
                snoozeIntent.putExtras(extras);
                AlarmReceiver.snoozing(context, snoozeIntent );
-
+/*
                // Leave this activity to main activity
                Intent intent = new Intent(context, MainActivity.class);
-               startActivity(intent);
+               startActivity(intent);*/
 
                // Kill this activity
                finish();
