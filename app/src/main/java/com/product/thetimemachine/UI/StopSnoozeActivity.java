@@ -14,11 +14,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -86,6 +88,49 @@ public class StopSnoozeActivity extends AppCompatActivity {
    };
    private boolean mVisible;
    private final Runnable mHideRunnable = () -> hide();
+
+   private final View.OnLongClickListener mSnoozeLongClickListener = new View.OnLongClickListener(){
+      @Override
+      public boolean onLongClick(View view) {
+
+         // Get the current Snooze duration
+         String strSnoozeDuration = extras.getString(appContext.getString(R.string.key_snooze_duration), "");
+
+         // Display Snooze duration dialog box
+
+         // Update the bundle
+         extras.putString(appContext.getString(R.string.key_snooze_duration), "600Seconds"); // TODO: Temporary
+
+         // Stop the Alarm by stopping the Alarm Service
+         Context context = getApplicationContext();
+         Intent snoozeIntent = new Intent(context, AlarmService.class);
+         snoozeIntent.putExtras(extras);
+         AlarmReceiver.snoozing(context, snoozeIntent );
+
+         // Kill this activity
+         finish();
+
+         return true; // Do not run OnClick
+      }
+   };
+
+   private final View.OnClickListener  mSnoozeClickListener = new View.OnClickListener(){
+      @Override
+      public void onClick(View view) {
+         if (AUTO_HIDE) {
+            delayedHide(AUTO_HIDE_DELAY_MILLIS);
+         }
+         // Stop the Alarm by stopping the Alarm Service
+         Context context = getApplicationContext();
+         Intent snoozeIntent = new Intent(context, AlarmService.class);
+         snoozeIntent.putExtras(extras);
+         AlarmReceiver.snoozing(context, snoozeIntent );
+
+         // Kill this activity
+         finish();
+      }
+   };
+
    /**
     * Touch listener to use for in-layout UI controls to delay hiding the
     * system UI. This is to prevent the jarring behavior of controls going away
@@ -96,6 +141,8 @@ public class StopSnoozeActivity extends AppCompatActivity {
       public boolean onTouch(View view, MotionEvent motionEvent) {
          switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
+               Log.d("THE_TIME_MACHINE", "Snooze: ACTION_DOWN");
+
                if (AUTO_HIDE) {
                   delayedHide(AUTO_HIDE_DELAY_MILLIS);
                }
@@ -116,6 +163,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
                finish();
                return true;
             case MotionEvent.ACTION_UP:
+               Log.d("THE_TIME_MACHINE", "Snooze: ACTION_UP");
                view.performClick();
                return true;
             default:
@@ -200,7 +248,11 @@ public class StopSnoozeActivity extends AppCompatActivity {
       // while interacting with the UI.
       binding.stopButton.setOnTouchListener(mStopTouchListener);
 
-      binding.snoozeButton.setOnTouchListener(mSnoozeTouchListener);
+      //binding.snoozeButton.setOnTouchListener(mSnoozeTouchListener);
+      binding.snoozeButton.setOnLongClickListener(mSnoozeLongClickListener);
+      binding.snoozeButton.setOnClickListener(mSnoozeClickListener);
+
+
    }
 
 
