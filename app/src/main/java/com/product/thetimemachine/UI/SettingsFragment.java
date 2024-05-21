@@ -115,7 +115,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
          gradualVolume = preferences.getString(key, "");
       }
 
-      Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+  preferences.getString(key, ""));
+     // Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+  preferences.getString(key, ""));
 
    }
 
