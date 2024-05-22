@@ -15,6 +15,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
@@ -26,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 
 import com.product.thetimemachine.AlarmReceiver;
 import com.product.thetimemachine.AlarmService;
@@ -89,15 +92,43 @@ public class StopSnoozeActivity extends AppCompatActivity {
    private boolean mVisible;
    private final Runnable mHideRunnable = () -> hide();
 
-   private final View.OnLongClickListener mSnoozeLongClickListener = new View.OnLongClickListener(){
+
+      private final View.OnLongClickListener mSnoozeLongClickListener = new View.OnLongClickListener(){
       @Override
       public boolean onLongClick(View view) {
 
          // Get the current Snooze duration
          String strSnoozeDuration = extras.getString(appContext.getString(R.string.key_snooze_duration), "");
 
-         // Display Snooze duration dialog box
+         /* * * Display Snooze duration pop-up menu * * */
+         // Initializing the popup menu and giving the reference as current context
+         PopupMenu popupMenu = new PopupMenu(StopSnoozeActivity.this , view);
 
+         // Populate the pop-up menu
+         popupMenu.getMenu().add(0,123, Menu.NONE, "Item1");
+         popupMenu.getMenu().add( 0,456, Menu.NONE, "Item2");
+
+         // Showing the popup menu
+         popupMenu.show();
+
+         popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+            @Override
+            public void onDismiss(PopupMenu menu) {
+               Log.d("THE_TIME_MACHINE", "Popup menu dismissed");
+               return;
+            }
+         });
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+               // Log message on menu item clicked
+              Log.d("THE_TIME_MACHINE", "You Clicked " + menuItem.getTitle() + " ID="+ menuItem.getItemId());
+               return true;
+            }
+         });
+
+
+/**/
          // Update the bundle
          extras.putString(appContext.getString(R.string.key_snooze_duration), "600Seconds"); // TODO: Temporary
 
@@ -108,7 +139,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
          AlarmReceiver.snoozing(context, snoozeIntent );
 
          // Kill this activity
-         finish();
+         //finish();
 
          return true; // Do not run OnClick
       }
