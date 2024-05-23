@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -105,41 +106,41 @@ public class StopSnoozeActivity extends AppCompatActivity {
          PopupMenu popupMenu = new PopupMenu(StopSnoozeActivity.this , view);
 
          // Populate the pop-up menu
-         popupMenu.getMenu().add(0,123, Menu.NONE, "Item1");
-         popupMenu.getMenu().add( 0,456, Menu.NONE, "Item2");
+         TypedArray snoozeDurationEntries = getResources().obtainTypedArray(R.array.snooze_duration_entries);
+         TypedArray snoozeDurationValues = getResources().obtainTypedArray(R.array.snooze_duration_values);
+         for(int i=0; i<snoozeDurationEntries.length(); i++){
+            popupMenu.getMenu().add(0,i, Menu.NONE, snoozeDurationEntries.getString(i));
+         }
 
          // Showing the popup menu
          popupMenu.show();
-
-         popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
-            @Override
-            public void onDismiss(PopupMenu menu) {
-               Log.d("THE_TIME_MACHINE", "Popup menu dismissed");
-               return;
-            }
-         });
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                // Log message on menu item clicked
-              Log.d("THE_TIME_MACHINE", "You Clicked " + menuItem.getTitle() + " ID="+ menuItem.getItemId());
+               Log.d("THE_TIME_MACHINE", "You Clicked " + menuItem.getTitle() + " ID="+ menuItem.getItemId());
+               // Update the bundle
+               extras.putString(appContext.getString(R.string.key_snooze_duration), snoozeDurationValues.getString(menuItem.getItemId()));
+
+               // Stop the Alarm by stopping the Alarm Service
+               Context context = getApplicationContext();
+               Intent snoozeIntent = new Intent(context, AlarmService.class);
+               snoozeIntent.putExtras(extras);
+               AlarmReceiver.snoozing(context, snoozeIntent );
+
+               // Done
+               finish();
                return true;
             }
          });
 
-
-/**/
-         // Update the bundle
-         extras.putString(appContext.getString(R.string.key_snooze_duration), "600Seconds"); // TODO: Temporary
-
-         // Stop the Alarm by stopping the Alarm Service
-         Context context = getApplicationContext();
-         Intent snoozeIntent = new Intent(context, AlarmService.class);
-         snoozeIntent.putExtras(extras);
-         AlarmReceiver.snoozing(context, snoozeIntent );
-
-         // Kill this activity
-         //finish();
+//         popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+//            @Override
+//            public void onDismiss(PopupMenu menu) {
+//               Log.d("THE_TIME_MACHINE", "Popup menu dismissed");
+//               return;
+//            }
+//         });
 
          return true; // Do not run OnClick
       }
