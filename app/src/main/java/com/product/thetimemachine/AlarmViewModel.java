@@ -217,7 +217,7 @@ public class AlarmViewModel extends AndroidViewModel {
          snoozeDuration.setValue(preferences.getString(context.getString(R.string.key_snooze_duration), ""));
          vibrationPattern.setValue(preferences.getString(context.getString(R.string.key_vibration_pattern), ""));
          alarmSound.setValue(preferences.getString(context.getString(R.string.key_alarm_sound), ""));
-         gradualVolume.setValue(preferences.getString(context.getString(R.string.gradual_volume_increase), ""));
+         gradualVolume.setValue(preferences.getString(context.getString(R.string.key_gradual_volume), ""));
 
 
          //weekDays.setValue(ONEOFF);
