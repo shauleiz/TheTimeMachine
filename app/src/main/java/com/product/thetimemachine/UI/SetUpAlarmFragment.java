@@ -51,7 +51,7 @@ import java.util.Objects;
 
 public class SetUpAlarmFragment extends Fragment {
 
-    private TimePicker timePicker;
+    private MyTimePicker timePicker;
     private DatePickerDialog datePickerDialog;
     //private SwitchCompat repeating;
     private MaterialButtonToggleGroup repeating;

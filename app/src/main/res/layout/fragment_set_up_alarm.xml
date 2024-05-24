@@ -14,7 +14,7 @@
     android:layout_centerHorizontal="true"
     android:minHeight="50dp">
 
-    <TimePicker
+    <com.product.thetimemachine.UI.MyTimePicker
         android:id="@+id/time_picker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
