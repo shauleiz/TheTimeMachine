@@ -6,8 +6,10 @@ import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.media.AudioManager;
 import android.os.Build;
@@ -36,13 +38,18 @@ import com.product.thetimemachine.AlarmService;
 import com.product.thetimemachine.R;
 import com.product.thetimemachine.databinding.ActivityStopSnoozeBinding;
 
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import java.text.SimpleDateFormat;
 
 public class StopSnoozeActivity extends AppCompatActivity {
 
    private static final boolean AUTO_HIDE = false;
    private Bundle extras = null;
+   private String strCurrentTime = "99:99 am";
+   BroadcastReceiver broadcastReceiver;
+   private SimpleDateFormat dateFormat;
 
    /**
     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -284,9 +291,40 @@ public class StopSnoozeActivity extends AppCompatActivity {
       binding.snoozeButton.setOnLongClickListener(mSnoozeLongClickListener);
       binding.snoozeButton.setOnClickListener(mSnoozeClickListener);
 
+      // Set The time format
+      if (pref_is24HourClock())
+         dateFormat = new SimpleDateFormat("H:mm");
+      else
+         dateFormat = new SimpleDateFormat("h:mm a");
 
    }
 
+
+   @Override
+   protected void onStart() {
+      super.onStart();
+
+      // Definition of the receiver that gets an ACTION_TIME_TICK every minute
+      broadcastReceiver = new BroadcastReceiver() {
+         @Override
+         public void onReceive(Context ctx, Intent intent) {
+            strCurrentTime = (dateFormat.format(new Date()));
+
+            // Refresh Text
+            DisplayScreenText();
+         }
+      };
+
+      // Register the receiver
+      registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+
+   }
+
+   @Override
+   protected void onStop() {
+      unregisterReceiver(broadcastReceiver);
+      super.onStop();
+   }
 
    @Override
    protected void onPostCreate(Bundle savedInstanceState) {
@@ -305,6 +343,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       snoozeButton.setText(snoozeButtonText(strSnoozeDuration));
 
       //  Display the data on the screen
+      strCurrentTime = (dateFormat.format(new Date()));
       DisplayScreenText();
 
    }
@@ -389,32 +428,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       if (!label.isEmpty())
          label+=" - ";
 
-      String time = "";
-      int minute = extras.getInt("MINUTE",-1);
-      int hour = extras.getInt("HOUR",-1);
-
-      // Time format
-      String ampm;
-      if (pref_is24HourClock())
-         ampm = "";
-      else{
-         if (hour==0) {
-            ampm = getString(R.string.format_am);
-            hour=12;
-         }
-         else if (hour<12)
-            ampm = getString(R.string.format_am);
-         else {
-            ampm = getString(R.string.format_pm);
-            if (hour!=12)
-               hour-=12;
-         }
-      }
-
-      if (minute!=-1 && hour!=-1)
-         time = String.format(Locale.US,"%d:%02d%s", hour, minute, ampm);
-
-      String displayText = String.format(Locale.US,"%s\n%s%s", appName, label, time);
+      String displayText = String.format(Locale.US,"%s\n%s%s", appName, label, strCurrentTime);
       ((TextView)mContentView).setText(displayText);
    }
 }

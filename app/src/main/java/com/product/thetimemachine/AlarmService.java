@@ -18,8 +18,10 @@ import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.VolumeShaper;
@@ -42,6 +44,8 @@ import com.product.thetimemachine.Data.AlarmItem;
 import com.product.thetimemachine.UI.StopSnoozeActivity;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Random.*;
@@ -59,6 +63,9 @@ public class AlarmService  extends Service {
    public static final String STOP = "stop";
    public static final String ALARM = "alarm";
 
+   BroadcastReceiver broadcastReceiver;
+   private SimpleDateFormat dateFormat;
+   NotificationCompat.Builder builder;
 
    @Override
    public int onStartCommand(Intent intent, int flags, int startId) {
@@ -66,21 +73,65 @@ public class AlarmService  extends Service {
       Log.i("THE_TIME_MACHINE", "Service Started");
       // Display Activity: Stop, Snooze and general data
       // TODO: Define activity Intent notificationIntent = new Intent(this, RingActivity.class);
-      //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 
+      // Create notification: With Title, Icon and Stop button
+      // Text will be added externally
+      builder = CreateNotification(intent);
+      if (builder == null || builder.build() == null) return START_NOT_STICKY;
 
-      // TODO: Add full screen activity
-      // Create notification: With Text, Icon and Stop button
-      Notification notification = CreateNotification(intent);
-      if (notification == null) return START_NOT_STICKY;
-      // Display Notification
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-         startForeground( 1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
-      }
-
+      // Set The time format
+      if (pref_is24HourClock())
+         dateFormat = new SimpleDateFormat("H:mm");
       else
-         startForeground(1,notification);
+         dateFormat = new SimpleDateFormat("h:mm a");
+
+      // Strings to show as alarm text when the notification shows for the 1st time
+      String alarmText;
+      Bundle inBundle = intent.getExtras();
+      if (inBundle == null) return START_NOT_STICKY;
+      String label = inBundle.getString(K_LABEL);
+      if (!label.isEmpty())
+         alarmText = String.format(Locale.ENGLISH,"%s - %s", label, dateFormat.format(new Date()));
+      else
+         alarmText = String.format(Locale.ENGLISH,"%s", dateFormat.format(new Date()));
+
+
+      // Display Notification for the 1st time
+      builder.setContentText(alarmText).build();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+         startForeground( 1, builder.build(), FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED); // TODO: Replace '1' with an ID
+      }
+      else
+         startForeground(1,builder.build()); // TODO: Replace '1' with an ID
+
+
+      // Definition of the receiver that gets an ACTION_TIME_TICK every minute
+      broadcastReceiver = new BroadcastReceiver() {
+         @Override
+         public void onReceive(Context ctx, Intent intent) {
+            String alarmText;
+
+            // Refresh Text
+            if (!label.isEmpty())
+               alarmText = String.format(Locale.ENGLISH,"%s - %s", label, dateFormat.format(new Date()));
+            else
+               alarmText = String.format(Locale.ENGLISH,"%s", dateFormat.format(new Date()));
+
+            // Update message text
+            builder.setContentText(alarmText).build();
+
+            // Display Notification
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+               startForeground( 1, builder.build(), FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED); // TODO: Replace '1' with an ID
+            }
+            else
+               startForeground(1,builder.build()); // TODO: Replace '1' with an ID
+         }
+      };
+
+      // Register the receiver
+      registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
 
       Log.i("THE_TIME_MACHINE", "Service Started.2");
 
@@ -104,8 +155,6 @@ public class AlarmService  extends Service {
       String pattern = Str2Int_vibration_pattern(StrVibrationPattern);
       vibrator.cancel();
       VibrateEffect(this, pattern);
-
-
 
       // TODO: If recurring alarm, schedule next alarm here
 
@@ -153,6 +202,8 @@ public class AlarmService  extends Service {
 
       return START_STICKY;
    }
+
+
    @Override
    public void onCreate() {
       super.onCreate();
@@ -177,6 +228,8 @@ public class AlarmService  extends Service {
       // then kill the auto-snooze callback
       if (!selfKill)
          handler.removeCallbacks(autoSnooze);
+
+      unregisterReceiver(broadcastReceiver);
    }
    @Nullable
    @Override
@@ -406,54 +459,19 @@ public class AlarmService  extends Service {
       return strBase + "  "+ snoozeDuration + units;
    }
 
-   // Create notification to display when Alarm goes off
+   // Create notification builder to display when Alarm goes off
    // Will be called from onStartCommand()
    @Nullable
-   private Notification CreateNotification(@NonNull Intent intent){
+   private NotificationCompat.Builder CreateNotification(@NonNull Intent intent){
 
       // Strings to show as alarm text and Title
       Bundle inBundle = intent.getExtras();
       if (inBundle == null) return null;
-      String label = inBundle.getString(K_LABEL);
-      int h = inBundle.getInt(K_HOUR, -1);
-      int m = inBundle.getInt(K_MINUTE, -1);
-
       String strSnoozeDuration = inBundle.getString(appContext.getString(R.string.key_snooze_duration), "");
 
-
-
-      // Time format
-      String ampm;
-      if (pref_is24HourClock())
-         ampm = "";
-      else{
-         if (h==0) {
-            ampm = getString(R.string.format_am);
-            h=12;
-         }
-         else if (h<12)
-            ampm = getString(R.string.format_am);
-         else {
-            ampm = getString(R.string.format_pm);
-            if (h!=12)
-               h-=12;
-         }
-      }
-
-      String alarmText;
-      assert label != null;
-      if (!label.isEmpty())
-         alarmText = String.format(Locale.ENGLISH,"%s - %d:%02d%s", label, h, m,ampm);
-      else
-         alarmText = String.format(Locale.ENGLISH,"%d:%02d%s", h, m,ampm);
-      String alarmTitle = getResources().getString(R.string.notification_title);
-      Log.i("THE_TIME_MACHINE", alarmText);
-
-      // Create a random number for request code
+   // Create a random number for request code
       Random random = new Random();
       int requestCode = random.nextInt(10000000);
-
-      Log.d("THE_TIME_MACHINE", "Label: " + alarmText + "  requestCode: " + requestCode);
 
       // Prepare intent for a Stop/Snooze fullscreen activity
       Intent fullScreenIntent = new Intent(this, StopSnoozeActivity.class);
@@ -475,9 +493,9 @@ public class AlarmService  extends Service {
             R.drawable.snooze_fill0_wght400_grad0_opsz24, snoozeButtonText(strSnoozeDuration), snoozeIntent).build();
 
       // Notification
-      return  new NotificationCompat.Builder(this, CHANNEL_ID)
-            /* Title */                .setContentTitle(alarmTitle)
-            /* Content */              .setContentText(alarmText)
+      NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+            /* Title */                .setContentTitle(getResources().getString(R.string.notification_title))
+            /* Content */              //.setContentText(alarmText)
             /* Status bar Icon */      .setSmallIcon(R.drawable.baseline_alarm_24)
             /* Always on top */        .setPriority(NotificationCompat.PRIORITY_MAX)
             /* Set category */         .setCategory(NotificationCompat.CATEGORY_ALARM)
@@ -487,8 +505,9 @@ public class AlarmService  extends Service {
             /* Audio and vibration */  .setDefaults(Notification.DEFAULT_ALL)
             /* Stop Button */          .addAction(stopAction)
             /* Stop Button */          .addAction(snoozeAction)
-            .setTimeoutAfter(-1)
-            .build();
+            /* Not canceled by system*/.setTimeoutAfter(-1);
+
+            return builder;
    }
 
 
