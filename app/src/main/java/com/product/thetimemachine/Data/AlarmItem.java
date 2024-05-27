@@ -392,9 +392,10 @@ public class AlarmItem {
          snoozeDelay = 0;
 
       // Everytime this alarm goes off - snoozeCounter is incremented
-      // The alarm should then scheduled to snooze
+      // The alarm should then scheduled to snoozeAdd
       // The next time it will go off will be after the next delay
-      calendar.setTimeInMillis(calendar.getTimeInMillis() + (long) snoozeCounter *snoozeDelay);
+      if (snoozeDelay >0)
+         calendar.setTimeInMillis(System.currentTimeMillis() + snoozeDelay);
 
       // if alarm time has already passed, increment day by 1
       if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
@@ -645,12 +646,18 @@ public class AlarmItem {
    *  The Snooze Counter member variable is set to 0 when an alarm is created.
    *  The counter is incremented every time alarmManager.setExactAndAllowWhileIdle is called.
    *  The counter is reset to 0 when the user activates an alarm.
-   *<p>
-   *  In both Snooze & Auto-Snooze the alarm time is calculated as an offset from the
-   *  original alarm time. The offset is delay*snoozecounter.
-   *  In the case of auto-snooze, when the snooze counter reaches the limit -
-   *  the alarm is deactivated
-   *
+    *<p>
+    *  In Snooze the alarm time is calculated as an offset from the
+    *  time 'Snooze' was pressed. The offset is delay*snoozecounter.
+    *  In the case of auto-snooze, when the snooze counter reaches the limit -
+    *  the alarm is deactivated
+    *
+    *<p>
+    *  In auto-snooze the alarm time is calculated as an offset from the
+    *  time the ringing stopped. The offset is delay*snoozecounter.
+    *  When the snooze counter reaches the limit -
+    *  the alarm is deactivated
+    *
    */
    public void Exec(){
       long alarmTime;
