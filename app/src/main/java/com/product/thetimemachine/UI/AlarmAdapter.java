@@ -118,6 +118,23 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
        else
            holder.SnoozeIcon.setVisibility(View.INVISIBLE);
 
+       // Vibration? If so set vibration icon
+        if (alarmItem.isVibrationActive())
+            holder.VibrationIcon.setVisibility(View.VISIBLE);
+        else
+            holder.VibrationIcon.setVisibility(View.INVISIBLE);
+
+//        AudioManager am = (AudioManager) context.getApplicationContext().getSystemService( Context.AUDIO_SERVICE);
+//        int volumeLevel= am.getStreamVolume(AudioManager.STREAM_ALARM);
+//        Log.d("THE_TIME_MACHINE", "Alarm Volume: " + volumeLevel );
+
+        // Warn if alarm muted
+        if (alarmItem.isAlarmMute() /*|| volumeLevel<=1*/)
+            holder.MuteIcon.setVisibility(View.VISIBLE);
+        else
+            holder.MuteIcon.setVisibility(View.INVISIBLE);
+
+
         // Weekdays
         if (pref_first_day_of_week().equals("Su"))
             holder.WeekDays.setText(R.string.list_of_weekdays_SU);
@@ -270,7 +287,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView AlarmLabel, WeekDays, AlarmTime, amPm24h;
-        public ImageView BellView, SnoozeIcon;
+        public ImageView BellView, SnoozeIcon, VibrationIcon, MuteIcon;
         public CheckBox AlarmActive;
         public View itemView;
 
@@ -290,6 +307,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             AlarmActive = itemView.findViewById(R.id.AlarmActive);
             amPm24h = itemView.findViewById(R.id.am_pm_24h);
             SnoozeIcon = itemView.findViewById(R.id.Snooze_icon);
+            VibrationIcon = itemView.findViewById(R.id.Vibrate_icon);
+            MuteIcon = itemView.findViewById(R.id.Mute_icon);
 
 
 

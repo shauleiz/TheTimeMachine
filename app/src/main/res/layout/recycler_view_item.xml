@@ -37,7 +37,7 @@
 
     <TextView
         android:id="@+id/WeekDays"
-        android:layout_width="285dp"
+        android:layout_width="200dp"
         android:layout_height="20dp"
         android:paddingStart="6dp"
         android:textAlignment="textEnd"
@@ -48,12 +48,35 @@
 
     <ImageView
         android:id="@+id/Snooze_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:contentDescription="@string/per_item_zoom_icon"
         android:textColor="?android:attr/textColorPrimaryNoDisable"
         app:layout_constraintTop_toTopOf="parent"
         whatever:layout_constraintStart_toEndOf="@+id/AlarmActive"
         whatever:srcCompat="@drawable/snooze_fill0_wght400_grad0_opsz24" />
+
+    <ImageView
+        android:id="@+id/Vibrate_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="2dp"
+        android:contentDescription="@string/per_item_vibrate_icon"
+        android:textColor="?android:attr/textColorPrimaryNoDisable"
+        app:layout_constraintTop_toTopOf="parent"
+        whatever:layout_constraintStart_toEndOf="@+id/Snooze_icon"
+        whatever:srcCompat="@drawable/vibration_opsz24" />
+
+    <ImageView
+        android:id="@+id/Mute_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="2dp"
+        android:contentDescription="@string/per_item_mute_icon"
+        android:textColor="?android:attr/textColorPrimaryNoDisable"
+        app:layout_constraintTop_toTopOf="parent"
+        whatever:layout_constraintStart_toEndOf="@+id/Vibrate_icon"
+        whatever:srcCompat="@drawable/notifications_off_24dp_fill0_wght400_grad0_opsz24" />
 
     <TextView
         android:id="@+id/AlarmTime"

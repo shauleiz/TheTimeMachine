@@ -254,8 +254,21 @@ public class AlarmItem {
    public String getVibrationPattern() {
       return vibrationPattern;
    }
+   public boolean isVibrationActive() {
+      if (getVibrationPattern().equals("none"))
+         return false;
+      else
+         return true;
+   }
    public String getAlarmSound() {
       return alarmSound;
+   }
+
+   public boolean isAlarmMute(){
+      if (getAlarmSound().equals("silent"))
+         return true;
+      else
+         return false;
    }
    public String getGradualVolume() {
       return gradualVolume;
