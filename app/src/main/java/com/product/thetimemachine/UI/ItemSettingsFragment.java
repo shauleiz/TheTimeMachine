@@ -1,6 +1,8 @@
 package com.product.thetimemachine.UI;
 
 import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
+import static com.product.thetimemachine.UI.SettingsFragment.sound;
+import static com.product.thetimemachine.UI.SettingsFragment.vibrate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -82,10 +84,14 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
          setUpAlarmValues.setRingRepeat(preferences.getString(key, ""));
       else if (key.equals(context.getString(R.string.key_snooze_duration)))
          setUpAlarmValues.setSnoozeDuration(preferences.getString(key, ""));
-      else if (key.equals(context.getString(R.string.key_vibration_pattern)))
+      else if (key.equals(context.getString(R.string.key_vibration_pattern))) {
          setUpAlarmValues.setVibrationPattern(preferences.getString(key, ""));
-      else if (key.equals(context.getString(R.string.key_alarm_sound)))
+         vibrate(preferences.getString(key, ""));
+      }
+      else if (key.equals(context.getString(R.string.key_alarm_sound))) {
          setUpAlarmValues.setAlarmSound(preferences.getString(key, ""));
+         sound(preferences.getString(key, ""));
+      }
       else if (key.equals(context.getString(R.string.key_gradual_volume)))
          setUpAlarmValues.setGradualVolume(preferences.getString(key, ""));
    }

@@ -146,8 +146,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
       Objects.requireNonNull(getPreferenceManager().getSharedPreferences()).unregisterOnSharedPreferenceChangeListener(this);
    }
 
-   void vibrate(String pattern) {
-      Vibrator vibrator =  (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+   static void vibrate(String pattern) {
+      Vibrator vibrator =  (Vibrator) appContext.getSystemService(Context.VIBRATOR_SERVICE);
       if (vibrator.hasAmplitudeControl())
          Log.d("THE_TIME_MACHINE", "vibrate(): hasAmplitudeControl");
       else
@@ -162,7 +162,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
       };
 
       // Vibrate
-      AlarmService.VibrateEffect(getContext(), pattern);
+      AlarmService.VibrateEffect(appContext, pattern);
 
 
 
