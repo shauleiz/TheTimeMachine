@@ -162,9 +162,9 @@ public class AlarmListFragment extends Fragment {
                     ActiveCheckboxChanged( view,  position);
                 }
                 else{ // The Alarm item itself has been clicked
-                    String label = alarmList.get(position).getLabel();
-                    String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
-                    Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
+                    //String label = alarmList.get(position).getLabel();
+                    //String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
+                    //Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
                     if (!parent.alarmViewModel.clearSelection(alarmList.get(position).getCreateTime()))
                         AlarmItemEdit(alarmList.get(position),true);
                 }
@@ -181,7 +181,7 @@ public class AlarmListFragment extends Fragment {
                 else{ // The Alarm item itself has been clicked
                     String label = alarmList.get(position).getLabel();
                     String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
-                    Toast.makeText(getContext(), "Alarm Long Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), "Alarm Long Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
                     AlarmItemLongClicked(alarmList.get(position).getCreateTime());
                 }
             }

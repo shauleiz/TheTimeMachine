@@ -15,7 +15,7 @@
     <string name="dummy_content">TODO: Change This Later</string>
     <string name="msg_alarm_set">Alarm set for %02d:%02d</string>
     <string name="msg_rec_alarm_set">Recurring Alarm set for %02d:%02d</string>
-    <string name="msg_alarm_canceled">Alarm cancelled for %02d:%02d</string>
+    <string name="msg_alarm_canceled">Alarm for %02d:%02d - cancelled</string>
     <string name="list_of_weekdays_SU">Su Mo Tu We Th Fr Sa</string>
     <string name="list_of_weekdays_Mo">Mo Tu We Th Fr Sa Su</string>
     <string name="got_it">Got it</string>

@@ -25,7 +25,9 @@ import com.product.thetimemachine.R;
 import com.product.thetimemachine.UI.MainActivity;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
@@ -614,6 +616,58 @@ public class AlarmItem {
       return Integer.parseInt(intValue) * 1000;
    }
 
+   public static String strGetDurationToAlarm(long alarmTime) {
+      String strD="", strH="", strM="";
+      final long DaysInMillis = 24*60*60*1000;
+      final long HoursInMillis = 60*60*1000;
+      final long MinutesInMillis = 60*1000;
+
+
+      // Get Current Time in Millis
+      long tNow= (new Date()).getTime();
+
+      // Calculate duration in millis
+      long duration = alarmTime + 60000 - tNow;
+
+      if (duration < 12000)
+         return "Alarm scheduled for now";
+
+      // Calculate D, H, M
+      long days = duration / DaysInMillis;
+      long hours = (duration - days*DaysInMillis)/ HoursInMillis;
+      long minutes = (duration - days*DaysInMillis - hours*HoursInMillis)/ MinutesInMillis;
+
+      // Create the print string.
+      // Alarm time is set for 10 days, 11 hours and 5 Minutes.
+      // Values are rounded down to the minute (no seconds and millis)
+      // Value 0 is ignored.
+      // Value 1 is without the plural
+
+      if (days>1)
+         strD = days +" days ";
+      else if (days==1)
+         strD = "1 day ";
+      else
+         strD = "";
+
+      if (hours>1)
+         strH = hours +" hours ";
+      else if (hours==1)
+         strH = "1 hour ";
+      else
+         strH = "";
+
+      if (minutes>1)
+         strM = minutes +" minutes ";
+      else if (minutes==1)
+         strM = "1 minute ";
+      else
+         strM = "";
+
+
+      return "Alarm scheduled for " + strD  + strH + strM + "from now";
+   }
+
 
    /********** Execute an alarm action according to alarm state **********
    * Actions:
@@ -747,15 +801,12 @@ public class AlarmItem {
          alarmManager.setAlarmClock(ac, alarmIntent);
 
 
-
-
-
          // Toast & Log
          Calendar calendar = Calendar.getInstance();
          calendar.setTimeInMillis(alarmTime);
          SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a", Locale.US);
          String toastText = String.format(context.getResources().getString(R.string.msg_alarm_set), hour, minute);
-         Toast.makeText(context, format.format(calendar.getTime()), Toast.LENGTH_SHORT).show();
+         Toast.makeText(context,  strGetDurationToAlarm(alarmTime), Toast.LENGTH_LONG).show();
          Log.d("THE_TIME_MACHINE", "Exec(): " + toastText + " " + format.format(calendar.getTime()) );
 
       }

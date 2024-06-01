@@ -129,7 +129,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             Intent.ACTION_PACKAGE_REPLACED.equals(action) ||
             Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
          String toastText = "Alarm Reboot";
-         Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
          booting(context);
          Log.i("THE_TIME_MACHINE", "Alarm Reboot");
 
@@ -153,7 +152,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
          // Debug information
          String txt = "Label: " + label + "  " + h + ":" + m;
-         Toast.makeText(context, txt, Toast.LENGTH_LONG).show();
          Log.i("THE_TIME_MACHINE", txt);
 
          // If alarm is intended to sound today then
