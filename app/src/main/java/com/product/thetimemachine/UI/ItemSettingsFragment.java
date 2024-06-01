@@ -33,20 +33,25 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
    AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
    AlarmViewModel alarmViewModel;
 
+   String getItemPrefFileName(){
+      return appContext.getPackageName()+"_"+getString(R.string.ITEM_PREF_FILENAME);
+   }
    @Override
    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
       // Init important global parameters
       context = appContext;
+
+
 
       // Create/acquire the ViewModel object of class AlarmViewModel
       alarmViewModel = new ViewModelProvider(requireActivity()).get(AlarmViewModel.class);
       setUpAlarmValues = alarmViewModel.setUpAlarmValues;
 
       // Set the current SharedPreferences file name
-      getPreferenceManager().setSharedPreferencesName(getString(R.string.ITEM_PREF_FILENAME));
+      getPreferenceManager().setSharedPreferencesName(getItemPrefFileName());
 
       // Get the SharedPreferences global parameter
-      preferences = context.getSharedPreferences(getString(R.string.ITEM_PREF_FILENAME), Context.MODE_PRIVATE);
+      preferences = context.getSharedPreferences(getItemPrefFileName(), Context.MODE_PRIVATE);
 
       // Copy the preferences for this item from AlarmItem to Item Preferences
       SetItemPreferences();
@@ -59,7 +64,7 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
    private void SetItemPreferences() {
       // Get the Item Preferences file
       Context context = getContext();
-      SharedPreferences preferences = context.getSharedPreferences(getString(R.string.ITEM_PREF_FILENAME), Context.MODE_PRIVATE);
+      SharedPreferences preferences = context.getSharedPreferences(getItemPrefFileName(), Context.MODE_PRIVATE);
       // Create an Editor
       SharedPreferences.Editor editor = preferences.edit();
 
