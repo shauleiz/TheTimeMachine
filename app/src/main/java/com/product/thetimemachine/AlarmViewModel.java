@@ -2,7 +2,9 @@ package com.product.thetimemachine;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
@@ -73,6 +75,14 @@ public class AlarmViewModel extends AndroidViewModel {
       // Get alarm item and cancel the alarm
       item.setActive(false);
       item.Exec();
+
+      // top alarm in case it is ringing
+      Bundle b = item.getBundle();
+      Context context = TheTimeMachineApp.appContext;;
+      Intent stopIntent = new Intent(context, AlarmService.class);
+      stopIntent.putExtras(b);
+      AlarmReceiver.stopping(context, stopIntent );
+
 
       // Repository
       repo.DeleteAlarm(item);
