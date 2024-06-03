@@ -61,8 +61,5 @@ public class BootService extends LifecycleService{
       super.onDestroy();
    }
 
-   @Override
-   public void onCreate() {
-      super.onCreate();
-   }
+
 }

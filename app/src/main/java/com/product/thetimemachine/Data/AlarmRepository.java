@@ -20,7 +20,7 @@ public class AlarmRepository {
 
    private final LiveData<List<AlarmItem>> liveAlarmItemList;
    //AlarmRoomDatabase alarmRoomDatabase;
-   AlarmDao alarmDao;
+   final AlarmDao alarmDao;
 
     public AlarmRepository(Application application){
        AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(application);

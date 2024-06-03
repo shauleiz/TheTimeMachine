@@ -1,6 +1,5 @@
 package com.product.thetimemachine.UI;
 
-import static android.icu.util.TimeZone.getTimeZone;
 import static com.product.thetimemachine.Data.AlarmItem.FRIDAY;
 import static com.product.thetimemachine.Data.AlarmItem.MONDAY;
 import static com.product.thetimemachine.Data.AlarmItem.SATURDAY;
@@ -12,8 +11,6 @@ import static com.product.thetimemachine.UI.SettingsFragment.pref_first_day_of_w
 import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,7 +33,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import com.product.thetimemachine.AlarmViewModel;
 import com.product.thetimemachine.Data.AlarmItem;
@@ -52,12 +48,10 @@ import java.util.Objects;
 public class SetUpAlarmFragment extends Fragment {
 
     private MyTimePicker timePicker;
-    private DatePickerDialog datePickerDialog;
-    //private SwitchCompat repeating;
+   //private SwitchCompat repeating;
     private MaterialButtonToggleGroup repeating;
-    private ImageButton callDatePickerButton;
 
-    private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
+   private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
           weToggleButton, thToggleButton,frToggleButton, saToggleButton;
     //private EditText label;
     private TextInputEditText label;
@@ -87,10 +81,7 @@ public class SetUpAlarmFragment extends Fragment {
         setUpAlarmValues.setMinute(minute);
 
         setUpAlarmValues.setWeekDays(getDaysValues());
-        if(repeating.getCheckedButtonId() == R.id.oneoff_btn)
-            setUpAlarmValues.setOneOff(true);
-        else
-            setUpAlarmValues.setOneOff(false);
+       setUpAlarmValues.setOneOff(repeating.getCheckedButtonId() == R.id.oneoff_btn);
 
 
 
@@ -220,7 +211,7 @@ public class SetUpAlarmFragment extends Fragment {
         setDisplayAreaVisible(oneOff, view);
 
         // This button calls the Date Picker
-        callDatePickerButton = view.findViewById(R.id.ShowDatePicker_Btn);
+       ImageButton callDatePickerButton = view.findViewById(R.id.ShowDatePicker_Btn);
         callDatePickerButton.setOnClickListener(this::ShowDatePickerOnClick);
 
         // Listener to the Repeating button (set the weekdays button visibility)
@@ -479,7 +470,7 @@ public boolean isInThePast(long alarmInMillis){
         int d, m, y;
 
         Log.d("THE_TIME_MACHINE", "ShowDatePickerOnClick");
-        datePickerDialog = new DatePickerDialog(requireContext());
+       DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext());
 
         // Get the date stored in the VM.
         d = setUpAlarmValues.getDayOfMonth().getValue();
@@ -500,7 +491,7 @@ public boolean isInThePast(long alarmInMillis){
         datePickerDialog.setOnDateSetListener(this::DateWidgetListener);
 
         // Set the date and show the widget
-        datePickerDialog.updateDate(y,m,d);
+        datePickerDialog.updateDate(y, m, d);
         datePickerDialog.show();
 
     }

@@ -8,7 +8,7 @@
     <item
         android:id="@+id/edit"
         android:icon="@drawable/edit_fill0_wght400_grad0_opsz24"
-        android:title="edit"
+        android:title="@string/edit_action_bar"
         android:visible="true"
         TheTimeMachine:showAsAction="ifRoom"/>
 
@@ -25,7 +25,7 @@
         android:id="@+id/duplicate"
         android:icon="@drawable/octicon__duplicate_24"
         android:iconTint="?attr/colorPrimaryContainer"
-        android:title="Duplicate"
+        android:title="@string/duplicate_action_bar"
         android:visible="true"
         TheTimeMachine:showAsAction="ifRoom" />
 
@@ -34,7 +34,7 @@
         android:id="@+id/settings"
         android:icon="@drawable/settings_fill0_wght400_grad0_opsz24"
         android:iconTint="?attr/colorPrimaryContainer"
-        android:title="Settings"
+        android:title="@string/settings_action_bar"
         android:visible="true"
         TheTimeMachine:showAsAction="always" />
 

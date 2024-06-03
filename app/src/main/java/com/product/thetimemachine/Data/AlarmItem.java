@@ -2,7 +2,6 @@ package com.product.thetimemachine.Data;
 
 import static com.product.thetimemachine.AlarmService.ALARM;
 import static com.product.thetimemachine.AlarmService.K_TYPE;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_snooze_duration;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -25,7 +24,6 @@ import com.product.thetimemachine.R;
 import com.product.thetimemachine.UI.MainActivity;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -37,7 +35,7 @@ import java.util.Random;
    The object contains all there is to know about the alarm:
    - Exact Time
    - Time of original creation: Used as unique ID
-   - Lable (optional) to display with the alarm
+   - Label (optional) to display with the alarm
    - Status (active)
    - Type (one-off or repeating or on a future explicit date)
    - Week days (For repeating alarm)
@@ -91,26 +89,23 @@ public class AlarmItem {
 
    public static final int DAY_IN_MILLIS = 24*60*60*1000;
 
-   // 2 Minutes Snooze Delay
-   public static final int SNOOZE_DELAY = 2*60*1000; // TODO: Replace by a configurable value
-
 
 
    /***
     * Constructors
-    *
+    * <p>
     * AlarmItem(@NonNull Bundle inBundle):
     * Create duplicate of an AlarmItem object from a bundle
-    *
+    * <p>
     * AlarmItem(int _hour, int _minute, String _label, boolean _active):
     * Create a default AlarmItem object from some basic info -
-    * the cretion time is calculated by the constructor.
+    * the creation time is calculated by the constructor.
     * Other values are set to default values
     * Preferences are set to the app default values
-    *
+    * <p>
     * AlarmItem(int _hour, int _minute, String _label, boolean _active, long _createTime):
     * Create a dummy duplicate
-    *
+    * <p>
     * public AlarmItem() : Place holder only
    ***/
    // Constructor of Alarm Item - Create from a bundle
@@ -257,20 +252,14 @@ public class AlarmItem {
       return vibrationPattern;
    }
    public boolean isVibrationActive() {
-      if (getVibrationPattern().equals("none"))
-         return false;
-      else
-         return true;
+      return !getVibrationPattern().equals("none");
    }
    public String getAlarmSound() {
       return alarmSound;
    }
 
    public boolean isAlarmMute(){
-      if (getAlarmSound().equals("silent"))
-         return true;
-      else
-         return false;
+      return getAlarmSound().equals("silent");
    }
    public String getGradualVolume() {
       return gradualVolume;
@@ -386,7 +375,7 @@ public class AlarmItem {
       calendar.set(Calendar.SECOND, 0);
       calendar.set(Calendar.MILLISECOND, 0);
 
-      // If this a future date by given calander date
+      // If this a future date by given calendar date
       if (isFutureDate() && getDayOfMonth()>0 && getMonth()>0 && getYear()>0){
          calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
          calendar.set(Calendar.MONTH,month);
@@ -485,10 +474,7 @@ public class AlarmItem {
       tomorrow_midnight = today_midnight+24*60*60*1000;
       tomorrow_last_sec = tomorrow_midnight+24*60*60*1000-1000;
       alarm_time = alarmTimeInMillis();
-      if (alarm_time>=tomorrow_midnight && alarm_time<=tomorrow_last_sec)
-         return true;
-      else
-         return false;
+      return alarm_time >= tomorrow_midnight && alarm_time <= tomorrow_last_sec;
    }
 
    // Copy Global preferences to Item preferences
@@ -617,7 +603,7 @@ public class AlarmItem {
    }
 
    public static String strGetDurationToAlarm(long alarmTime) {
-      String strD="", strH="", strM="";
+      String strH, strD, strM;
       final long DaysInMillis = 24*60*60*1000;
       final long HoursInMillis = 60*60*1000;
       final long MinutesInMillis = 60*1000;

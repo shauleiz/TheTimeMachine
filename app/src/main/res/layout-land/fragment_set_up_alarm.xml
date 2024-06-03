@@ -102,7 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Single" />
+                android:text="@string/single_oneoff" />
 
             <Button
                 android:id="@+id/repeate_btn"
@@ -110,7 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Weekly" />
+                android:text="@string/weekly_repeat" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
 
@@ -390,6 +390,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageButton
+            android:contentDescription="@string/date_picker"
             android:id="@+id/ShowDatePicker_Btn"
             android:layout_width="51dp"
             android:layout_height="48dp"

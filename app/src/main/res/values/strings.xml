@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">The Time Machine</string>
     <string name="alarm_add">Add Alarm</string>
     <string name="Text_Clock">Text Clock - 2nd Frame</string>
@@ -94,6 +94,15 @@
     <string name="per_item_zoom_icon">Per-item Zoom Icon</string>
     <string name="per_item_vibrate_icon">Per-Item Vibrate Icon</string>
     <string name="per_item_mute_icon">Per-Item Mute Icon</string>
+    <string name="date_picker">Date Picker</string>
+    <string name="single_oneoff">Single</string>
+    <string name="weekly_repeat">Weekly</string>
+    <string name="edit_action_bar">edit</string>
+    <string name="duplicate_action_bar">Duplicate</string>
+    <string name="settings_action_bar">Settings</string>
+    <string name="call">Call</string>
+    <string name="sms">SMS</string>
+    <string name="button">Button</string>
 
 
     <array name="clock_12_24_entries">

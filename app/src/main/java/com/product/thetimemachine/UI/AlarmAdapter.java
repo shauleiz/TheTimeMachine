@@ -194,7 +194,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
     // Prepare the string to show Today/Tomorrow or the selected days of the week
     // The info is gotten from the Alarm item
-    // The function returns a spanable string for display
+    // The function returns a span-able string for display
     private void prepareWeekdaysSpan(AlarmItem alarmItem, TextView textView) {
 
         final int[] su_array = {0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20};
@@ -286,10 +286,10 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     public class AlarmViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
-        public TextView AlarmLabel, WeekDays, AlarmTime, amPm24h;
-        public ImageView BellView, SnoozeIcon, VibrationIcon, MuteIcon;
-        public CheckBox AlarmActive;
-        public View itemView;
+        public final TextView AlarmLabel, WeekDays, AlarmTime, amPm24h;
+        public final ImageView BellView, SnoozeIcon, VibrationIcon, MuteIcon;
+        public final CheckBox AlarmActive;
+        public final View itemView;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview

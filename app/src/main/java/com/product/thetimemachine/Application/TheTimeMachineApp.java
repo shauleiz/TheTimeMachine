@@ -5,8 +5,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 
-import java.util.List;
-
 public class TheTimeMachineApp extends Application {
    public static final String CHANNEL_ID = "ALARM_SERVICE_CHANNEL";
    public static Context appContext;

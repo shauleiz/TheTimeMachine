@@ -7,7 +7,6 @@ import static com.product.thetimemachine.UI.SettingsFragment.vibrate;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.product.thetimemachine.AlarmViewModel;
 import com.product.thetimemachine.R;
@@ -76,8 +74,8 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
       editor.putString(context.getString(R.string.key_alarm_sound), setUpAlarmValues.getAlarmSound().getValue());
       editor.putString(context.getString(R.string.key_gradual_volume), setUpAlarmValues.getGradualVolume().getValue());
 
-      // Now, commit changes
-      editor.commit();
+      // Now, apply changes
+      editor.apply();
    }
 
    @Override
@@ -106,9 +104,9 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
 
       // Hide irrelevant categories
       PreferenceCategory mCategory;
-      mCategory= (PreferenceCategory) findPreference(getString(R.string.key_time_format));
+      mCategory= findPreference(getString(R.string.key_time_format));
       mCategory.setVisible(false);
-      mCategory = (PreferenceCategory) findPreference(getString(R.string.key_alarm_list));
+      mCategory = findPreference(getString(R.string.key_alarm_list));
       mCategory.setVisible(false);
 
 

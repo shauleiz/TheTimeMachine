@@ -28,8 +28,8 @@ import java.util.List;
  */
 public class AlarmViewModel extends AndroidViewModel {
 
-   public SetUpAlarmValues setUpAlarmValues;
-   public LiveData<List<AlarmItem>> LiveAlarmList;
+   public final SetUpAlarmValues setUpAlarmValues;
+   public final LiveData<List<AlarmItem>> LiveAlarmList;
    private List<AlarmItem> AlarmList;
    private AlarmRepository repo;
 
@@ -143,23 +143,23 @@ public class AlarmViewModel extends AndroidViewModel {
    }
    // This Class holds the values of the alarm that is being added/modified
    public class SetUpAlarmValues {
-      MutableLiveData<Integer> hour, minute;
-      MutableLiveData<String> label;
-      MutableLiveData<Boolean> active;
-      MutableLiveData<Long>  createTime;
-      MutableLiveData<Integer> weekDays;
-      MutableLiveData<Boolean> oneOff;
+      final MutableLiveData<Integer> hour, minute;
+      final MutableLiveData<String> label;
+      final MutableLiveData<Boolean> active;
+      final MutableLiveData<Long>  createTime;
+      final MutableLiveData<Integer> weekDays;
+      final MutableLiveData<Boolean> oneOff;
 
-      MutableLiveData<Integer> dayOfMonth, month, year;
-      MutableLiveData<Boolean>  futureDate;
+      final MutableLiveData<Integer> dayOfMonth, month, year;
+      final MutableLiveData<Boolean>  futureDate;
 
       // Preferences
-      MutableLiveData<String> ringDuration;
-      MutableLiveData<String> ringRepeat;
+      final MutableLiveData<String> ringDuration;
+      final MutableLiveData<String> ringRepeat;
       MutableLiveData<String> snoozeDuration;
-      MutableLiveData<String> vibrationPattern;
-      MutableLiveData<String> alarmSound;
-      MutableLiveData<String> gradualVolume;
+      final MutableLiveData<String> vibrationPattern;
+      final MutableLiveData<String> alarmSound;
+      final MutableLiveData<String> gradualVolume;
 
 
       // Default constructor
@@ -260,10 +260,9 @@ public class AlarmViewModel extends AndroidViewModel {
          active.setValue(item.isActive());
 
 
-         AlarmItem ai = item;
          long c;
          if (edit)
-            c = ai.getCreateTime();
+            c = item.getCreateTime();
          else
             c=0;
          createTime.setValue(c);

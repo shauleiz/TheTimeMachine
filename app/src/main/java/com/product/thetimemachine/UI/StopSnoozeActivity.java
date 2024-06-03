@@ -16,19 +16,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
@@ -98,7 +93,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       }
    };
    private boolean mVisible;
-   private final Runnable mHideRunnable = () -> hide();
+   private final Runnable mHideRunnable = this::hide;
 
 
       private final View.OnLongClickListener mSnoozeLongClickListener = new View.OnLongClickListener(){
@@ -118,6 +113,8 @@ public class StopSnoozeActivity extends AppCompatActivity {
          for(int i=0; i<snoozeDurationEntries.length(); i++){
             popupMenu.getMenu().add(0,i, Menu.NONE, snoozeDurationEntries.getString(i));
          }
+         snoozeDurationEntries.recycle();
+         snoozeDurationValues.recycle();
 
          // Showing the popup menu
          popupMenu.show();
@@ -293,9 +290,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
       // Set The time format
       if (pref_is24HourClock())
-         dateFormat = new SimpleDateFormat("H:mm");
+         dateFormat = new SimpleDateFormat("H:mm",Locale.US);
       else
-         dateFormat = new SimpleDateFormat("h:mm a");
+         dateFormat = new SimpleDateFormat("h:mm a",Locale.US);
 
    }
 

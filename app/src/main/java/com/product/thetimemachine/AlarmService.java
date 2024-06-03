@@ -3,9 +3,7 @@ package com.product.thetimemachine;
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
 import static com.product.thetimemachine.Application.TheTimeMachineApp.CHANNEL_ID;
 import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
-import static com.product.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.product.thetimemachine.Data.AlarmItem.K_LABEL;
-import static com.product.thetimemachine.Data.AlarmItem.K_MINUTE;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_SnoozeDuration;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_alarm_sound;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_gradual_volume;
@@ -15,6 +13,7 @@ import static com.product.thetimemachine.Data.AlarmItem.Str2Int_vibration_patter
 import static com.product.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
 import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -48,7 +47,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
-import java.util.Random.*;
 
 public class AlarmService  extends Service {
 
@@ -67,6 +65,7 @@ public class AlarmService  extends Service {
    private SimpleDateFormat dateFormat;
    NotificationCompat.Builder builder;
 
+   @SuppressLint("SimpleDateFormat")
    @Override
    public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -82,9 +81,9 @@ public class AlarmService  extends Service {
 
       // Set The time format
       if (pref_is24HourClock())
-         dateFormat = new SimpleDateFormat("H:mm");
+         dateFormat = new SimpleDateFormat("H:mm",Locale.US);
       else
-         dateFormat = new SimpleDateFormat("h:mm a");
+         dateFormat = new SimpleDateFormat("h:mm a",Locale.US);
 
       // Strings to show as alarm text when the notification shows for the 1st time
       String alarmText;
@@ -291,58 +290,64 @@ public class AlarmService  extends Service {
       int[] amplitudes;
       int repeatIndex ;
 
-      if (effect.equals("ssb")) { // Single Short Beat
-         timings = new long[]  { 50, 50, 50, 50,  50,  100 };
-         amplitudes = new int[]{ 33, 51, 75, 113, 170, 255 };
-         repeatIndex = -1; // Do not repeat
-      }
-      else if (effect.equals("tsb")) { // Three Short Beats
-         timings = new long[]  {
-               50,  50,  50,  100, 50,  50,  400,
-               50,  50,  50,  100, 50,  50,  400,
-               50,  50,  50,  100, 50,  50,  400
-         };
-         amplitudes = new int[]{
-               33,  113, 170, 255, 170, 113, 0,
-               33,  113, 170, 255, 170, 113, 0,
-               33,  113, 170, 255, 170, 113, 0
-         };
-         repeatIndex = -1; // Do not repeat
-      }
-      else if (effect.equals("slb")) { // Single Long  Beat
-         timings = new long[]  {50,  50,  50,  400, 50,  50,  400};
-         amplitudes = new int[]{33,  113, 170, 255, 170, 113, 0};
-         repeatIndex = -1; // Do not repeat
-      }
+      switch (effect) {
+         case "ssb":  // Single Short Beat
+            timings = new long[]{50, 50, 50, 50, 50, 100};
+            amplitudes = new int[]{33, 51, 75, 113, 170, 255};
+            repeatIndex = -1; // Do not repeat
 
-      else if (effect.equals("rsb")) { // Repeating Short Beats
-         timings = new long[]  {
-               50,  50,  50,  100, 50,  50,  400,
-               50,  50,  50,  100, 50,  50,  400,
-               50,  50,  50,  100, 50,  50,  400
-         };
-         amplitudes = new int[]{
-               33,  113, 170, 255, 170, 113, 0,
-               33,  113, 170, 255, 170, 113, 0,
-               33,  113, 170, 255, 170, 113, 0
-         };
-         repeatIndex = 0; // repeat
-      }
-      else if (effect.equals("rlb")) { // Repeating Long  Beats
-         timings = new long[]  {50,  50,  50,  400, 50,  50,  600};
-         amplitudes = new int[]{33,  113, 170, 255, 170, 113, 0};
-         repeatIndex = 0; // repeat
-      }
+            break;
+         case "tsb":  // Three Short Beats
+            timings = new long[]{
+                  50, 50, 50, 100, 50, 50, 400,
+                  50, 50, 50, 100, 50, 50, 400,
+                  50, 50, 50, 100, 50, 50, 400
+            };
+            amplitudes = new int[]{
+                  33, 113, 170, 255, 170, 113, 0,
+                  33, 113, 170, 255, 170, 113, 0,
+                  33, 113, 170, 255, 170, 113, 0
+            };
+            repeatIndex = -1; // Do not repeat
 
-      else if (effect.equals("cont")) { // Continuous buzz
-         timings = new long[]  { 50, 50, 50, 50,  50,  100 };
-         amplitudes = new int[]{ 33, 51, 75, 113, 170, 255 };
-         repeatIndex = 5; // Stay at max
-      }
-      else { // None
-         timings = new long[]{100};
-         amplitudes = new int[]{0};
-         repeatIndex = -1;
+            break;
+         case "slb":  // Single Long  Beat
+            timings = new long[]{50, 50, 50, 400, 50, 50, 400};
+            amplitudes = new int[]{33, 113, 170, 255, 170, 113, 0};
+            repeatIndex = -1; // Do not repeat
+
+            break;
+         case "rsb":  // Repeating Short Beats
+            timings = new long[]{
+                  50, 50, 50, 100, 50, 50, 400,
+                  50, 50, 50, 100, 50, 50, 400,
+                  50, 50, 50, 100, 50, 50, 400
+            };
+            amplitudes = new int[]{
+                  33, 113, 170, 255, 170, 113, 0,
+                  33, 113, 170, 255, 170, 113, 0,
+                  33, 113, 170, 255, 170, 113, 0
+            };
+            repeatIndex = 0; // repeat
+
+            break;
+         case "rlb":  // Repeating Long  Beats
+            timings = new long[]{50, 50, 50, 400, 50, 50, 600};
+            amplitudes = new int[]{33, 113, 170, 255, 170, 113, 0};
+            repeatIndex = 0; // repeat
+
+            break;
+         case "cont":  // Continuous buzz
+            timings = new long[]{50, 50, 50, 50, 50, 100};
+            amplitudes = new int[]{33, 51, 75, 113, 170, 255};
+            repeatIndex = 5; // Stay at max
+
+            break;
+         default:  // None
+            timings = new long[]{100};
+            amplitudes = new int[]{0};
+            repeatIndex = -1;
+            break;
       }
 
       return VibrationEffect.createWaveform(timings, amplitudes, repeatIndex);
@@ -394,8 +399,7 @@ public class AlarmService  extends Service {
       if (pattern!=null && !pattern.isEmpty()){
          mediaPlayer = new MediaPlayer();
          //mediaPlayer = MediaPlayer.create(context, getUriForMusicFilename(pattern));
-         if (mediaPlayer == null)
-            return;
+
 
          try {
             mediaPlayer.setDataSource(context, getUriForMusicFilename(pattern));
@@ -447,7 +451,7 @@ public class AlarmService  extends Service {
 
    public static String snoozeButtonText(String strSnoozeDuration){
       String strBase =  appContext.getString(R.string.snooze);
-      if (strSnoozeDuration == null || strSnoozeDuration.length()==0)
+      if (strSnoozeDuration == null || strSnoozeDuration.isEmpty())
          return strBase;
 
       String units="Sec"; // TODO: Replace by global string

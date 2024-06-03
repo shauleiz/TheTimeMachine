@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -53,9 +52,7 @@ import java.util.Locale;
 public class AlarmListFragment extends Fragment {
 
 
-    private FloatingActionButton AddAlarm_Button;
-    private RecyclerView rvAlarms;
-    private MainActivity parent;
+   private MainActivity parent;
     private AlarmAdapter alarmAdapter;
 
     private List<AlarmItem> alarmList;
@@ -113,11 +110,11 @@ public class AlarmListFragment extends Fragment {
         parent.UpdateOptionMenu();
 
         // Add Alarm button (FAB)
-        AddAlarm_Button = view.findViewById(R.id.Add_Alarm_fab);
-        AddAlarm_Button.setOnClickListener(v -> AddAlarmClicked());
+       FloatingActionButton addAlarm_Button = view.findViewById(R.id.Add_Alarm_fab);
+        addAlarm_Button.setOnClickListener(v -> AddAlarmClicked());
 
         // Recyclerview widget - List of alarms
-        rvAlarms = view.findViewById(R.id.alarmListRecyclerView);
+       RecyclerView rvAlarms = view.findViewById(R.id.alarmListRecyclerView);
         // Set layout manager to position the items
         rvAlarms.setLayoutManager(new LinearLayoutManager(getContext()));
         // Attach the adapter to the recyclerview to populate items
@@ -433,11 +430,11 @@ public class AlarmListFragment extends Fragment {
 
     private void SortAlarmList(String comparatorType, boolean separate){
         if (comparatorType.equals("alphabetically"))
-            Collections.sort(alarmList, new ascendSortByLabel(separate));
+            alarmList.sort(new ascendSortByLabel(separate));
         else if (comparatorType.equals("by_alarm_time"))
-            Collections.sort(alarmList, new ascendSortByAlarmTime(separate));
+            alarmList.sort(new ascendSortByAlarmTime(separate));
         else
-            Collections.sort(alarmList, new descendSortByCreateTime(separate));
+            alarmList.sort(new descendSortByCreateTime(separate));
     }
 
     class ascendSortByAlarmTime implements Comparator<AlarmItem>

@@ -29,8 +29,7 @@ public abstract class AlarmRoomDatabase extends RoomDatabase {
       boolean deleted;
       // Brute Force removal of Room database
       String[] list =  context1.databaseList ();
-      for (int i=0; i<list.length; i++)
-         deleted = context1.deleteDatabase(list[i]);
+      for (String s : list) deleted = context1.deleteDatabase(s);
    }
    public static AlarmRoomDatabase getDatabase(final Context context) {
       if (alarmRoomDatabase == null) {

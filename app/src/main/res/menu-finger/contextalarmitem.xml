@@ -3,9 +3,9 @@
     <item
         android:id="@+id/call"
         android:icon="@android:drawable/sym_action_call"
-        android:title="Call" />
+        android:title="@string/call" />
     <item
         android:id="@+id/sms"
         android:icon="@android:drawable/sym_action_email"
-        android:title="SMS" />
+        android:title="@string/sms" />
 </menu>
