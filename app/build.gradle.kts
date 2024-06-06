@@ -16,8 +16,8 @@ android {
         applicationId = "com.product.thetimemachine"
         minSdk = 27
         targetSdk = 34
-        versionCode = 1005
-        versionName = "1.0.7"
+        versionCode = 1008
+        versionName = "1.0.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

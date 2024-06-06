@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -190,6 +192,19 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         else {
             holder.AlarmTime.setTextColor(AlarmTimeUncheckedTextColor);
         }
+
+        // Ringing: Blink AlarmTime
+        boolean isBlinking = alarmItem.isRinging(); // TODO: Ringing: Use mask
+        Animation anim = new AlphaAnimation(0.2f, 1.0f);
+        if (isBlinking) {
+            anim.setDuration(200); //You can manage the blinking time with this parameter
+            anim.setStartOffset(20);
+            anim.setRepeatMode(Animation.REVERSE);
+            anim.setRepeatCount(Animation.INFINITE);
+        }
+        else
+            anim.reset();
+        holder.AlarmTime.startAnimation(anim);
     }
 
     // Prepare the string to show Today/Tomorrow or the selected days of the week

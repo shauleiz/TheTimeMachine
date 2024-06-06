@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -60,6 +61,9 @@ public class AlarmItem {
    public String ringRepeat, ringDuration, snoozeDuration;
    public String vibrationPattern, alarmSound, gradualVolume;
 
+   @ColumnInfo(name = "genStatus", defaultValue = "0")
+   public int genStatus;
+
    /** Key Strings for saving alarm data in bundle  - A key per AlarmItem variable  **/
    public static final String K_HOUR = "HOUR";
    public static final String K_MINUTE = "MINUTE";
@@ -88,6 +92,9 @@ public class AlarmItem {
    public static final int SATURDAY = 0x40;
 
    public static final int DAY_IN_MILLIS = 24*60*60*1000;
+
+   // GenStatus flags
+   public static final int RINGING = 0x1;
 
 
 
@@ -273,6 +280,16 @@ public class AlarmItem {
       //resetSnoozeCounter();
    }
 
+   public int getGenStatus() {return genStatus;}
+
+   public boolean isRinging(){
+      int stat = getGenStatus();
+      if ((stat&RINGING) >0)
+         return true;
+      else
+         return false;
+   }
+
    // Setters
    public void setHour(int hour) {this.hour = hour;}
 
@@ -327,9 +344,16 @@ public class AlarmItem {
       gradualVolume = val;
    }
 
+   public void setGenStatus(int genStatus) {this.genStatus = genStatus;}
 
-
-
+   public void setRinging(boolean ringing){
+      int stat = getGenStatus();
+      if (ringing)
+         stat |= RINGING;
+      else
+         stat &= (~RINGING);
+      setGenStatus(stat);
+   }
 
    /*** Helper Functions ***/
 

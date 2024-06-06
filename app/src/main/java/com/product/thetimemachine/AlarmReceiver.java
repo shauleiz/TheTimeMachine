@@ -49,7 +49,10 @@ public class AlarmReceiver extends BroadcastReceiver {
             b.getString(K_LABEL), b.getInt(K_HOUR), b.getInt(K_MINUTE), b.getInt(K_CSNOOZE));
       Log.d("THE_TIME_MACHINE", s);
 
-    // Force update of UI
+      // Mark alarm as not ringing
+      alarm.setRinging(false);
+
+      // Force update of UI
       insertAlarm(alarm,  context);
       //AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
       //AlarmDao alarmDao = db.alarmDao();
@@ -72,6 +75,9 @@ public class AlarmReceiver extends BroadcastReceiver {
       if (alarm.isOneOff())
          alarm.setActive(false);
 
+      // Mark alarm as not ringing
+      alarm.setRinging(false);
+
       insertAlarm(alarm,  context);
 /*
          AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
@@ -93,8 +99,15 @@ public class AlarmReceiver extends BroadcastReceiver {
 
       context.startForegroundService(intentService);
 
-      /* DEBUG */
       Bundle b = intent.getExtras();
+      if (b==null) return;
+
+      // Mark this alarm as ringing
+      AlarmItem alarm = new AlarmItem(b);
+      alarm.setRinging(true);
+      insertAlarm(alarm,  context);
+
+      /* DEBUG */
       String s = String.format(Locale.US, "startAlarmService(): Label=%s - Hour=%d - Minute=%d", b.getString(K_LABEL), b.getInt(K_HOUR), b.getInt(K_MINUTE));
       Log.i("THE_TIME_MACHINE", s);
 

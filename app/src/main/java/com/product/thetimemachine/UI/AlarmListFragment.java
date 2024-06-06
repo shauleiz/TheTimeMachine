@@ -43,7 +43,6 @@ import com.product.thetimemachine.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -176,9 +175,6 @@ public class AlarmListFragment extends Fragment {
                     ActiveCheckboxChanged( view,  position);
                 }
                 else{ // The Alarm item itself has been clicked
-                    String label = alarmList.get(position).getLabel();
-                    String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
-                    //Toast.makeText(getContext(), "Alarm Long Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
                     AlarmItemLongClicked(alarmList.get(position).getCreateTime());
                 }
             }

@@ -25,7 +25,7 @@ import java.util.Objects;
 public class ItemSettingsFragment extends PreferenceFragmentCompat
       implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-   MainActivity parent;
+   //MainActivity parent;
    Context context;
    SharedPreferences preferences;
    AlarmViewModel.SetUpAlarmValues setUpAlarmValues;
