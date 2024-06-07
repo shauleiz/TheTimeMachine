@@ -194,7 +194,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         }
 
         // Ringing: Blink AlarmTime
-        boolean isBlinking = alarmItem.isRinging(); // TODO: Ringing: Use mask
+        boolean isBlinking = alarmItem.isRinging();
         Animation anim = new AlphaAnimation(0.2f, 1.0f);
         if (isBlinking) {
             anim.setDuration(200); //You can manage the blinking time with this parameter
