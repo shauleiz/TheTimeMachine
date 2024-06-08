@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +25,8 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
@@ -45,6 +48,8 @@ public class StopSnoozeActivity extends AppCompatActivity {
    private String strCurrentTime = "99:99 am";
    BroadcastReceiver broadcastReceiver;
    private SimpleDateFormat dateFormat;
+
+   private TextView footer;
 
    /**
     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -242,6 +247,17 @@ public class StopSnoozeActivity extends AppCompatActivity {
    };
    private ActivityStopSnoozeBinding binding;
 
+
+   @Nullable
+   @Override
+   public View onCreateView(@Nullable View parent, @NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
+      View view = super.onCreateView(parent, name, context, attrs);
+
+
+
+      return view;
+   }
+
    @SuppressLint("ClickableViewAccessibility")
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -254,7 +270,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       mControlsView = binding.fullscreenContentControls;
       mContentView = binding.fullscreenContent;
 
-
+      footer = findViewById(R.id.footnote);
 
       // Allow this activity on a locked screen
       allowOnLockScreen();
@@ -425,7 +441,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
       if (!label.isEmpty())
          label+=" - ";
 
-      String displayText = String.format(Locale.US,"%s\n%s%s", appName, label, strCurrentTime);
+      String displayText = String.format(Locale.US,"%s%s",  label, strCurrentTime);
       ((TextView)mContentView).setText(displayText);
+
+      footer.setText(appName);
    }
 }
