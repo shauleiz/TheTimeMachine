@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 
 public class AlarmService  extends Service {
@@ -90,7 +91,7 @@ public class AlarmService  extends Service {
       Bundle inBundle = intent.getExtras();
       if (inBundle == null) return START_NOT_STICKY;
       String label = inBundle.getString(K_LABEL);
-      if (!label.isEmpty())
+      if (!Objects.requireNonNull(label).isEmpty())
          alarmText = String.format(Locale.ENGLISH,"%s - %s", label, dateFormat.format(new Date()));
       else
          alarmText = String.format(Locale.ENGLISH,"%s", dateFormat.format(new Date()));
@@ -148,6 +149,8 @@ public class AlarmService  extends Service {
 
 
       // Start audio and vibration
+      assert StrAlarmSound != null;
+      assert StrGradualVolume != null;
       sound(this, Str2Int_alarm_sound(StrAlarmSound), Str2Int_gradual_volume(StrGradualVolume));
 
       // it is safe to cancel other vibrations currently taking place
@@ -161,7 +164,9 @@ public class AlarmService  extends Service {
       // Start auto-snooze timer
       // After a short delay, an alarm is created and alarm.Snooze is called
       handler = new Handler(Looper.getMainLooper());
+      assert StrRingDuration != null;
       int delayMillis = Str2Int_ring_duration(StrRingDuration);
+      assert StrRingRepeat != null;
       int nRepeat = Str2Int_ring_repeat(StrRingRepeat);
       autoSnooze = new Runnable() {
          @Override

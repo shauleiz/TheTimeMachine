@@ -62,6 +62,7 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
    private void SetItemPreferences() {
       // Get the Item Preferences file
       Context context = getContext();
+      assert context != null;
       SharedPreferences preferences = context.getSharedPreferences(getItemPrefFileName(), Context.MODE_PRIVATE);
       // Create an Editor
       SharedPreferences.Editor editor = preferences.edit();
@@ -81,6 +82,7 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
    @Override
    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
       // Copy preferences to SetupAlarmValues
+      assert key != null;
       if (key.equals(context.getString(R.string.key_ring_duration)))
          setUpAlarmValues.setRingduration(preferences.getString(key, ""));
       else if (key.equals(context.getString(R.string.key_ring_repeat)))
@@ -105,8 +107,10 @@ public class ItemSettingsFragment extends PreferenceFragmentCompat
       // Hide irrelevant categories
       PreferenceCategory mCategory;
       mCategory= findPreference(getString(R.string.key_time_format));
+      assert mCategory != null;
       mCategory.setVisible(false);
       mCategory = findPreference(getString(R.string.key_alarm_list));
+      assert mCategory != null;
       mCategory.setVisible(false);
 
 
