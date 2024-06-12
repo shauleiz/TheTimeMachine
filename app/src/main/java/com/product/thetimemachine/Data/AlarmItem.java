@@ -284,10 +284,7 @@ public class AlarmItem {
 
    public boolean isRinging(){
       int stat = getGenStatus();
-      if ((stat&RINGING) >0)
-         return true;
-      else
-         return false;
+      return (stat & RINGING) > 0;
    }
 
    // Setters

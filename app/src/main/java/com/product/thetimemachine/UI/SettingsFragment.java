@@ -93,6 +93,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
       //String newPref = preferences.getString(key, "");
       //Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
 
+      assert key != null;
       if (key.equals(context.getString(R.string.key_ring_repeat))) ringRepeat = preferences.getString(key, "");
       else if (key.equals(context.getString(R.string.key_ring_duration))) ringDuration = preferences.getString(key, "");
       else if (key.equals(context.getString(R.string.key_snooze_duration))) snoozeDuration = preferences.getString(key, "");

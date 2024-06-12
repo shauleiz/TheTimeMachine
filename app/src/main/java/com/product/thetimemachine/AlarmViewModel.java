@@ -78,7 +78,7 @@ public class AlarmViewModel extends AndroidViewModel {
 
       // top alarm in case it is ringing
       Bundle b = item.getBundle();
-      Context context = TheTimeMachineApp.appContext;;
+      Context context = TheTimeMachineApp.appContext;
       Intent stopIntent = new Intent(context, AlarmService.class);
       stopIntent.putExtras(b);
       AlarmReceiver.stopping(context, stopIntent );

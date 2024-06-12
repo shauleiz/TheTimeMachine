@@ -13,6 +13,7 @@ import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 import android.app.DatePickerDialog;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,8 @@ import com.product.thetimemachine.R;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
+
+import org.w3c.dom.Text;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -71,7 +74,13 @@ public class SetUpAlarmFragment extends Fragment {
     public void onStop() {
 
         // Get the selected values
-        String t = label.getText().toString();
+        String t;
+        Editable txt = label.getText();
+        if (txt != null) {
+            t = txt.toString();
+        }
+        else
+            t= "";
         int hourOfDay = timePicker.getHour();
         int minute = timePicker.getMinute();
 
@@ -328,13 +337,13 @@ public class SetUpAlarmFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(now+24*60*60*1000);
 
-        // Get time of tomorow's midnight (minus a second)
+        // Get time of tomorrow's midnight (minus a second)
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         long lastSecondOfDay = calendar.getTimeInMillis();
 
-        // Get time of tomorow's first second
+        // Get time of tomorrow's first second
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -364,13 +373,23 @@ public boolean isInThePast(long alarmInMillis){
     private String displayTargetAlarm(){
         String out = "";
         long nowInMillis, targetInMillis;
+        int dd, mm, yy;
 
         // Get time/date values
         int m = timePicker.getMinute();
         int h = timePicker.getHour();
-        int dd = setUpAlarmValues.getDayOfMonth().getValue();
-        int mm = setUpAlarmValues.getMonth().getValue();
-        int yy = setUpAlarmValues.getYear().getValue();
+        if ( setUpAlarmValues.getDayOfMonth().getValue()!=null)
+            dd = setUpAlarmValues.getDayOfMonth().getValue();
+        else
+            dd = 0;
+        if (setUpAlarmValues.getMonth().getValue()!=null)
+            mm = setUpAlarmValues.getMonth().getValue();
+        else
+            mm = 0;
+        if (setUpAlarmValues.getYear().getValue()!=null)
+            yy = setUpAlarmValues.getYear().getValue();
+        else
+            yy = 0;
 
         // Create a calendar object and modify it
         nowInMillis = System.currentTimeMillis();
@@ -473,9 +492,9 @@ public boolean isInThePast(long alarmInMillis){
        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext());
 
         // Get the date stored in the VM.
-        d = setUpAlarmValues.getDayOfMonth().getValue();
-        m = setUpAlarmValues.getMonth().getValue();
-        y = setUpAlarmValues.getYear().getValue();
+        d = setUpAlarmValues.getDayOfMonth().getValue()==null ? 0: setUpAlarmValues.getDayOfMonth().getValue();
+        m = setUpAlarmValues.getMonth().getValue()==null ? 0: setUpAlarmValues.getMonth().getValue();
+        y = setUpAlarmValues.getYear().getValue()==null ? 0: setUpAlarmValues.getYear().getValue();
 
         // If date not stored, set today's date
         if (d == 0 || m == 0 || y == 0) {
@@ -554,6 +573,7 @@ public boolean isInThePast(long alarmInMillis){
     //@RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public void OkClicked(){
         final MainActivity parent = (MainActivity) getActivity();
+        String t;
 
         /// This part should be replaced by:
         /// 1. Put new/modified alarm entry in alarm list
@@ -561,7 +581,10 @@ public boolean isInThePast(long alarmInMillis){
         // Get the time from the time picker and pass it to the ViewModel
         int h = timePicker.getHour();
         int m = timePicker.getMinute();
-        String t = label.getText().toString();
+       if (label.getText() != null)
+         t = label.getText().toString();
+       else
+          t= "";
         boolean active = true; // A new/modified alarm is always active
         long c = initParams.getLong("INIT_CREATE_TIME");
         boolean newAlarm = initParams.getBoolean("INIT_NEWALARM", true);
@@ -597,14 +620,25 @@ public boolean isInThePast(long alarmInMillis){
         if (!item.isOneOff())
             item.setFutureDate(false);
         else
-            item.setFutureDate(setUpAlarmValues.isFutureDate().getValue());
+            item.setFutureDate(Boolean.TRUE.equals(setUpAlarmValues.isFutureDate().getValue()));
 
 
         // Future Date
         if (item.isFutureDate() /* && (weekdays==0)*/){
-            int yy = setUpAlarmValues.getYear().getValue();
-            int mm = setUpAlarmValues.getMonth().getValue();
-            int dd = setUpAlarmValues.getDayOfMonth().getValue();
+           int yy, mm, dd;
+           if (setUpAlarmValues.getYear().getValue() != null)
+              yy = setUpAlarmValues.getYear().getValue();
+           else
+              yy=0;
+           if (setUpAlarmValues.getMonth().getValue() != null)
+              mm = setUpAlarmValues.getMonth().getValue();
+           else
+              mm=0;
+           if (setUpAlarmValues.getDayOfMonth().getValue()!=null)
+              dd = setUpAlarmValues.getDayOfMonth().getValue();
+           else
+              dd= 0;
+
             if (yy>0 && mm>0 && dd>0) {
                 item.setYear(yy);
                 item.setMonth(mm);
@@ -651,7 +685,10 @@ public boolean isInThePast(long alarmInMillis){
         // Create alarm item to be removed
         int h = timePicker.getHour();
         int m = timePicker.getMinute();
-        String t = label.getText().toString();
+        String t;
+        if (label.getText()!=null )
+           t = label.getText().toString();
+        else t= "";
         boolean active = true; // A new/modified alarm is always active
         long c = initParams.getLong("INIT_CREATE_TIME");
         AlarmItem item = new AlarmItem(h, m,t, active, c);
