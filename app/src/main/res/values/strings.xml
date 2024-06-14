@@ -139,7 +139,7 @@
         <item>300Seconds</item>
     </array>
 
-<!--
+    <!--
     Alarm max repeating before giving up: 0,1,2,5,10, no-limit(Marked as 100)
 -->
     <array name="ring_repeat_entries">
@@ -159,8 +159,8 @@
         <item>100T</item>
     </array>
 
-<!--    Snooze Time: Duration between two alarms (for Snooze & Auto-Snooze)-->
-        <array name="snooze_duration_entries">
+    <!--    Snooze Time: Duration between two alarms (for Snooze & Auto-Snooze)-->
+    <array name="snooze_duration_entries">
         <item>30 Seconds</item>
         <item>1 Minute</item>
         <item>2 Minute</item>
@@ -198,7 +198,7 @@
         <item>slb</item>
         <item>rsb</item>
         <item>rlb</item>
-         <item>cont</item>
+        <item>cont</item>
     </array>
 
     <!-- Alarm Sounds  -->
@@ -252,5 +252,6 @@
         <item>120Seconds</item>
         <item>180Seconds</item>
     </array>
+    <string name="dummy_button">Dummy Button</string>
 
 </resources>

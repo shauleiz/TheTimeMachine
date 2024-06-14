@@ -5,7 +5,7 @@
         <item name="faded_text">@color/light_gray</item>
     </style>
 
-    <style name="Theme.TheTimeMachine" parent="Base.Theme.TheTimeMachine" >
+    <style name="Theme.TheTimeMachine" parent="Base.Theme.TheTimeMachine">
         <item name="faded_text">@color/medium_gray</item>
         <item name="blue_text">@color/light_blue_A400</item>
         <item name="primary_text">@color/white</item>

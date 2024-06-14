@@ -41,10 +41,12 @@ import com.product.thetimemachine.R;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
+import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
 
 import org.w3c.dom.Text;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -485,33 +487,42 @@ public boolean isInThePast(long alarmInMillis){
 
     // Called when user clicks on the calendar button to call the Date Picker
     public void ShowDatePickerOnClick(View view){
-        Calendar calendar;
-        int d, m, y;
+       FragmentManager fragmentManager =  parent.getSupportFragmentManager();
+       CalendarFragment newFragment = new CalendarFragment(CalendarPickerView.SelectionMode.MULTIPLE);
 
-        Log.d("THE_TIME_MACHINE", "ShowDatePickerOnClick");
-       DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext());
 
-        // Get the date stored in the VM.
-        d = setUpAlarmValues.getDayOfMonth().getValue()==null ? 0: setUpAlarmValues.getDayOfMonth().getValue();
-        m = setUpAlarmValues.getMonth().getValue()==null ? 0: setUpAlarmValues.getMonth().getValue();
-        y = setUpAlarmValues.getYear().getValue()==null ? 0: setUpAlarmValues.getYear().getValue();
+       newFragment.show(fragmentManager, "dialog");
 
-        // If date not stored, set today's date
-        if (d == 0 || m == 0 || y == 0) {
-            calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            d = calendar.get(Calendar.DAY_OF_MONTH);
-            m = calendar.get(Calendar.MONTH);
-            y = calendar.get(Calendar.YEAR);
-        }
+       //newFragment.setSelectionMode(CalendarPickerView.SelectionMode.RANGE);
 
-        // Set as cancelable and set a listener that will be called on OK
-        datePickerDialog.setCancelable(true);
-        datePickerDialog.setOnDateSetListener(this::DateWidgetListener);
 
-        // Set the date and show the widget
-        datePickerDialog.updateDate(y, m, d);
-        datePickerDialog.show();
+//       Calendar calendar;
+//        int d, m, y;
+//
+//        Log.d("THE_TIME_MACHINE", "ShowDatePickerOnClick");
+//       DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext());
+//
+//        // Get the date stored in the VM.
+//        d = setUpAlarmValues.getDayOfMonth().getValue()==null ? 0: setUpAlarmValues.getDayOfMonth().getValue();
+//        m = setUpAlarmValues.getMonth().getValue()==null ? 0: setUpAlarmValues.getMonth().getValue();
+//        y = setUpAlarmValues.getYear().getValue()==null ? 0: setUpAlarmValues.getYear().getValue();
+//
+//        // If date not stored, set today's date
+//        if (d == 0 || m == 0 || y == 0) {
+//            calendar = Calendar.getInstance();
+//            calendar.setTimeInMillis(System.currentTimeMillis());
+//            d = calendar.get(Calendar.DAY_OF_MONTH);
+//            m = calendar.get(Calendar.MONTH);
+//            y = calendar.get(Calendar.YEAR);
+//        }
+//
+//        // Set as cancelable and set a listener that will be called on OK
+//        datePickerDialog.setCancelable(true);
+//        datePickerDialog.setOnDateSetListener(this::DateWidgetListener);
+//
+//        // Set the date and show the widget
+//        datePickerDialog.updateDate(y, m, d);
+//        datePickerDialog.show();
 
     }
 
