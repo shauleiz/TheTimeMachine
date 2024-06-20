@@ -5,12 +5,14 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,35 +38,11 @@ public class CalendarFragment extends DialogFragment {
    // whether it's being displayed as a dialog or an embedded fragment.
 
    CalendarPickerView.FluentInitializer fluentInitializer;
-   CalendarPickerView.SelectionMode mode;
+   CalendarPickerView.SelectionMode mode = CalendarPickerView.SelectionMode.SINGLE;
 
-   CalendarFragment(CalendarPickerView.SelectionMode mode){
-      super();
-      this.mode = mode;
-   }
-   @Override
-   public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                            Bundle savedInstanceState) {
-      // Inflate the layout to use as a dialog or embedded fragment.
-      View v= inflater.inflate(R.layout.fragment_calendar, container, false);
+   CalendarPickerView datePicker;
 
-      // Define the boundary dates
-      Calendar nextYear = Calendar.getInstance();
-      nextYear.add(Calendar.YEAR, 1); // Next year
-      Date todayDate = new Date(); // Today
 
-      // Get the Date Picker
-      CalendarPickerView datePicker = (CalendarPickerView) v.findViewById(R.id.calendar_view);
-
-      // Initialize Date picker to support a year from today with today selected
-      fluentInitializer = datePicker.init(todayDate, nextYear.getTime()).withSelectedDate(todayDate);
-
-      // Set Date Picker to support selection of multiple dates
-      fluentInitializer.inMode(mode);
-
-      return v;
-
-   }
 
    public void setSelectionMode(CalendarPickerView.SelectionMode mode){
       this.mode = mode;
@@ -73,13 +51,54 @@ public class CalendarFragment extends DialogFragment {
    // The system calls this only when creating the layout in a dialog.
    @Override
    public Dialog onCreateDialog(Bundle savedInstanceState) {
-      // The only reason you might override this method when using
-      // onCreateView() is to modify the dialog characteristics. For example,
-      // the dialog includes a title by default, but your custom layout might
-      // not need it. Here, you can remove the dialog title, but you must
-      // call the superclass to get the Dialog.
-      Dialog dialog = super.onCreateDialog(savedInstanceState);
-      //dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+
+      /////////////
+
+      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+      // Get the layout inflater.
+      LayoutInflater inflater = requireActivity().getLayoutInflater();
+
+      // Inflate and set the layout for the dialog.
+      // Pass null as the parent view because it's going in the dialog layout.
+      View v = inflater.inflate(R.layout.fragment_calendar, null);
+      builder.setView(v)
+            // Add action buttons
+            .setPositiveButton("positive", new DialogInterface.OnClickListener() {
+               @Override
+               public void onClick(DialogInterface dialog, int id) {
+                  // Sign in the user.
+               }
+            })
+            .setNegativeButton("negative", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int id) {
+                  //LoginDialogFragment.this.getDialog().cancel();
+               }
+            });
+
+      builder.setTitle("Title");
+
+      Dialog dialog = builder.create();
+
+      //////////////
+
+
+
+
+      // Define the boundary dates
+      Calendar nextYear = Calendar.getInstance();
+      nextYear.add(Calendar.YEAR, 1); // Next year
+      Date todayDate = new Date(); // Today
+      /**/
+      // Get the Date Picker
+      datePicker = (CalendarPickerView) v.findViewById(R.id.calendar_view);
+
+      // Initialize Date picker to support a year from today with today selected
+      fluentInitializer = datePicker.init(todayDate, nextYear.getTime()).withSelectedDate(todayDate);
+
+      // Set Date Picker to support selection of multiple dates
+      fluentInitializer.inMode(mode);
+
       return dialog;
    }
 
