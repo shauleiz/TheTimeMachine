@@ -27,8 +27,10 @@ import android.view.WindowManager;
 
 import com.product.thetimemachine.R;
 import com.product.thetimemachine.databinding.FragmentCalendarBinding;
-import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
+//import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
+import com.squareup.timessquare.CalendarPickerView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -52,16 +54,16 @@ public class CalendarFragment extends DialogFragment {
    @Override
    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-
-      /////////////
-
-      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       // Get the layout inflater.
       LayoutInflater inflater = requireActivity().getLayoutInflater();
 
       // Inflate and set the layout for the dialog.
       // Pass null as the parent view because it's going in the dialog layout.
       View v = inflater.inflate(R.layout.fragment_calendar, null);
+
+      // Alert dialog builder
+      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+      builder.setTitle("Title");
       builder.setView(v)
             // Add action buttons
             .setPositiveButton("positive", new DialogInterface.OnClickListener() {
@@ -76,13 +78,9 @@ public class CalendarFragment extends DialogFragment {
                }
             });
 
-      builder.setTitle("Title");
+
 
       Dialog dialog = builder.create();
-
-      //////////////
-
-
 
 
       // Define the boundary dates
@@ -93,10 +91,14 @@ public class CalendarFragment extends DialogFragment {
       // Get the Date Picker
       datePicker = (CalendarPickerView) v.findViewById(R.id.calendar_view);
 
-      // Initialize Date picker to support a year from today with today selected
-      fluentInitializer = datePicker.init(todayDate, nextYear.getTime()).withSelectedDate(todayDate);
 
-      // Set Date Picker to support selection of multiple dates
+      // Initialize Date picker to support a year from today with today selected
+      fluentInitializer = datePicker.init(todayDate, nextYear.getTime());
+
+      // Select a date (today)
+      fluentInitializer.withSelectedDate(todayDate);
+
+      // Set Date Picker to support selection  multiple/single/range of dates
       fluentInitializer.inMode(mode);
 
       return dialog;

@@ -41,7 +41,8 @@ import com.product.thetimemachine.R;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
-import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
+import com.squareup.timessquare.CalendarPickerView;
+//import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
 
 import org.w3c.dom.Text;
 
@@ -489,9 +490,7 @@ public boolean isInThePast(long alarmInMillis){
     public void ShowDatePickerOnClick(View view){
        FragmentManager fragmentManager =  parent.getSupportFragmentManager();
        CalendarFragment newFragment = new CalendarFragment();
-       newFragment.setSelectionMode(CalendarPickerView.SelectionMode.SINGLE);
-
-
+       newFragment.setSelectionMode(CalendarPickerView.SelectionMode.MULTIPLE);
        newFragment.show(fragmentManager, "dialog");
 
        //newFragment.setSelectionMode(CalendarPickerView.SelectionMode.RANGE);
