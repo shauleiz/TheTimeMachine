@@ -1,36 +1,20 @@
 package com.product.thetimemachine.UI;
 
-import android.annotation.SuppressLint;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
-import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.method.Touch;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.product.thetimemachine.R;
-import com.product.thetimemachine.databinding.FragmentCalendarBinding;
 //import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
 import com.squareup.timessquare.CalendarPickerView;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -44,10 +28,35 @@ public class CalendarFragment extends DialogFragment {
 
    CalendarPickerView datePicker;
 
+   public interface CalendarDialogListener { // Change to CalendarDialogListener
+      public void onDialogPositiveClick(DialogFragment dialog);
+      public void onDialogNegativeClick(DialogFragment dialog);
+   }
 
 
    public void setSelectionMode(CalendarPickerView.SelectionMode mode){
       this.mode = mode;
+   }
+
+
+   // Use this instance of the interface to deliver action events.
+   CalendarDialogListener listener;
+
+   @Override
+   public void onAttach(@NonNull Context context) {
+      super.onAttach(context);
+
+      // Verify that the host activity implements the callback interface.
+      try {
+         // Instantiate the CalendarDialogListener so you can send events to
+         // the host.
+         listener = (CalendarDialogListener) getParentFragment();
+      } catch (ClassCastException e) {
+         // The activity doesn't implement the interface. Throw exception.
+         throw new ClassCastException(listener.toString()
+                                            + " must implement CalendarDialogListener");
+      }
+
    }
 
    // The system calls this only when creating the layout in a dialog.
@@ -66,15 +75,17 @@ public class CalendarFragment extends DialogFragment {
       builder.setTitle("Title");
       builder.setView(v)
             // Add action buttons
-            .setPositiveButton("positive", new DialogInterface.OnClickListener() {
-               @Override
+            .setPositiveButton("Pos", new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
-                  // Sign in the user.
+                  // Send the positive button event back to the host activity.
+                  listener.onDialogPositiveClick(CalendarFragment.this);
                }
             })
+
             .setNegativeButton("negative", new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
-                  //LoginDialogFragment.this.getDialog().cancel();
+                  // Send the negative button event back to the host activity.
+                  listener.onDialogNegativeClick(CalendarFragment.this);
                }
             });
 
@@ -87,6 +98,8 @@ public class CalendarFragment extends DialogFragment {
       Calendar nextYear = Calendar.getInstance();
       nextYear.add(Calendar.YEAR, 1); // Next year
       Date todayDate = new Date(); // Today
+      Calendar tomorrow = Calendar.getInstance();
+      tomorrow.add(Calendar.DAY_OF_MONTH,1);
       /**/
       // Get the Date Picker
       datePicker = (CalendarPickerView) v.findViewById(R.id.calendar_view);
@@ -95,8 +108,8 @@ public class CalendarFragment extends DialogFragment {
       // Initialize Date picker to support a year from today with today selected
       fluentInitializer = datePicker.init(todayDate, nextYear.getTime());
 
-      // Select a date (today)
-      fluentInitializer.withSelectedDate(todayDate);
+      // Select a date (tomorrow)
+      fluentInitializer.withSelectedDate(tomorrow.getTime());
 
       // Set Date Picker to support selection  multiple/single/range of dates
       fluentInitializer.inMode(mode);

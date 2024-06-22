@@ -10,7 +10,6 @@ import static com.product.thetimemachine.Data.AlarmItem.WEDNESDAY;
 import static com.product.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
 import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
-import android.app.DatePickerDialog;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
@@ -44,14 +44,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.timessquare.CalendarPickerView;
 //import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
 
-import org.w3c.dom.Text;
-
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
-public class SetUpAlarmFragment extends Fragment {
+public class SetUpAlarmFragment extends Fragment implements CalendarFragment.CalendarDialogListener {
 
     private MyTimePicker timePicker;
    //private SwitchCompat repeating;
@@ -488,10 +485,11 @@ public boolean isInThePast(long alarmInMillis){
 
     // Called when user clicks on the calendar button to call the Date Picker
     public void ShowDatePickerOnClick(View view){
-       FragmentManager fragmentManager =  parent.getSupportFragmentManager();
        CalendarFragment newFragment = new CalendarFragment();
+       FragmentManager fragmentManager =  getChildFragmentManager();
+
        newFragment.setSelectionMode(CalendarPickerView.SelectionMode.MULTIPLE);
-       newFragment.show(fragmentManager, "dialog");
+       newFragment.show( getChildFragmentManager(), "dialog");
 
        //newFragment.setSelectionMode(CalendarPickerView.SelectionMode.RANGE);
 
@@ -526,7 +524,25 @@ public boolean isInThePast(long alarmInMillis){
 
     }
 
-    // Called when user exits the Date Picker with 'OK'
+   // The dialog fragment receives a reference to this Activity through the
+   // Fragment.onAttach() callback, which it uses to call the following
+   // methods defined by the NoticeDialogFragment.NoticeDialogListener
+   // interface.
+   @Override
+   public void onDialogPositiveClick(DialogFragment dialog) {
+      // User taps the dialog's positive button.
+      Log.d("THE_TIME_MACHINE", "onDialogPositiveClick()");
+   }
+
+   @Override
+   public void onDialogNegativeClick(DialogFragment dialog) {
+      // User taps the dialog's negative button.
+      Log.d("THE_TIME_MACHINE", "onDialogNegativeClick()");
+
+   }
+
+
+   // Called when user exits the Date Picker with 'OK'
     // Gets the selected date (
     public void DateWidgetListener(View v, int year, int month, int day){
         Calendar calendar;
