@@ -10,6 +10,7 @@ import static com.product.thetimemachine.Data.AlarmItem.WEDNESDAY;
 import static com.product.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
 import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
+import android.app.DatePickerDialog;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.text.Editable;
@@ -45,6 +46,8 @@ import com.squareup.timessquare.CalendarPickerView;
 //import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -64,8 +67,10 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
     private MainActivity parent;
     private Bundle initParams;
 
+    private List<Date> selectedDates;
 
-    // Default constructor
+
+   // Default constructor
     public SetUpAlarmFragment() {
         // Required empty public constructor
     }
@@ -498,7 +503,7 @@ public boolean isInThePast(long alarmInMillis){
 //        int d, m, y;
 //
 //        Log.d("THE_TIME_MACHINE", "ShowDatePickerOnClick");
-//       DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext());
+ //     DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext());
 //
 //        // Get the date stored in the VM.
 //        d = setUpAlarmValues.getDayOfMonth().getValue()==null ? 0: setUpAlarmValues.getDayOfMonth().getValue();
@@ -519,7 +524,7 @@ public boolean isInThePast(long alarmInMillis){
 //        datePickerDialog.setOnDateSetListener(this::DateWidgetListener);
 //
 //        // Set the date and show the widget
-//        datePickerDialog.updateDate(y, m, d);
+//       datePickerDialog.updateDate(y, m, d);
 //        datePickerDialog.show();
 
     }
@@ -531,7 +536,11 @@ public boolean isInThePast(long alarmInMillis){
    @Override
    public void onDialogPositiveClick(DialogFragment dialog) {
       // User taps the dialog's positive button.
-      Log.d("THE_TIME_MACHINE", "onDialogPositiveClick()");
+      selectedDates = ((CalendarFragment)dialog).getSelectedDates();
+      long time0=0;
+      if (!selectedDates.isEmpty())
+         time0 = selectedDates.get(0).getTime();
+      Log.d("THE_TIME_MACHINE", "onDialogPositiveClick() - Time = "+time0);
    }
 
    @Override

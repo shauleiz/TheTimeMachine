@@ -17,6 +17,7 @@ import com.squareup.timessquare.CalendarPickerView;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 
 public class CalendarFragment extends DialogFragment {
@@ -57,6 +58,10 @@ public class CalendarFragment extends DialogFragment {
                                             + " must implement CalendarDialogListener");
       }
 
+   }
+
+   public List<Date> getSelectedDates(){
+      return datePicker.getSelectedDates();
    }
 
    // The system calls this only when creating the layout in a dialog.
