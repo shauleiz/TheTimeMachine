@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -15,6 +16,7 @@ import com.product.thetimemachine.R;
 //import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
 import com.squareup.timessquare.CalendarPickerView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +25,9 @@ import java.util.List;
 public class CalendarFragment extends DialogFragment {
    // The system calls this to get the DialogFragment's layout, regardless of
    // whether it's being displayed as a dialog or an embedded fragment.
+
+   final private String KEY_MODE = "keyMode";
+   final private String KEY_LIST_DATES = "keyListOfDates";
 
    CalendarPickerView.FluentInitializer fluentInitializer;
    CalendarPickerView.SelectionMode mode = CalendarPickerView.SelectionMode.SINGLE;
@@ -37,6 +42,32 @@ public class CalendarFragment extends DialogFragment {
 
    public void setSelectionMode(CalendarPickerView.SelectionMode mode){
       this.mode = mode;
+   }
+
+   private CalendarPickerView.SelectionMode int2mode(int i){
+      switch (i){
+         case 0:
+            return CalendarPickerView.SelectionMode.SINGLE;
+         case 1:
+            return CalendarPickerView.SelectionMode.MULTIPLE;
+         case 2:
+            return CalendarPickerView.SelectionMode.RANGE;
+         default:
+            return CalendarPickerView.SelectionMode.SINGLE;
+      }
+   }
+
+   private int mode2int(CalendarPickerView.SelectionMode m){
+      switch (m){
+         case SINGLE:
+            return 0;
+         case MULTIPLE:
+            return 1;
+         case RANGE:
+            return 2;
+         default:
+            return 0;
+      }
    }
 
 
@@ -65,8 +96,21 @@ public class CalendarFragment extends DialogFragment {
    }
 
    // The system calls this only when creating the layout in a dialog.
+   @NonNull
    @Override
    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+      // Get the Saved State
+      if (savedInstanceState !=null) {
+         mode = int2mode(savedInstanceState.getInt(KEY_MODE)) ;
+         List<Integer> list = savedInstanceState.getIntegerArrayList(KEY_LIST_DATES);
+         if (list !=null) {
+            for (int a : list) {
+               Log.d("THE_TIME_MACHINE", "Item: " + a);
+            }
+         }
+      }
+
 
       // Get the layout inflater.
       LayoutInflater inflater = requireActivity().getLayoutInflater();
@@ -120,6 +164,17 @@ public class CalendarFragment extends DialogFragment {
       fluentInitializer.inMode(mode);
 
       return dialog;
+   }
+
+   @Override
+   public void onSaveInstanceState(Bundle savedInstanceState) {
+      super.onSaveInstanceState(savedInstanceState);
+      ArrayList<Integer> list = new ArrayList<>();
+      list.add(20240516);
+      list.add(20230330);
+
+      savedInstanceState.putIntegerArrayList(KEY_LIST_DATES, list);
+      savedInstanceState.putInt(KEY_MODE, mode2int(mode));
    }
 
 }
