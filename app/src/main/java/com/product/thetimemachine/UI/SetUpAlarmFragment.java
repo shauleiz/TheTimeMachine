@@ -491,7 +491,6 @@ public boolean isInThePast(long alarmInMillis){
     // Called when user clicks on the calendar button to call the Date Picker
     public void ShowDatePickerOnClick(View view){
        CalendarFragment newFragment = new CalendarFragment();
-       FragmentManager fragmentManager =  getChildFragmentManager();
 
        newFragment.setSelectionMode(CalendarPickerView.SelectionMode.MULTIPLE);
        newFragment.show( getChildFragmentManager(), "dialog");

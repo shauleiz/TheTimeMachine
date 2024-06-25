@@ -95,21 +95,54 @@ public class CalendarFragment extends DialogFragment {
       return datePicker.getSelectedDates();
    }
 
+   private void setSelectedDatesAsInt(ArrayList<Integer> dates){
+
+      int y,m,d;
+      Date dd = new Date();
+      Calendar cal = Calendar.getInstance();
+
+      List<Date> listOfDates; // DEBUG
+
+      for (int date: dates) {
+         d = date%100;
+         m = (date/100)%10 -1;
+         y = (date/10000);
+         cal.clear();
+         cal.set(y,m,d);
+
+         dd = cal.getTime();
+         datePicker.selectDate(dd, true);
+         Log.d("THE_TIME_MACHINE", "setSelectedDatesAsInt():  Time = " + dd.toString());
+         listOfDates = getSelectedDates(); // DEBUG
+      }
+   }
+
+   public ArrayList<Integer> getSelectedDatesAsInt(){
+      ArrayList<Integer> out = new ArrayList<>();
+      List<Date> listOfDates = getSelectedDates();
+      Calendar cal = Calendar.getInstance();
+      int y,m,d, entry;
+
+      for (Date date: listOfDates) {
+         cal.setTime(date);
+         y = cal.get(Calendar.YEAR);
+         m = cal.get(Calendar.MONTH)+1;
+         d = cal.get(Calendar.DATE);
+         entry = d+100*m+10000*y;
+         out.add(entry);
+         Log.d("THE_TIME_MACHINE", "getSelectedDatesAsInt():  Entry = " + entry);
+
+      }
+
+      return out;
+   }
+
    // The system calls this only when creating the layout in a dialog.
    @NonNull
    @Override
    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-      // Get the Saved State
-      if (savedInstanceState !=null) {
-         mode = int2mode(savedInstanceState.getInt(KEY_MODE)) ;
-         List<Integer> list = savedInstanceState.getIntegerArrayList(KEY_LIST_DATES);
-         if (list !=null) {
-            for (int a : list) {
-               Log.d("THE_TIME_MACHINE", "Item: " + a);
-            }
-         }
-      }
+
 
 
       // Get the layout inflater.
@@ -153,15 +186,27 @@ public class CalendarFragment extends DialogFragment {
       // Get the Date Picker
       datePicker = (CalendarPickerView) v.findViewById(R.id.calendar_view);
 
-
       // Initialize Date picker to support a year from today with today selected
       fluentInitializer = datePicker.init(todayDate, nextYear.getTime());
 
       // Select a date (tomorrow)
-      fluentInitializer.withSelectedDate(tomorrow.getTime());
+      //fluentInitializer.withSelectedDate(tomorrow.getTime());
+
+      // Get the Saved State
+      if (savedInstanceState !=null) {
+         mode = int2mode(savedInstanceState.getInt(KEY_MODE)) ;
+         fluentInitializer.inMode(mode);
+         ArrayList<Integer> list = savedInstanceState.getIntegerArrayList(KEY_LIST_DATES);
+         if (list !=null) {
+            for (int a : list) {
+               setSelectedDatesAsInt(list);
+            }
+         }
+      }
 
       // Set Date Picker to support selection  multiple/single/range of dates
       fluentInitializer.inMode(mode);
+      Log.d("THE_TIME_MACHINE", "fluentInitializer.inMode(mode): mode = " + mode);
 
       return dialog;
    }
@@ -169,10 +214,7 @@ public class CalendarFragment extends DialogFragment {
    @Override
    public void onSaveInstanceState(Bundle savedInstanceState) {
       super.onSaveInstanceState(savedInstanceState);
-      ArrayList<Integer> list = new ArrayList<>();
-      list.add(20240516);
-      list.add(20230330);
-
+      ArrayList<Integer> list = getSelectedDatesAsInt();
       savedInstanceState.putIntegerArrayList(KEY_LIST_DATES, list);
       savedInstanceState.putInt(KEY_MODE, mode2int(mode));
    }
