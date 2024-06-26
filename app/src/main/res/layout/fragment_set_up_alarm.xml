@@ -389,6 +389,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/single_weekly_btngrp" />
 
+        <ImageButton
+            android:id="@+id/ShowDatePicker_Btn_X"
+            android:layout_width="51dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/rounded_rect_pale"
+            android:contentDescription="@string/open_date_picker"
+            android:src="@drawable/calendar_month_24dp_fill0_wght400_grad0_opsz24_x"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/single_weekly_btngrp" />
+
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/single_weekly_btngrp"
             android:layout_width="match_parent"

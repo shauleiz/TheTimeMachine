@@ -79,4 +79,6 @@ dependencies {
     //kapt  ("androidx.room:room-compiler:2.4.2")
     implementation ("com.google.android.material:material:1.12.0")
     implementation ("androidx.room:room-gradle-plugin:2.6.1")
+    //implementation ("com.github.wisnukurniawan:date-time-range-picker-android:1.0.10")
+    implementation ("com.squareup:android-times-square:1.7.11")
 }

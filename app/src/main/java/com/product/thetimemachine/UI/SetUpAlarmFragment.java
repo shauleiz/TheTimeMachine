@@ -41,6 +41,8 @@ import com.product.thetimemachine.R;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
+//import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
+import com.squareup.timessquare.CalendarPickerView;
 
 import org.w3c.dom.Text;
 
@@ -218,10 +220,7 @@ public class SetUpAlarmFragment extends Fragment {
             repeating.check(R.id.repeate_btn);
         setDaysVisible(!oneOff, view);
         setDisplayAreaVisible(oneOff, view);
-
-        // This button calls the Date Picker
-       ImageButton callDatePickerButton = view.findViewById(R.id.ShowDatePicker_Btn);
-        callDatePickerButton.setOnClickListener(this::ShowDatePickerOnClick);
+        setCalendarButton(oneOff, view);
 
         // Listener to the Repeating button (set the weekdays button visibility)
         repeating.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
@@ -230,10 +229,12 @@ public class SetUpAlarmFragment extends Fragment {
                 if (id == R.id.oneoff_btn) {
                     setDaysVisible(!checked, view);
                     setDisplayAreaVisible(checked,view);
+                   setCalendarButton(checked, view);
                 }
                 else {
                     setDaysVisible(checked, view);
                     setDisplayAreaVisible(!checked,view);
+                   setCalendarButton(!checked, view);
                 }
             }
         });
@@ -312,7 +313,22 @@ public class SetUpAlarmFragment extends Fragment {
             view.findViewById(R.id.day_buttons_layout).setVisibility(View.GONE);
             view.findViewById(R.id.day_buttons_layout_mo).setVisibility(View.GONE);
         }
+    }
 
+    private void setCalendarButton(boolean oneOff, View view){
+       // This button calls the Date Picker
+       ImageButton callDatePickerButton = view.findViewById(R.id.ShowDatePicker_Btn);
+       ImageButton callDatePickerButtonX = view.findViewById(R.id.ShowDatePicker_Btn_X);
+       if (oneOff == true) {
+          callDatePickerButton.setVisibility(View.VISIBLE);
+          callDatePickerButtonX.setVisibility(View.INVISIBLE);
+          callDatePickerButton.setOnClickListener(this::ShowDatePickerOnClick);
+       }
+       else {
+          callDatePickerButton.setVisibility(View.INVISIBLE);
+          callDatePickerButtonX.setVisibility(View.VISIBLE);
+          callDatePickerButtonX.setOnClickListener(this::ShowExcludeDatePickerOnClick);
+       }
     }
 
     public boolean isToday(long alarmInMillis){
@@ -482,6 +498,13 @@ public boolean isInThePast(long alarmInMillis){
         return mask;
     }
 
+    public void ShowExcludeDatePickerOnClick(View view) {
+       Log.d("THE_TIME_MACHINE", "ShowExcludeDatePickerOnClick()");
+       FragmentManager fragmentManager =  parent.getSupportFragmentManager();
+       CalendarFragment newFragment = new CalendarFragment();
+       newFragment.setSelectionMode(CalendarPickerView.SelectionMode.MULTIPLE);
+       newFragment.show(fragmentManager, "dialog");
+    }
 
     // Called when user clicks on the calendar button to call the Date Picker
     public void ShowDatePickerOnClick(View view){
