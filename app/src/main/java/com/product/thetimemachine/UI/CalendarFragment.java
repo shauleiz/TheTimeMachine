@@ -154,17 +154,17 @@ public class CalendarFragment extends DialogFragment {
 
       // Alert dialog builder
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-      builder.setTitle("Title");
+      builder.setTitle(R.string.dates_to_exclude_calendar_title);
       builder.setView(v)
             // Add action buttons
-            .setPositiveButton("Pos", new DialogInterface.OnClickListener() {
+            .setPositiveButton(R.string.ok_calendar, new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
                   // Send the positive button event back to the host activity.
                   listener.onDialogPositiveClick(CalendarFragment.this);
                }
             })
 
-            .setNegativeButton("negative", new DialogInterface.OnClickListener() {
+            .setNegativeButton(R.string.cancel_calendar, new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
                   // Send the negative button event back to the host activity.
                   listener.onDialogNegativeClick(CalendarFragment.this);

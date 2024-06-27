@@ -104,6 +104,9 @@
     <string name="call">Call</string>
     <string name="sms">SMS</string>
     <string name="button">Button</string>
+    <string name="ok_calendar">OK</string>
+    <string name="cancel_calendar">Cancel</string>
+    <string name="dates_to_exclude_calendar_title">Dates to Exclude</string>
 
 
     <array name="clock_12_24_entries">
