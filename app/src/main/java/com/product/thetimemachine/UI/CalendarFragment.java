@@ -34,6 +34,11 @@ public class CalendarFragment extends DialogFragment {
 
    CalendarPickerView datePicker;
 
+   CalendarDialogListener listener;
+
+   List<Date> selectedDates;
+
+
    public interface CalendarDialogListener {
       public void onCalendarDialogPositiveClick(DialogFragment dialog);
       public void onCalendarDialogNegativeClick(DialogFragment dialog);
@@ -72,7 +77,6 @@ public class CalendarFragment extends DialogFragment {
 
 
    // Use this instance of the interface to deliver action events.
-   CalendarDialogListener listener;
 
    @Override
    public void onAttach(@NonNull Context context) {
@@ -90,53 +94,6 @@ public class CalendarFragment extends DialogFragment {
       }
 
    }
-
-   public List<Date> getSelectedDates(){
-      return datePicker.getSelectedDates();
-   }
-
-   private void setSelectedDatesAsInt(ArrayList<Integer> dates){
-
-      int y,m,d;
-      Date dd = new Date();
-      Calendar cal = Calendar.getInstance();
-
-      List<Date> listOfDates; // DEBUG
-
-      for (int date: dates) {
-         d = date%100;
-         m = (date/100)%10 -1;
-         y = (date/10000);
-         cal.clear();
-         cal.set(y,m,d);
-
-         dd = cal.getTime();
-         datePicker.selectDate(dd, true);
-         Log.d("THE_TIME_MACHINE", "setSelectedDatesAsInt():  Time = " + dd.toString());
-         listOfDates = getSelectedDates(); // DEBUG
-      }
-   }
-
-   public ArrayList<Integer> getSelectedDatesAsInt(){
-      ArrayList<Integer> out = new ArrayList<>();
-      List<Date> listOfDates = getSelectedDates();
-      Calendar cal = Calendar.getInstance();
-      int y,m,d, entry;
-
-      for (Date date: listOfDates) {
-         cal.setTime(date);
-         y = cal.get(Calendar.YEAR);
-         m = cal.get(Calendar.MONTH)+1;
-         d = cal.get(Calendar.DATE);
-         entry = d+100*m+10000*y;
-         out.add(entry);
-         Log.d("THE_TIME_MACHINE", "getSelectedDatesAsInt():  Entry = " + entry);
-
-      }
-
-      return out;
-   }
-
    // The system calls this only when creating the layout in a dialog.
    @NonNull
    @Override
@@ -204,6 +161,8 @@ public class CalendarFragment extends DialogFragment {
       fluentInitializer.inMode(mode);
       Log.d("THE_TIME_MACHINE", "fluentInitializer.inMode(mode): mode = " + mode);
 
+      fluentInitializer.withSelectedDates(selectedDates);
+
       return dialog;
    }
 
@@ -214,5 +173,63 @@ public class CalendarFragment extends DialogFragment {
       savedInstanceState.putIntegerArrayList(KEY_LIST_DATES, list);
       savedInstanceState.putInt(KEY_MODE, mode2int(mode));
    }
+
+   public List<Date> getSelectedDates(){
+      return datePicker.getSelectedDates();
+   }
+
+   public void  setSelectedDates(List<Date> dates){
+      if (dates==null || dates.isEmpty())
+         return;
+      selectedDates = dates;
+      if (datePicker!=null){
+         for (Date date: dates){
+         datePicker.selectDate(date, false);
+         }
+      }
+   }
+
+   private void setSelectedDatesAsInt(ArrayList<Integer> dates){
+
+      int y,m,d;
+      Date dd = new Date();
+      Calendar cal = Calendar.getInstance();
+
+      List<Date> listOfDates; // DEBUG
+
+      for (int date: dates) {
+         d = date%100;
+         m = (date/100)%10 -1;
+         y = (date/10000);
+         cal.clear();
+         cal.set(y,m,d);
+
+         dd = cal.getTime();
+         datePicker.selectDate(dd, true);
+         Log.d("THE_TIME_MACHINE", "setSelectedDatesAsInt():  Time = " + dd.toString());
+         listOfDates = getSelectedDates(); // DEBUG
+      }
+   }
+
+   public ArrayList<Integer> getSelectedDatesAsInt(){
+      ArrayList<Integer> out = new ArrayList<>();
+      List<Date> listOfDates = getSelectedDates();
+      Calendar cal = Calendar.getInstance();
+      int y,m,d, entry;
+
+      for (Date date: listOfDates) {
+         cal.setTime(date);
+         y = cal.get(Calendar.YEAR);
+         m = cal.get(Calendar.MONTH)+1;
+         d = cal.get(Calendar.DATE);
+         entry = d+100*m+10000*y;
+         out.add(entry);
+         Log.d("THE_TIME_MACHINE", "getSelectedDatesAsInt():  Entry = " + entry);
+
+      }
+
+      return out;
+   }
+
 
 }

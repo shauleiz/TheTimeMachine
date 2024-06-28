@@ -227,6 +227,8 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
         setDisplayAreaVisible(oneOff, view);
         setCalendarButton(oneOff, view);
 
+        selectedDates = setUpAlarmValues.getExceptionDates().getValue();
+
         // Listener to the Repeating button (set the weekdays button visibility)
         repeating.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
             @Override
@@ -508,6 +510,7 @@ public boolean isInThePast(long alarmInMillis){
 
        CalendarFragment newFragment = new CalendarFragment();
        newFragment.setSelectionMode(CalendarPickerView.SelectionMode.MULTIPLE);
+       newFragment.setSelectedDates(selectedDates);
        newFragment.show(getChildFragmentManager(), "dialog");
     }
 
@@ -515,6 +518,7 @@ public boolean isInThePast(long alarmInMillis){
    public void onCalendarDialogPositiveClick(DialogFragment dialog) {
       // User taps the dialog's positive button.
       selectedDates = ((CalendarFragment)dialog).getSelectedDates();
+      setUpAlarmValues.setExceptionDates(selectedDates);
 
       // DEBUG
       long time0=0;
