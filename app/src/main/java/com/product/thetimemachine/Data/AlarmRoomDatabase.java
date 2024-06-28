@@ -12,8 +12,12 @@ import java.util.concurrent.Executors;
 
 @Database(
       entities = {AlarmItem.class},
-      version = 4,
-      autoMigrations = {@AutoMigration(from = 1, to = 4), @AutoMigration(from = 2, to = 4), @AutoMigration(from = 3, to = 4)},
+      version = 5,
+      autoMigrations = {
+            @AutoMigration(from = 1, to = 5),
+            @AutoMigration(from = 3, to = 5),
+            @AutoMigration(from = 4, to = 5)
+      },
       exportSchema = true)
 
 public abstract class AlarmRoomDatabase extends RoomDatabase {

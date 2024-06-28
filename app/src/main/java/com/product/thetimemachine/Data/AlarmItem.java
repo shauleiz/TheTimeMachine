@@ -64,6 +64,8 @@ public class AlarmItem {
    @ColumnInfo(name = "genStatus", defaultValue = "0")
    public int genStatus;
 
+   public String exceptionDatesStr;
+
    /** Key Strings for saving alarm data in bundle  - A key per AlarmItem variable  **/
    public static final String K_HOUR = "HOUR";
    public static final String K_MINUTE = "MINUTE";
