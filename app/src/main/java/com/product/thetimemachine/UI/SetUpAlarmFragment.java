@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
@@ -47,10 +48,12 @@ import com.squareup.timessquare.CalendarPickerView;
 import org.w3c.dom.Text;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class SetUpAlarmFragment extends Fragment {
+public class SetUpAlarmFragment extends Fragment implements CalendarFragment.CalendarDialogListener {
 
     private MyTimePicker timePicker;
    //private SwitchCompat repeating;
@@ -65,6 +68,8 @@ public class SetUpAlarmFragment extends Fragment {
     private AlarmViewModel alarmViewModel;
     private MainActivity parent;
     private Bundle initParams;
+
+    private List<Date> selectedDates;
 
 
     // Default constructor
@@ -500,10 +505,10 @@ public boolean isInThePast(long alarmInMillis){
 
     public void ShowExcludeDatePickerOnClick(View view) {
        Log.d("THE_TIME_MACHINE", "ShowExcludeDatePickerOnClick()");
-       FragmentManager fragmentManager =  parent.getSupportFragmentManager();
+
        CalendarFragment newFragment = new CalendarFragment();
        newFragment.setSelectionMode(CalendarPickerView.SelectionMode.MULTIPLE);
-       newFragment.show(fragmentManager, "dialog");
+       newFragment.show(getChildFragmentManager(), "dialog");
     }
 
     // Called when user clicks on the calendar button to call the Date Picker
@@ -768,4 +773,26 @@ public boolean isInThePast(long alarmInMillis){
     private void onTimeChangedListener(TimePicker timePicker, int hourOfDay, int minute) {
         targetAlarmText.setText(displayTargetAlarm());
     }
+
+   @Override
+   public void onDialogPositiveClick(DialogFragment dialog) {
+      // User taps the dialog's positive button.
+      selectedDates = ((CalendarFragment)dialog).getSelectedDates();
+
+      // DEBUG
+      long time0=0;
+      if (!selectedDates.isEmpty()) {
+         for (Date d : selectedDates) {
+            Log.d("THE_TIME_MACHINE", "onDialogPositiveClick() - Time = " + d);
+         }
+      }
+      else {
+         Log.d("THE_TIME_MACHINE", "onDialogPositiveClick() Empty");
+      }
+   }
+
+   @Override
+   public void onDialogNegativeClick(DialogFragment dialog) {
+      Log.d("THE_TIME_MACHINE", "onDialogNegativeClick()");
+   }
 }

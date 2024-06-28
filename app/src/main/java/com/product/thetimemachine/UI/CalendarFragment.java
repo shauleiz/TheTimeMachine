@@ -34,7 +34,7 @@ public class CalendarFragment extends DialogFragment {
 
    CalendarPickerView datePicker;
 
-   public interface CalendarDialogListener { // Change to CalendarDialogListener
+   public interface CalendarDialogListener {
       public void onDialogPositiveClick(DialogFragment dialog);
       public void onDialogNegativeClick(DialogFragment dialog);
    }
