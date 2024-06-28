@@ -511,7 +511,30 @@ public boolean isInThePast(long alarmInMillis){
        newFragment.show(getChildFragmentManager(), "dialog");
     }
 
-    // Called when user clicks on the calendar button to call the Date Picker
+   @Override
+   public void onCalendarDialogPositiveClick(DialogFragment dialog) {
+      // User taps the dialog's positive button.
+      selectedDates = ((CalendarFragment)dialog).getSelectedDates();
+
+      // DEBUG
+      long time0=0;
+      if (!selectedDates.isEmpty()) {
+         for (Date d : selectedDates) {
+            Log.d("THE_TIME_MACHINE", "onCalendarDialogPositiveClick() - Time = " + d);
+         }
+      }
+      else {
+         Log.d("THE_TIME_MACHINE", "onCalendarDialogPositiveClick() Empty");
+      }
+   }
+
+   @Override
+   public void onCalendarDialogNegativeClick(DialogFragment dialog) {
+      Log.d("THE_TIME_MACHINE", "onCalendarDialogNegativeClick()");
+   }
+
+
+   // Called when user clicks on the calendar button to call the Date Picker
     public void ShowDatePickerOnClick(View view){
         Calendar calendar;
         int d, m, y;
@@ -774,25 +797,4 @@ public boolean isInThePast(long alarmInMillis){
         targetAlarmText.setText(displayTargetAlarm());
     }
 
-   @Override
-   public void onDialogPositiveClick(DialogFragment dialog) {
-      // User taps the dialog's positive button.
-      selectedDates = ((CalendarFragment)dialog).getSelectedDates();
-
-      // DEBUG
-      long time0=0;
-      if (!selectedDates.isEmpty()) {
-         for (Date d : selectedDates) {
-            Log.d("THE_TIME_MACHINE", "onDialogPositiveClick() - Time = " + d);
-         }
-      }
-      else {
-         Log.d("THE_TIME_MACHINE", "onDialogPositiveClick() Empty");
-      }
-   }
-
-   @Override
-   public void onDialogNegativeClick(DialogFragment dialog) {
-      Log.d("THE_TIME_MACHINE", "onDialogNegativeClick()");
-   }
 }

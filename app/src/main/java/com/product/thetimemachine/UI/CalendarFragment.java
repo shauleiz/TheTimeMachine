@@ -35,8 +35,8 @@ public class CalendarFragment extends DialogFragment {
    CalendarPickerView datePicker;
 
    public interface CalendarDialogListener {
-      public void onDialogPositiveClick(DialogFragment dialog);
-      public void onDialogNegativeClick(DialogFragment dialog);
+      public void onCalendarDialogPositiveClick(DialogFragment dialog);
+      public void onCalendarDialogNegativeClick(DialogFragment dialog);
    }
 
 
@@ -160,14 +160,14 @@ public class CalendarFragment extends DialogFragment {
             .setPositiveButton(R.string.ok_calendar, new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
                   // Send the positive button event back to the host activity.
-                  listener.onDialogPositiveClick(CalendarFragment.this);
+                  listener.onCalendarDialogPositiveClick(CalendarFragment.this);
                }
             })
 
             .setNegativeButton(R.string.cancel_calendar, new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
                   // Send the negative button event back to the host activity.
-                  listener.onDialogNegativeClick(CalendarFragment.this);
+                  listener.onCalendarDialogNegativeClick(CalendarFragment.this);
                }
             });
 
