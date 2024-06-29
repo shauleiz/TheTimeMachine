@@ -164,7 +164,7 @@ public class AlarmViewModel extends AndroidViewModel {
       final MutableLiveData<Integer> dayOfMonth, month, year;
       final MutableLiveData<Boolean>  futureDate;
 
-      final MutableLiveData<List<Date>> exceptionDates;
+      final MutableLiveData<String> exceptionDates;
 
       // Preferences
       final MutableLiveData<String> ringDuration;
@@ -220,7 +220,7 @@ public class AlarmViewModel extends AndroidViewModel {
          month.setValue(0);
          year.setValue(0);
          futureDate.setValue(false);
-         exceptionDates.setValue(null);
+         exceptionDates.setValue("");
 
          // Preferences
          // Copy default preferences to this item's preferences
@@ -338,7 +338,7 @@ public class AlarmViewModel extends AndroidViewModel {
       public void setYear(int year) {this.year.setValue(year);}
 
       public void setFutureDate(boolean futureDate) {this.futureDate.setValue(futureDate) ;}
-      public void  setExceptionDates(List<Date> dates){this.exceptionDates.setValue(dates);}
+      public void  setExceptionDates(String dates){this.exceptionDates.setValue(dates);}
 
       public void setRingduration(String val) {this.ringDuration.setValue(val);}
       public void setRingRepeat(String val) {this.ringRepeat.setValue(val);}
@@ -361,7 +361,7 @@ public class AlarmViewModel extends AndroidViewModel {
       public MutableLiveData<Integer> getYear() {return year;}
 
       public MutableLiveData<Boolean> isFutureDate() {return futureDate;}
-      public MutableLiveData<List<Date>> getExceptionDates(){return exceptionDates;}
+      public MutableLiveData<String> getExceptionDates(){return exceptionDates;}
 
       public MutableLiveData<String> getRingDuration() {return  ringDuration;}
       public MutableLiveData<String> getRingRepeat() {return  ringRepeat;}

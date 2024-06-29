@@ -62,6 +62,7 @@ dependencies {
     implementation ("androidx.fragment:fragment:1.7.1")
     implementation("androidx.lifecycle:lifecycle-service:2.7.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation("com.google.firebase:firebase-crashlytics-buildtools:3.0.2")
 
 
     testImplementation("junit:junit:4.13.2")
@@ -81,4 +82,5 @@ dependencies {
     implementation ("androidx.room:room-gradle-plugin:2.6.1")
     //implementation ("com.github.wisnukurniawan:date-time-range-picker-android:1.0.10")
     implementation ("com.squareup:android-times-square:1.7.11")
+    implementation ("com.google.code.gson:gson:2.8.5")
 }

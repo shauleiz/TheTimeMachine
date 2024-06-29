@@ -36,6 +36,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.product.thetimemachine.AlarmViewModel;
 import com.product.thetimemachine.Data.AlarmItem;
 import com.product.thetimemachine.R;
@@ -47,6 +49,8 @@ import com.squareup.timessquare.CalendarPickerView;
 
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -227,7 +231,7 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
         setDisplayAreaVisible(oneOff, view);
         setCalendarButton(oneOff, view);
 
-        selectedDates = setUpAlarmValues.getExceptionDates().getValue();
+        selectedDates = ExceptionDates2Date(setUpAlarmValues.getExceptionDates().getValue());
 
         // Listener to the Repeating button (set the weekdays button visibility)
         repeating.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
@@ -505,6 +509,71 @@ public boolean isInThePast(long alarmInMillis){
         return mask;
     }
 
+
+   // Converts selected Dates in JSON string format to List<Date>
+   // Each entry in format "YYYYMMYY" (e.g. "20240630")
+    private List<Date> ExceptionDates2Date(String dates){
+       List<Date> dateList = new ArrayList<>();
+
+       if (dates==null || dates.isEmpty())
+          return dateList;
+
+
+       // From JSON to Array of strings
+       Type listOfMyClassObject = new TypeToken<ArrayList<String>>() {}.getType();
+       Gson gson = new Gson();
+       List<String > dateListStr = gson.fromJson(dates, listOfMyClassObject);
+
+       // Test list of strings
+       if (dateListStr==null || dateListStr.isEmpty())
+          return dateList;
+
+       // Convert each string to Date
+       int d,m,y, yyyymmdd;
+       Date date;
+       Calendar cal = Calendar.getInstance();
+       for (String dateStr: dateListStr) {
+          yyyymmdd = (Integer.valueOf(dateStr)).intValue();
+          d = yyyymmdd%100;
+          m = (yyyymmdd/100)%10 -1;
+          y = (yyyymmdd/10000);
+          cal.clear();
+          cal.set(y,m,d);
+          date = cal.getTime();
+          dateList.add(date);
+       }
+       return dateList;
+    }
+
+
+    // Converts selected Dates to the corresponding JSON string
+    // Each date is converted into format "YYYYMMYY" (e.g. "20240630")
+    // before inserted to JSON string
+    private String ExceptionDates2Str(List<Date> dates){
+       // Check input
+       if (dates == null || dates.isEmpty())
+          return "";
+
+       // For each Date, convert it to string and add it to a list of strings
+       List<String> datesStr = new ArrayList<>();
+       int y, m, d, entry;
+       String dateStr;
+       Calendar cal = Calendar.getInstance();
+       for (Date date: dates) {
+          cal.setTime(date);
+          y = cal.get(Calendar.YEAR);
+          m = cal.get(Calendar.MONTH)+1;
+          d = cal.get(Calendar.DATE);
+          entry = d+100*m+10000*y;
+          dateStr = Integer.toString(entry);
+          datesStr.add(dateStr);
+       }
+
+       // Convert list of strings to a single JSON string
+       Gson gson = new Gson();
+       return gson.toJson(datesStr);
+    }
+
     public void ShowExcludeDatePickerOnClick(View view) {
        Log.d("THE_TIME_MACHINE", "ShowExcludeDatePickerOnClick()");
 
@@ -518,7 +587,8 @@ public boolean isInThePast(long alarmInMillis){
    public void onCalendarDialogPositiveClick(DialogFragment dialog) {
       // User taps the dialog's positive button.
       selectedDates = ((CalendarFragment)dialog).getSelectedDates();
-      setUpAlarmValues.setExceptionDates(selectedDates);
+      setUpAlarmValues.setExceptionDates(ExceptionDates2Str(selectedDates));
+
 
       // DEBUG
       long time0=0;
@@ -530,6 +600,8 @@ public boolean isInThePast(long alarmInMillis){
       else {
          Log.d("THE_TIME_MACHINE", "onCalendarDialogPositiveClick() Empty");
       }
+
+      Log.d("THE_TIME_MACHINE", "onCalendarDialogPositiveClick() - JSON = " + ExceptionDates2Str(selectedDates));
    }
 
    @Override
