@@ -589,7 +589,7 @@ public boolean isInThePast(long alarmInMillis){
       selectedDates = ((CalendarFragment)dialog).getSelectedDates();
       setUpAlarmValues.setExceptionDates(ExceptionDates2Str(selectedDates));
 
-
+/*
       // DEBUG
       long time0=0;
       if (!selectedDates.isEmpty()) {
@@ -602,7 +602,8 @@ public boolean isInThePast(long alarmInMillis){
       }
 
       Log.d("THE_TIME_MACHINE", "onCalendarDialogPositiveClick() - JSON = " + ExceptionDates2Str(selectedDates));
-   }
+*/
+    }
 
    @Override
    public void onCalendarDialogNegativeClick(DialogFragment dialog) {
@@ -748,6 +749,10 @@ public boolean isInThePast(long alarmInMillis){
             item.setFutureDate(false);
         else
             item.setFutureDate(Boolean.TRUE.equals(setUpAlarmValues.isFutureDate().getValue()));
+
+        // Set Exception dates if this is a weekly (repetative) alarm item
+       if (!item.isOneOff())
+          item.setExceptionDatesStr(ExceptionDates2Str(selectedDates));
 
 
         // Future Date

@@ -284,6 +284,8 @@ public class AlarmItem {
 
    public int getGenStatus() {return genStatus;}
 
+   public String getExceptionDatesStr() {return exceptionDatesStr;}
+
    public boolean isRinging(){
       int stat = getGenStatus();
       return (stat & RINGING) > 0;
@@ -344,6 +346,8 @@ public class AlarmItem {
    }
 
    public void setGenStatus(int genStatus) {this.genStatus = genStatus;}
+
+   public void setExceptionDatesStr(String exceptionDatesStr) {this.exceptionDatesStr = exceptionDatesStr;}
 
    public void setRinging(boolean ringing){
       int stat = getGenStatus();
