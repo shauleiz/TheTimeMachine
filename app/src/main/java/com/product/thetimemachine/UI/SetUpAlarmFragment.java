@@ -579,6 +579,7 @@ public boolean isInThePast(long alarmInMillis){
 
        CalendarFragment newFragment = new CalendarFragment();
        newFragment.setSelectionMode(CalendarPickerView.SelectionMode.MULTIPLE);
+       selectedDates = ExceptionDates2Date(setUpAlarmValues.getExceptionDates().getValue());
        newFragment.setSelectedDates(selectedDates);
        newFragment.show(getChildFragmentManager(), "dialog");
     }
@@ -751,7 +752,7 @@ public boolean isInThePast(long alarmInMillis){
             item.setFutureDate(Boolean.TRUE.equals(setUpAlarmValues.isFutureDate().getValue()));
 
         // Set Exception dates if this is a weekly (repetative) alarm item
-       if (!item.isOneOff())
+       //if (!item.isOneOff())
           item.setExceptionDatesStr(ExceptionDates2Str(selectedDates));
 
 

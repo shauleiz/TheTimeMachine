@@ -260,7 +260,7 @@ public class AlarmViewModel extends AndroidViewModel {
          month.setValue(AlarmList.get(position).getMonth());
          year.setValue(AlarmList.get(position).getYear());
          futureDate.setValue(AlarmList.get(position).isFutureDate());
-         // TODO: exceptionDates.setValue()
+         exceptionDates.setValue(AlarmList.get(position).getExceptionDatesStr());
 
          // Preferences ???
       }
@@ -290,7 +290,8 @@ public class AlarmViewModel extends AndroidViewModel {
          month.setValue(item.getMonth());
          year.setValue(item.getYear());
          futureDate.setValue(item.isFutureDate());
-         // TODO: exceptionDates.setValue()
+         exceptionDates.setValue(item.getExceptionDatesStr());
+
 
          // Preferences
          ringDuration.setValue(item.getRingDuration());
