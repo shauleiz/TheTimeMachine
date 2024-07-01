@@ -107,6 +107,15 @@
     <string name="ok_calendar">OK</string>
     <string name="cancel_calendar">Cancel</string>
     <string name="dates_to_exclude_calendar_title">Dates to Exclude</string>
+    <string name="alarm_scheduled_for">"Alarm scheduled for "</string>
+    <string name="date_format">EEEE, MMMM d, yyyy \'at\' h:mm a</string>
+    <string name="day_plural">" days "</string>
+    <string name="day_singular">"1 day "</string>
+    <string name="hour_plural">" hours "</string>
+    <string name="hour_singular">"1 hour "</string>
+    <string name="minute_plural">" minutes "</string>
+    <string name="minute_singular">"1 minute "</string>
+    <string name="from_now">from now</string>
 
 
     <array name="clock_12_24_entries">

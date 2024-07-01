@@ -24,6 +24,7 @@ import com.product.thetimemachine.Application.TheTimeMachineApp;
 import com.product.thetimemachine.R;
 import com.product.thetimemachine.UI.MainActivity;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -668,6 +669,7 @@ public class AlarmItem {
       final long DaysInMillis = 24*60*60*1000;
       final long HoursInMillis = 60*60*1000;
       final long MinutesInMillis = 60*1000;
+      Context context = TheTimeMachineApp.appContext;
 
 
       // Get Current Time in Millis
@@ -685,34 +687,42 @@ public class AlarmItem {
       long minutes = (duration - days*DaysInMillis - hours*HoursInMillis)/ MinutesInMillis;
 
       // Create the print string.
+
+      // When Alarm is scheduled for more than 2 days from now, prind the date and time
+      if (days > 2) {
+         SimpleDateFormat format = new SimpleDateFormat(context.getString(R.string.date_format), Locale.US);
+         Date date = new Date(alarmTime);
+         return context.getString(R.string.alarm_scheduled_for) + format.format(date);
+      }
+
       // Alarm time is set for 10 days, 11 hours and 5 Minutes.
       // Values are rounded down to the minute (no seconds and millis)
       // Value 0 is ignored.
       // Value 1 is without the plural
 
       if (days>1)
-         strD = days +" days ";
+         strD = days +context.getString(R.string.day_plural);
       else if (days==1)
-         strD = "1 day ";
+         strD = context.getString(R.string.day_singular);
       else
          strD = "";
 
       if (hours>1)
-         strH = hours +" hours ";
+         strH = hours +context.getString(R.string.hour_plural);
       else if (hours==1)
-         strH = "1 hour ";
+         strH = context.getString(R.string.hour_singular);
       else
          strH = "";
 
       if (minutes>1)
-         strM = minutes +" minutes ";
+         strM = minutes +context.getString(R.string.minute_plural);
       else if (minutes==1)
-         strM = "1 minute ";
+         strM = context.getString(R.string.minute_singular);
       else
          strM = "";
 
 
-      return "Alarm scheduled for " + strD  + strH + strM + "from now";
+      return context.getString(R.string.alarm_scheduled_for) + strD  + strH + strM + context.getString(R.string.from_now);
    }
 
 

@@ -752,8 +752,7 @@ public boolean isInThePast(long alarmInMillis){
             item.setFutureDate(Boolean.TRUE.equals(setUpAlarmValues.isFutureDate().getValue()));
 
         // Set Exception dates if this is a weekly (repetative) alarm item
-       //if (!item.isOneOff())
-          item.setExceptionDatesStr(ExceptionDates2Str(selectedDates));
+       item.setExceptionDatesStr(ExceptionDates2Str(selectedDates));
 
 
         // Future Date
