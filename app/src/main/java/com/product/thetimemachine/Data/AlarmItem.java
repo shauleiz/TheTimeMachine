@@ -81,6 +81,10 @@ public class AlarmItem {
    public static final String K_YEAR = "YEAR";
    public static final String K_FDATE = "FUTURE_DATE";
 
+   public static final String K_EXCEPTION = "EXCEPTION";
+
+
+
 
    // Masks for days of the week.
    // If ONEOFF is set, the rest of the fields are to be ignored
@@ -131,6 +135,7 @@ public class AlarmItem {
       month = inBundle.getInt(K_MONTH,0);
       year = inBundle.getInt(K_YEAR,0);
       futureDate = inBundle.getBoolean(K_FDATE, false);
+      exceptionDatesStr = inBundle.getString(K_EXCEPTION);
 
       // Sanity check
       if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
@@ -379,6 +384,7 @@ public class AlarmItem {
       b.putInt(K_MONTH,month);
       b.putInt(K_YEAR,year);
       b.putBoolean(K_FDATE,futureDate);
+      b.putString(K_EXCEPTION,exceptionDatesStr);
 
       // Preferences
       Context context = TheTimeMachineApp.appContext;
@@ -464,12 +470,40 @@ public class AlarmItem {
          // - Multiple nDay by the number of milliseconds in a day and add it to calendar time
          // - Set the alarm manager with this calender time
          int[] days = {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY};
-         for (int i = 0; i < days.length; i++) {
+         for (int i = 0; i < 100; i++) { // 100 is just a large number
             int nDay = (dayOfWeek +i)%7;
             if ((weekDays & days[nDay]) == 0) continue;
-            return i * DAY_IN_MILLIS + cal.getTimeInMillis();
+            long out = i * (long)DAY_IN_MILLIS + alarmTime;
+
+            // Check if this time falls in one of the dates in the list of exceptions
+            if (!isDateException(out))
+               return out;
          }
       return alarmTime;
+   }
+
+   // Compare given time (in millis) with the dates in the list of exceptions
+   // If given time falls in one of the dates in the list - return true
+   private boolean isDateException(long timeInMillis){
+      // Is there a valid exception list?
+      if (exceptionDatesStr==null || exceptionDatesStr.isEmpty())
+         return false;
+
+      // Convert timeInMillis to date in YYYYMMDD format
+      int y, m, d;
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTimeInMillis(timeInMillis);
+      y = calendar.get(Calendar.YEAR);
+      m = calendar.get(Calendar.MONTH)+1;
+      d = calendar.get(Calendar.DAY_OF_MONTH);
+      String dateStr = Integer.toString(d+100*m+10000*y);
+
+      // Search the exceptionDatesStr for this string
+      int index = exceptionDatesStr.indexOf(dateStr);
+      if (index == -1) // Not found
+         return false;
+
+      return true;
    }
 
    /* True if the alarm is set for today */
