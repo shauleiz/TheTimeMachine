@@ -23,20 +23,19 @@ import java.util.List;
 
 
 public class CalendarFragment extends DialogFragment {
-   // The system calls this to get the DialogFragment's layout, regardless of
-   // whether it's being displayed as a dialog or an embedded fragment.
 
    final private String KEY_MODE = "keyMode";
    final private String KEY_LIST_DATES = "keyListOfDates";
+   final private String KEY_MIN_DATE = "keyMinDate";
+   final private String KEY_MAX_DATE = "keyMaxDate";
+   final private String KEY_HIGHLIGHT = "keyHighlight";
 
-   CalendarPickerView.FluentInitializer fluentInitializer;
    CalendarPickerView.SelectionMode mode = CalendarPickerView.SelectionMode.SINGLE;
-
    CalendarPickerView datePicker;
-
    CalendarDialogListener listener;
-
-   List<Date> selectedDates;
+   List<Date> selectedDates = new ArrayList<>();
+   Date minDate, maxDate;
+   int days2Highlight;
 
 
    public interface CalendarDialogListener {
@@ -97,6 +96,9 @@ public class CalendarFragment extends DialogFragment {
    // The system calls this only when creating the layout in a dialog.
    @NonNull
    @Override
+
+   //-------------------------
+
    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
 
@@ -107,12 +109,12 @@ public class CalendarFragment extends DialogFragment {
 
       // Inflate and set the layout for the dialog.
       // Pass null as the parent view because it's going in the dialog layout.
-      View v = inflater.inflate(R.layout.fragment_calendar, null);
+      View viewFragmentCalendar = inflater.inflate(R.layout.fragment_calendar, null);
 
       // Alert dialog builder
-      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-      builder.setTitle(R.string.dates_to_exclude_calendar_title);
-      builder.setView(v)
+      Dialog dialog = new AlertDialog.Builder(getActivity())
+      .setTitle(R.string.dates_to_exclude_calendar_title)
+      .setView(viewFragmentCalendar)
             // Add action buttons
             .setPositiveButton(R.string.ok_calendar, new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
@@ -126,88 +128,209 @@ public class CalendarFragment extends DialogFragment {
                   // Send the negative button event back to the host activity.
                   listener.onCalendarDialogNegativeClick(CalendarFragment.this);
                }
-            });
+            })
+      .create();
 
 
 
-      Dialog dialog = builder.create();
 
-
-      // Define the boundary dates
-      Calendar nextYear = Calendar.getInstance();
-      nextYear.add(Calendar.YEAR, 1); // Next year
-      Date todayDate = new Date(); // Today
-      Calendar tomorrow = Calendar.getInstance();
-      tomorrow.add(Calendar.DAY_OF_MONTH,1);
-      /**/
-      // Get the Date Picker
-      datePicker = (CalendarPickerView) v.findViewById(R.id.calendar_view);
-
-      // Initialize Date picker to support a year from today with today selected
-      fluentInitializer = datePicker.init(todayDate, nextYear.getTime());
-
-      // Select a date (tomorrow)
-      //fluentInitializer.withSelectedDate(tomorrow.getTime());
+      ArrayList<Integer> list = new ArrayList<>();
 
       // Get the Saved State
       if (savedInstanceState !=null) {
-         mode = int2mode(savedInstanceState.getInt(KEY_MODE)) ;
-         fluentInitializer.inMode(mode);
-         ArrayList<Integer> list = savedInstanceState.getIntegerArrayList(KEY_LIST_DATES);
-         if (list !=null) {setSelectedDatesAsInt(list);}
+         minDate = int2Date(savedInstanceState.getInt(KEY_MIN_DATE));
+         maxDate = int2Date(savedInstanceState.getInt(KEY_MAX_DATE));
+         mode = int2mode(savedInstanceState.getInt(KEY_MODE));
+         days2Highlight = savedInstanceState.getInt(KEY_HIGHLIGHT);
+         list = savedInstanceState.getIntegerArrayList(KEY_LIST_DATES);
+         setSelectedDatesAsInt(list);
       }
 
-      // Set Date Picker to support selection  multiple/single/range of dates
-      fluentInitializer.inMode(mode);
-      Log.d("THE_TIME_MACHINE", "fluentInitializer.inMode(mode): mode = " + mode);
+      // Get the Date Picker
+      datePicker = (CalendarPickerView) viewFragmentCalendar.findViewById(R.id.calendar_view);
 
-      fluentInitializer.withSelectedDates(selectedDates);
+      // Initialize Date picker to support a year from today with today selected
+      datePicker.init(minDate, maxDate)
+      // Set Date Picker to support selection  multiple/single/range of dates
+      .inMode(mode)
+      // Highlight the weekdays with alarms
+      .withHighlightedDates(getPreselectedDates())
+      .withSelectedDates(selectedDates);
 
       return dialog;
    }
 
+   //-------------------------
+
+
+
+
+   /*public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+
+
+      // Get the layout inflater.
+      LayoutInflater inflater = requireActivity().getLayoutInflater();
+
+      // Inflate and set the layout for the dialog.
+      // Pass null as the parent view because it's going in the dialog layout.
+      View calendarView = inflater.inflate(R.layout.fragment_calendar, null);
+
+      // Alert dialog builder
+      Dialog dialog = new AlertDialog.Builder(getActivity())
+      .setTitle(R.string.dates_to_exclude_calendar_title) // TODO: Replace String
+      .setView(calendarView)
+      // Add action buttons
+      .setPositiveButton(R.string.ok_calendar, new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {
+                  // Send the positive button event back to the host activity.
+                  listener.onCalendarDialogPositiveClick(CalendarFragment.this);
+        }
+      })
+      .setNegativeButton(R.string.cancel_calendar, new DialogInterface.OnClickListener() { // TODO: Replace String
+        public void onClick(DialogInterface dialog, int id) {
+           // Send the negative button event back to the host activity.
+           listener.onCalendarDialogNegativeClick(CalendarFragment.this);
+        }
+      })
+      .create();
+
+
+      // Get the Date Picker
+      datePicker = (CalendarPickerView) calendarView.findViewById(R.id.calendar_view);
+
+      // Initialize Date picker to support a year from today with today selected
+      fluentInitializer = datePicker.init(minDate, maxDate);
+
+      // Get the Saved State
+      if (savedInstanceState !=null) {
+         mode = int2mode(savedInstanceState.getInt(KEY_MODE)) ;
+
+         ArrayList<Integer> list = savedInstanceState.getIntegerArrayList(KEY_LIST_DATES);
+         if (list !=null) {setSelectedDatesAsInt(list);}
+
+         minDate = int2Date(savedInstanceState.getInt(KEY_MIN_DATE));
+         maxDate = int2Date(savedInstanceState.getInt(KEY_MAX_DATE));
+      }
+
+      Log.d("THE_TIME_MACHINE", "fluentInitializer.inMode(mode): mode = " + mode);
+
+      // Highlight all Tuesdays and Saturdays in range
+      List<Integer> weekdays = new ArrayList<>();
+      weekdays.add(2); // Tue
+      weekdays.add(6); // Sat
+      List<Date> highlightDates = getPreselectedDates(weekdays, minDate, maxDate);
+
+      // Initialize Date picker
+      //
+      // To support a rage of dates
+      datePicker.init(minDate, maxDate)
+
+      // Set Date Picker to support selection  multiple/single/range of dates
+      .inMode(mode)
+       // Highlight the weekdays with alarms
+      .withHighlightedDates(highlightDates)
+
+       // Set selected dates - the days to exclude
+      .withSelectedDates(selectedDates);
+
+      // Display the dates to exclude
+      displaySelectedDates();
+      return dialog;
+   }
+*/
    @Override
    public void onSaveInstanceState(Bundle savedInstanceState) {
       super.onSaveInstanceState(savedInstanceState);
       ArrayList<Integer> list = getSelectedDatesAsInt();
       savedInstanceState.putIntegerArrayList(KEY_LIST_DATES, list);
       savedInstanceState.putInt(KEY_MODE, mode2int(mode));
+      savedInstanceState.putInt(KEY_MAX_DATE, date2Int(maxDate));
+      savedInstanceState.putInt(KEY_MIN_DATE, date2Int(minDate));
+      savedInstanceState.putInt(KEY_HIGHLIGHT, days2Highlight);
    }
 
    public List<Date> getSelectedDates(){
       return datePicker.getSelectedDates();
    }
 
-   public void  setSelectedDates(List<Date> dates){
-      if (dates==null || dates.isEmpty())
+   private void  displaySelectedDates(){
+      Log.d("THE_TIME_MACHINE", "displaySelectedDates()");
+      if (selectedDates==null || selectedDates.isEmpty())
          return;
-      selectedDates = dates;
       if (datePicker!=null){
-         for (Date date: dates){
-         datePicker.selectDate(date, false);
+         for (Date date: selectedDates){
+            datePicker.selectDate(date, false);
+            Log.d("THE_TIME_MACHINE", "displaySelectedDates() date: " + date);
          }
       }
    }
 
+   public void setSelectedDates(List<Date> dates) {
+      if (dates==null || dates.isEmpty() )
+         return;
+
+      if (selectedDates==null)
+         selectedDates = new ArrayList<>();
+
+      for (Date date: dates){
+         selectedDates.add(new Date(date.getTime()));
+      }
+   }
+
+   public void setMaxDate(Date maxDate) {
+      this.maxDate =  new Date(maxDate.getTime());
+
+      // Modify if needed
+      if (maxDate == null || selectedDates == null  || selectedDates.isEmpty())
+         return;
+
+      // If a selected date is set to a date later that maxDate then maxDate is modified.
+      for (Date date: selectedDates) {
+         if (date.after(maxDate))
+            maxDate.setTime(date.getTime());
+      }
+   }
+
+   public void setMinDate(Date minDate) {
+      this.minDate = new Date(minDate.getTime());
+
+      // Modify if needed
+      if (minDate == null || selectedDates == null  || selectedDates.isEmpty())
+         return;
+
+      // If a selected date is set to a date before that minDate then minDate is modified.
+      for (Date date: selectedDates) {
+         if (date.before(minDate))
+            minDate.setTime(date.getTime());
+      }
+   }
+
+   public void setHighlightedDays(int mask){
+      days2Highlight = mask;
+   }
+
    private void setSelectedDatesAsInt(ArrayList<Integer> dates){
 
-      int y,m,d;
-      Date dd = new Date();
-      Calendar cal = Calendar.getInstance();
+      if (dates==null || dates.isEmpty())
+         return;
 
-      List<Date> listOfDates; // DEBUG
+      int y,m,d;
+
+      Calendar cal = Calendar.getInstance();
+      if (selectedDates != null)
+         selectedDates.clear();
 
       for (int date: dates) {
-         d = date%100;
-         m = (date/100)%10 -1;
-         y = (date/10000);
+         d = date % 100;
+         m = (date / 100) % 10 - 1;
+         y = (date / 10000);
          cal.clear();
-         cal.set(y,m,d);
+         cal.set(y, m, d);
 
-         dd = cal.getTime();
-         datePicker.selectDate(dd, true);
-         Log.d("THE_TIME_MACHINE", "setSelectedDatesAsInt():  Time = " + dd.toString());
-         listOfDates = getSelectedDates(); // DEBUG
+         Date dd = cal.getTime();
+         selectedDates.add(dd);
+
       }
    }
 
@@ -230,6 +353,87 @@ public class CalendarFragment extends DialogFragment {
 
       return out;
    }
+
+
+   // Convert a Date to integer format (e.g. 20240731)
+   private int date2Int(Date date){
+      if (date == null)
+         return  0;
+
+      int y,m,d;
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(date);
+      y = cal.get(Calendar.YEAR);
+      m = cal.get(Calendar.MONTH)+1;
+      d = cal.get(Calendar.DATE);
+
+      return d+100*m+10000*y;
+   }
+
+   // Convert an int to Date format
+   private Date int2Date(int date){
+      int d = date % 100;
+      int m = (date / 100) % 10 - 1;
+      int y = (date / 10000);
+
+      Calendar cal = Calendar.getInstance();
+      cal.clear();
+      cal.set(y, m, d);
+
+      return cal.getTime();
+   }
+
+   /*
+    * Returns a list of dates.
+    * The List consists of all dates (In  a range) of a given weekday (e.g. all Thursdays )
+    * Weekdays are defined as 0 max 6 (Sunday max Saturday)
+    *
+    * Parameters:
+    *   weekdays: List of given weekdays
+    *   min: Beginning of range
+    *   max: end of range
+    *
+    * */
+   private List<Date> getPreselectedDates(int weekdays, Date min, Date max){
+      List<Date> preselected = new ArrayList<>();
+
+      if (weekdays == 0)
+         return preselected;
+
+      if (min.after(max))
+         return preselected;
+
+      long minMillies = min.getTime();
+      long maxMillies = max.getTime();
+      int mask;
+
+
+      // Loop on all days: min->max
+      Calendar now = Calendar.getInstance();
+      now.setTime(min);
+
+      Log.d("THE_TIME_MACHINE", "getPreselectedDates():  weekdays = " + weekdays  );
+
+
+      while (now.getTimeInMillis() <= (maxMillies-1000*60*60*24)) {
+         mask = 1;
+         int today = now.get(Calendar.DAY_OF_WEEK)-1;
+         mask = mask<<today;
+         Log.d("THE_TIME_MACHINE", "getPreselectedDates():  today = " + today + " mask = " + mask  );
+         if ((weekdays & mask) != 0) {
+            preselected.add(new Date(now.getTimeInMillis()));
+         }
+         now.setTimeInMillis(now.getTimeInMillis()+1000*60*60*24);
+      }
+
+
+      return preselected;
+   }
+
+   private List<Date> getPreselectedDates(){
+      return getPreselectedDates(days2Highlight, minDate, maxDate);
+   }
+
 
 
 }

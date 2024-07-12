@@ -47,8 +47,6 @@ import com.google.android.material.textfield.TextInputEditText;
 //import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
 import com.squareup.timessquare.CalendarPickerView;
 
-import org.w3c.dom.Text;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -506,7 +504,7 @@ public boolean isInThePast(long alarmInMillis){
         if (frToggleButton.isChecked())  mask|=FRIDAY;
         if (saToggleButton.isChecked())  mask|=SATURDAY;
 
-        return mask;
+       return mask;
     }
 
 
@@ -574,14 +572,37 @@ public boolean isInThePast(long alarmInMillis){
        return gson.toJson(datesStr);
     }
 
-    public void ShowExcludeDatePickerOnClick(View view) {
-       Log.d("THE_TIME_MACHINE", "ShowExcludeDatePickerOnClick()");
+    private Date computeMaxDate() {
+       // Define the boundary dates
+       Calendar c = Calendar.getInstance();
+       c.add(Calendar.YEAR, 2); // 2 years
+       return c.getTime();
+    }
 
-       CalendarFragment newFragment = new CalendarFragment();
-       newFragment.setSelectionMode(CalendarPickerView.SelectionMode.MULTIPLE);
+   private Date computeMinDate() {
+      // Define the boundary dates
+      Calendar c = Calendar.getInstance();
+      c.add(Calendar.MONTH, -2); // 2 years
+      return c.getTime();
+   }
+
+    public void ShowExcludeDatePickerOnClick(View view) {
+
+       // Get the dates that are an exception
        selectedDates = ExceptionDates2Date(setUpAlarmValues.getExceptionDates().getValue());
-       newFragment.setSelectedDates(selectedDates);
-       newFragment.show(getChildFragmentManager(), "dialog");
+
+       // Get the Calendar Dialog Fragment
+       CalendarFragment calendarFragment = new CalendarFragment();
+
+       // Set Calendar parameters
+       calendarFragment.setSelectionMode(CalendarPickerView.SelectionMode.MULTIPLE);
+       calendarFragment.setSelectedDates(selectedDates);
+       calendarFragment.setHighlightedDays(getDaysValues());
+       calendarFragment.setMaxDate(computeMaxDate());
+       calendarFragment.setMinDate(computeMinDate());
+
+       // Show dialog
+       calendarFragment.show(getChildFragmentManager(), "dialog");
     }
 
    @Override

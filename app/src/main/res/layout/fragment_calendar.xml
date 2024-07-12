@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/fullscreenBackgroundColor"
     android:theme="@style/ThemeOverlay.TheTimeMachine.FullscreenContainer"
     tools:context=".UI.CalendarFragment">
@@ -18,6 +19,6 @@
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        app:tsquare_dayBackground="@drawable/calendar_bg_selector"  />
 
 </FrameLayout>
