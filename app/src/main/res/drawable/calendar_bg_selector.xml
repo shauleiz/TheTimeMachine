@@ -7,7 +7,7 @@
     <color android:color="@color/calendar_selected_range_bg"/>
   </item>
   <item android:state_selected="true" app:tsquare_state_highlighted="true">
-    <color android:color="@android:color/holo_red_dark"/>
+    <color android:color="?attr/colorPrimarySurface"/>
   </item>
   <item android:state_selected="true">
     <color android:color="@color/calendar_selected_day_bg"/>
@@ -19,12 +19,12 @@
     <color android:color="@color/calendar_inactive_month_bg"/>
   </item>
   <item app:tsquare_state_highlighted="true">
-    <color android:color="@color/calendar_highlighted_day_bg"/>
+    <color android:color="?attr/colorSecondaryFixedDim"/>
   </item>
   <item app:tsquare_state_today="true">
     <color android:color="@color/calendar_text_active"/>
   </item>
   <item>
-    <color android:color="@color/calendar_active_month_bg"/>
+    <color android:color="?attr/colorSurfaceContainerHigh"/>
   </item>
 </selector>

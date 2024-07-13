@@ -101,9 +101,6 @@ public class CalendarFragment extends DialogFragment {
 
    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-
-
-
       // Get the layout inflater.
       LayoutInflater inflater = requireActivity().getLayoutInflater();
 
@@ -145,6 +142,8 @@ public class CalendarFragment extends DialogFragment {
          list = savedInstanceState.getIntegerArrayList(KEY_LIST_DATES);
          setSelectedDatesAsInt(list);
       }
+
+      Log.d("THE_TIME_MACHINE", "onCreateDialog():  dateList = " + selectedDates);
 
       // Get the Date Picker
       datePicker = (CalendarPickerView) viewFragmentCalendar.findViewById(R.id.calendar_view);
@@ -323,7 +322,7 @@ public class CalendarFragment extends DialogFragment {
 
       for (int date: dates) {
          d = date % 100;
-         m = (date / 100) % 10 - 1;
+         m = (date / 100) % 100 - 1;
          y = (date / 10000);
          cal.clear();
          cal.set(y, m, d);
@@ -412,14 +411,14 @@ public class CalendarFragment extends DialogFragment {
       Calendar now = Calendar.getInstance();
       now.setTime(min);
 
-      Log.d("THE_TIME_MACHINE", "getPreselectedDates():  weekdays = " + weekdays  );
+     // Log.d("THE_TIME_MACHINE", "getPreselectedDates():  weekdays = " + weekdays  );
 
 
       while (now.getTimeInMillis() <= (maxMillies-1000*60*60*24)) {
          mask = 1;
          int today = now.get(Calendar.DAY_OF_WEEK)-1;
          mask = mask<<today;
-         Log.d("THE_TIME_MACHINE", "getPreselectedDates():  today = " + today + " mask = " + mask  );
+         //Log.d("THE_TIME_MACHINE", "getPreselectedDates():  today = " + today + " mask = " + mask  );
          if ((weekdays & mask) != 0) {
             preselected.add(new Date(now.getTimeInMillis()));
          }

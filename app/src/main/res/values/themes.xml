@@ -23,4 +23,12 @@
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowBackground">@null</item>
     </style>
+
+    <style name="CalendarTheme">
+
+        <item name="textDefault">@color/custom_background_today</item>
+        <item name="textDisabled">@color/custom_text_inactive</item>
+        <item name="textSelected">@color/custom_text_selected</item>
+    </style>
+
 </resources>

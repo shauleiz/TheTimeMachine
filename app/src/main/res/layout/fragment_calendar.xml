@@ -19,6 +19,12 @@
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:tsquare_dayBackground="@drawable/calendar_bg_selector"  />
+        android:theme="@style/Preference"
+        app:tsquare_dayBackground="@drawable/custom_calendar_bg_selector_top"
+        app:tsquare_dayTextColor="@color/custom_calendar_text_selector"
+        app:tsquare_displayDayNamesHeaderRow="true"
+        app:tsquare_dividerColor="@color/transparent"
+        app:tsquare_headerTextColor="@color/custom_header_text"
+        app:tsquare_titleTextStyle="@style/CustomCalendarTitle" />
 
 </FrameLayout>

@@ -528,18 +528,18 @@ public boolean isInThePast(long alarmInMillis){
 
        // Convert each string to Date
        int d,m,y, yyyymmdd;
-       Date date;
        Calendar cal = Calendar.getInstance();
        for (String dateStr: dateListStr) {
           yyyymmdd = (Integer.valueOf(dateStr)).intValue();
           d = yyyymmdd%100;
-          m = (yyyymmdd/100)%10 -1;
+          m = (yyyymmdd/100)%100 -1;
           y = (yyyymmdd/10000);
           cal.clear();
           cal.set(y,m,d);
-          date = cal.getTime();
-          dateList.add(date);
+          dateList.add(cal.getTime());
        }
+
+       Log.d("THE_TIME_MACHINE", "ExceptionDates2Date():  dateList = " + dateList);
        return dateList;
     }
 
@@ -590,6 +590,7 @@ public boolean isInThePast(long alarmInMillis){
 
        // Get the dates that are an exception
        selectedDates = ExceptionDates2Date(setUpAlarmValues.getExceptionDates().getValue());
+
 
        // Get the Calendar Dialog Fragment
        CalendarFragment calendarFragment = new CalendarFragment();

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item app:tsquare_state_today="true" >
+        <layer-list>
+            <item android:drawable="@drawable/custom_calendar_bg_selector" />
+            <item android:drawable="@drawable/bg_circle_today" />
+        </layer-list>
+    </item>
+    <item android:drawable="@drawable/custom_calendar_bg_selector"> </item>
+</selector>

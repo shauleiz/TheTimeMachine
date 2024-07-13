@@ -6,4 +6,7 @@
         <attr name="blue_text" format="reference|color" />
         <attr name="primary_text" format="reference|color" />
     </declare-styleable>
+    <attr name="textDefault" format="color" />
+    <attr name="textDisabled" format="color" />
+    <attr name="textSelected" format="color" />
 </resources>

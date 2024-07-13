@@ -15,4 +15,11 @@
     <color name="faded_violet_1">#40E5C7EA</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="dark_gray">#ff0F0F0F</color>
+    <color name="custom_header_text">#85B100</color>
+    <color name="custom_selected">@color/calendar_selected_day_bg</color>
+    <color name="custom_background">@color/calendar_bg</color>
+    <color name="custom_background_today">#FF9105</color>
+    <color name="custom_background_disabled">@color/calendar_inactive_month_bg</color>
+    <color name="custom_text_selected">#FFFFFFFF</color>
+    <color name="custom_text_inactive">#7f778088</color>
 </resources>
