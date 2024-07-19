@@ -7,10 +7,16 @@ import androidx.fragment.app.DialogFragment;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.product.thetimemachine.R;
 //import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
@@ -20,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 public class CalendarFragment extends DialogFragment {
@@ -130,7 +137,6 @@ public class CalendarFragment extends DialogFragment {
 
 
 
-
       ArrayList<Integer> list = new ArrayList<>();
 
       // Get the Saved State
@@ -155,6 +161,13 @@ public class CalendarFragment extends DialogFragment {
       // Highlight the weekdays with alarms
       .withHighlightedDates(getPreselectedDates())
       .withSelectedDates(selectedDates);
+
+      dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+         @Override public void onShow(DialogInterface dialogInterface) {
+            datePicker.fixDialogDimens();
+         }
+      });
+
 
       return dialog;
    }
@@ -238,6 +251,14 @@ public class CalendarFragment extends DialogFragment {
       return dialog;
    }
 */
+
+   @Override
+   public void onResume() {
+      super.onResume();
+      Log.d("THE_TIME_MACHINE", "onResume() " );
+      modifyDialogSize();
+   }
+
    @Override
    public void onSaveInstanceState(Bundle savedInstanceState) {
       super.onSaveInstanceState(savedInstanceState);
@@ -434,5 +455,25 @@ public class CalendarFragment extends DialogFragment {
    }
 
 
+   private void modifyDialogSize(){
+      DisplayMetrics displayMetrics = new DisplayMetrics();
+      assert getActivity() != null;
+      Window window = Objects.requireNonNull(getDialog()).getWindow();
+      if (window == null)
+         return;
+
+
+      Point p = new Point();
+      window.getWindowManager().getDefaultDisplay().getSize(p);
+      int h = p.y;
+      int w = p.x;
+      Log.d("THE_TIME_MACHINE", "dialogMetricsFix():  " + p.toString());
+
+      if (w/h > 1.5)
+         window.setLayout((int) (h * 0.7), WindowManager.LayoutParams.WRAP_CONTENT);
+      else
+         window.setLayout((int) (w * 0.9), WindowManager.LayoutParams.WRAP_CONTENT);
+      window.setGravity(Gravity.CENTER);
+   }
 
 }
