@@ -469,7 +469,7 @@ public class CalendarFragment extends DialogFragment {
       int w = p.x;
       Log.d("THE_TIME_MACHINE", "dialogMetricsFix():  " + p.toString());
 
-      if (w/h > 1.5)
+      if (w/h > 1.5 || h<800)
          window.setLayout((int) (h * 0.7), WindowManager.LayoutParams.WRAP_CONTENT);
       else
          window.setLayout((int) (w * 0.9), WindowManager.LayoutParams.WRAP_CONTENT);
