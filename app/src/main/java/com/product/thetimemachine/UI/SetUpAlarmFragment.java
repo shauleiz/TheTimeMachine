@@ -11,6 +11,7 @@ import static com.product.thetimemachine.UI.SettingsFragment.pref_first_day_of_w
 import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.text.Editable;
@@ -70,8 +71,16 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
     private AlarmViewModel alarmViewModel;
     private MainActivity parent;
     private Bundle initParams;
-
+    private DatePickerDialog datePickerDialog;
     private List<Date> selectedDates;
+    private boolean keepDatePickerDialog;
+
+   final private String KEY_KEEPDATEPICKER_DAY = "key_keep_date_picker_day";
+   final private String KEY_DATEPICKER_DAY = "key_date_picker_day";
+   final private String KEY_DATEPICKER_MONTH = "key_date_picker_month";
+   final private String KEY_DATEPICKER_YEAR = "key_date_picker_year";
+
+
 
 
     // Default constructor
@@ -111,7 +120,16 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
         super.onStop();
     }
 
-    @Override
+   @Override
+   public void onPause() {
+      super.onPause();
+      if(datePickerDialog!=null) {
+         keepDatePickerDialog = true;
+         datePickerDialog.dismiss();
+      }
+   }
+
+   @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initParams = getArguments();
@@ -231,6 +249,10 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
 
         selectedDates = ExceptionDates2Date(setUpAlarmValues.getExceptionDates().getValue());
 
+        // Restore dialog date picker dialog box
+       if (savedInstanceState != null && savedInstanceState.getBoolean(KEY_KEEPDATEPICKER_DAY,false) != false)
+          restoreDatePicker(savedInstanceState);
+
         // Listener to the Repeating button (set the weekdays button visibility)
         repeating.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
             @Override
@@ -303,8 +325,19 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
 
     }
 
+   @Override
+   public void onSaveInstanceState(@NonNull Bundle outState) {
+      super.onSaveInstanceState(outState);
+      if (datePickerDialog != null) {
+         outState.putBoolean(KEY_KEEPDATEPICKER_DAY,keepDatePickerDialog);
+         outState.putInt(KEY_DATEPICKER_DAY,datePickerDialog.getDatePicker().getDayOfMonth());
+         outState.putInt(KEY_DATEPICKER_MONTH,datePickerDialog.getDatePicker().getMonth());
+         outState.putInt(KEY_DATEPICKER_YEAR,datePickerDialog.getDatePicker().getYear());
+      }
+   }
 
-    // Set the row of weekday buttons visible/gone
+
+   // Set the row of weekday buttons visible/gone
     private void setDaysVisible(boolean visible, View view){
 
         String firstDay = pref_first_day_of_week();
@@ -640,7 +673,6 @@ public boolean isInThePast(long alarmInMillis){
         int d, m, y;
 
         Log.d("THE_TIME_MACHINE", "ShowDatePickerOnClick");
-       DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext());
 
         // Get the date stored in the VM.
         d = setUpAlarmValues.getDayOfMonth().getValue()==null ? 0: setUpAlarmValues.getDayOfMonth().getValue();
@@ -656,15 +688,41 @@ public boolean isInThePast(long alarmInMillis){
             y = calendar.get(Calendar.YEAR);
         }
 
-        // Set as cancelable and set a listener that will be called on OK
-        datePickerDialog.setCancelable(true);
-        datePickerDialog.setOnDateSetListener(this::DateWidgetListener);
-
-        // Set the date and show the widget
-        datePickerDialog.updateDate(y, m, d);
-        datePickerDialog.show();
-
+       invokeDatePickerDialog(d, m, y);
     }
+
+    private void restoreDatePicker(Bundle b){
+
+       int d = b.getInt(KEY_DATEPICKER_DAY,0);
+       int m = b.getInt(KEY_DATEPICKER_MONTH, 0);
+       int y = b.getInt(KEY_DATEPICKER_YEAR,0);
+
+       if (d==0 || m==0 || y==0){
+          Log.e("THE_TIME_MACHINE", "restoreDatePicker() bad values: d/y/m: " +d+"/"+m+"/"+y);
+          return;
+       }
+       invokeDatePickerDialog(d, m, y);
+    }
+
+   private void invokeDatePickerDialog(int d, int m, int y) {
+      datePickerDialog = new DatePickerDialog(requireContext());
+
+      // Set as cancelable and set a listener that will be called on OK
+      datePickerDialog.setCancelable(true);
+      datePickerDialog.setOnDateSetListener(this::DateWidgetListener);
+      datePickerDialog.setOnDismissListener(this::DateWidgetDismissListener);
+
+      // Set the date and show the widget
+      datePickerDialog.updateDate(y, m, d);
+      datePickerDialog.show();
+   }
+
+   private void DateWidgetDismissListener(DialogInterface dialogInterface) {
+      Log.d("THE_TIME_MACHINE", "DateWidgetDismissListener");
+      datePickerDialog= null;
+   }
+
+
 
     // Called when user exits the Date Picker with 'OK'
     // Gets the selected date (
@@ -717,7 +775,6 @@ public boolean isInThePast(long alarmInMillis){
         }
 
         targetAlarmText.setText(displayTargetAlarm());
-
     }
 
     // OK Button clicked
