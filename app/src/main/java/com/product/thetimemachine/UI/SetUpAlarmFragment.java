@@ -62,6 +62,8 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
    //private SwitchCompat repeating;
     private MaterialButtonToggleGroup repeating;
 
+   ImageButton callDatePickerButtonX, callDatePickerButton;
+
    private ToggleButton suToggleButton, moToggleButton, tuToggleButton,
           weToggleButton, thToggleButton,frToggleButton, saToggleButton;
     //private EditText label;
@@ -244,31 +246,39 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
         else
             repeating.check(R.id.repeate_btn);
         setDaysVisible(!oneOff, view);
-        setDisplayAreaVisible(oneOff, view);
+        setDisplayAreaVisible(oneOff);
         setCalendarButton(oneOff, view);
 
         selectedDates = ExceptionDates2Date(setUpAlarmValues.getExceptionDates().getValue());
 
         // Restore dialog date picker dialog box
-       if (savedInstanceState != null && savedInstanceState.getBoolean(KEY_KEEPDATEPICKER_DAY,false) != false)
+       if (savedInstanceState != null && savedInstanceState.getBoolean(KEY_KEEPDATEPICKER_DAY, false))
           restoreDatePicker(savedInstanceState);
 
+       // Date picker button (weekly) clickable only if one day at least is selected
+       setDatePickerButtonXClickable();
+
         // Listener to the Repeating button (set the weekdays button visibility)
-        repeating.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
-            @Override
-            public void onButtonChecked(MaterialButtonToggleGroup materialButtonToggleGroup, int id, boolean checked) {
-                if (id == R.id.oneoff_btn) {
-                    setDaysVisible(!checked, view);
-                    setDisplayAreaVisible(checked,view);
-                   setCalendarButton(checked, view);
-                }
-                else {
-                    setDaysVisible(checked, view);
-                    setDisplayAreaVisible(!checked,view);
-                   setCalendarButton(!checked, view);
-                }
+        repeating.addOnButtonCheckedListener((materialButtonToggleGroup, id, checked) -> {
+            if (id == R.id.oneoff_btn) {
+                setDaysVisible(!checked, view);
+                setDisplayAreaVisible(checked);
+               setCalendarButton(checked, view);
+            }
+            else {
+                setDaysVisible(checked, view);
+                setDisplayAreaVisible(!checked);
+               setCalendarButton(!checked, view);
             }
         });
+
+       suToggleButton.setOnCheckedChangeListener((compoundButton, b) -> setDatePickerButtonXClickable());
+       moToggleButton.setOnCheckedChangeListener((compoundButton, b) -> setDatePickerButtonXClickable());
+       tuToggleButton.setOnCheckedChangeListener((compoundButton, b) -> setDatePickerButtonXClickable());
+       weToggleButton.setOnCheckedChangeListener((compoundButton, b) -> setDatePickerButtonXClickable());
+       thToggleButton.setOnCheckedChangeListener((compoundButton, b) -> setDatePickerButtonXClickable());
+       frToggleButton.setOnCheckedChangeListener((compoundButton, b) -> setDatePickerButtonXClickable());
+       saToggleButton.setOnCheckedChangeListener((compoundButton, b) -> setDatePickerButtonXClickable());
 
         // Observers to change in the setup values:
         setUpAlarmValues.getHour().observe(getViewLifecycleOwner(), new Observer<Integer>() {
@@ -288,8 +298,6 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
                 }
             }
         });
-
-
 
         setUpAlarmValues.getWeekDays().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
@@ -311,8 +319,6 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
                 }
             }
         });
-
-
 
         setUpAlarmValues.getLabel().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -337,6 +343,25 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
    }
 
 
+   // Set the Date Picker (in weekly alarm mode) to clickable (on/off)
+   // Off: If none of the weekdays selected
+   // On:  If at least one of the weekdays selected
+   private void setDatePickerButtonXClickable(){
+      float alpha;
+      boolean b =
+            suToggleButton.isChecked() || moToggleButton.isChecked() ||
+                  tuToggleButton.isChecked() || weToggleButton.isChecked() ||
+                  thToggleButton.isChecked() || frToggleButton.isChecked() ||
+                  saToggleButton.isChecked();
+      if (b)
+         alpha=1;
+      else
+         alpha = 0.5f;
+      callDatePickerButtonX.setAlpha(alpha);
+      callDatePickerButtonX.setEnabled(b);
+   }
+
+   // Weekly alarm mode:
    // Set the row of weekday buttons visible/gone
     private void setDaysVisible(boolean visible, View view){
 
@@ -359,9 +384,9 @@ public class SetUpAlarmFragment extends Fragment implements CalendarFragment.Cal
 
     private void setCalendarButton(boolean oneOff, View view){
        // This button calls the Date Picker
-       ImageButton callDatePickerButton = view.findViewById(R.id.ShowDatePicker_Btn);
-       ImageButton callDatePickerButtonX = view.findViewById(R.id.ShowDatePicker_Btn_X);
-       if (oneOff == true) {
+       callDatePickerButton = view.findViewById(R.id.ShowDatePicker_Btn);
+       callDatePickerButtonX = view.findViewById(R.id.ShowDatePicker_Btn_X);
+       if (oneOff) {
           callDatePickerButton.setVisibility(View.VISIBLE);
           callDatePickerButtonX.setVisibility(View.INVISIBLE);
           callDatePickerButton.setOnClickListener(this::ShowDatePickerOnClick);
@@ -416,7 +441,7 @@ public boolean isInThePast(long alarmInMillis){
 }
 
     // Set Display Area visible/gone
-    private void setDisplayAreaVisible(boolean visible, View view){
+    private void setDisplayAreaVisible(boolean visible){
 
         //TextView textView = view.findViewById(R.id.target_time_date);
         if (visible) {
@@ -430,8 +455,8 @@ public boolean isInThePast(long alarmInMillis){
     @NonNull
     private String displayTargetAlarm(){
         String out = "";
-        long nowInMillis, targetInMillis;
-        int dd, mm, yy;
+        long nowInMillis;
+       int dd, mm, yy;
 
         // Get time/date values
         int m = timePicker.getMinute();
@@ -481,6 +506,11 @@ public boolean isInThePast(long alarmInMillis){
         return out;
     }
 
+
+    private void setDatePickerButtonXActive(int weekDays){
+       callDatePickerButtonX.setActivated(weekDays != 0);
+    }
+
     // Set/reset the individual day-buttons
     private void setDaysValues(int weekDays, View view){
         boolean isSunday = (weekDays&SUNDAY) >0;
@@ -523,9 +553,12 @@ public boolean isInThePast(long alarmInMillis){
             saToggleButton = view.findViewById(R.id.SaturdayButton_2);
             saToggleButton.setChecked(isSaturday);
         }
+
+
     }
 
-    private int getDaysValues(){
+
+   private int getDaysValues(){
 
         int mask = 0;
 
@@ -563,7 +596,7 @@ public boolean isInThePast(long alarmInMillis){
        int d,m,y, yyyymmdd;
        Calendar cal = Calendar.getInstance();
        for (String dateStr: dateListStr) {
-          yyyymmdd = (Integer.valueOf(dateStr)).intValue();
+          yyyymmdd = Integer.valueOf(dateStr);
           d = yyyymmdd%100;
           m = (yyyymmdd/100)%100 -1;
           y = (yyyymmdd/10000);

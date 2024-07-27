@@ -25,6 +25,6 @@
     <color android:color="@color/calendar_text_active"/>
   </item>
   <item>
-    <color android:color="?attr/colorSurfaceContainerHigh"/>
+    <color android:color="@color/light_blue_A400"/>
   </item>
 </selector>

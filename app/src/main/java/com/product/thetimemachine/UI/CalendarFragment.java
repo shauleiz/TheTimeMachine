@@ -8,7 +8,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -22,6 +21,8 @@ import com.product.thetimemachine.R;
 //import com.wisnu.datetimerangepickerandroid.CalendarPickerView;
 import com.squareup.timessquare.CalendarPickerView;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -119,6 +120,7 @@ public class CalendarFragment extends DialogFragment {
       Dialog dialog = new AlertDialog.Builder(getActivity())
       .setTitle(R.string.dates_to_exclude_calendar_title)
       .setView(viewFragmentCalendar)
+
             // Add action buttons
             .setPositiveButton(R.string.ok_calendar, new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
@@ -137,7 +139,7 @@ public class CalendarFragment extends DialogFragment {
 
 
 
-      ArrayList<Integer> list = new ArrayList<>();
+      ArrayList<Integer> list;
 
       // Get the Saved State
       if (savedInstanceState !=null) {
@@ -153,6 +155,16 @@ public class CalendarFragment extends DialogFragment {
 
       // Get the Date Picker
       datePicker = (CalendarPickerView) viewFragmentCalendar.findViewById(R.id.calendar_view);
+
+      // Intercepts click. Prevents selection/unselection of dates that are not in the
+      // right weekdays or that are in the past
+      datePicker.setCellClickInterceptor(new CalendarPickerView.CellClickInterceptor() {
+         @Override
+         public boolean onCellClicked(Date date) {
+            // Returns TRUE (intercept) is cell is highlighted or in the past
+            return (isHighlighted(date) || isInThePast(date));
+         }
+      });
 
       // Initialize Date picker to support a year from today with today selected
       datePicker.init(minDate, maxDate)
@@ -170,6 +182,36 @@ public class CalendarFragment extends DialogFragment {
 
 
       return dialog;
+   }
+
+   private boolean isHighlighted(Date date) {
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(date);
+      int theDay = calendar.get(Calendar.DAY_OF_WEEK)-1;
+      int mask = 1;
+      mask = mask<<theDay;
+      return ((days2Highlight & mask) == 0);
+   }
+
+   private boolean isInThePast(Date date) {
+      Calendar calendar = Calendar.getInstance();
+      calendar.set(Calendar.HOUR_OF_DAY,0);
+      calendar.set(Calendar.MINUTE,0);
+      calendar.set(Calendar.SECOND,0);
+      calendar.set(Calendar.MILLISECOND,0);
+      Date midnight = new Date();
+      midnight.setTime(calendar.getTimeInMillis());
+      return (midnight.after(date));
+   }
+
+   private boolean isSameDay(Date date1, Date date2) {
+      LocalDate localDate1 = date1.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
+      LocalDate localDate2 = date2.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
+      return localDate1.isEqual(localDate2);
    }
 
    //-------------------------

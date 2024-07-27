@@ -16,10 +16,16 @@
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
     <com.squareup.timessquare.CalendarPickerView
+        android:clipToPadding="false"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
+        android:scrollbarStyle="outsideOverlay"
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:theme="@style/Preference"
+        android:background="?attr/colorSurfaceContainer"
         app:tsquare_dayBackground="@drawable/custom_calendar_bg_selector_top"
         app:tsquare_dayTextColor="@color/custom_calendar_text_selector"
         app:tsquare_displayDayNamesHeaderRow="true"

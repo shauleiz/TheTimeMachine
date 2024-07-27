@@ -13,7 +13,7 @@
     <item app:tsquare_state_highlighted="true" android:state_selected="true">
         <layer-list>
             <item>
-                <color   android:color="@color/faded_violet_1"/>
+                <color   android:color="?attr/colorSurfaceContainerLow"/>
             </item>
 <!---->
             <item>
@@ -24,11 +24,11 @@
         </layer-list>
     </item>
     <item app:tsquare_state_highlighted="true">
-        <color  android:color="@color/faded_violet_1"/>
+        <color  android:color="?attr/colorSurfaceContainerHighest"/>
     </item>
     <item>
         <shape android:shape="rectangle">
-            <solid  android:color="@color/custom_background" />
+            <solid  android:color="?attr/colorSurfaceContainer" />
         </shape>
     </item>
 </selector>
