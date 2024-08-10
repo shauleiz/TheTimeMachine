@@ -290,72 +290,92 @@ public class AlarmService  extends Service {
       vibrator.vibrate(vibrationEffect);
    }
 
-   private static VibrationEffect getVibrationEffect(String effect, boolean hasAmplitudeControl) {
-      long[] timings;
-      int[] amplitudes;
-      int repeatIndex ;
+   public static VibrationEffect getVibrationEffect(String effect, boolean hasAmplitudeControl) {
+      final long[] timings;
+      final long[] timingsNoAmp;
+      final int[] amplitudes;
+      final int repeatIndex ;
+      final int repeatIndexNoAmp ;
 
       switch (effect) {
          case "ssb":  // Single Short Beat
             timings = new long[]{50, 50, 50, 50, 50, 100};
+            timingsNoAmp = new long[] {0, 350};
             amplitudes = new int[]{33, 51, 75, 113, 170, 255};
             repeatIndex = -1; // Do not repeat
-
+            repeatIndexNoAmp = -1; // Do not repeat
             break;
+
          case "tsb":  // Three Short Beats
             timings = new long[]{
-                  50, 50, 50, 100, 50, 50, 400,
-                  50, 50, 50, 100, 50, 50, 400,
-                  50, 50, 50, 100, 50, 50, 400
+                    50, 50, 50, 100, 50, 50, 400,
+                    50, 50, 50, 100, 50, 50, 400,
+                    50, 50, 50, 100, 50, 50, 400
             };
+            timingsNoAmp = new long[] {0, 350,400, 350, 400, 350};
             amplitudes = new int[]{
-                  33, 113, 170, 255, 170, 113, 0,
-                  33, 113, 170, 255, 170, 113, 0,
-                  33, 113, 170, 255, 170, 113, 0
+                    33, 113, 170, 255, 170, 113, 0,
+                    33, 113, 170, 255, 170, 113, 0,
+                    33, 113, 170, 255, 170, 113, 0
             };
             repeatIndex = -1; // Do not repeat
-
+            repeatIndexNoAmp = -1; // Do not repeat
             break;
+
          case "slb":  // Single Long  Beat
             timings = new long[]{50, 50, 50, 400, 50, 50, 400};
             amplitudes = new int[]{33, 113, 170, 255, 170, 113, 0};
+            timingsNoAmp = new long[] {0, 650, 400};
             repeatIndex = -1; // Do not repeat
-
+            repeatIndexNoAmp = -1; // Do not repeat
             break;
+
          case "rsb":  // Repeating Short Beats
             timings = new long[]{
-                  50, 50, 50, 100, 50, 50, 400,
-                  50, 50, 50, 100, 50, 50, 400,
-                  50, 50, 50, 100, 50, 50, 400
+                    50, 50, 50, 100, 50, 50, 400,
+                    50, 50, 50, 100, 50, 50, 400,
+                    50, 50, 50, 100, 50, 50, 400
             };
+            timingsNoAmp = new long[] {0, 350, 400};
             amplitudes = new int[]{
-                  33, 113, 170, 255, 170, 113, 0,
-                  33, 113, 170, 255, 170, 113, 0,
-                  33, 113, 170, 255, 170, 113, 0
+                    33, 113, 170, 255, 170, 113, 0,
+                    33, 113, 170, 255, 170, 113, 0,
+                    33, 113, 170, 255, 170, 113, 0
             };
             repeatIndex = 0; // repeat
-
+            repeatIndexNoAmp = 0; // repeat
             break;
+
          case "rlb":  // Repeating Long  Beats
             timings = new long[]{50, 50, 50, 400, 50, 50, 600};
+            timingsNoAmp = new long[] {0, 650, 600};
             amplitudes = new int[]{33, 113, 170, 255, 170, 113, 0};
             repeatIndex = 0; // repeat
-
+            repeatIndexNoAmp = 0; // repeat
             break;
+
          case "cont":  // Continuous buzz
-            timings = new long[]{50, 50, 50, 50, 50, 100};
+            timings = new   long[]{50, 50, 50,  50,  50, 100};
+            timingsNoAmp = new long[] {0, 3000};
             amplitudes = new int[]{33, 51, 75, 113, 170, 255};
             repeatIndex = 5; // Stay at max
+            repeatIndexNoAmp = 0; // Stay at max
 
             break;
          default:  // None
             timings = new long[]{100};
+            timingsNoAmp = new long[] {100, 0};
             amplitudes = new int[]{0};
             repeatIndex = -1;
+            repeatIndexNoAmp = -1; // Do not repeat
+
             break;
       }
 
-      return VibrationEffect.createWaveform(timings, amplitudes, repeatIndex);
+      if (hasAmplitudeControl)
+         return VibrationEffect.createWaveform(timings, amplitudes, repeatIndex);
+      else
+         return VibrationEffect.createWaveform(timingsNoAmp, repeatIndexNoAmp);
 
    }
 
