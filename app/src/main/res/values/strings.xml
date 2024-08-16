@@ -59,17 +59,12 @@
     <string name="key_gradual_volume">KEY_GRADUAL_VOLUME</string>
     <string name="key_time_format">KEY_TIME_FORMAT</string>
     <string name="ring_duration">Ring for:</string>
-    <string name="ring_duration_def">30Seconds</string>
-    <string name="clock_format_def">h24</string>
-    <string name="first_day_week_def">Su</string>
-    <string name="ring_repeat_def">2T</string>
     <string name="first_day_of_week">First Day of Week</string>
     <string name="times_to_keep_on_ringing">If not stopped, number of times to keep on ringing</string>
     <string name="snooze_for">Snooze for:</string>
     <string name="times_5t">5T</string>
     <string name="one_minute">60Seconds</string>
     <string name="none_vibration">none</string>
-    <string name="rooster_alarm">rooster</string>
     <string name="by_time_set">by_time_set</string>
     <string name="duplicate_alarm_title">"Duplicate Alarm"</string>
     <string name="duplicate_alarm_message">"Only one alarm can be scheduled to a specified time"</string>
@@ -117,7 +112,17 @@
     <string name="minute_singular">"1 minute "</string>
     <string name="from_now">from now</string>
 
+    <!--     Preferences:  Default Values -->
+    <string name="ring_duration_def">30Seconds</string>
+    <string name="clock_format_def">h24</string>
+    <string name="first_day_week_def">Su</string>
+    <string name="ring_repeat_def">5T</string>
+    <string name="snooze_duration_def">300Seconds</string>
+    <string name="vibration_pattern_def">rsb</string>
+    <string name="alarm_sound_def">rooster</string>
+    <string name="gradual_volume_def">30Seconds</string>
 
+    <!-- Preferences: Menu -->
     <array name="clock_12_24_entries">
         <item>12h Clock</item>
         <item>24h Clock</item>

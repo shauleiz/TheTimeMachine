@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /*
  *      Alarm Clock ViewModel Class
@@ -223,9 +224,14 @@ public class AlarmViewModel extends AndroidViewModel {
          exceptionDates.setValue("");
 
          // Preferences
-         // Copy default preferences to this item's preferences
          Context context = TheTimeMachineApp.appContext;
+
+         // Read the preferences from the XML file to set the default values
+         PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
+
+         // Copy default preferences to this item's preferences
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
 
          ringDuration.setValue(preferences.getString(context.getString(R.string.key_ring_duration), ""));
          ringRepeat.setValue(preferences.getString(context.getString(R.string.key_ring_repeat), ""));
