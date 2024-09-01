@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -261,6 +262,10 @@ public class StopSnoozeActivity extends AppCompatActivity {
    @SuppressLint("ClickableViewAccessibility")
    @Override
    protected void onCreate(Bundle savedInstanceState) {
+
+      // Allow this activity on a locked screen
+      allowOnLockScreen();
+
       super.onCreate(savedInstanceState);
 
       binding = ActivityStopSnoozeBinding.inflate(getLayoutInflater());
@@ -272,8 +277,6 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
       footer = findViewById(R.id.footnote);
 
-      // Allow this activity on a locked screen
-      allowOnLockScreen();
 
       // Set the default volume control as ALARM volume control
       setVolumeControlStream(AudioManager.STREAM_ALARM);
@@ -310,6 +313,8 @@ public class StopSnoozeActivity extends AppCompatActivity {
       else
          dateFormat = new SimpleDateFormat("h:mm a",Locale.US);
 
+      // Make sure Screen is on
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
    }
 
 
@@ -428,10 +433,10 @@ public class StopSnoozeActivity extends AppCompatActivity {
    private void allowOnLockScreen() {
       setShowWhenLocked(true);
       setTurnScreenOn(true);
-      if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
+      //if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
          KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
          keyguardManager.requestDismissKeyguard(this, null); // API 28 Only
-      }
+      //}
    }
 
    private void DisplayScreenText()

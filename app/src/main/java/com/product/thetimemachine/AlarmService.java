@@ -3,6 +3,7 @@ package com.product.thetimemachine;
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
 import static com.product.thetimemachine.Application.TheTimeMachineApp.CHANNEL_ID;
 import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
+import static com.product.thetimemachine.Data.AlarmItem.K_CTIME;
 import static com.product.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_SnoozeDuration;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_alarm_sound;
@@ -96,14 +97,16 @@ public class AlarmService  extends Service {
       else
          alarmText = String.format(Locale.ENGLISH,"%s", dateFormat.format(new Date()));
 
+      // Use creation time as ID
+      int id = (int)(inBundle.getLong(K_CTIME, 1)%10000);
 
       // Display Notification for the 1st time
       builder.setContentText(alarmText).build();
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-         startForeground( 1, builder.build(), FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED); // TODO: Replace '1' with an ID
+         startForeground( id, builder.build(), FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
       }
       else
-         startForeground(1,builder.build()); // TODO: Replace '1' with an ID
+         startForeground(id,builder.build());
 
 
       // Definition of the receiver that gets an ACTION_TIME_TICK every minute
@@ -123,10 +126,10 @@ public class AlarmService  extends Service {
 
             // Display Notification
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-               startForeground( 1, builder.build(), FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED); // TODO: Replace '1' with an ID
+               startForeground( id+1, builder.build(), FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED); // TODO: Replace '1' with an ID
             }
             else
-               startForeground(1,builder.build()); // TODO: Replace '1' with an ID
+               startForeground(id+1,builder.build()); // TODO: Replace '1' with an ID
          }
       };
 
