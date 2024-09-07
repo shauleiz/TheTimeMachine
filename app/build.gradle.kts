@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
-    kotlin("kapt") version "1.9.23"
+    kotlin("kapt")
     id ("androidx.room") version "2.6.1"
+    id("org.jetbrains.kotlin.android")
 }
 
 room {
@@ -16,8 +17,8 @@ android {
         applicationId = "com.product.thetimemachine"
         minSdk = 27
         targetSdk = 34
-        versionCode = 10100
-        versionName = "1.1.0"
+        versionCode = 20000
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -49,7 +50,18 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    kotlinOptions {
+        jvmTarget = "18"
+    }
 
+    buildFeatures {
+        compose = true
+        viewBinding = true
+    }
+
+    composeOptions {
+
+    }
 }
 
 dependencies {
@@ -63,6 +75,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-service:2.7.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("com.google.firebase:firebase-crashlytics-buildtools:3.0.2")
+    implementation("androidx.compose.ui:ui-android:1.7.0")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.compose.material3:material3-android:1.3.0")
 
 
     testImplementation("junit:junit:4.13.2")

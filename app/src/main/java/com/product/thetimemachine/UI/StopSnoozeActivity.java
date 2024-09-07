@@ -25,11 +25,13 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.widget.TextView;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.compose.ui.platform.ComposeView;
 
 import com.product.thetimemachine.AlarmReceiver;
 import com.product.thetimemachine.AlarmService;
@@ -255,13 +257,18 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
 
 
-      return view;
+
+         return view;
    }
 
    @SuppressLint("ClickableViewAccessibility")
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+
+
+      ComposeView composeView = findViewById(R.id.stop_snooze_compose_view);
+      StopSnoozeDisplay.setContent(composeView);
 
       binding = ActivityStopSnoozeBinding.inflate(getLayoutInflater());
       setContentView(binding.getRoot());
