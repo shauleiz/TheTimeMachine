@@ -23,11 +23,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
 
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-            }
-        }
+
 
     }
 
@@ -59,8 +55,9 @@ android {
         viewBinding = true
     }
 
-    composeOptions {
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
 }
 
@@ -92,7 +89,7 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.1")
 
     //implementation ("android.arch.persistence.room:compiler:2.6.0")
-    //kapt  ("androidx.room:room-compiler:2.4.2")
+    kapt  ("androidx.room:room-compiler:2.6.1")
     implementation ("com.google.android.material:material:1.12.0")
     implementation ("androidx.room:room-gradle-plugin:2.6.1")
     //implementation ("com.github.wisnukurniawan:date-time-range-picker-android:1.0.10")
