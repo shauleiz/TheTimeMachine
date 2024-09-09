@@ -13,7 +13,7 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
-    <!--<TextView
+    <TextView
         android:id="@+id/fullscreen_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -27,13 +27,13 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />-->
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
 
 
-    <!--<androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fullscreen_content_controls"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -126,9 +126,9 @@
             app:layout_constraintVertical_weight="1" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>-->
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--<TextView
+    <TextView
         android:id="@+id/footnote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -141,7 +141,8 @@
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />-->
+        app:layout_constraintStart_toStartOf="parent" />
+
 
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/stop_snooze_compose_view"

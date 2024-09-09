@@ -257,18 +257,13 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
 
 
-
-         return view;
+      return view;
    }
 
    @SuppressLint("ClickableViewAccessibility")
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-
-
-      ComposeView composeView = findViewById(R.id.stop_snooze_compose_view);
-      StopSnoozeDisplay.setContent(composeView);
 
       binding = ActivityStopSnoozeBinding.inflate(getLayoutInflater());
       setContentView(binding.getRoot());
@@ -316,6 +311,10 @@ public class StopSnoozeActivity extends AppCompatActivity {
          dateFormat = new SimpleDateFormat("H:mm",Locale.US);
       else
          dateFormat = new SimpleDateFormat("h:mm a",Locale.US);
+
+      // Compose Content
+      ComposeView composeView = binding.stopSnoozeComposeView;
+      StopSnoozeDisplay.setContent(composeView);
 
    }
 
