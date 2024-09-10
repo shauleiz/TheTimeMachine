@@ -75,6 +75,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-android:1.7.0")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.compose.material3:material3-android:1.3.0")
+    implementation("androidx.compose.ui:ui-tooling-preview-android:1.7.0")
+    implementation("androidx.compose.ui:ui-tooling-preview-desktop:1.7.0")
 
 
     testImplementation("junit:junit:4.13.2")
@@ -87,6 +89,7 @@ dependencies {
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
     androidTestImplementation ("androidx.room:room-testing:2.6.1")
     implementation("androidx.preference:preference-ktx:1.2.1")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.7.0")
 
     //implementation ("android.arch.persistence.room:compiler:2.6.0")
     kapt  ("androidx.room:room-compiler:2.6.1")

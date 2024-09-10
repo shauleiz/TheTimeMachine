@@ -313,9 +313,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
          dateFormat = new SimpleDateFormat("h:mm a",Locale.US);
 
       // Compose Content
+      hide(); // Immersive mode: Hide system bars
       ComposeView composeView = binding.stopSnoozeComposeView;
       StopSnoozeDisplay.setContent(composeView);
-
    }
 
 
