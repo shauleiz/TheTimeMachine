@@ -312,10 +312,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       else
          dateFormat = new SimpleDateFormat("h:mm a",Locale.US);
 
-      // Compose Content
-      hide(); // Immersive mode: Hide system bars
-      ComposeView composeView = binding.stopSnoozeComposeView;
-      StopSnoozeDisplay.setContent(composeView);
+
    }
 
 
@@ -364,6 +361,14 @@ public class StopSnoozeActivity extends AppCompatActivity {
       //  Display the data on the screen
       strCurrentTime = (dateFormat.format(new Date()));
       DisplayScreenText();
+
+      // Get Text
+      String label = extras.getString("LABEL","");
+
+      // Compose Content
+      hide(); // Immersive mode: Hide system bars
+      ComposeView composeView = binding.stopSnoozeComposeView;
+      StopSnoozeDisplay.setContent(composeView, label);
 
    }
 
