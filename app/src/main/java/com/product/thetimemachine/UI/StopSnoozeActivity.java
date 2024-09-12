@@ -174,6 +174,24 @@ public class StopSnoozeActivity extends AppCompatActivity {
       }
    };
 
+   public void onClickStop(){
+      // Stop the Alarm by stopping the Alarm Service
+      Context context = getApplicationContext();
+
+      Intent stopIntent = new Intent(context, AlarmService.class);
+      stopIntent.putExtras(extras);
+      AlarmReceiver.stopping(context, stopIntent );
+
+               /*
+               // Leave this activity to main activity
+               Intent intent = new Intent(context, MainActivity.class);
+               startActivity(intent);
+                */
+
+      // Kill this activity
+      finish();
+   }
+
    /**
     * Touch listener to use for in-layout UI controls to delay hiding the
     * system UI. This is to prevent the jarring behavior of controls going away
@@ -361,11 +379,11 @@ public class StopSnoozeActivity extends AppCompatActivity {
       //  Display the data on the screen
       strCurrentTime = (dateFormat.format(new Date()));
 
-     
+
       // Compose Content
       hide(); // Immersive mode: Hide system bars
       ComposeView composeView = binding.stopSnoozeComposeView;
-      StopSnoozeDisplay.setContent(composeView,  DisplayScreenText());
+      StopSnoozeDisplay.setContent(composeView,  DisplayScreenText(), this);
 
    }
 
@@ -442,7 +460,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       }
    }
 
-   private String DisplayScreenText()
+   public String DisplayScreenText()
    {
       String appName = extras.getString("APP_NAME","");
       String label = extras.getString("LABEL","");

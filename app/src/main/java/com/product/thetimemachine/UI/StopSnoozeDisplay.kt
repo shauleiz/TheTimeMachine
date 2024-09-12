@@ -30,14 +30,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.product.thetimemachine.R
 
-fun setContent(composeView: ComposeView, label: String) {
-    composeView.setContent { StopSnoozeDisplay(label) }
+
+fun setContent(composeView: ComposeView, label: String, activity: StopSnoozeActivity) {
+    composeView.setContent { StopSnoozeDisplay(label, activity) }
 }
 @Composable
-fun StopSnoozeDisplay(label: String) {
+fun StopSnoozeDisplay(label: String, activity: StopSnoozeActivity? = null) {
+
     Surface{
         MaterialTheme {
-            ContentViewCompose(label)
+            if (activity!=null)
+                ContentViewCompose(activity.DisplayScreenText(), activity)
+            else
+                ContentViewCompose(label)
         }
     }
 }
@@ -45,7 +50,7 @@ fun StopSnoozeDisplay(label: String) {
 
 
 @Composable
-private fun ContentViewCompose(name: String) {
+private fun ContentViewCompose(name: String, activity: StopSnoozeActivity? = null) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,6 +58,7 @@ private fun ContentViewCompose(name: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
 
     ){
+        // Label + Alarm time
     Text(
         text = name,
         style = MaterialTheme.typography.headlineLarge,
@@ -62,8 +68,10 @@ private fun ContentViewCompose(name: String) {
             .padding(horizontal = 5.dp)
             .wrapContentWidth(Alignment.CenterHorizontally)
     )
+
+        // Image (Stop) that serves as stop-button
         Spacer(modifier = Modifier.size(20.dp))
-        StopButton()
+        StopButton(activity)
     }
 }
 
@@ -74,15 +82,15 @@ private fun StopSnoozeDisplayPrev() {
 }
 
 @Composable
-private fun StopButton() {
+private fun StopButton(activity: StopSnoozeActivity? = null) {
     Box() {
         Image(
             painter = painterResource(id = R.drawable.iconmonstr_octagon_1),
             contentDescription = "Stop Button",
             modifier = Modifier
                 .align(alignment = Alignment.Center)
-                .requiredSize((LocalConfiguration.current.screenHeightDp * 0.1f).dp)
-                .clickable { onClickStop() }
+                .requiredSize((LocalConfiguration.current.screenHeightDp * 0.2f).dp)
+                .clickable { onClickStop(activity) }
         )
         Text(
             text = "Stop",
@@ -91,8 +99,9 @@ private fun StopButton() {
     }
 }
 
-private fun onClickStop()
+private fun onClickStop(activity: StopSnoozeActivity? = null)
 {
+    activity?.onClickStop()
 }
 
 
