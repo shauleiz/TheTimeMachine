@@ -5,31 +5,25 @@ package com.product.thetimemachine.UI
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Spacer
 //import androidx.compose.foundation.layout.FlowColumnScopeInstance.align
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,7 +35,7 @@ fun setContent(composeView: ComposeView, label: String) {
 }
 @Composable
 fun StopSnoozeDisplay(label: String) {
-    Surface() {
+    Surface{
         MaterialTheme {
             ContentViewCompose(label)
         }
@@ -68,6 +62,7 @@ private fun ContentViewCompose(name: String) {
             .padding(horizontal = 5.dp)
             .wrapContentWidth(Alignment.CenterHorizontally)
     )
+        Spacer(modifier = Modifier.size(20.dp))
         StopButton()
     }
 }
@@ -80,23 +75,24 @@ private fun StopSnoozeDisplayPrev() {
 
 @Composable
 private fun StopButton() {
-    Box(Modifier
-        //.background(Color.Green)
-        //.aspectRatio(1F)
-        .size(100.dp)
-        ) {
+    Box() {
         Image(
-            modifier = Modifier.align(alignment = Alignment.Center).requiredSize(90.dp),
             painter = painterResource(id = R.drawable.iconmonstr_octagon_1),
             contentDescription = "Stop Button",
-            //contentScale = ContentScale.FillBounds,
+            modifier = Modifier
+                .align(alignment = Alignment.Center)
+                .requiredSize((LocalConfiguration.current.screenHeightDp * 0.1f).dp)
+                .clickable { onClickStop() }
         )
         Text(
             text = "Stop",
             modifier = Modifier.align(alignment = Alignment.Center),
             )
     }
+}
 
+private fun onClickStop()
+{
 }
 
 
