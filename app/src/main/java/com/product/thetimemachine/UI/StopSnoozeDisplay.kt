@@ -99,6 +99,7 @@ private fun StopButton(activity: StopSnoozeActivity? = null) {
     }
 }
 
+// Stop Button clicked
 private fun onClickStop(activity: StopSnoozeActivity? = null)
 {
     activity?.onClickStop()
