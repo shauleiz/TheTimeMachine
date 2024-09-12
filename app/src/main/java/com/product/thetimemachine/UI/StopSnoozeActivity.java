@@ -360,15 +360,12 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
       //  Display the data on the screen
       strCurrentTime = (dateFormat.format(new Date()));
-      DisplayScreenText();
 
-      // Get Text
-      String label = extras.getString("LABEL","");
-
+     
       // Compose Content
       hide(); // Immersive mode: Hide system bars
       ComposeView composeView = binding.stopSnoozeComposeView;
-      StopSnoozeDisplay.setContent(composeView, label);
+      StopSnoozeDisplay.setContent(composeView,  DisplayScreenText());
 
    }
 
@@ -445,7 +442,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       }
    }
 
-   private void DisplayScreenText()
+   private String DisplayScreenText()
    {
       String appName = extras.getString("APP_NAME","");
       String label = extras.getString("LABEL","");
@@ -456,5 +453,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       ((TextView)mContentView).setText(displayText);
 
       footer.setText(appName);
+
+      return  displayText;
    }
 }
