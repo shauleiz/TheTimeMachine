@@ -1,9 +1,8 @@
-package com.product.thetimemachine.UI;
+package com.product.thetimemachine.ui;
 
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TimePicker;
 

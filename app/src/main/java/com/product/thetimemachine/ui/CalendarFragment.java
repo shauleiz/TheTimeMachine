@@ -1,4 +1,4 @@
-package com.product.thetimemachine.UI;
+package com.product.thetimemachine.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;

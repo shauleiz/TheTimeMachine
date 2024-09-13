@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#CC62def8"
-    tools:context=".UI.AlarmListFragment">
+    tools:context=".ui.AlarmListFragment">
 
     <TextView
         android:id="@+id/popup_permis_notif"

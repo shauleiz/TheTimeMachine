@@ -1,11 +1,11 @@
-package com.product.thetimemachine.UI;
+package com.product.thetimemachine.ui;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
-import static com.product.thetimemachine.UI.SettingsFragment.pref_sort_separate;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_sort_type;
+import static com.product.thetimemachine.ui.SettingsFragment.pref_sort_separate;
+import static com.product.thetimemachine.ui.SettingsFragment.pref_sort_type;
 
 import android.content.Context;
 import android.content.Intent;

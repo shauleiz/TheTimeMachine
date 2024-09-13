@@ -1,4 +1,4 @@
-package com.product.thetimemachine.UI;
+package com.product.thetimemachine.ui;
 
 import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
 

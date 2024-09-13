@@ -22,9 +22,8 @@ import androidx.room.PrimaryKey;
 import com.product.thetimemachine.AlarmReceiver;
 import com.product.thetimemachine.Application.TheTimeMachineApp;
 import com.product.thetimemachine.R;
-import com.product.thetimemachine.UI.MainActivity;
+import com.product.thetimemachine.ui.MainActivity;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

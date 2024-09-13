@@ -1,9 +1,9 @@
-package com.product.thetimemachine.UI;
+package com.product.thetimemachine.ui;
 
 import static android.widget.TextView.BufferType.SPANNABLE;
 import static androidx.core.content.ContextCompat.getColor;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
+import static com.product.thetimemachine.ui.SettingsFragment.pref_first_day_of_week;
+import static com.product.thetimemachine.ui.SettingsFragment.pref_is24HourClock;
 
 import android.content.Context;
 import android.graphics.Color;

@@ -5,7 +5,7 @@
     android:id="@+id/SetUpAlarmFragScroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UI.SetUpAlarmFragment">
+    tools:context=".ui.SetUpAlarmFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/SetUpAlarmFrag"
@@ -14,7 +14,7 @@
     android:layout_centerHorizontal="true"
     android:minHeight="50dp">
 
-    <com.product.thetimemachine.UI.MyTimePicker
+    <com.product.thetimemachine.ui.MyTimePicker
         android:id="@+id/time_picker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

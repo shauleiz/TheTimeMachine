@@ -1,4 +1,4 @@
-package com.product.thetimemachine.UI;
+package com.product.thetimemachine.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

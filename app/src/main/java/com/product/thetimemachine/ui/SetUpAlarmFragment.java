@@ -1,4 +1,4 @@
-package com.product.thetimemachine.UI;
+package com.product.thetimemachine.ui;
 
 import static com.product.thetimemachine.Data.AlarmItem.FRIDAY;
 import static com.product.thetimemachine.Data.AlarmItem.MONDAY;
@@ -7,8 +7,8 @@ import static com.product.thetimemachine.Data.AlarmItem.SUNDAY;
 import static com.product.thetimemachine.Data.AlarmItem.THURSDAY;
 import static com.product.thetimemachine.Data.AlarmItem.TUESDAY;
 import static com.product.thetimemachine.Data.AlarmItem.WEDNESDAY;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_first_day_of_week;
-import static com.product.thetimemachine.UI.SettingsFragment.pref_is24HourClock;
+import static com.product.thetimemachine.ui.SettingsFragment.pref_first_day_of_week;
+import static com.product.thetimemachine.ui.SettingsFragment.pref_is24HourClock;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;

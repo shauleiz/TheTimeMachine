@@ -1,8 +1,8 @@
-package com.product.thetimemachine.UI;
+package com.product.thetimemachine.ui;
 
 import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
-import static com.product.thetimemachine.UI.SettingsFragment.sound;
-import static com.product.thetimemachine.UI.SettingsFragment.vibrate;
+import static com.product.thetimemachine.ui.SettingsFragment.sound;
+import static com.product.thetimemachine.ui.SettingsFragment.vibrate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
