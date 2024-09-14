@@ -49,6 +49,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
    private String strCurrentTime = "99:99 am";
    BroadcastReceiver broadcastReceiver;
    private SimpleDateFormat dateFormat;
+   private StopSnoozeDisplay display;
 
    private TextView footer;
 
@@ -173,7 +174,28 @@ public class StopSnoozeActivity extends AppCompatActivity {
       }
    };
 
+   public void onLongClickSnooze(){
+      if (AUTO_HIDE) delayedHide(AUTO_HIDE_DELAY_MILLIS);
+
+   }
+
+   public void onClickSnooze(){
+      if (AUTO_HIDE) delayedHide(AUTO_HIDE_DELAY_MILLIS);
+
+      // Stop the Alarm by stopping the Alarm Service
+      Context context = getApplicationContext();
+      Intent snoozeIntent = new Intent(context, AlarmService.class);
+      snoozeIntent.putExtras(extras);
+      AlarmReceiver.snoozing(context, snoozeIntent );
+
+      // Kill this activity
+      finish();
+   }
+
    public void onClickStop(){
+
+      if (AUTO_HIDE) delayedHide(AUTO_HIDE_DELAY_MILLIS);
+
       // Stop the Alarm by stopping the Alarm Service
       Context context = getApplicationContext();
 
@@ -329,7 +351,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       else
          dateFormat = new SimpleDateFormat("h:mm a",Locale.US);
 
-
+      display = new StopSnoozeDisplay(this);
    }
 
 
@@ -382,7 +404,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       // Compose Content
       hide(); // Immersive mode: Hide system bars
       ComposeView composeView = binding.stopSnoozeComposeView;
-      StopSnoozeDisplay.setContent(composeView,  DisplayScreenText(), this);
+      display.setContent(composeView);
 
    }
 
@@ -407,6 +429,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
          show();
       }
    }
+
+   public  String snoozeButtonTextCompose()
+   {return  snoozeButtonText(extras.getString(appContext.getString(R.string.key_snooze_duration), ""));}
 
    private void hide() {
       // Hide UI first
