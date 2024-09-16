@@ -3,13 +3,12 @@
 package com.product.thetimemachine.ui
 
 
-//import androidx.compose.foundation.layout.FlowColumnScopeInstance.align
-import android.content.res.TypedArray
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,8 +18,6 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -37,146 +34,183 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.integerArrayResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.io.Resources
 import com.product.thetimemachine.R
 
 
-class StopSnoozeDisplay (val activity: StopSnoozeActivity) {
+class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
 
-fun setContent(composeView: ComposeView) {
-    composeView.setContent { StopSnoozeDisplayTop() }
-}
-@Composable
-fun StopSnoozeDisplayTop() {
+    fun setContent(composeView: ComposeView) {
+        composeView.setContent { StopSnoozeDisplayTop() }
+    }
+    @Composable
+    fun StopSnoozeDisplayTop() {
 
-    Surface{
-        MaterialTheme {
-            ContentViewCompose(activity.DisplayScreenText())
+        Surface{
+            MaterialTheme {
+                ContentViewCompose(activity.DisplayScreenText())
+            }
         }
     }
-}
 
 
 
-@Composable
-private fun ContentViewCompose(name: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = colorResource(com.product.thetimemachine.R.color.light_blue_A400)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-
-    ){
-        // Label + Alarm time
-    Text(
-        text = name,
-        style = MaterialTheme.typography.headlineLarge,
-        modifier = Modifier
-            .background(color = colorResource(com.product.thetimemachine.R.color.light_blue_A400))
-            .fillMaxWidth()
-            .padding(horizontal = 5.dp)
-            .wrapContentWidth(Alignment.CenterHorizontally)
-    )
-
-        // Image (Stop) that serves as stop-button
-        Spacer(modifier = Modifier.size(20.dp))
-        StopButton()
-
-        // Box (Snooze) that serves as stop-button
-        Spacer(modifier = Modifier.size(20.dp))
-        SnoozeButton()
-    }
-}
-
-
-
-@Composable
-private fun StopButton() {
-    Box() {
-        Image(
-            painter = painterResource(id = com.product.thetimemachine.R.drawable.iconmonstr_octagon_1),
-            contentDescription = "Stop Button",
+    @Composable
+    private fun ContentViewCompose(name: String) {
+        Column(
             modifier = Modifier
-                .align(alignment = Alignment.Center)
-                .requiredSize((LocalConfiguration.current.screenHeightDp * 0.2f).dp)
-                .clickable { activity.onClickStop() }
-        )
-        Text(
-            text = stringResource(id = com.product.thetimemachine.R.string.stop_button),
-            fontSize =  14.sp,
-            fontFamily = FontFamily.SansSerif,
-            //style = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Body2,
-            modifier = Modifier.align(alignment = Alignment.Center),
+                .fillMaxWidth()
+                .background(color = colorResource(R.color.light_blue_A400)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+
+            ){
+            // Label + Alarm time
+            Text(
+                text = name,
+                style = MaterialTheme.typography.headlineLarge,
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
+                modifier = Modifier
+                    .background(color = colorResource(R.color.light_blue_A400))
+                    .fillMaxWidth()
+                    .padding(horizontal = 5.dp, vertical = 24.dp)
+                    .wrapContentWidth(Alignment.CenterHorizontally)
             )
 
+            // Image (Stop) that serves as stop-button
+            Spacer(modifier = Modifier.size(20.dp))
+            StopButton()
 
+            // Box (Snooze) that serves as stop-button
+            Spacer(modifier = Modifier.size(20.dp))
+            SnoozeButton()
+
+            // Footer: App name
+            Spacer(modifier = Modifier.size(20.dp))
+            Box ()
+            {
+                Text(
+                    text =  activity.footerText,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .background(color = colorResource(R.color.light_blue_A400))
+                        .fillMaxWidth()
+                        .padding(horizontal = 5.dp)
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                        .padding(horizontal = 5.dp, vertical = 24.dp)
+                        .align(alignment = Alignment.BottomCenter),
+                )
+            }
+
+        }
     }
-}
 
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun SnoozeButton() {
 
-    // Keep the state of the menu
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier
-            .size((LocalConfiguration.current.screenHeightDp * 0.2f).dp)
-            .clip(CircleShape)
-            .background(color = colorResource(android.R.color.holo_orange_dark))
-            .combinedClickable(
-                onClick = { activity.onClickSnooze() },
-                onClickLabel = "Snooze", //TODO: Replace
-                onLongClick = { expanded = true },
-                onLongClickLabel = "Modify Snooze Duration", //TODO: Replace
+    @Composable
+    // Stop "Button"
+    // Box containing an image (Red octagon) and Text ("Stop")
+    private fun StopButton() {
+        Box {
+            Image(
+                painter = painterResource(id = R.drawable.iconmonstr_octagon_1),
+                contentDescription = "Stop Button",
+                modifier = Modifier
+                    .align(alignment = Alignment.Center)
+                    .requiredSize((LocalConfiguration.current.screenWidthDp * 0.5f).dp)
+                    .clickable { activity.onClickStop() }
             )
-    ){
+            Text(
+                text = stringResource(id = R.string.stop_button),
+                fontSize =  30.sp,
+                fontFamily = FontFamily.SansSerif,
+                color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
+                modifier = Modifier.align(alignment = Alignment.Center),
+            )
 
+
+        }
+    }
+
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Composable
+    // Snooze "Button"
+    // Box clipped to a circle+Text+menu(Collapsed)
+    private fun SnoozeButton() {
+
+        // Keep the state of the menu
+        var expanded by remember { mutableStateOf(false) }
+
+        // Circle
+        Box(
+            modifier = Modifier
+                .requiredSize((LocalConfiguration.current.screenWidthDp * 0.5f).dp)
+                .clip(CircleShape)
+                .background(color = colorResource(android.R.color.holo_orange_dark))
+                .combinedClickable(
+                    onClick = { activity.onClickSnooze() },
+                    onClickLabel = "Snooze", //TODO: Replace
+                    onLongClick = { expanded = true },
+                    onLongClickLabel = "Modify Snooze Duration", //TODO: Replace
+                )
+        ){
+
+            // "Snooze for XXX
             Text(
                 activity.snoozeButtonTextCompose(),
-                fontSize =  14.sp,
+                color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
+                fontSize =  30.sp,
                 fontFamily = FontFamily.SansSerif,
                 modifier = Modifier.align(alignment = Alignment.Center),
             )
 
-        SnoozePopupMenu (expanded,  onSnoozeMenuSelected = {expanded=it} )
-    }
-}
-
-@Composable
-private fun SnoozePopupMenu ( expanded:Boolean, onSnoozeMenuSelected : (Boolean)->Unit){
-
-    // Arrays of Entries/Values
-    val snoozeDurationEntries = stringArrayResource(R.array.snooze_duration_entries)
-
-
-
-    // Create the menu
-    DropdownMenu(
-        expanded = expanded, // Temp
-        onDismissRequest = { onSnoozeMenuSelected(false)  },
-    ) {
-        for (index in snoozeDurationEntries.indices) {
-            DropdownMenuItem(
-                text = { Text(snoozeDurationEntries[index] )},
-                onClick = { onSnoozeMenuSelected(false) },
-            )
+            // Menu of optional snooze times (Collapsed)
+            SnoozePopupMenu (expanded,  onSnoozeMenuSelected = {expanded=it} )
         }
     }
 
+    @Composable
+    private fun SnoozePopupMenu ( expanded:Boolean, onSnoozeMenuSelected : (Boolean)->Unit){
 
-}
+        // Arrays of Entries
+        val snoozeDurationEntries = stringArrayResource(R.array.snooze_duration_entries)
+
+        // Create the menu
+        DropdownMenu(
+            expanded = expanded, // Temp
+            onDismissRequest = { onSnoozeMenuSelected(false)  },
+        )
+
+        // Populate the menu:
+        // For every item:
+        //  Text from the Arrays of Entries
+        //  When clicked: Call a callback routine that changes its status and call an activity
+        //  routine that replace snooze duration an start snoozing
+        {
+            for (index in snoozeDurationEntries.indices) {
+                DropdownMenuItem(
+                    text = { Text(snoozeDurationEntries[index] )},
+                    onClick = {
+                        onSnoozeMenuSelected(false)
+                        activity.onSnoozeMenuItemSelected(index)}
+                )
+            }
+        }
+
+
+    }
 
 }
 

@@ -174,10 +174,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       }
    };
 
-   public void onLongClickSnooze(){
-      if (AUTO_HIDE) delayedHide(AUTO_HIDE_DELAY_MILLIS);
 
-   }
 
    public void onClickSnooze(){
       if (AUTO_HIDE) delayedHide(AUTO_HIDE_DELAY_MILLIS);
@@ -210,6 +207,26 @@ public class StopSnoozeActivity extends AppCompatActivity {
                 */
 
       // Kill this activity
+      finish();
+   }
+
+   public  void onSnoozeMenuItemSelected(int iItem) {
+      TypedArray snoozeDurationValues = getResources().obtainTypedArray(R.array.snooze_duration_values);
+      // Update the bundle
+      extras.putString(appContext.getString(R.string.key_snooze_duration), snoozeDurationValues.getString(iItem));
+
+      Log.d("THE_TIME_MACHINE", "You Clicked " + iItem + " - "+ snoozeDurationValues.getString(iItem));
+
+      // Stop the Alarm by stopping the Alarm Service
+      Context context = getApplicationContext();
+      Intent snoozeIntent = new Intent(context, AlarmService.class);
+      snoozeIntent.putExtras(extras);
+      AlarmReceiver.snoozing(context, snoozeIntent );
+
+      snoozeDurationValues.recycle();
+
+
+      // Done
       finish();
    }
 
@@ -497,5 +514,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
       footer.setText(appName);
 
       return  displayText;
+   }
+
+   public  String getFooterText(){
+      return extras.getString("APP_NAME","");
    }
 }
