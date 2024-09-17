@@ -3,6 +3,8 @@
 package com.product.thetimemachine.ui
 
 
+import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,6 +13,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,7 +58,10 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
         Surface{
             MaterialTheme {
-                ContentViewCompose(activity.DisplayScreenText())
+                if (isPortrait())
+                    ContentViewComposePortrait(activity.DisplayScreenText())
+                else
+                    ContentViewComposeLand(activity.DisplayScreenText() )
             }
         }
     }
@@ -63,7 +69,11 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
 
     @Composable
-    private fun ContentViewCompose(name: String) {
+    private fun ContentViewComposePortrait(name: String) {
+        Log.d(
+            "THE_TIME_MACHINE",
+            "called: ContentViewComposePortrait"
+        )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,18 +83,7 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
             ){
             // Label + Alarm time
-            Text(
-                text = name,
-                style = MaterialTheme.typography.headlineLarge,
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-                color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
-                modifier = Modifier
-                    .background(color = colorResource(R.color.light_blue_A400))
-                    .fillMaxWidth()
-                    .padding(horizontal = 5.dp, vertical = 24.dp)
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-            )
+            HeaderText(name)
 
             // Image (Stop) that serves as stop-button
             Spacer(modifier = Modifier.size(20.dp))
@@ -96,27 +95,92 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
             // Footer: App name
             Spacer(modifier = Modifier.size(20.dp))
-            Box ()
-            {
-                Text(
-                    text =  activity.footerText,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
-                    fontSize = 16.sp,
-                    modifier = Modifier
-                        .background(color = colorResource(R.color.light_blue_A400))
-                        .fillMaxWidth()
-                        .padding(horizontal = 5.dp)
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                        .padding(horizontal = 5.dp, vertical = 24.dp)
-                        .align(alignment = Alignment.BottomCenter),
-                )
+            FooterText()
+
+        }
+    }
+
+    @Composable
+    private fun ContentViewComposeLand(name: String) {
+        Log.d(
+            "THE_TIME_MACHINE",
+            "called: ContentViewComposeLand"
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = colorResource(R.color.light_blue_A400)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ){
+            // Label + Alarm time
+            HeaderText(name)
+
+            Row (
+                modifier =
+                Modifier
+                    .fillMaxWidth(),
+                    //.background(color = colorResource(R.color.custom_header_text)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ){
+                // Image (Stop) that serves as stop-button
+                Spacer(modifier = Modifier.size(20.dp, 20.dp))
+                StopButton()
+
+                 // Box (Snooze) that serves as stop-button
+                Spacer(modifier = Modifier.size(20.dp, 20.dp))
+                SnoozeButton()
+
+                Spacer(modifier = Modifier.size(20.dp, 20.dp))
             }
+            // Footer: App name
+            Spacer(modifier = Modifier.size(20.dp, 20.dp))
+            FooterText()
 
         }
     }
 
 
+    @Composable
+    // Label + Alarm time
+    private fun HeaderText(name :String){
+        Text(
+            text = name,
+            style = MaterialTheme.typography.headlineLarge,
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+            color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
+            maxLines = 2,
+            modifier = Modifier
+                .background(color = colorResource(R.color.light_blue_A400))
+                .fillMaxWidth()
+                .padding(horizontal = 5.dp, vertical = 24.dp)
+                .wrapContentWidth(Alignment.CenterHorizontally)
+        )
+    }
+
+    @Composable
+    // Footer: App name
+    private fun FooterText(){
+        Box ()
+        {
+            Text(
+                text =  activity.footerText,
+                style = MaterialTheme.typography.headlineLarge,
+                color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .background(color = colorResource(R.color.light_blue_A400))
+                    .fillMaxWidth()
+                    .padding(horizontal = 5.dp)
+                    .wrapContentWidth(Alignment.CenterHorizontally)
+                    .padding(horizontal = 5.dp, vertical = 24.dp)
+                    .align(alignment = Alignment.BottomCenter),
+            )
+        }
+    }
 
     @Composable
     // Stop "Button"
@@ -128,7 +192,7 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
                 contentDescription = "Stop Button",
                 modifier = Modifier
                     .align(alignment = Alignment.Center)
-                    .requiredSize((LocalConfiguration.current.screenWidthDp * 0.5f).dp)
+                    .requiredSize((LocalConfiguration.current.smallestScreenWidthDp * 0.5f).dp)
                     .clickable { activity.onClickStop() }
             )
             Text(
@@ -151,19 +215,19 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
     private fun SnoozeButton() {
 
         // Keep the state of the menu
-        var expanded by remember { mutableStateOf(false) }
+        var expanded by rememberSaveable { mutableStateOf(false) }
 
         // Circle
         Box(
             modifier = Modifier
-                .requiredSize((LocalConfiguration.current.screenWidthDp * 0.5f).dp)
+                .requiredSize((LocalConfiguration.current.smallestScreenWidthDp * 0.5f).dp)
                 .clip(CircleShape)
                 .background(color = colorResource(android.R.color.holo_orange_dark))
                 .combinedClickable(
                     onClick = { activity.onClickSnooze() },
-                    onClickLabel = "Snooze", //TODO: Replace
+                    onClickLabel = stringResource(id = R.string.snooze_button),
                     onLongClick = { expanded = true },
-                    onLongClickLabel = "Modify Snooze Duration", //TODO: Replace
+                    onLongClickLabel = stringResource(id = R.string.snooze_duration_label),
                 )
         ){
 
@@ -212,5 +276,11 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
     }
 
+
+    @Composable
+    private fun isPortrait():Boolean{
+        return LocalConfiguration.current.orientation.equals(Configuration.ORIENTATION_PORTRAIT)
+        //return (LocalConfiguration.current.screenWidthDp<LocalConfiguration.current.screenHeightDp)
+    }
 }
 

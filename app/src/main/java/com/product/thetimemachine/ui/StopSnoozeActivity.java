@@ -417,6 +417,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       //  Display the data on the screen
       strCurrentTime = (dateFormat.format(new Date()));
 
+      Log.d("THE_TIME_MACHINE", "onPostCreate");
 
       // Compose Content
       hide(); // Immersive mode: Hide system bars
