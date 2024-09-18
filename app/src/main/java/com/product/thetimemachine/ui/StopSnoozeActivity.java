@@ -51,7 +51,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
    private SimpleDateFormat dateFormat;
    private StopSnoozeDisplay display;
 
-   private TextView footer;
+   //private TextView footer;
 
    /**
     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -328,7 +328,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       mControlsView = binding.fullscreenContentControls;
       //mContentView = binding.fullscreenContent;
 
-      footer = findViewById(R.id.footnote);
+      //footer = findViewById(R.id.footnote);
 
       // Allow this activity on a locked screen
       allowOnLockScreen();
@@ -514,7 +514,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       String displayText = String.format(Locale.US,"%s%s",  label, strCurrentTime);
       // ((TextView)mContentView).setText(displayText);
 
-      footer.setText(appName);
+      //footer.setText(appName);
 
       return  displayText;
    }
