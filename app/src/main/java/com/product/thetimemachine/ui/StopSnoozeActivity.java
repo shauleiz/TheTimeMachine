@@ -65,20 +65,20 @@ public class StopSnoozeActivity extends AppCompatActivity {
     */
    private static final int UI_ANIMATION_DELAY = 300;
    private final Handler mHideHandler = new Handler(Objects.requireNonNull(Looper.myLooper()));
-   private View mContentView;
+   //private View mContentView;
    private final Runnable mHidePart2Runnable = new Runnable() {
       @SuppressLint("InlinedApi")
       @Override
       public void run() {
          // Delayed removal of status and navigation bar
          if (Build.VERSION.SDK_INT >= 30) {
-            Objects.requireNonNull(mContentView.getWindowInsetsController()).hide(
+            Objects.requireNonNull(binding.getRoot().getWindowInsetsController()).hide(
                   WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
          } else {
             // Note that some of these constants are new as of API 16 (Jelly Bean)
             // and API 19 (KitKat). It is safe to use them, as they are inlined
             // at compile-time and do nothing on earlier devices.
-            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+            binding.getRoot().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                   | View.SYSTEM_UI_FLAG_FULLSCREEN
                   | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                   | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -326,7 +326,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
       mVisible = true;
       mControlsView = binding.fullscreenContentControls;
-      mContentView = binding.fullscreenContent;
+      //mContentView = binding.fullscreenContent;
 
       footer = findViewById(R.id.footnote);
 
@@ -439,7 +439,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       setTurnScreenOn(false);
 
    }
-
+   /*
    private void toggle() {
       if (mVisible) {
          hide();
@@ -447,6 +447,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
          show();
       }
    }
+*/
 
    public  String snoozeButtonTextCompose()
    {return  snoozeButtonText(extras.getString(appContext.getString(R.string.key_snooze_duration), ""));}
@@ -465,11 +466,12 @@ public class StopSnoozeActivity extends AppCompatActivity {
       mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
    }
 
+   /*
    private void show() {
       // Show the system bar
       if (Build.VERSION.SDK_INT >= 30) {
          Objects.requireNonNull(mContentView.getWindowInsetsController()).show(
-               WindowInsets.Type.statusBars()/* | WindowInsets.Type.navigationBars()*/);
+               WindowInsets.Type.statusBars());
       } else {
          mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
@@ -480,7 +482,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       mHideHandler.removeCallbacks(mHidePart2Runnable);
       mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
    }
-
+*/
    /**
     * Schedules a call to hide() in delay milliseconds, canceling any
     * previously scheduled calls.
@@ -510,7 +512,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
          label+=" - ";
 
       String displayText = String.format(Locale.US,"%s%s",  label, strCurrentTime);
-      ((TextView)mContentView).setText(displayText);
+      // ((TextView)mContentView).setText(displayText);
 
       footer.setText(appName);
 
