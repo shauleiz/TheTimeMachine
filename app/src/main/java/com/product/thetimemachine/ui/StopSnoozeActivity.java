@@ -356,11 +356,11 @@ public class StopSnoozeActivity extends AppCompatActivity {
       // Upon interacting with UI controls, delay any scheduled hide()
       // operations to prevent the jarring behavior of controls going away
       // while interacting with the UI.
-      binding.stopButton.setOnTouchListener(mStopTouchListener);
+      //binding.stopButton.setOnTouchListener(mStopTouchListener);
 
       //binding.snoozeButton.setOnTouchListener(mSnoozeTouchListener);
-      binding.snoozeButton.setOnLongClickListener(mSnoozeLongClickListener);
-      binding.snoozeButton.setOnClickListener(mSnoozeClickListener);
+      //binding.snoozeButton.setOnLongClickListener(mSnoozeLongClickListener);
+      //binding.snoozeButton.setOnClickListener(mSnoozeClickListener);
 
       // Set The time format
       if (pref_is24HourClock())
@@ -410,9 +410,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
       // Set the snooze button text
       View v = binding.getRoot();
-      TextView snoozeButton = v.findViewById(R.id.snooze_button);
-      String strSnoozeDuration = extras.getString(appContext.getString(R.string.key_snooze_duration), "");
-      snoozeButton.setText(snoozeButtonText(strSnoozeDuration));
+      //TextView snoozeButton = v.findViewById(R.id.snooze_button);
+      //String strSnoozeDuration = extras.getString(appContext.getString(R.string.key_snooze_duration), "");
+      //snoozeButton.setText(snoozeButtonText(strSnoozeDuration));
 
       //  Display the data on the screen
       strCurrentTime = (dateFormat.format(new Date()));
