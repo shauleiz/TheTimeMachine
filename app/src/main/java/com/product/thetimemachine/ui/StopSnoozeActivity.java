@@ -87,7 +87,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
          }
       }
    };
-   private View mControlsView;
+   //private View mControlsView;
    private final Runnable mShowPart2Runnable = new Runnable() {
       @Override
       public void run() {
@@ -96,13 +96,14 @@ public class StopSnoozeActivity extends AppCompatActivity {
          if (actionBar != null) {
             actionBar.show();
          }
-         mControlsView.setVisibility(View.VISIBLE);
+        // mControlsView.setVisibility(View.VISIBLE);
       }
    };
    private boolean mVisible;
    private final Runnable mHideRunnable = this::hide;
 
 
+/*
       private final View.OnLongClickListener mSnoozeLongClickListener = new View.OnLongClickListener(){
       @Override
       public boolean onLongClick(View view) {
@@ -110,7 +111,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
          // Get the current Snooze duration
          String strSnoozeDuration = extras.getString(appContext.getString(R.string.key_snooze_duration), "");
 
-         /* * * Display Snooze duration pop-up menu * * */
+         */
+/* * * Display Snooze duration pop-up menu * * *//*
+
          // Initializing the popup menu and giving the reference as current context
          PopupMenu popupMenu = new PopupMenu(StopSnoozeActivity.this , view);
 
@@ -156,7 +159,9 @@ public class StopSnoozeActivity extends AppCompatActivity {
          return true; // Do not run OnClick
       }
    };
+*/
 
+/*
    private final View.OnClickListener  mSnoozeClickListener = new View.OnClickListener(){
       @Override
       public void onClick(View view) {
@@ -173,6 +178,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
          finish();
       }
    };
+*/
 
 
 
@@ -235,6 +241,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
     * system UI. This is to prevent the jarring behavior of controls going away
     * while interacting with activity UI.
     */
+/*
    private final View.OnTouchListener mStopTouchListener = new View.OnTouchListener() {
       @Override
       public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -252,11 +259,13 @@ public class StopSnoozeActivity extends AppCompatActivity {
                stopIntent.putExtras(extras);
                AlarmReceiver.stopping(context, stopIntent );
 
-               /*
+               */
+/*
                // Leave this activity to main activity
                Intent intent = new Intent(context, MainActivity.class);
                startActivity(intent);
-                */
+                *//*
+
 
                // Kill this activity
                finish();
@@ -271,6 +280,8 @@ public class StopSnoozeActivity extends AppCompatActivity {
          return false;
       }
    };
+*/
+/*
    private final View.OnTouchListener mSnoozeTouchListener = new View.OnTouchListener() {
       @Override
       public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -285,10 +296,12 @@ public class StopSnoozeActivity extends AppCompatActivity {
                Intent snoozeIntent = new Intent(context, AlarmService.class);
                snoozeIntent.putExtras(extras);
                AlarmReceiver.snoozing(context, snoozeIntent );
+*/
 /*
                // Leave this activity to main activity
                Intent intent = new Intent(context, MainActivity.class);
-               startActivity(intent);*/
+               startActivity(intent);*//*
+
 
                // Kill this activity
                finish();
@@ -303,6 +316,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
          return false;
       }
    };
+*/
    private ActivityStopSnoozeBinding binding;
 
 
@@ -325,7 +339,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       setContentView(binding.getRoot());
 
       mVisible = true;
-      mControlsView = binding.fullscreenContentControls;
+      //mControlsView = binding.fullscreenContentControls;
       //mContentView = binding.fullscreenContent;
 
       //footer = findViewById(R.id.footnote);
@@ -409,7 +423,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       extras = getIntent().getExtras();
 
       // Set the snooze button text
-      View v = binding.getRoot();
+      // View v = binding.getRoot();
       //TextView snoozeButton = v.findViewById(R.id.snooze_button);
       //String strSnoozeDuration = extras.getString(appContext.getString(R.string.key_snooze_duration), "");
       //snoozeButton.setText(snoozeButtonText(strSnoozeDuration));
@@ -458,7 +472,7 @@ public class StopSnoozeActivity extends AppCompatActivity {
       if (actionBar != null) {
          actionBar.hide();
       }
-      mControlsView.setVisibility(View.GONE);
+      //mControlsView.setVisibility(View.GONE);
       mVisible = false;
 
       // Schedule a runnable to remove the status and navigation bar after a delay
