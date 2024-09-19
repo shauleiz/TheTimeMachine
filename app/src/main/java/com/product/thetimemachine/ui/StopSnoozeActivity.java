@@ -398,6 +398,8 @@ public class StopSnoozeActivity extends AppCompatActivity {
 
             // Refresh Text
             DisplayScreenText();
+
+            display.getTriggerTimeDisplay().setValue(true);
          }
       };
 

@@ -27,8 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,19 +51,20 @@ import com.product.thetimemachine.R
 
 class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
+    val triggerTimeDisplay = mutableStateOf(false)
+
 
     fun setContent(composeView: ComposeView) {
         composeView.setContent { StopSnoozeDisplayTop() }
     }
     @Composable
     fun StopSnoozeDisplayTop() {
-
         Surface{
             MaterialTheme {
                 if (isPortrait())
-                    ContentViewComposePortrait(activity.DisplayScreenText())
+                    ContentViewComposePortrait()
                 else
-                    ContentViewComposeLand(activity.DisplayScreenText() )
+                    ContentViewComposeLand( )
             }
         }
     }
@@ -69,7 +72,7 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
 
     @Composable
-    private fun ContentViewComposePortrait(name: String) {
+    private fun ContentViewComposePortrait() {
         Log.d(
             "THE_TIME_MACHINE",
             "called: ContentViewComposePortrait"
@@ -83,7 +86,7 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
             ){
             // Label + Alarm time
-            HeaderText(name)
+            HeaderText(triggerTimeDisplay.value)
 
             // Image (Stop) that serves as stop-button
             Spacer(modifier = Modifier.size(20.dp))
@@ -101,7 +104,7 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
     }
 
     @Composable
-    private fun ContentViewComposeLand(name: String) {
+    private fun ContentViewComposeLand() {
         Log.d(
             "THE_TIME_MACHINE",
             "called: ContentViewComposeLand"
@@ -115,7 +118,7 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
             verticalArrangement = Arrangement.SpaceBetween
         ){
             // Label + Alarm time
-            HeaderText(name)
+            HeaderText(triggerTimeDisplay.value)
 
             Row (
                 modifier =
@@ -145,9 +148,10 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
 
     @Composable
     // Label + Alarm time
-    private fun HeaderText(name :String){
+    private fun HeaderText(trigger: Boolean){
+
         Text(
-            text = name,
+            text = activity.DisplayScreenText(),
             style = MaterialTheme.typography.headlineLarge,
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
@@ -159,15 +163,17 @@ class StopSnoozeDisplay (private val activity: StopSnoozeActivity) {
                 .padding(horizontal = 5.dp, vertical = 24.dp)
                 .wrapContentWidth(Alignment.CenterHorizontally)
         )
+        triggerTimeDisplay.value = false;
     }
 
     @Composable
     // Footer: App name
     private fun FooterText(){
+
         Box ()
         {
             Text(
-                text =  activity.footerText,
+                text =  activity.footerText ,
                 style = MaterialTheme.typography.headlineLarge,
                 color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
                 fontSize = 16.sp,
