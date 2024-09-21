@@ -54,6 +54,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
@@ -404,7 +405,6 @@ class StopSnoozeActivity : AppCompatActivity() {
                modifier = Modifier
                    .background(color = colorResource(R.color.light_blue_A400))
                    .fillMaxWidth()
-                   .padding(horizontal = 5.dp)
                    .wrapContentWidth(Alignment.CenterHorizontally)
                    .padding(horizontal = 5.dp, vertical = 24.dp)
                    .align(alignment = Alignment.BottomCenter),
@@ -433,6 +433,7 @@ class StopSnoozeActivity : AppCompatActivity() {
                fontSize =  30.sp,
                fontFamily = FontFamily.SansSerif,
                color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
+               textAlign = TextAlign.Center,
                modifier = Modifier.align(alignment = Alignment.Center),
            )
 
@@ -470,6 +471,7 @@ class StopSnoozeActivity : AppCompatActivity() {
                color =  colorResource(com.google.android.material.R.color.design_default_color_surface),
                fontSize =  30.sp,
                fontFamily = FontFamily.SansSerif,
+               textAlign = TextAlign.Center,
                modifier = Modifier.align(alignment = Alignment.Center),
            )
 
