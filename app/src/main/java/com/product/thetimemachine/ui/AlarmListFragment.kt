@@ -19,6 +19,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.material3.Text
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
@@ -34,15 +36,11 @@ import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 
-class AlarmListFragment  // Required empty public constructor
-    : Fragment() {
+class AlarmListFragment : Fragment() {
     private var parent: MainActivity? = null
     private var alarmAdapter: AlarmAdapter? = null
-
     private var alarmList: List<AlarmItem>? = null
-
     private var fragmentView: View? = null
-
     private var selectedItems: ArrayList<Int>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +53,7 @@ class AlarmListFragment  // Required empty public constructor
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val v = super.onCreateView(inflater, container, savedInstanceState)
         // Create Adapter for the Recycler View
 
         alarmList = parent!!.alarmViewModel.alarmList.value
@@ -67,8 +66,11 @@ class AlarmListFragment  // Required empty public constructor
             ArrayList()
         }
 
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_alarm_list, container, false)
+        return ComposeView(requireContext()).apply {
+            setContent {
+                Text(text = "Hello world.")
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -87,7 +89,7 @@ class AlarmListFragment  // Required empty public constructor
         (requireActivity() as AppCompatActivity).setSupportActionBar(AppToolbar)
         parent!!.UpdateOptionMenu()
 
-        // Add Alarm button (FAB)
+        /*// Add Alarm button (FAB)
         val addAlarm_Button = view.findViewById<FloatingActionButton>(R.id.Add_Alarm_fab)
         addAlarm_Button.setOnClickListener { v: View? -> AddAlarmClicked() }
 
@@ -97,7 +99,7 @@ class AlarmListFragment  // Required empty public constructor
         rvAlarms.layoutManager = LinearLayoutManager(context)
         // Attach the adapter to the recyclerview to populate items
         // (The Adapter was created previously in onCreateView())
-        rvAlarms.adapter = alarmAdapter
+        rvAlarms.adapter = alarmAdapter*/
 
         // Create observer to inform recycler view that there was a change in the list
         /*
@@ -158,10 +160,13 @@ class AlarmListFragment  // Required empty public constructor
                 AlarmItemLongClicked(alarmList!![position].getCreateTime())
             }
         }
+
         // Decoration
+/*
         val itemDecoration: ItemDecoration =
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         rvAlarms.addItemDecoration(itemDecoration)
+*/
     }
 
 
