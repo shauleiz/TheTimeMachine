@@ -20,9 +20,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +42,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
@@ -511,25 +524,55 @@ class AlarmListFragment : Fragment() {
         // Observes values coming from the VM's LiveData<Plant> field
         val alarmList by alarmViewModel.alarmList.observeAsState()
 
-        // Display List of Alarms
-        alarmList?.let { DisplayAlarmList(it) }
+        Scaffold (
+            // Display "Add" floating button
+            floatingActionButton =  {DisplayAddFloatButton()},
+            floatingActionButtonPosition = FabPosition.End,
+        ) {it
+            DisplayAlarmList(alarmList)
+        }
 
-
-        // Display "Add" floating button
     }
+
 
     @Composable
     fun AlarmListFragDisplayLand(alarmViewModel : AlarmViewModel){}
 
     @Composable
-    fun DisplayAlarmList (list : List<AlarmItem>){
+    fun DisplayAlarmList (list: MutableList<AlarmItem>?) {
+
         LazyColumn(Modifier.fillMaxSize()) {
-            items(list.size) {
-                val fmt = requireContext().resources.getString(R.string.alarm_format)
-                val alarmTime = String.format(fmt,(list[it].getHour()), (list[it].getMinute()))
-                Text(list[it].getLabel() + " :: " + alarmTime)}
+            if (list != null) {
+                items(list.size) {DisplayAlarmItem(list[it]) }
+            }
         }
+
     }
 
+    @Composable
+    private fun DisplayAlarmItem(alarmItem: AlarmItem) {
+        val fmt = requireContext().resources.getString(R.string.alarm_format)
+        val alarmTime = String.format(fmt,alarmItem.getHour(), alarmItem.getMinute())
+        Text(alarmItem.getLabel() + " -- " + alarmTime)
+    }
+
+    @Composable
+    private fun DisplayAddFloatButton(){
+       FloatingActionButton(
+            onClick = onAddFloatButtonClick ,
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.secondary,
+        )
+        { Icon(
+            painter = painterResource(R.drawable.baseline_alarm_add_48),
+            contentDescription = requireContext().resources.getString(R.string.alarm_add),
+            modifier = Modifier.size(24.dp),
+        )
+       }
+
+
+    }
+
+    private val onAddFloatButtonClick = { /* Do something */ }
 
 }
