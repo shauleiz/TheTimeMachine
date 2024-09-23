@@ -4,6 +4,7 @@ import android.Manifest.permission
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -19,20 +20,24 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
+import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 
@@ -66,11 +71,8 @@ class AlarmListFragment : Fragment() {
             ArrayList()
         }
 
-        return ComposeView(requireContext()).apply {
-            setContent {
-                Text(text = "Hello world.")
-            }
-        }
+        // Start the compose display
+        return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -486,4 +488,48 @@ class AlarmListFragment : Fragment() {
             return (b.getCreateTime() - a.getCreateTime()).toInt()
         }
     }
+
+
+
+    /*** Composable Functions ***/
+    //
+    /* Top level Display - Call Portrait/Landscape Content View */
+    @Composable
+    fun AlarmListFragDisplayTop() {
+        Surface{
+            MaterialTheme {
+                if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT)
+                    AlarmListFragDisplayPortrait(parent!!.alarmViewModel)
+                else
+                    AlarmListFragDisplayLand(parent!!.alarmViewModel )
+            }
+        }
+    }
+
+    @Composable
+    fun AlarmListFragDisplayPortrait(alarmViewModel : AlarmViewModel){
+        // Observes values coming from the VM's LiveData<Plant> field
+        val alarmList by alarmViewModel.alarmList.observeAsState()
+
+        // Display List of Alarms
+        alarmList?.let { DisplayAlarmList(it) }
+
+
+        // Display "Add" floating button
+    }
+
+    @Composable
+    fun AlarmListFragDisplayLand(alarmViewModel : AlarmViewModel){}
+
+    @Composable
+    fun DisplayAlarmList (list : List<AlarmItem>){
+        LazyColumn(Modifier.fillMaxSize()) {
+            items(list.size) {
+                val fmt = requireContext().resources.getString(R.string.alarm_format)
+                val alarmTime = String.format(fmt,(list[it].getHour()), (list[it].getMinute()))
+                Text(list[it].getLabel() + " :: " + alarmTime)}
+        }
+    }
+
+
 }

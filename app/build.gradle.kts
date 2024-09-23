@@ -77,6 +77,7 @@ dependencies {
     implementation("androidx.compose.material3:material3-android:1.3.0")
     implementation("androidx.compose.ui:ui-tooling-preview-android:1.7.0")
     implementation("androidx.compose.ui:ui-tooling-preview-desktop:1.7.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
 
 
     testImplementation("junit:junit:4.13.2")
