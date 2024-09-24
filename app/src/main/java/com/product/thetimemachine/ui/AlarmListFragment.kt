@@ -20,27 +20,33 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
@@ -82,9 +88,9 @@ class AlarmListFragment : Fragment() {
             ArrayList()
         }
 
-        return v
+        return binding.root
         // Start the compose display
-        // return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
+        //return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -379,11 +385,9 @@ class AlarmListFragment : Fragment() {
 
         // Replace current fragment with the Setup Alarm fragment
         parent = activity as MainActivity?
-        if (parent != null) {
-            parent!!.supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
-                .addToBackStack("tag2").commit()
-        }
+        if (parent != null) parent!!.supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
+            .addToBackStack("tag2").commit()
     }
 
     fun DeleteSelectedAlarms() {
@@ -574,6 +578,6 @@ class AlarmListFragment : Fragment() {
 
     }
 
-    private val onAddFloatButtonClick = { AddAlarmClicked()}
+    private val onAddFloatButtonClick = { /* Do something */ }
 
 }
