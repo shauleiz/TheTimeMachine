@@ -32,4 +32,9 @@
         android:tooltipText="Add Alarm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/alarm_list_compose_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

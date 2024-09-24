@@ -380,9 +380,11 @@ class AlarmListFragment : Fragment() {
 
         // Replace current fragment with the Setup Alarm fragment
         parent = activity as MainActivity?
-        if (parent != null) parent!!.supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
-            .addToBackStack("tag2").commit()
+        if (parent != null) {
+            parent!!.supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
+                .addToBackStack("tag2").commit()
+        }
     }
 
     fun DeleteSelectedAlarms() {
@@ -573,6 +575,6 @@ class AlarmListFragment : Fragment() {
 
     }
 
-    private val onAddFloatButtonClick = { /* Do something */ }
+    private val onAddFloatButtonClick = { AddAlarmClicked()}
 
 }
