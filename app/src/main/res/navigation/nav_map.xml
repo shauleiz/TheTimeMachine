@@ -15,4 +15,14 @@
         android:name="com.product.thetimemachine.ui.SetUpAlarmFragment"
         android:label="fragment_set_up_alarm"
         tools:layout="@layout/fragment_set_up_alarm" />
+    <fragment
+        android:id="@+id/alarmListFragment"
+        android:name="com.product.thetimemachine.ui.AlarmListFragment"
+        android:label="fragment_alarm_list"
+        tools:layout="@layout/fragment_alarm_list" >
+        <action
+            android:id="@+id/action_alarmListFragment_to_setUpAlarmFragment"
+            app:destination="@id/setUpAlarmFragment"
+            app:launchSingleTop="true" />
+    </fragment>
 </navigation>
