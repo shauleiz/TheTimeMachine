@@ -80,6 +80,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.1")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.1")
+    implementation("androidx.databinding:databinding-runtime:8.6.1")
 
 
     testImplementation("junit:junit:4.13.2")

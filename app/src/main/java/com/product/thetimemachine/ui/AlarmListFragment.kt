@@ -66,9 +66,8 @@ class AlarmListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = DataBindingUtil.inflate<FragmentAlarmListBinding>(
-            inflater, R.layout.fragment_alarm_list, container, false
-        ).apply { alarmListComposeView.setContent { MaterialTheme { AlarmListFragDisplayTop() } } }
+        val binding = FragmentAlarmListBinding.inflate( layoutInflater)
+        .apply { alarmListComposeView.setContent { MaterialTheme { AlarmListFragDisplayTop() } } }
 
         val v = super.onCreateView(inflater, container, savedInstanceState)
         // Create Adapter for the Recycler View
