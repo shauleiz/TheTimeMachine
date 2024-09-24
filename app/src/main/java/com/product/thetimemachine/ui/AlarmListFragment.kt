@@ -53,6 +53,7 @@ import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
+import com.product.thetimemachine.databinding.FragmentAlarmListBinding
 
 class AlarmListFragment : Fragment() {
     private var parent: MainActivity? = null
@@ -71,6 +72,9 @@ class AlarmListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val binding = FragmentAlarmListBinding.inflate( layoutInflater)
+        .apply { alarmListComposeView.setContent { MaterialTheme { AlarmListFragDisplayTop() } } }
+
         val v = super.onCreateView(inflater, container, savedInstanceState)
         // Create Adapter for the Recycler View
 
@@ -84,8 +88,9 @@ class AlarmListFragment : Fragment() {
             ArrayList()
         }
 
+        return binding.root
         // Start the compose display
-        return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
+        //return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
