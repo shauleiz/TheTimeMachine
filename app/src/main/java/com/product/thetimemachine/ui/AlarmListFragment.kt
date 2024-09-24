@@ -20,39 +20,34 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
+import com.product.thetimemachine.databinding.FragmentAlarmListBinding
 
 class AlarmListFragment : Fragment() {
     private var parent: MainActivity? = null
@@ -71,6 +66,10 @@ class AlarmListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val binding = DataBindingUtil.inflate<FragmentAlarmListBinding>(
+            inflater, R.layout.fragment_alarm_list, container, false
+        ).apply { alarmListComposeView.setContent { MaterialTheme { AlarmListFragDisplayTop() } } }
+
         val v = super.onCreateView(inflater, container, savedInstanceState)
         // Create Adapter for the Recycler View
 
@@ -84,8 +83,9 @@ class AlarmListFragment : Fragment() {
             ArrayList()
         }
 
+        return v
         // Start the compose display
-        return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
+        // return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
