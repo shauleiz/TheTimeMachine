@@ -102,6 +102,7 @@ dependencies {
     //implementation ("com.github.wisnukurniawan:date-time-range-picker-android:1.0.10")
     implementation ("com.squareup:android-times-square:1.7.11")
     implementation ("com.google.code.gson:gson:2.8.5")
-
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation ("androidx.constraintlayout:constraintlayout-core:1.0.4")
     implementation ("androidx.activity:activity-compose:1.9.2")
 }

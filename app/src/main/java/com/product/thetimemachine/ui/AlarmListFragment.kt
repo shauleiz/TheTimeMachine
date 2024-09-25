@@ -20,30 +20,43 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
@@ -53,7 +66,9 @@ import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
-import com.product.thetimemachine.databinding.FragmentAlarmListBinding
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.content.ContentProviderCompat.requireContext
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.io.Resources
 
 class AlarmListFragment : Fragment() {
     private var parent: MainActivity? = null
@@ -72,10 +87,7 @@ class AlarmListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = FragmentAlarmListBinding.inflate( layoutInflater)
-        .apply { alarmListComposeView.setContent { MaterialTheme { AlarmListFragDisplayTop() } } }
 
-        val v = super.onCreateView(inflater, container, savedInstanceState)
         // Create Adapter for the Recycler View
 
         alarmList = parent!!.alarmViewModel.alarmList.value
@@ -88,9 +100,8 @@ class AlarmListFragment : Fragment() {
             ArrayList()
         }
 
-        return binding.root
         // Start the compose display
-        //return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
+        return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -515,12 +526,12 @@ class AlarmListFragment : Fragment() {
     @Composable
     fun AlarmListFragDisplayTop() {
         Surface{
-            MaterialTheme {
+            /*MaterialTheme*/
                 if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT)
                     AlarmListFragDisplayPortrait(parent!!.alarmViewModel)
                 else
                     AlarmListFragDisplayLand(parent!!.alarmViewModel )
-            }
+
         }
     }
 
@@ -546,7 +557,9 @@ class AlarmListFragment : Fragment() {
     @Composable
     fun DisplayAlarmList (list: MutableList<AlarmItem>?) {
 
-        LazyColumn(Modifier.fillMaxSize()) {
+        LazyColumn(Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp)
+        ) {
             if (list != null) {
                 items(list.size) {DisplayAlarmItem(list[it]) }
             }
@@ -558,8 +571,74 @@ class AlarmListFragment : Fragment() {
     private fun DisplayAlarmItem(alarmItem: AlarmItem) {
         val fmt = requireContext().resources.getString(R.string.alarm_format)
         val alarmTime = String.format(fmt,alarmItem.getHour(), alarmItem.getMinute())
-        Text(alarmItem.getLabel() + " -- " + alarmTime)
+        Card(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .wrapContentHeight(),
+                shape = MaterialTheme.shapes.small,
+                elevation = CardDefaults.elevatedCardElevation(10.dp),
+                colors = CardDefaults.elevatedCardColors(),
+            ) {
+                ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+                    val refLabel = createRef()
+                    val refBell = createRef()
+                    val refAlarmTime = createRef()
+                    val refAlarmActive = createRef()
+
+
+                    // Bell Icon
+                    /*
+                    Image(
+                        painter = painterResource(id = R.drawable.baseline_alarm_off_24),
+                        contentDescription = stringResource(R.string.temp_icon),
+                        //painter = painterResource(id = android.R.drawable.ic_lock_idle_alarm),
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(start = 8.dp)
+                            .constrainAs(refBell) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                                top.linkTo(parent.top)
+                            }
+                        )*/
+
+                    // Alarm Label
+                    Text(
+                        alarmItem.getLabel(),
+                        textAlign = TextAlign.Start,
+                        color = colorResource(com.google.android.material.R.color.m3_default_color_primary_text),
+                        fontSize = 20.sp,
+                        modifier = Modifier
+                            .width(236.dp)
+                            .height(29.dp)
+                            //.padding(start = 8.dp, bottom = 6.dp)
+                            .constrainAs(refLabel) {
+                            bottom.linkTo(parent.bottom, margin = 6.dp) // alarmTime
+                            start.linkTo(refAlarmActive.end, margin = 8.dp) //
+                        },
+                        )
+                    // Alarm Active Checkbox
+                    val isChecked = remember { mutableStateOf(false) }
+                    Checkbox(checked = isChecked.value,
+                        onCheckedChange = { isChecked.value = it },
+                        enabled = true,
+                        //colors = CheckboxDefaults.colors(custom),
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .size(3.dp)
+                            .constrainAs(refAlarmActive){
+                                start.linkTo(parent.start)
+                                top.linkTo(parent.top, margin = 8.dp)
+                            },
+                        )
+
+                }
+            }
     }
+
 
     @Composable
     private fun DisplayAddFloatButton(){
