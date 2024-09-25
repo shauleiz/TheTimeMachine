@@ -573,6 +573,6 @@ class AlarmListFragment : Fragment() {
 
     }
 
-    private val onAddFloatButtonClick = { /* Do something */ }
+    private val onAddFloatButtonClick = { AddAlarmClicked()}
 
 }
