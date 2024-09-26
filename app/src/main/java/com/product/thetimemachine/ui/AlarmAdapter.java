@@ -226,43 +226,43 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         //if (!alarmItem.isActive())
         //    return;
 
-        // Is it a One-Off case? If so, is the alarm set for today or tomorrow?
-        if (alarmItem.isOneOff()){
-            if (alarmItem.isToday()) {
-                word = new SpannableString(context.getString(R.string.day_today));
-                if (alarmItem.isActive())
-                    word.setSpan(new ForegroundColorSpan(Color.RED),
-                      0, word.length(),
-                      Spannable.SPAN_INCLUSIVE_INCLUSIVE);}
-            else if (alarmItem.isTomorrow()) {
-                word = new SpannableString(context.getString(R.string.day_tomorrow));
-                if (alarmItem.isActive())
-                    word.setSpan(new ForegroundColorSpan(getColor(context,
-                            R.color.light_blue_600)),
-                      0, word.length(),
-                      Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-            } else {
-                SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.US);
-                long alarmTime = alarmItem.alarmTimeInMillis();
-                word = new SpannableString(format.format(alarmTime));
-                if (alarmItem.isActive())
-                    word.setSpan(new ForegroundColorSpan(
-                                MaterialColors.getColor(context, R.attr.primary_text, Color.BLACK)),
+            // Is it a One-Off case? If so, is the alarm set for today or tomorrow?
+            if (alarmItem.isOneOff()){
+                if (alarmItem.isToday()) {
+                    word = new SpannableString(context.getString(R.string.day_today));
+                    if (alarmItem.isActive())
+                        word.setSpan(new ForegroundColorSpan(Color.RED),
+                          0, word.length(),
+                          Spannable.SPAN_INCLUSIVE_INCLUSIVE);}
+                else if (alarmItem.isTomorrow()) {
+                    word = new SpannableString(context.getString(R.string.day_tomorrow));
+                    if (alarmItem.isActive())
+                        word.setSpan(new ForegroundColorSpan(getColor(context,
+                                R.color.light_blue_600)),
                           0, word.length(),
                           Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                } else {
+                    SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.US);
+                    long alarmTime = alarmItem.alarmTimeInMillis();
+                    word = new SpannableString(format.format(alarmTime));
+                    if (alarmItem.isActive())
+                        word.setSpan(new ForegroundColorSpan(
+                                    MaterialColors.getColor(context, R.attr.primary_text, Color.BLACK)),
+                              0, word.length(),
+                              Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                }
             }
-        }
-        // This is a repeating alarm - print the weekdays
-        else{
-            // By default - all days are grayed
-            if (pref_first_day_of_week().equals("Su")) {
-                word = new SpannableString(context.getString(R.string.su_mo_tu_we_th_fr_sa));
-                gen_array = su_array;
-            }
-            else {
-                word = new SpannableString(context.getString(R.string.mo_tu_we_th_fr_sa_su));
-                gen_array = mo_array;
-            }
+            // This is a repeating alarm - print the weekdays
+            else{
+                // By default - all days are grayed
+                if (pref_first_day_of_week().equals("Su")) {
+                    word = new SpannableString(context.getString(R.string.su_mo_tu_we_th_fr_sa));
+                    gen_array = su_array;
+                }
+                else {
+                    word = new SpannableString(context.getString(R.string.mo_tu_we_th_fr_sa_su));
+                    gen_array = mo_array;
+                }
 
             // Color of days that are selected / not selected
             int notSelectedTextColor = MaterialColors.getColor(context, R.attr.faded_text, Color.BLACK);

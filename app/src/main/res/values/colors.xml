@@ -22,4 +22,5 @@
     <color name="custom_background_disabled">@color/calendar_inactive_month_bg</color>
     <color name="custom_text_selected">#FFFFFFFF</color>
     <color name="custom_text_inactive">#7f778088</color>
+    <color name="RealRed">#E90F0A</color>
 </resources>

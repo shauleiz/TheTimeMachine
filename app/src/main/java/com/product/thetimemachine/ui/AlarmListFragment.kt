@@ -1,6 +1,5 @@
 package com.product.thetimemachine.ui
 
-import android.Manifest.permission
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Context
 import android.content.Intent
@@ -20,20 +19,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -41,22 +37,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
@@ -66,9 +68,11 @@ import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.core.content.ContentProviderCompat.requireContext
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.io.Resources
+import com.product.thetimemachine.ui.SettingsFragment.pref_first_day_of_week
+import com.product.thetimemachine.ui.SettingsFragment.pref_is24HourClock
+import java.text.SimpleDateFormat
+import java.util.Locale
+
 
 class AlarmListFragment : Fragment() {
     private var parent: MainActivity? = null
@@ -115,8 +119,8 @@ class AlarmListFragment : Fragment() {
         fragmentView = view
 
         // Toolbar: Title + Menu
-        val AppToolbar = requireActivity().findViewById<Toolbar>(R.id.app_toolbar)
-        AppToolbar.setTitle(R.string.alarmlist_title)
+        val AppToolbar = requireActivity().findViewById<Toolbar>(com.product.thetimemachine.R.id.app_toolbar)
+        AppToolbar.setTitle(com.product.thetimemachine.R.string.alarmlist_title)
         (requireActivity() as AppCompatActivity).setSupportActionBar(AppToolbar)
         parent!!.UpdateOptionMenu()
 
@@ -206,7 +210,7 @@ class AlarmListFragment : Fragment() {
     // If not enabled - launches request for permission that defines the callback to run
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private fun CheckPermissions() {
-        val permission = ContextCompat.checkSelfPermission(parent!!, permission.POST_NOTIFICATIONS)
+        val permission = ContextCompat.checkSelfPermission(parent!!, POST_NOTIFICATIONS)
         if (permission == PermissionChecker.PERMISSION_GRANTED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Granted")
             //AddAlarm_Button.setEnabled(true);;
@@ -290,7 +294,7 @@ class AlarmListFragment : Fragment() {
     // Get new state of checkbox
     // Send update to this item down to the ViewModel
     // Schedule/cancel alarm
-    fun ActiveCheckboxChanged(view: View, position: Int) {
+    private fun ActiveCheckboxChanged(view: View, position: Int) {
         // Get alarm item data from list
 
         var b = alarmList!![position].bundle
@@ -326,7 +330,7 @@ class AlarmListFragment : Fragment() {
      *   If parameter edit if false - this means that this item should be duplicated
      *   rather than edited
      */
-    fun AlarmItemEdit(item: AlarmItem?, edit: Boolean) {
+    private fun AlarmItemEdit(item: AlarmItem?, edit: Boolean) {
         if (item == null) return
 
         // Copy values from the selected item to be used by the setup fragment
@@ -362,7 +366,7 @@ class AlarmListFragment : Fragment() {
       -- Single: 1 item selected
       -- Multi: 2 or more items selected
      */
-    fun AlarmItemLongClicked(id: Long) {
+    private fun AlarmItemLongClicked(id: Long) {
         // get the list of alarms
         //List<AlarmItem> alarmItems = parent.alarmViewModel.getAlarmList().getValue();
         //if (alarmItems==null) return;
@@ -382,7 +386,7 @@ class AlarmListFragment : Fragment() {
     * Create a bundle with data to be passed to the setup fragment
     * Replace this fragment by setup fragment
     * */
-    fun AddAlarmClicked() {
+    private fun AddAlarmClicked() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             CheckPermissions()
         }
@@ -526,12 +530,12 @@ class AlarmListFragment : Fragment() {
     @Composable
     fun AlarmListFragDisplayTop() {
         Surface{
-            /*MaterialTheme*/
+            MaterialTheme{/**/
                 if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT)
                     AlarmListFragDisplayPortrait(parent!!.alarmViewModel)
                 else
                     AlarmListFragDisplayLand(parent!!.alarmViewModel )
-
+            }
         }
     }
 
@@ -571,14 +575,16 @@ class AlarmListFragment : Fragment() {
     private fun DisplayAlarmItem(alarmItem: AlarmItem) {
         val fmt = requireContext().resources.getString(R.string.alarm_format)
         val alarmTime = String.format(fmt,alarmItem.getHour(), alarmItem.getMinute())
+        val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
         Card(
                 modifier = Modifier
                     .padding(5.dp)
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surface)
+                    //.height(100.dp),
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.small,
-                elevation = CardDefaults.elevatedCardElevation(10.dp),
+                elevation = CardDefaults.elevatedCardElevation(5.dp),
                 colors = CardDefaults.elevatedCardColors(),
             ) {
                 ConstraintLayout(modifier = Modifier.fillMaxSize()) {
@@ -586,6 +592,8 @@ class AlarmListFragment : Fragment() {
                     val refBell = createRef()
                     val refAlarmTime = createRef()
                     val refAlarmActive = createRef()
+                    val refAmPm24h = createRef()
+                    val refWeekdays = createRef()
 
 
                     // Bell Icon
@@ -612,33 +620,75 @@ class AlarmListFragment : Fragment() {
                         color = colorResource(com.google.android.material.R.color.m3_default_color_primary_text),
                         fontSize = 20.sp,
                         modifier = Modifier
-                            .width(236.dp)
-                            .height(29.dp)
-                            //.padding(start = 8.dp, bottom = 6.dp)
+                            .alpha(currentAlpha)
                             .constrainAs(refLabel) {
-                            bottom.linkTo(parent.bottom, margin = 6.dp) // alarmTime
-                            start.linkTo(refAlarmActive.end, margin = 8.dp) //
-                        },
+                                centerVerticallyTo(refAlarmActive, bias = 0.7f)
+                                start.linkTo(refAlarmActive.end, margin = 8.dp) //
+                            },
                         )
+
+                    // Weekdays / Today / Tomorrow
+                    Text(
+                        getDisplayWeekdays(alarmItem),
+                        textAlign = TextAlign.End,
+                        color = colorResource(com.google.android.material.R.color.m3_default_color_primary_text),
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            //.height(30.dp)
+                            //.padding(bottom = 8.dp)
+                            .alpha(currentAlpha)
+                            .constrainAs(refWeekdays) {
+                                end.linkTo(refAlarmTime.end)
+                                bottom.linkTo(refAlarmTime.top) //
+                            },
+                    )
+
                     // Alarm Active Checkbox
                     val isChecked = remember { mutableStateOf(false) }
-                    Checkbox(checked = isChecked.value,
+                    Checkbox(
+                        checked = isChecked.value,
                         onCheckedChange = { isChecked.value = it },
                         enabled = true,
                         //colors = CheckboxDefaults.colors(custom),
                         modifier = Modifier
-                            .padding(5.dp)
-                            .size(3.dp)
-                            .constrainAs(refAlarmActive){
-                                start.linkTo(parent.start)
-                                top.linkTo(parent.top, margin = 8.dp)
+                            .constrainAs(refAlarmActive) {
+                                start.linkTo(parent.start, margin = 8.dp)
+                                linkTo(top = parent.top, bottom = parent.bottom, bias = 0.9f)
                             },
+                    )
+
+                    // Am/Pm/24h annotation
+                    Text(
+                        stringResource(id = getAmPm24h(alarmItem)),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .constrainAs(refAmPm24h) {
+                                bottom.linkTo(parent.bottom, margin = 2.dp)
+                                end.linkTo(parent.end, margin = 8.dp)
+                            }
                         )
 
+                    // Alarm Time
+                    Text(
+                        getDisplayAlarmTime(alarmItem),
+                        fontSize = 34.sp,
+                        color = getPrimaryTextColor(alarmItem),
+                        modifier = Modifier
+                            .constrainAs(refAlarmTime){
+                                bottom.linkTo(parent.bottom)
+                                end.linkTo(refAmPm24h.start)
+                            }
+                    )
                 }
             }
     }
 
+    @Composable
+    private fun getPrimaryTextColor(alarmItem: AlarmItem) : androidx.compose.ui.graphics.Color {
+         if (alarmItem.isActive) return MaterialTheme.colorScheme.primary
+        else return MaterialTheme.colorScheme.inversePrimary
+    }
 
     @Composable
     private fun DisplayAddFloatButton(){
@@ -658,5 +708,169 @@ class AlarmListFragment : Fragment() {
     }
 
     private val onAddFloatButtonClick = { AddAlarmClicked()}
+
+    private fun getAmPm24h(alarmItem: AlarmItem ) : Int {
+        // Time
+        val h = alarmItem.getHour();
+        return if (pref_is24HourClock())
+            (R.string.format_24h)
+        else {
+            if (h == 0) {
+                (R.string.format_am)
+            } else if (h < 12)
+                (R.string.format_am)
+            else {
+                (R.string.format_pm)
+            }
+        }
+    }
+
+    @Composable
+    private fun  getDisplayAlarmTime(alarmItem: AlarmItem ) : String {
+
+        // Time
+        var h = alarmItem.getHour()
+        if (pref_is24HourClock())
+        else {
+            if (h == 0) {
+                h = 12
+            } else if (h < 12)
+            else {
+                if (h != 12) h -= 12
+            }
+        }
+        val fmt = stringResource(R.string.alarm_format)
+        val alarmTime = java.lang.String.format(fmt, h, alarmItem.getMinute())
+        return(alarmTime)
+    }
+
+
+    @Composable
+    private fun getDisplayWeekdays(alarmItem: AlarmItem) : AnnotatedString {
+
+        val defaultColor = colorResource(com.google.android.material.R.color.m3_default_color_primary_text)
+
+        /// Is it a One-Off case? If so, is the alarm set for today or tomorrow?
+        if (alarmItem.isOneOff) {
+
+            // Today - Active(Red) or inactive (pale Primary)
+            if (alarmItem.isToday()) {
+                //val todayColorId = if (alarmItem.isActive) colorResource(R.color.RealRed) else MaterialTheme.colorScheme.inversePrimary
+                return ((buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = colorResource(R.color.RealRed))) {
+                        append(stringResource(R.string.day_today))
+                    }
+                }))
+            }
+
+            // Tomorrow - Active(Blue) or inactive (pale Primary)
+            if (alarmItem.isTomorrow()) {
+                //val tomorrowColorId = if (alarmItem.isActive) colorResource(R.color.light_blue_600) else MaterialTheme.colorScheme.inversePrimary
+                return ((buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = colorResource(R.color.light_blue_600))) {
+                        append(stringResource(R.string.day_tomorrow))
+                    }
+                }))
+
+                // Future Date
+            } /**/else {
+                val format  =   SimpleDateFormat("EEEE, MMMM d, yyyy", Locale("US"))
+                val alarmTime = alarmItem.alarmTimeInMillis();
+                val word =  format.format(alarmTime);
+                if (alarmItem.isActive)
+                    return ((buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = defaultColor)) {
+                            append(word)
+                        }
+                    }))
+            }
+        }
+
+        // Repeating
+        return getAnnotatedWeekdays(alarmItem)
+
+         /*
+        // This is a repeating alarm - print the weekdays
+        else {
+            // By default - all days are grayed
+            if (pref_first_day_of_week().equals("Su")) {
+                return ((buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = defaultColor)) {
+                        append(stringResource(R.string.su_mo_tu_we_th_fr_sa))
+                    }
+                }))
+            } else {
+                return ((buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = defaultColor)) {
+                        append(stringResource(R.string.mo_tu_we_th_fr_sa_su))
+                    }
+                }))
+            }
+        }
+        return ((buildAnnotatedString {
+            withStyle(style = SpanStyle(color = defaultColor)) {
+                append ("Error")
+            }
+        }))*/
+    }
+
+    @Composable
+    private fun getAnnotatedWeekdays(alarmItem: AlarmItem): AnnotatedString {
+
+        val suArray = intArrayOf(0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20)
+        val moArray = intArrayOf(18, 20, 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20)
+        val genArray: IntArray
+        val weekdaysString: String
+
+        // Get the array os 'skips' and the correct weekdays string
+        when (pref_first_day_of_week()) {
+            "Su" -> {
+                weekdaysString = stringResource(R.string.su_mo_tu_we_th_fr_sa)
+                genArray = suArray
+            }
+
+            else -> {
+                weekdaysString = stringResource(R.string.mo_tu_we_th_fr_sa_su)
+                genArray = moArray
+            }
+        }
+
+        val defaultColor =
+            colorResource(com.google.android.material.R.color.m3_default_color_primary_text)
+        val fadedColor = colorResource(id = R.color.light_gray)
+
+        // If inactive - just print string in default color
+        if (!alarmItem.isActive)
+            return buildAnnotatedString {
+                withStyle(style = SpanStyle(color = defaultColor)) {
+                    append(weekdaysString)
+                }
+            }
+
+        // If Active - Set color to selected/unselected days and mark the next day with underline
+        val indexOfNextDay = alarmItem.weekdayOfNextAlarm
+        val weekdays = alarmItem.getWeekDays()
+        var substr: String
+        var currentColor: Color
+        var underlined: TextDecoration
+
+        Log.d("THE_TIME_MACHINE", "weekdaysString = " + weekdaysString)
+        return buildAnnotatedString {
+            append(weekdaysString)
+            for (day in 0..6) {
+                currentColor = if ((weekdays and (1 shl day)) > 0) defaultColor else fadedColor
+                underlined =
+                    if (day == indexOfNextDay) TextDecoration.Underline else TextDecoration.None
+                addStyle(
+                    style = SpanStyle(
+                        color = currentColor,
+                        textDecoration = underlined
+                    ),
+                    start = genArray[day * 2],
+                    end = genArray[day * 2 + 1]
+                )
+            }
+        }
+    }
 
 }
