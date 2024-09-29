@@ -19,7 +19,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -387,6 +390,9 @@ class AlarmListFragment : Fragment() {
     * Replace this fragment by setup fragment
     * */
     private fun AddAlarmClicked() {
+
+        Log.d("THE_TIME_MACHINE", "AddAlarmClicked()) " )
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             CheckPermissions()
         }
@@ -571,21 +577,23 @@ class AlarmListFragment : Fragment() {
 
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun DisplayAlarmItem(alarmItem: AlarmItem) {
         val fmt = requireContext().resources.getString(R.string.alarm_format)
         val alarmTime = String.format(fmt,alarmItem.getHour(), alarmItem.getMinute())
         val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
         Card(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    //.height(100.dp),
-                    .wrapContentHeight(),
-                shape = MaterialTheme.shapes.small,
-                elevation = CardDefaults.elevatedCardElevation(5.dp),
-                colors = CardDefaults.elevatedCardColors(),
+            modifier = Modifier
+                .padding(5.dp)
+                .fillMaxWidth()
+                .combinedClickable(onLongClick = {AddAlarmClicked()}, onClickLabel = "Edit Alarm"){AlarmItemEdit(alarmItem, true)}
+                .background(MaterialTheme.colorScheme.surface)
+                .wrapContentHeight(),
+            shape = MaterialTheme.shapes.small,
+            elevation = CardDefaults.elevatedCardElevation(5.dp),
+            colors = CardDefaults.elevatedCardColors(),
+            // onClick = {}
             ) {
                 ConstraintLayout(modifier = Modifier.fillMaxSize()) {
                     val refLabel = createRef()
@@ -888,7 +896,7 @@ class AlarmListFragment : Fragment() {
         // Reset snooze
         item.resetSnoozeCounter()
 
-        // Update View Model
+        // Update View Model - this also causes recomposition
         parent!!.alarmViewModel.UpdateAlarm(item)
 
         // Schedule/Cancel Alarm
