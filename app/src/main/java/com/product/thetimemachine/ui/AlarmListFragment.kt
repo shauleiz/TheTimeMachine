@@ -646,8 +646,8 @@ class AlarmListFragment : Fragment() {
                     // Alarm Active Checkbox
                     val isChecked = remember { mutableStateOf(false) }
                     Checkbox(
-                        checked = isChecked.value,
-                        onCheckedChange = { isChecked.value = it },
+                        checked = alarmItem.isActive,
+                        onCheckedChange = {  onActiveChange(alarmItem, it) },
                         enabled = true,
                         //colors = CheckboxDefaults.colors(custom),
                         modifier = Modifier
@@ -870,6 +870,37 @@ class AlarmListFragment : Fragment() {
                     end = genArray[day * 2 + 1]
                 )
             }
+        }
+    }
+
+    // Get Item's info from Alarm list
+    // Get new state of checkbox
+    // Send update to this item down to the ViewModel
+    // Schedule/cancel alarm
+    private fun onActiveChange(alarmItem:AlarmItem, checked:Boolean){
+
+        var b = alarmItem.bundle
+
+        // Create a new alarm, set active
+        val item = AlarmItem(b!!)
+        item.active = checked
+
+        // Reset snooze
+        item.resetSnoozeCounter()
+
+        // Update View Model
+        parent!!.alarmViewModel.UpdateAlarm(item)
+
+        // Schedule/Cancel Alarm
+        item.Exec()
+
+        // Stop ringing if unchecked
+        if (!item.active) {
+            b = item.bundle
+            val context = requireContext()
+            val stopIntent = Intent(context, AlarmService::class.java)
+            stopIntent.putExtras(b)
+            AlarmReceiver.stopping(context, stopIntent)
         }
     }
 
