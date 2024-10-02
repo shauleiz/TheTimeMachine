@@ -590,11 +590,11 @@ class AlarmListFragment : Fragment() {
         val selectedAlarmList by parent!!.alarmViewModel.selectedItems.observeAsState()
         val filterList = selectedAlarmList?.filter {  it.equals(alarmItem.createTime.toInt()) }
         var selected= (filterList != null && filterList.isNotEmpty())
-        val backgroundColor = if (selected) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant
+        val backgroundColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
 
-
+        // Force this function to be called when list of selected changes
         val test by parent!!.alarmViewModel.testObserve.observeAsState( )
-        Log.d("THE_TIME_MACHINE", "test=$test")
+        val toggled = if (test!=null && test as Boolean) "A" else "B"
 
         val fmt = requireContext().resources.getString(R.string.alarm_format)
         val alarmTime = String.format(fmt,alarmItem.getHour(), alarmItem.getMinute())
@@ -643,7 +643,7 @@ class AlarmListFragment : Fragment() {
 
                     // Alarm Label
                     Text(
-                        alarmItem.getLabel() + selected.toString(),
+                        alarmItem.getLabel(),
                         textAlign = TextAlign.Start,
                         color = colorResource(com.google.android.material.R.color.m3_default_color_primary_text),
                         fontSize = 20.sp,
