@@ -45,9 +45,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
@@ -380,6 +383,8 @@ class AlarmListFragment : Fragment() {
 
         // Modify toolbar according to number of selected items
         parent!!.UpdateOptionMenu()
+
+        parent?.alarmViewModel?.toggleTestObserve()
     }
 
 
@@ -580,6 +585,17 @@ class AlarmListFragment : Fragment() {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun DisplayAlarmItem(alarmItem: AlarmItem) {
+
+        // Get list of selected alarms and mark this item as selected(yes/no)
+        val selectedAlarmList by parent!!.alarmViewModel.selectedItems.observeAsState()
+        val filterList = selectedAlarmList?.filter {  it.equals(alarmItem.createTime.toInt()) }
+        var selected= (filterList != null && filterList.isNotEmpty())
+        val backgroundColor = if (selected) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant
+
+
+        val test by parent!!.alarmViewModel.testObserve.observeAsState( )
+        Log.d("THE_TIME_MACHINE", "test=$test")
+
         val fmt = requireContext().resources.getString(R.string.alarm_format)
         val alarmTime = String.format(fmt,alarmItem.getHour(), alarmItem.getMinute())
         val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
@@ -587,12 +603,16 @@ class AlarmListFragment : Fragment() {
             modifier = Modifier
                 .padding(5.dp)
                 .fillMaxWidth()
-                .combinedClickable(onLongClick = {AddAlarmClicked()}, onClickLabel = "Edit Alarm"){AlarmItemEdit(alarmItem, true)}
+                .combinedClickable(
+                    onLongClick = { AlarmItemLongClicked(alarmItem.getCreateTime()) },
+                    onClickLabel = "Edit Alarm"
+                )
+                { AlarmItemEdit(alarmItem, true) }
                 .background(MaterialTheme.colorScheme.surface)
                 .wrapContentHeight(),
             shape = MaterialTheme.shapes.small,
             elevation = CardDefaults.elevatedCardElevation(5.dp),
-            colors = CardDefaults.elevatedCardColors(),
+            colors = CardDefaults.cardColors(containerColor = backgroundColor),
             // onClick = {}
             ) {
                 ConstraintLayout(modifier = Modifier.fillMaxSize()) {
@@ -623,7 +643,7 @@ class AlarmListFragment : Fragment() {
 
                     // Alarm Label
                     Text(
-                        alarmItem.getLabel(),
+                        alarmItem.getLabel() + selected.toString(),
                         textAlign = TextAlign.Start,
                         color = colorResource(com.google.android.material.R.color.m3_default_color_primary_text),
                         fontSize = 20.sp,

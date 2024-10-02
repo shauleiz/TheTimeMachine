@@ -40,7 +40,14 @@ public class AlarmViewModel extends AndroidViewModel {
    private final MutableLiveData<ArrayList<Integer>> LiveSelectedItems;
    private final ArrayList<Integer> selectedItems;
 
- // Observer<List<AlarmRepository.RawAlarmItem>> ObsFrevr;
+   // Experimenting
+   public  MutableLiveData<Boolean> LiveTestObserve;
+   //public LiveData<Integer> testObserve;
+   public void toggleTestObserve(){LiveTestObserve.setValue(!LiveTestObserve.getValue());}
+   public LiveData<Boolean> getTestObserve() {return LiveTestObserve;}
+
+
+   // Observer<List<AlarmRepository.RawAlarmItem>> ObsFrevr;
 
    // Constructor
    public AlarmViewModel(Application application) {
@@ -51,7 +58,12 @@ public class AlarmViewModel extends AndroidViewModel {
       LiveAlarmList = repo.getAlarmList();
       selectedItems = new ArrayList<>();
       LiveSelectedItems = new MutableLiveData<>();
+
+      LiveTestObserve = new MutableLiveData<>();
+      LiveTestObserve.setValue(false);
    }
+
+
    @Override
    protected void onCleared() {
       repo = null;
@@ -122,6 +134,7 @@ public class AlarmViewModel extends AndroidViewModel {
          selectedItems.add((int)id);
 
       LiveSelectedItems.setValue(selectedItems);
+      toggleTestObserve();
    }
 
    public boolean clearSelection(long id){
