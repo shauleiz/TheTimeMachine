@@ -20,11 +20,13 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -32,6 +34,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -374,12 +377,12 @@ class AlarmListFragment : Fragment() {
         //if (alarmItems==null) return;
 
         // Update the list of the selected items - simply toggle
-
         parent!!.alarmViewModel.toggleSelection(id)
 
         // Modify toolbar according to number of selected items
         parent!!.UpdateOptionMenu()
 
+        // Inform the ViewModel that the selection List was changed
         parent?.alarmViewModel?.selectToggleObserve()
     }
 
@@ -583,7 +586,7 @@ class AlarmListFragment : Fragment() {
 
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
+    @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
     @Composable
     private fun DisplayAlarmItem(alarmItem: AlarmItem) {
 
@@ -599,6 +602,10 @@ class AlarmListFragment : Fragment() {
 
 
         val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
+        val snoozeIconColor = if (alarmItem.getSnoozeCounter() >0)  Color.Unspecified else Color.Transparent
+        val vibrateIconColor = if (alarmItem.isVibrationActive()) Color.Unspecified else Color.Transparent
+        val muteIconColor = if (alarmItem.isAlarmMute()) Color.Unspecified else Color.Transparent
+
         Card(
             modifier = Modifier
                 .padding(5.dp)
@@ -622,6 +629,9 @@ class AlarmListFragment : Fragment() {
                     val refAlarmActive = createRef()
                     val refAmPm24h = createRef()
                     val refWeekdays = createRef()
+                    val refSnoozeIcon = createRef()
+                    val refVibrateIcon = createRef()
+                    val refMuteIcon = createRef()
 
 
                     // Bell Icon
@@ -670,6 +680,46 @@ class AlarmListFragment : Fragment() {
                                 bottom.linkTo(refAlarmTime.top) //
                             },
                     )
+
+                    // Snooze Icon
+                    Icon(
+                        painter = painterResource(id = R.drawable.snooze_fill0_wght400_grad0_opsz24),
+                        contentDescription = stringResource(R.string.per_item_zoom_icon),
+                        tint = snoozeIconColor,
+                        modifier = Modifier
+                            .height(16.dp)
+                            .constrainAs(refSnoozeIcon){
+                                top.linkTo(parent.top)
+                                start.linkTo(refAlarmActive.end)
+                            }
+                    )
+
+                    // Vibrate Icon
+                    Icon(
+                        painter = painterResource(id = R.drawable.vibration_opsz24),
+                        contentDescription = stringResource(R.string.per_item_vibrate_icon),
+                        tint = vibrateIconColor,
+                        modifier = Modifier
+                            .height(16.dp)
+                            .constrainAs(refVibrateIcon){
+                                top.linkTo(parent.top)
+                                start.linkTo(refSnoozeIcon.end)
+                            }
+                    )
+
+                    // Mute Icon
+                    Icon(
+                        painter = painterResource(id = R.drawable.notifications_off_24dp_fill0_wght400_grad0_opsz24),
+                        contentDescription = stringResource(R.string.per_item_mute_icon),
+                        tint = muteIconColor,
+                        modifier = Modifier
+                            .height(16.dp)
+                            .constrainAs(refMuteIcon){
+                                top.linkTo(parent.top)
+                                start.linkTo(refVibrateIcon.end)
+                            }
+                    )
+
 
                     // Alarm Active Checkbox
                     val isChecked = remember { mutableStateOf(false) }
