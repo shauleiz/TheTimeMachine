@@ -541,10 +541,10 @@ class AlarmListFragment : Fragment() {
     fun AlarmListFragDisplayTop() {
         Surface{
             MaterialTheme{/**/
-                if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT)
+                //if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT)
                     AlarmListFragDisplayPortrait(parent!!.alarmViewModel)
-                else
-                    AlarmListFragDisplayLand(parent!!.alarmViewModel )
+               // else
+                   // AlarmListFragDisplayLand(parent!!.alarmViewModel )
             }
         }
     }
@@ -614,7 +614,7 @@ class AlarmListFragment : Fragment() {
                     onLongClick = { AlarmItemLongClicked(alarmItem.getCreateTime()) },
                     onClickLabel = "Edit Alarm"
                 )
-                { AlarmItemEdit(alarmItem, true) }
+                { if (selected) AlarmItemLongClicked(alarmItem.getCreateTime()) else AlarmItemEdit(alarmItem, true) }
                 .background(MaterialTheme.colorScheme.surface)
                 .wrapContentHeight(),
             shape = MaterialTheme.shapes.small,
