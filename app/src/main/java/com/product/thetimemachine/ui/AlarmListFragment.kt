@@ -3,7 +3,6 @@ package com.product.thetimemachine.ui
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -37,7 +36,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -51,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -415,26 +412,34 @@ class AlarmListFragment : Fragment() {
             .addToBackStack("tag2").commit()
     }
 
-    fun DeleteSelectedAlarms() {
-        val tempList = ArrayList(selectedItems)
-
-        for (i in tempList.indices) {
-            val item = parent!!.alarmViewModel.getAlarmItemById(tempList[i]) ?: return
-            parent!!.alarmViewModel.DeleteAlarm(item)
+    fun deleteSelectedAlarms() {
+        //val tempList = ArrayList(selectedItems)
+        val tempList = ArrayList(parent!!.alarmViewModel.selectedItems.value)
+        if (tempList != null) {
+            for (id in tempList) {
+                val item = parent!!.alarmViewModel.getAlarmItemById(id)
+                if (item!=null)
+                    parent!!.alarmViewModel.DeleteAlarm(item)
+            }
         }
     }
 
-    fun EditSelectedAlarm() {
+    fun editSelectedAlarm() {
+        val tempList = ArrayList(parent!!.alarmViewModel.selectedItems.value)
         // Edit only is exactly one item selected
+        Log.d("THE_TIME_MACHINE", "editSelectedAlarm()) :: selectedItems=$tempList" )
+        if (tempList==null || tempList.size != 1) return
 
-        if (selectedItems!!.size != 1) return
-        AlarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(selectedItems!![0]), true)
+        AlarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), true)
     }
 
-    fun DuplicateSelectedAlarm() {
+    fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
-        if (selectedItems!!.size != 1) return
-        AlarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(selectedItems!![0]), false)
+        val tempList = ArrayList(parent!!.alarmViewModel.selectedItems.value)
+        Log.d("THE_TIME_MACHINE", "editSelectedAlarm()) :: selectedItems=$tempList" )
+        if (tempList==null || tempList.size != 1) return
+
+        AlarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), false)
     }
 
     private fun sortAlarmList(comparatorType: String, separate: Boolean) {

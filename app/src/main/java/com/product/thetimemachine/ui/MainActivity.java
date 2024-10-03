@@ -191,13 +191,13 @@ public class MainActivity extends AppCompatActivity {
         else if (frag instanceof AlarmListFragment) {
             Log.v("THE_TIME_MACHINE", "AlarmListFragment");
             if (itemId == R.id.delete) {
-                ((AlarmListFragment) frag).DeleteSelectedAlarms();
+                ((AlarmListFragment) frag).deleteSelectedAlarms();
                 return true;
             } else if (itemId == R.id.edit) {
-                ((AlarmListFragment) frag).EditSelectedAlarm();
+                ((AlarmListFragment) frag).editSelectedAlarm();
                 return true;
             } else if (itemId == R.id.duplicate) {
-                ((AlarmListFragment) frag).DuplicateSelectedAlarm();
+                ((AlarmListFragment) frag).duplicateSelectedAlarm();
                 return true;
             } else if (itemId == R.id.settings) {
                 Settings();
