@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,12 +44,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
@@ -384,7 +380,7 @@ class AlarmListFragment : Fragment() {
         // Modify toolbar according to number of selected items
         parent!!.UpdateOptionMenu()
 
-        parent?.alarmViewModel?.toggleTestObserve()
+        parent?.alarmViewModel?.selectToggleObserve()
     }
 
 
@@ -553,7 +549,7 @@ class AlarmListFragment : Fragment() {
     @Composable
     fun AlarmListFragDisplayPortrait(alarmViewModel : AlarmViewModel){
         // Observes values coming from the VM's LiveData<Plant> field
-        val alarmList by alarmViewModel.alarmList.observeAsState()
+        val alarmList         by alarmViewModel.alarmList.observeAsState()
 
         Scaffold (
             // Display "Add" floating button
@@ -572,11 +568,16 @@ class AlarmListFragment : Fragment() {
     @Composable
     fun DisplayAlarmList (list: MutableList<AlarmItem>?) {
 
-        LazyColumn(Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
+
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
         ) {
             if (list != null) {
-                items(list.size) {DisplayAlarmItem(list[it]) }
+                items(list.size,
+                    key = {list[it].createTime}
+                ) {DisplayAlarmItem(list[it]) }
             }
         }
 
@@ -586,18 +587,17 @@ class AlarmListFragment : Fragment() {
     @Composable
     private fun DisplayAlarmItem(alarmItem: AlarmItem) {
 
+        // Force this function to be called when list of selected changes
+        val selectToggle by parent!!.alarmViewModel.selectToggleObserve.observeAsState( )
+        val toggled = if (selectToggle!=null && selectToggle as Boolean) "A" else "B"
+
         // Get list of selected alarms and mark this item as selected(yes/no)
         val selectedAlarmList by parent!!.alarmViewModel.selectedItems.observeAsState()
         val filterList = selectedAlarmList?.filter {  it.equals(alarmItem.createTime.toInt()) }
         var selected= (filterList != null && filterList.isNotEmpty())
         val backgroundColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
 
-        // Force this function to be called when list of selected changes
-        val test by parent!!.alarmViewModel.testObserve.observeAsState( )
-        val toggled = if (test!=null && test as Boolean) "A" else "B"
 
-        val fmt = requireContext().resources.getString(R.string.alarm_format)
-        val alarmTime = String.format(fmt,alarmItem.getHour(), alarmItem.getMinute())
         val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
         Card(
             modifier = Modifier

@@ -18,9 +18,7 @@ import com.product.thetimemachine.Data.AlarmRepository;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /*
  *      Alarm Clock ViewModel Class
@@ -40,11 +38,11 @@ public class AlarmViewModel extends AndroidViewModel {
    private final MutableLiveData<ArrayList<Integer>> LiveSelectedItems;
    private final ArrayList<Integer> selectedItems;
 
-   // Experimenting
-   public  MutableLiveData<Boolean> LiveTestObserve;
-   //public LiveData<Integer> testObserve;
-   public void toggleTestObserve(){LiveTestObserve.setValue(!LiveTestObserve.getValue());}
-   public LiveData<Boolean> getTestObserve() {return LiveTestObserve;}
+   // Detect selection/un-selection of an item
+   public  MutableLiveData<Boolean> LiveSelectToggleObserve;
+   public void selectToggleObserve(){
+      LiveSelectToggleObserve.setValue(!LiveSelectToggleObserve.getValue());}
+   public LiveData<Boolean> getSelectToggleObserve() {return LiveSelectToggleObserve;}
 
 
    // Observer<List<AlarmRepository.RawAlarmItem>> ObsFrevr;
@@ -59,8 +57,8 @@ public class AlarmViewModel extends AndroidViewModel {
       selectedItems = new ArrayList<>();
       LiveSelectedItems = new MutableLiveData<>();
 
-      LiveTestObserve = new MutableLiveData<>();
-      LiveTestObserve.setValue(false);
+      LiveSelectToggleObserve = new MutableLiveData<>();
+      LiveSelectToggleObserve.setValue(false);
    }
 
 
@@ -134,7 +132,7 @@ public class AlarmViewModel extends AndroidViewModel {
          selectedItems.add((int)id);
 
       LiveSelectedItems.setValue(selectedItems);
-      toggleTestObserve();
+      selectToggleObserve();
    }
 
    public boolean clearSelection(long id){
