@@ -18,6 +18,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
@@ -49,6 +54,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -620,7 +627,17 @@ class AlarmListFragment : Fragment() {
         val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
         val snoozeIconColor = if (alarmItem.getSnoozeCounter() >0)  Color.Unspecified else Color.Transparent
         val vibrateIconColor = if (alarmItem.isVibrationActive()) Color.Unspecified else Color.Transparent
-        val muteIconColor = if (alarmItem.isAlarmMute()) Color.Unspecified else Color.Transparent
+        val muteIconColor = if (alarmItem.isAlarmMute) Color.Unspecified else Color.Transparent
+
+        // Animation (From: https://developer.android.com/develop/ui/compose/animation/quick-guide#animate-text-scale)
+        val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
+        val scale by  infiniteTransition.animateFloat(
+            initialValue = if (alarmItem.isRinging) 1.2f else 1.0f,
+            targetValue = if (alarmItem.isRinging) 0.8f else 1.0f,
+            animationSpec = infiniteRepeatable(tween(200), RepeatMode.Reverse),
+            label = "scale"
+        )
+
 
 
         Card(
@@ -776,6 +793,11 @@ class AlarmListFragment : Fragment() {
                         fontSize = 34.sp,
                         color = getPrimaryTextColor(alarmItem),
                         modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                                transformOrigin = TransformOrigin.Center
+                            }
                             .constrainAs(refAlarmTime){
                                 bottom.linkTo(parent.bottom)
                                 end.linkTo(refAmPm24h.start)
