@@ -45,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -358,6 +359,9 @@ class AlarmListFragment : Fragment() {
             .replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
             .addToBackStack("tag2")
             .commit()
+
+        // Remove from list of selected alarms
+        parent!!.alarmViewModel.clearSelection(item.createTime)
     }
 
 
@@ -418,16 +422,21 @@ class AlarmListFragment : Fragment() {
         if (tempList != null) {
             for (id in tempList) {
                 val item = parent!!.alarmViewModel.getAlarmItemById(id)
-                if (item!=null)
+                if (item!=null) {
                     parent!!.alarmViewModel.DeleteAlarm(item)
+                    // Remove from list of selected alarms
+                    parent!!.alarmViewModel.clearSelection(item.createTime)
+                }
             }
         }
+        // Modify toolbar according to number of selected items
+        parent!!.UpdateOptionMenu()
+
     }
 
     fun editSelectedAlarm() {
         val tempList = ArrayList(parent!!.alarmViewModel.selectedItems.value)
         // Edit only is exactly one item selected
-        Log.d("THE_TIME_MACHINE", "editSelectedAlarm()) :: selectedItems=$tempList" )
         if (tempList==null || tempList.size != 1) return
 
         AlarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), true)
@@ -436,7 +445,6 @@ class AlarmListFragment : Fragment() {
     fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
         val tempList = ArrayList(parent!!.alarmViewModel.selectedItems.value)
-        Log.d("THE_TIME_MACHINE", "editSelectedAlarm()) :: selectedItems=$tempList" )
         if (tempList==null || tempList.size != 1) return
 
         AlarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), false)
@@ -446,17 +454,20 @@ class AlarmListFragment : Fragment() {
 
         when(comparatorType){
             "alphabetically" -> alarmList?.sortedWith(ascendSortByLabel(separate))
-            "by_alarm_time"  -> alarmList?.sortedWith(ascendSortByAlarmTime(separate))
+            "by_alarm_time"  -> alarmList?.sortedWith(AscendSortByAlarmTime(separate))
             else             -> alarmList?.sortedWith(descendSortByCreateTime(separate))
         }
     }
 
-    internal inner class ascendSortByAlarmTime(separate: Boolean) : Comparator<AlarmItem> {
+    internal inner class AscendSortByAlarmTime(separate: Boolean) : Comparator<AlarmItem> {
         // Used for sorting in ascending order of
         // Alarm Time
-        var inactiveSeparate: Boolean = true
+        private var inactiveSeparate: Boolean = true
+
+
 
         init {
+            Log.d("THE_TIME_MACHINE", "AscendSortByAlarmTime:init) " )
             inactiveSeparate = separate
         }
 
@@ -583,8 +594,9 @@ class AlarmListFragment : Fragment() {
             contentPadding = PaddingValues(16.dp),
         ) {
             if (list != null) {
-                items(list.size,
-                    key = {list[it].createTime}
+                items(
+                    count = list.size,
+                    key = {list[it].createTime }
                 ) {DisplayAlarmItem(list[it]) }
             }
         }
@@ -602,14 +614,14 @@ class AlarmListFragment : Fragment() {
         // Get list of selected alarms and mark this item as selected(yes/no)
         val selectedAlarmList by parent!!.alarmViewModel.selectedItems.observeAsState()
         val filterList = selectedAlarmList?.filter {  it.equals(alarmItem.createTime.toInt()) }
-        var selected= (filterList != null && filterList.isNotEmpty())
+        var selected= !filterList.isNullOrEmpty()
+
         val backgroundColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
-
-
         val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
         val snoozeIconColor = if (alarmItem.getSnoozeCounter() >0)  Color.Unspecified else Color.Transparent
         val vibrateIconColor = if (alarmItem.isVibrationActive()) Color.Unspecified else Color.Transparent
         val muteIconColor = if (alarmItem.isAlarmMute()) Color.Unspecified else Color.Transparent
+
 
         Card(
             modifier = Modifier
@@ -617,9 +629,12 @@ class AlarmListFragment : Fragment() {
                 .fillMaxWidth()
                 .combinedClickable(
                     onLongClick = { AlarmItemLongClicked(alarmItem.getCreateTime()) },
-                    onClickLabel = "Edit Alarm"
+                    onClickLabel = "Edit Alarm" // TODO
                 )
-                { if (selected) AlarmItemLongClicked(alarmItem.getCreateTime()) else AlarmItemEdit(alarmItem, true) }
+                {
+                    if (selected) AlarmItemLongClicked(alarmItem.getCreateTime())
+                    else AlarmItemEdit(alarmItem, true)
+                }
                 .background(MaterialTheme.colorScheme.surface)
                 .wrapContentHeight(),
             shape = MaterialTheme.shapes.small,
@@ -672,7 +687,7 @@ class AlarmListFragment : Fragment() {
 
                     // Weekdays / Today / Tomorrow
                     Text(
-                        getDisplayWeekdays(alarmItem),
+                        text = getDisplayWeekdays(alarmItem),
                         textAlign = TextAlign.End,
                         color = colorResource(com.google.android.material.R.color.m3_default_color_primary_text),
                         fontSize = 14.sp,
@@ -692,8 +707,9 @@ class AlarmListFragment : Fragment() {
                         contentDescription = stringResource(R.string.per_item_zoom_icon),
                         tint = snoozeIconColor,
                         modifier = Modifier
+                            .alpha(currentAlpha)
                             .height(16.dp)
-                            .constrainAs(refSnoozeIcon){
+                            .constrainAs(refSnoozeIcon) {
                                 top.linkTo(parent.top)
                                 start.linkTo(refAlarmActive.end)
                             }
@@ -705,8 +721,9 @@ class AlarmListFragment : Fragment() {
                         contentDescription = stringResource(R.string.per_item_vibrate_icon),
                         tint = vibrateIconColor,
                         modifier = Modifier
+                            .alpha(currentAlpha)
                             .height(16.dp)
-                            .constrainAs(refVibrateIcon){
+                            .constrainAs(refVibrateIcon) {
                                 top.linkTo(parent.top)
                                 start.linkTo(refSnoozeIcon.end)
                             }
@@ -718,8 +735,9 @@ class AlarmListFragment : Fragment() {
                         contentDescription = stringResource(R.string.per_item_mute_icon),
                         tint = muteIconColor,
                         modifier = Modifier
+                            .alpha(currentAlpha)
                             .height(16.dp)
-                            .constrainAs(refMuteIcon){
+                            .constrainAs(refMuteIcon) {
                                 top.linkTo(parent.top)
                                 start.linkTo(refVibrateIcon.end)
                             }
