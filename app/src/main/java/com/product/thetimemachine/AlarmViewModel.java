@@ -142,6 +142,12 @@ public class AlarmViewModel extends AndroidViewModel {
       return false;
    }
 
+   public void clearSelection(){
+      ArrayList<Integer> currentList = new ArrayList<>(Objects.requireNonNull(liveSelectedItems.getValue()));
+      currentList.clear();
+      liveSelectedItems.setValue(currentList);
+   }
+
    public boolean isDuplicate(int hour, int minute, long createTime) {
       // Get List
       AlarmList = LiveAlarmList.getValue();

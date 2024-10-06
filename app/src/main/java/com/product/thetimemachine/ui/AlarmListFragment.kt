@@ -418,6 +418,9 @@ class AlarmListFragment : Fragment() {
         if (parent != null) parent!!.supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
             .addToBackStack("tag2").commit()
+
+        // Clear list of selected alarms
+        parent!!.alarmViewModel.clearSelection()
     }
 
     fun deleteSelectedAlarms() {
