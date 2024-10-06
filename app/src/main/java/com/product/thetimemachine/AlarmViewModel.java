@@ -19,6 +19,7 @@ import com.product.thetimemachine.Data.AlarmRepository;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 /*
  *      Alarm Clock ViewModel Class
@@ -34,18 +35,12 @@ public class AlarmViewModel extends AndroidViewModel {
    public final LiveData<List<AlarmItem>> LiveAlarmList;
    private List<AlarmItem> AlarmList;
    private AlarmRepository repo;
-
-   private final MutableLiveData<ArrayList<Integer>> LiveSelectedItems;
-   private final ArrayList<Integer> selectedItems;
-
-   // Detect selection/un-selection of an item
-   public  MutableLiveData<Boolean> LiveSelectToggleObserve;
-   public void selectToggleObserve(){
-      LiveSelectToggleObserve.setValue(!LiveSelectToggleObserve.getValue());}
-   public LiveData<Boolean> getSelectToggleObserve() {return LiveSelectToggleObserve;}
+   private final MutableLiveData<ArrayList<Integer>> liveSelectedItems = new MutableLiveData<>(new ArrayList<>());
 
 
-   // Observer<List<AlarmRepository.RawAlarmItem>> ObsFrevr;
+   public LiveData<ArrayList<Integer>> getLiveSelectedItems() {
+      return liveSelectedItems;
+   }
 
    // Constructor
    public AlarmViewModel(Application application) {
@@ -54,11 +49,6 @@ public class AlarmViewModel extends AndroidViewModel {
       setUpAlarmValues = new SetUpAlarmValues();
       repo = new AlarmRepository(application);
       LiveAlarmList = repo.getAlarmList();
-      selectedItems = new ArrayList<>();
-      LiveSelectedItems = new MutableLiveData<>();
-
-      LiveSelectToggleObserve = new MutableLiveData<>();
-      LiveSelectToggleObserve.setValue(false);
    }
 
 
@@ -75,13 +65,16 @@ public class AlarmViewModel extends AndroidViewModel {
    }
 
    public void DeleteAlarm(AlarmItem item){
+      ArrayList<Integer> currentList = new ArrayList<>(Objects.requireNonNull(liveSelectedItems.getValue()));
+
       // Remove from list of selected alarms
       int id = (int)item.getCreateTime();
-      int index = selectedItems.indexOf(id);
+      int index = currentList.indexOf(id);
       Log.d("THE_TIME_MACHINE", "DeleteAlarm(): by item ");
       if (index >=0) {
-         selectedItems.remove(index);
-         LiveSelectedItems.setValue(selectedItems);
+         currentList.remove(index);
+
+         liveSelectedItems.setValue(currentList);
       }
 
       // Get alarm item and cancel the alarm
@@ -125,21 +118,25 @@ public class AlarmViewModel extends AndroidViewModel {
    }
 
    public void toggleSelection(long id){
-      int index = selectedItems.indexOf((int)id);
-      if (index >=0)
-         selectedItems.remove(index);
-      else
-         selectedItems.add((int)id);
+      ArrayList<Integer> currentList = new ArrayList<>(Objects.requireNonNull(liveSelectedItems.getValue()));
 
-      LiveSelectedItems.setValue(selectedItems);
-      selectToggleObserve();
+      int index = currentList.indexOf((int)id);
+      if (index >=0)
+         currentList.remove(index);
+      else
+         currentList.add((int)id);
+
+      liveSelectedItems.setValue(currentList);
+
    }
 
    public boolean clearSelection(long id){
-      int index = selectedItems.indexOf((int)id);
+      ArrayList<Integer> currentList = new ArrayList<>(Objects.requireNonNull(liveSelectedItems.getValue()));
+
+      int index = currentList.indexOf((int)id);
       if (index >=0) {
-         selectedItems.remove(index);
-         LiveSelectedItems.setValue(selectedItems);
+         currentList.remove(index);
+         liveSelectedItems.setValue(currentList);
          return true;
       }
       return false;
@@ -158,12 +155,11 @@ public class AlarmViewModel extends AndroidViewModel {
       return false;
    }
    public int getNofSelectedItems(){
-      return selectedItems.size();
+      return liveSelectedItems.getValue().size();
    }
-   public MutableLiveData<ArrayList<Integer>> getSelectedItems(){
-      Log.d("THE_TIME_MACHINE", "getSelectedItems()");
-      return LiveSelectedItems;
-   }
+
+
+
    // This Class holds the values of the alarm that is being added/modified
    public class SetUpAlarmValues {
       final MutableLiveData<Integer> hour, minute;

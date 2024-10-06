@@ -389,9 +389,6 @@ class AlarmListFragment : Fragment() {
 
         // Modify toolbar according to number of selected items
         parent!!.UpdateOptionMenu()
-
-        // Inform the ViewModel that the selection List was changed
-        parent?.alarmViewModel?.selectToggleObserve()
     }
 
 
@@ -425,7 +422,7 @@ class AlarmListFragment : Fragment() {
 
     fun deleteSelectedAlarms() {
         //val tempList = ArrayList(selectedItems)
-        val tempList = ArrayList(parent!!.alarmViewModel.selectedItems.value)
+        val tempList = ArrayList(parent!!.alarmViewModel.liveSelectedItems.value)
         if (tempList != null) {
             for (id in tempList) {
                 val item = parent!!.alarmViewModel.getAlarmItemById(id)
@@ -442,7 +439,7 @@ class AlarmListFragment : Fragment() {
     }
 
     fun editSelectedAlarm() {
-        val tempList = ArrayList(parent!!.alarmViewModel.selectedItems.value)
+        val tempList = ArrayList(parent!!.alarmViewModel.liveSelectedItems.value)
         // Edit only is exactly one item selected
         if (tempList==null || tempList.size != 1) return
 
@@ -451,7 +448,7 @@ class AlarmListFragment : Fragment() {
 
     fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
-        val tempList = ArrayList(parent!!.alarmViewModel.selectedItems.value)
+        val tempList = ArrayList(parent!!.alarmViewModel.liveSelectedItems.value)
         if (tempList==null || tempList.size != 1) return
 
         AlarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), false)
@@ -615,15 +612,14 @@ class AlarmListFragment : Fragment() {
     private fun DisplayAlarmItem(alarmItem: AlarmItem) {
 
         // Force this function to be called when list of selected changes
-        val selectToggle by parent!!.alarmViewModel.selectToggleObserve.observeAsState( )
-        val toggled = if (selectToggle!=null && selectToggle as Boolean) "A" else "B"
+        // val selectToggle by parent!!.alarmViewModel.selectToggleObserve.observeAsState( )
+        // val toggled = if (selectToggle!=null && selectToggle as Boolean) "A" else "B"
 
         // Get list of selected alarms and mark this item as selected(yes/no)
-        val selectedAlarmList by parent!!.alarmViewModel.selectedItems.observeAsState()
+        val selectedAlarmList by parent!!.alarmViewModel.liveSelectedItems.observeAsState(ArrayList())
         val filterList = selectedAlarmList?.filter {  it.equals(alarmItem.createTime.toInt()) }
         var selected= !filterList.isNullOrEmpty()
 
-        val backgroundColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
         val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
         val snoozeIconColor = if (alarmItem.getSnoozeCounter() >0)  Color.Unspecified else Color.Transparent
         val vibrateIconColor = if (alarmItem.isVibrationActive()) Color.Unspecified else Color.Transparent
@@ -656,7 +652,7 @@ class AlarmListFragment : Fragment() {
                 .wrapContentHeight(),
             shape = MaterialTheme.shapes.small,
             elevation = CardDefaults.elevatedCardElevation(5.dp),
-            colors = CardDefaults.cardColors(containerColor = backgroundColor),
+            colors = CardDefaults.cardColors(containerColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface ),
             // onClick = {}
             ) {
                 ConstraintLayout(modifier = Modifier.fillMaxSize()) {
