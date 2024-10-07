@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import androidx.activity.result.contract.ActivityResultContracts
@@ -86,8 +85,6 @@ import java.util.Locale
 
 class AlarmListFragment : Fragment() {
     private var parent: MainActivity? = null
-    private var alarmAdapter: AlarmAdapter? = null
-    private var alarmList: List<AlarmItem>? = null
     private var fragmentView: View? = null
     private var selectedItems: ArrayList<Int>? = null
 
@@ -100,19 +97,7 @@ class AlarmListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-
-        // Create Adapter for the Recycler View
-
-        alarmList = parent!!.alarmViewModel.alarmList.value
-        alarmAdapter = AlarmAdapter(alarmList)
-
-        // Get the list of selected alarm items
-        selectedItems = if (savedInstanceState != null) {
-            savedInstanceState.getIntegerArrayList("ARRAY_SI")
-        } else {
-            ArrayList()
-        }
+    ): View {
 
         // Start the compose display
         return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
@@ -126,92 +111,14 @@ class AlarmListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fragmentView = view
+
 
         // Toolbar: Title + Menu
-        val AppToolbar = requireActivity().findViewById<Toolbar>(com.product.thetimemachine.R.id.app_toolbar)
-        AppToolbar.setTitle(com.product.thetimemachine.R.string.alarmlist_title)
-        (requireActivity() as AppCompatActivity).setSupportActionBar(AppToolbar)
+        val appToolbar = requireActivity().findViewById<Toolbar>(R.id.app_toolbar)
+        appToolbar.setTitle(R.string.alarmlist_title)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(appToolbar)
         parent!!.UpdateOptionMenu()
 
-        /*// Add Alarm button (FAB)
-        val addAlarm_Button = view.findViewById<FloatingActionButton>(R.id.Add_Alarm_fab)
-        addAlarm_Button.setOnClickListener { v: View? -> AddAlarmClicked() }
-
-        // Recyclerview widget - List of alarms
-        val rvAlarms = view.findViewById<RecyclerView>(R.id.alarmListRecyclerView)
-        // Set layout manager to position the items
-        rvAlarms.layoutManager = LinearLayoutManager(context)
-        // Attach the adapter to the recyclerview to populate items
-        // (The Adapter was created previously in onCreateView())
-        rvAlarms.adapter = alarmAdapter*/
-
-        // Create observer to inform recycler view that there was a change in the list
-        /*
-        parent!!.alarmViewModel.alarmList.observe(
-            viewLifecycleOwner,
-            object : Observer<List<AlarmItem?>?> {
-                override fun onChanged(m: List<AlarmItem>) {
-                    if (m != null) {
-                        alarmList = m
-                        sortAlarmList(
-                            SettingsFragment.pref_sort_type(),
-                            SettingsFragment.pref_sort_separate()
-                        )
-                        alarmAdapter!!.UpdateAlarmAdapter(m)
-                    }
-                }
-            })
-        */
-
-        /*
-        parent!!.alarmViewModel.selectedItems.observe(
-            viewLifecycleOwner,
-            object : Observer<ArrayList<Int?>?> {
-                override fun onChanged(m: ArrayList<Int>) {
-                    if (m != null) {
-                        // Modify Alarm List
-                        selectedItems = m
-                        alarmAdapter!!.UpdateAlarmAdapter(m)
-                        // Modify toolbar according to number of selected items
-                        parent!!.UpdateOptionMenu()
-                    }
-                }
-            })
-            */
-
-        // Define the Item Click listener - What to do when user clicks on an alarm item
-        // Test what was clicked: Compare ID of view to known item elements
-        // If none found then it means that the item itself was clicked
-        alarmAdapter!!.setOnItemClickListener { view, position ->
-            val id = view.id
-            if (id == R.id.AlarmActive) { // Alarm Active checkbox has been clicked
-                ActiveCheckboxChanged(view, position)
-            } else { // The Alarm item itself has been clicked
-                //String label = alarmList.get(position).getLabel();
-                //String alarmTime = String.format( Locale.US,"%d:%02d", alarmList.get(position).getHour(), alarmList.get(position).getMinute());
-                //Toast.makeText(getContext(), "Alarm Clicked: " + label + ": Time: " + alarmTime, Toast.LENGTH_SHORT).show();
-                if (!parent!!.alarmViewModel.clearSelection(alarmList!![position].getCreateTime())) AlarmItemEdit(
-                    alarmList!![position], true
-                )
-            }
-        }
-
-        alarmAdapter!!.setOnItemLongClickListener { view, position ->
-            val id = view.id
-            if (id == R.id.AlarmActive) { // Alarm Active checkbox has been clicked
-                ActiveCheckboxChanged(view, position)
-            } else { // The Alarm item itself has been clicked
-                AlarmItemLongClicked(alarmList!![position].getCreateTime())
-            }
-        }
-
-        // Decoration
-/*
-        val itemDecoration: ItemDecoration =
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        rvAlarms.addItemDecoration(itemDecoration)
-*/
     }
 
 
@@ -219,7 +126,7 @@ class AlarmListFragment : Fragment() {
     // Checks if Notification is enabled
     // If not enabled - launches request for permission that defines the callback to run
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    private fun CheckPermissions() {
+    private fun checkPermissions() {
         val permission = ContextCompat.checkSelfPermission(parent!!, POST_NOTIFICATIONS)
         if (permission == PermissionChecker.PERMISSION_GRANTED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Granted")
@@ -300,36 +207,7 @@ class AlarmListFragment : Fragment() {
         return popupWindow
     }
 
-    // Get Item's info from Alarm list
-    // Get new state of checkbox
-    // Send update to this item down to the ViewModel
-    // Schedule/cancel alarm
-    private fun ActiveCheckboxChanged(view: View, position: Int) {
-        // Get alarm item data from list
 
-        var b = alarmList!![position].bundle
-
-        // Create a new alarm, set active
-        val item = AlarmItem(b!!)
-        // Get 'active' checkbox state and insert it to the Alarm
-        val active = (view as CheckBox).isChecked
-        item.isActive = active
-        item.resetSnoozeCounter()
-        // Update View Model
-        parent!!.alarmViewModel.UpdateAlarm(item)
-
-        // Schedule/Cancel Alarm
-        item.Exec()
-
-        // Stop ringing if unchecked
-        if (!active) {
-            b = item.bundle
-            val context = requireContext()
-            val stopIntent = Intent(context, AlarmService::class.java)
-            stopIntent.putExtras(b)
-            AlarmReceiver.stopping(context, stopIntent)
-        }
-    }
 
     /*
      *   Called when user clicks on Alarm item in recycler or toolbar Edit action
@@ -340,7 +218,7 @@ class AlarmListFragment : Fragment() {
      *   If parameter edit if false - this means that this item should be duplicated
      *   rather than edited
      */
-    private fun AlarmItemEdit(item: AlarmItem?, edit: Boolean) {
+    private fun alarmItemEdit(item: AlarmItem?, edit: Boolean) {
         if (item == null) return
 
         // Copy values from the selected item to be used by the setup fragment
@@ -350,7 +228,7 @@ class AlarmListFragment : Fragment() {
         val b = Bundle()
 
         b.putInt("INIT_POSITION", 0)
-        val alarmItems = parent!!.alarmViewModel.alarmList.value ?: return
+        parent!!.alarmViewModel.alarmList.value ?: return
         if (edit) {
             b.putLong("INIT_CREATE_TIME", item.getCreateTime())
             b.putBoolean("INIT_NEWALARM", false)
@@ -379,11 +257,7 @@ class AlarmListFragment : Fragment() {
       -- Single: 1 item selected
       -- Multi: 2 or more items selected
      */
-    private fun AlarmItemLongClicked(id: Long) {
-        // get the list of alarms
-        //List<AlarmItem> alarmItems = parent.alarmViewModel.getAlarmList().getValue();
-        //if (alarmItems==null) return;
-
+    private fun alarmItemLongClicked(id: Long) {
         // Update the list of the selected items - simply toggle
         parent!!.alarmViewModel.toggleSelection(id)
 
@@ -398,12 +272,12 @@ class AlarmListFragment : Fragment() {
     * Create a bundle with data to be passed to the setup fragment
     * Replace this fragment by setup fragment
     * */
-    private fun AddAlarmClicked() {
+    private fun addAlarmClicked() {
 
         Log.d("THE_TIME_MACHINE", "AddAlarmClicked()) " )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            CheckPermissions()
+            checkPermissions()
         }
 
         // Reset the setup alarm values
@@ -425,7 +299,7 @@ class AlarmListFragment : Fragment() {
 
     fun deleteSelectedAlarms() {
         //val tempList = ArrayList(selectedItems)
-        val tempList = ArrayList(parent!!.alarmViewModel.liveSelectedItems.value)
+        val tempList = parent!!.alarmViewModel.liveSelectedItems.value?.let { ArrayList(it) }
         if (tempList != null) {
             for (id in tempList) {
                 val item = parent!!.alarmViewModel.getAlarmItemById(id)
@@ -442,117 +316,19 @@ class AlarmListFragment : Fragment() {
     }
 
     fun editSelectedAlarm() {
-        val tempList = ArrayList(parent!!.alarmViewModel.liveSelectedItems.value)
+        val tempList = parent!!.alarmViewModel.liveSelectedItems.value?.let { ArrayList(it) }
         // Edit only is exactly one item selected
         if (tempList==null || tempList.size != 1) return
 
-        AlarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), true)
+        alarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), true)
     }
 
     fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
-        val tempList = ArrayList(parent!!.alarmViewModel.liveSelectedItems.value)
+        val tempList = parent!!.alarmViewModel.liveSelectedItems.value?.let { ArrayList(it) }
         if (tempList==null || tempList.size != 1) return
 
-        AlarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), false)
-    }
-
-    private fun sortAlarmList(comparatorType: String, separate: Boolean) {
-
-        when(comparatorType){
-            "alphabetically" -> alarmList?.sortedWith(ascendSortByLabel(separate))
-            "by_alarm_time"  -> alarmList?.sortedWith(AscendSortByAlarmTime(separate))
-            else             -> alarmList?.sortedWith(descendSortByCreateTime(separate))
-        }
-    }
-
-    internal inner class AscendSortByAlarmTime(separate: Boolean) : Comparator<AlarmItem> {
-        // Used for sorting in ascending order of
-        // Alarm Time
-        private var inactiveSeparate: Boolean = true
-
-
-
-        init {
-            Log.d("THE_TIME_MACHINE", "AscendSortByAlarmTime:init) " )
-            inactiveSeparate = separate
-        }
-
-        override fun compare(a: AlarmItem, b: AlarmItem): Int {
-            if (inactiveSeparate) {
-                if (b.isActive && !a.isActive) return 1
-                if (!b.isActive && a.isActive) return -1
-            }
-
-            return (a.nextAlarmTimeInMillis() - b.nextAlarmTimeInMillis()).toInt()
-        }
-    }
-
-    internal inner class descendSortByAlarmTime : Comparator<AlarmItem> {
-        // Used for sorting in descending order of
-        // Alarm Time
-        override fun compare(a: AlarmItem, b: AlarmItem): Int {
-            return (b.nextAlarmTimeInMillis() - a.nextAlarmTimeInMillis()).toInt()
-        }
-    }
-
-    internal inner class ascendSortByLabel(separate: Boolean) : Comparator<AlarmItem> {
-        // Used for sorting in ascending order of Labels
-        // If labels are identical - sort by alarm time
-        var inactiveSeparate: Boolean = true
-
-        init {
-            inactiveSeparate = separate
-        }
-
-
-        override fun compare(a: AlarmItem, b: AlarmItem): Int {
-            if (inactiveSeparate) {
-                if (b.isActive && !a.isActive) return 1
-                if (!b.isActive && a.isActive) return -1
-            }
-
-            val compLabel = a.getLabel().compareTo(b.getLabel())
-            if (compLabel != 0) return compLabel
-
-
-            return (b.nextAlarmTimeInMillis() - a.nextAlarmTimeInMillis()).toInt()
-        }
-    }
-
-    internal inner class descendSortByLabel : Comparator<AlarmItem> {
-        // Used for sorting in descending order of Labels
-        // If labels are identical - sort by alarm time
-        override fun compare(b: AlarmItem, a: AlarmItem): Int {
-            val compLabel = a.getLabel().compareTo(b.getLabel())
-            if (compLabel != 0) return compLabel
-
-            return (b.nextAlarmTimeInMillis() - a.nextAlarmTimeInMillis()).toInt()
-        }
-    }
-
-    internal inner class descendSortByCreateTime(separate: Boolean) : Comparator<AlarmItem> {
-        // Used for sorting in descending order of Creation Time
-        var inactiveSeparate: Boolean = true
-
-        init {
-            inactiveSeparate = separate
-        }
-
-        override fun compare(a: AlarmItem, b: AlarmItem): Int {
-            if (inactiveSeparate) {
-                if (b.isActive && !a.isActive) return 1
-                if (!b.isActive && a.isActive) return -1
-            }
-            return (b.getCreateTime() - a.getCreateTime()).toInt()
-        }
-    }
-
-    internal inner class ascendSortByCreateTime : Comparator<AlarmItem> {
-        // Used for sorting in descending order of Creation Time
-        override fun compare(b: AlarmItem, a: AlarmItem): Int {
-            return (b.getCreateTime() - a.getCreateTime()).toInt()
-        }
+        alarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), false)
     }
 
 
@@ -619,13 +395,13 @@ class AlarmListFragment : Fragment() {
                 ArrayList()
             )
             val filterList = selectedAlarmList?.filter { it.equals(alarmItem.createTime.toInt()) }
-            var selected = !filterList.isNullOrEmpty()
+            val selected = !filterList.isNullOrEmpty()
 
             val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
             val snoozeIconColor =
                 if (alarmItem.getSnoozeCounter() > 0) Color.Unspecified else Color.Transparent
             val vibrateIconColor =
-                if (alarmItem.isVibrationActive()) Color.Unspecified else Color.Transparent
+                if (alarmItem.isVibrationActive) Color.Unspecified else Color.Transparent
             val muteIconColor = if (alarmItem.isAlarmMute) Color.Unspecified else Color.Transparent
 
             // Animation (From: https://developer.android.com/develop/ui/compose/animation/quick-guide#animate-text-scale)
@@ -644,12 +420,12 @@ class AlarmListFragment : Fragment() {
                     .padding(5.dp)
                     .fillMaxWidth()
                     .combinedClickable(
-                        onLongClick = { AlarmItemLongClicked(alarmItem.getCreateTime()) },
-                        onClickLabel = "Edit Alarm" // TODO
+                        onLongClick = { alarmItemLongClicked(alarmItem.getCreateTime()) },
+                        onClickLabel = stringResource(id = R.string.edit_alarm)
                     )
                     {
-                        if (selected) AlarmItemLongClicked(alarmItem.getCreateTime())
-                        else AlarmItemEdit(alarmItem, true)
+                        if (selected) alarmItemLongClicked(alarmItem.getCreateTime())
+                        else alarmItemEdit(alarmItem, true)
                     }
                     .background(MaterialTheme.colorScheme.surface)
                     .wrapContentHeight(),
@@ -660,7 +436,6 @@ class AlarmListFragment : Fragment() {
             ) {
                 ConstraintLayout(modifier = Modifier.fillMaxSize()) {
                     val refLabel = createRef()
-                    val refBell = createRef()
                     val refAlarmTime = createRef()
                     val refAlarmActive = createRef()
                     val refAmPm24h = createRef()
@@ -669,23 +444,6 @@ class AlarmListFragment : Fragment() {
                     val refVibrateIcon = createRef()
                     val refMuteIcon = createRef()
 
-
-                    // Bell Icon
-                    /*
-                    Image(
-                        painter = painterResource(id = R.drawable.baseline_alarm_off_24),
-                        contentDescription = stringResource(R.string.temp_icon),
-                        //painter = painterResource(id = android.R.drawable.ic_lock_idle_alarm),
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp)
-                            .padding(start = 8.dp)
-                            .constrainAs(refBell) {
-                                bottom.linkTo(parent.bottom)
-                                start.linkTo(parent.start)
-                                top.linkTo(parent.top)
-                            }
-                        )*/
 
                     // Alarm Label
                     Text(
@@ -821,9 +579,9 @@ class AlarmListFragment : Fragment() {
                 }
             } else {
                 when (comparatorType) {
-                    "alphabetically" -> list.sortedWith(compareBy<AlarmItem> { it.label })
-                    "by_alarm_time" -> list.sortedWith(compareBy<AlarmItem> { it.alarmTimeInMillis() })
-                    else -> list.sortedWith(compareBy<AlarmItem> { it.createTime })
+                    "alphabetically" -> list.sortedWith(compareBy { it.label })
+                    "by_alarm_time" -> list.sortedWith(compareBy{ it.alarmTimeInMillis() })
+                    else -> list.sortedWith(compareBy { it.createTime })
                 }
             }
         }
@@ -832,9 +590,9 @@ class AlarmListFragment : Fragment() {
     }
 
         @Composable
-        private fun getPrimaryTextColor(alarmItem: AlarmItem): androidx.compose.ui.graphics.Color {
+        private fun getPrimaryTextColor(alarmItem: AlarmItem): Color {
             if (alarmItem.isActive) return MaterialTheme.colorScheme.primary
-            else return MaterialTheme.colorScheme.inversePrimary
+            return MaterialTheme.colorScheme.inversePrimary
         }
 
         @Composable
@@ -855,11 +613,11 @@ class AlarmListFragment : Fragment() {
 
         }
 
-        private val onAddFloatButtonClick = { AddAlarmClicked() }
+        private val onAddFloatButtonClick = { addAlarmClicked() }
 
         private fun getAmPm24h(alarmItem: AlarmItem): Int {
             // Time
-            val h = alarmItem.getHour();
+            val h = alarmItem.getHour()
             return if (pref_is24HourClock())
                 (R.string.format_24h)
             else {
@@ -878,13 +636,13 @@ class AlarmListFragment : Fragment() {
 
             // Time
             var h = alarmItem.getHour()
-            if (pref_is24HourClock())
-            else {
+            if (!pref_is24HourClock())
+            {
                 if (h == 0) {
                     h = 12
-                } else if (h < 12)
+                }
                 else {
-                    if (h != 12) h -= 12
+                    if (h > 12) h -= 12
                 }
             }
             val fmt = stringResource(R.string.alarm_format)
@@ -895,9 +653,6 @@ class AlarmListFragment : Fragment() {
 
         @Composable
         private fun getDisplayWeekdays(alarmItem: AlarmItem): AnnotatedString {
-
-            val defaultColor =
-                colorResource(com.google.android.material.R.color.m3_default_color_primary_text)
 
             /// Is it a One-Off case? If so, is the alarm set for today or tomorrow?
             if (alarmItem.isOneOff) {
@@ -924,8 +679,8 @@ class AlarmListFragment : Fragment() {
                     // Future Date
                 } /**/ else {
                     val format = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale("US"))
-                    val alarmTime = alarmItem.alarmTimeInMillis();
-                    val word = format.format(alarmTime);
+                    val alarmTime = alarmItem.alarmTimeInMillis()
+                    val word = format.format(alarmTime)
                     //if (alarmItem.isActive)
                         return ((buildAnnotatedString {
                             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
@@ -938,29 +693,6 @@ class AlarmListFragment : Fragment() {
             // Repeating
             return getAnnotatedWeekdays(alarmItem)
 
-            /*
-        // This is a repeating alarm - print the weekdays
-        else {
-            // By default - all days are grayed
-            if (pref_first_day_of_week().equals("Su")) {
-                return ((buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = defaultColor)) {
-                        append(stringResource(R.string.su_mo_tu_we_th_fr_sa))
-                    }
-                }))
-            } else {
-                return ((buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = defaultColor)) {
-                        append(stringResource(R.string.mo_tu_we_th_fr_sa_su))
-                    }
-                }))
-            }
-        }
-        return ((buildAnnotatedString {
-            withStyle(style = SpanStyle(color = defaultColor)) {
-                append ("Error")
-            }
-        }))*/
         }
 
         @Composable
@@ -999,11 +731,10 @@ class AlarmListFragment : Fragment() {
             // If Active - Set color to selected/unselected days and mark the next day with underline
             val indexOfNextDay = alarmItem.weekdayOfNextAlarm
             val weekdays = alarmItem.getWeekDays()
-            var substr: String
             var currentColor: Color
             var underlined: TextDecoration
 
-            Log.d("THE_TIME_MACHINE", "weekdaysString = " + weekdaysString)
+            Log.d("THE_TIME_MACHINE", "weekdaysString = $weekdaysString" )
             return buildAnnotatedString {
                 append(weekdaysString)
                 for (day in 0..6) {

@@ -72,6 +72,7 @@
     <string name="check">check</string>
     <string name="duplicate">Duplicate</string>
     <string name="edit">edit</string>
+    <string name="edit_alarm">Edit Alarm</string>
     <string name="settings">settings</string>
     <string name="open_date_picker">Open Date Picker</string>
     <string name="title_error">Error</string>
