@@ -50,7 +50,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -80,6 +79,7 @@ import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.SettingsFragment.pref_first_day_of_week
 import com.product.thetimemachine.ui.SettingsFragment.pref_is24HourClock
+import com.product.thetimemachine.ui.theme.AppTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -562,18 +562,17 @@ class AlarmListFragment : Fragment() {
     /* Top level Display - Call Portrait/Landscape Content View */
     @Composable
     fun AlarmListFragDisplayTop() {
-        Surface{
-            MaterialTheme{/**/
-                //if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT)
-                    AlarmListFragDisplayPortrait(parent!!.alarmViewModel)
-               // else
-                   // AlarmListFragDisplayLand(parent!!.alarmViewModel )
+        AppTheme(dynamicColor = true) {
+            Surface {
+                MaterialTheme {
+                    AlarmListFragDisplay(parent!!.alarmViewModel)
+                }
             }
         }
     }
 
     @Composable
-    fun AlarmListFragDisplayPortrait(alarmViewModel : AlarmViewModel){
+    fun AlarmListFragDisplay(alarmViewModel : AlarmViewModel){
         // Observes values coming from the VM's LiveData<Plant> field
         val alarmList         by alarmViewModel.alarmList.observeAsState()
 
@@ -587,9 +586,6 @@ class AlarmListFragment : Fragment() {
 
     }
 
-
-    @Composable
-    fun AlarmListFragDisplayLand(alarmViewModel : AlarmViewModel){}
 
     @Composable
     fun DisplayAlarmList (list: MutableList<AlarmItem>?) {
@@ -695,7 +691,7 @@ class AlarmListFragment : Fragment() {
                     Text(
                         alarmItem.getLabel(),
                         textAlign = TextAlign.Start,
-                        color = colorResource(com.google.android.material.R.color.m3_default_color_primary_text),
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 20.sp,
                         modifier = Modifier
                             .alpha(currentAlpha)
@@ -709,7 +705,7 @@ class AlarmListFragment : Fragment() {
                     Text(
                         text = getDisplayWeekdays(alarmItem),
                         textAlign = TextAlign.End,
-                        color = colorResource(com.google.android.material.R.color.m3_default_color_primary_text),
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         modifier = Modifier
                             //.height(30.dp)
@@ -930,9 +926,9 @@ class AlarmListFragment : Fragment() {
                     val format = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale("US"))
                     val alarmTime = alarmItem.alarmTimeInMillis();
                     val word = format.format(alarmTime);
-                    if (alarmItem.isActive)
+                    //if (alarmItem.isActive)
                         return ((buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = defaultColor)) {
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
                                 append(word)
                             }
                         }))
@@ -989,8 +985,8 @@ class AlarmListFragment : Fragment() {
             }
 
             val defaultColor =
-                colorResource(com.google.android.material.R.color.m3_default_color_primary_text)
-            val fadedColor = colorResource(id = R.color.light_gray)
+                MaterialTheme.colorScheme.onSurface
+            val fadedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
 
             // If inactive - just print string in default color
             if (!alarmItem.isActive)
