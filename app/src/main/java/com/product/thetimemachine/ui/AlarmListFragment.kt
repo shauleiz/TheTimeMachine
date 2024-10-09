@@ -26,6 +26,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,10 +64,14 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
+import androidx.constraintlayout.compose.atLeast
+import androidx.constraintlayout.compose.atMost
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
@@ -444,20 +449,30 @@ class AlarmListFragment : Fragment() {
                     val refVibrateIcon = createRef()
                     val refMuteIcon = createRef()
 
-
                     // Alarm Label
                     Text(
                         alarmItem.getLabel(),
                         textAlign = TextAlign.Start,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 20.sp,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
                         modifier = Modifier
                             .alpha(currentAlpha)
                             .constrainAs(refLabel) {
+                                width = fillToConstraints
                                 centerVerticallyTo(refAlarmActive, bias = 0.7f)
-                                start.linkTo(refAlarmActive.end, margin = 8.dp) //
+                                linkTo(
+                                    start = refAlarmActive.end,
+                                    end = refAlarmTime.start,
+                                    startMargin = 8.dp,
+                                    endMargin = 8.dp,
+                                    bias = 0.0f,
+                                )
                             },
-                    )
+                        )
+
+
 
                     // Weekdays / Today / Tomorrow
                     Text(
