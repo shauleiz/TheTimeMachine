@@ -246,7 +246,8 @@ class AlarmListFragment : Fragment() {
         parent = activity as MainActivity?
         if (parent != null) parent!!.supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
+            //.replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
+            .replace(R.id.fragment_container_view, AlarmEditFrag::class.java, b)
             .addToBackStack("tag2")
             .commit()
 
