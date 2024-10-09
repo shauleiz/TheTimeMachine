@@ -22,6 +22,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,9 +40,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -302,9 +305,9 @@ class StopSnoozeActivity : AppCompatActivity() {
        )
        Column(
            modifier = Modifier
+               .background(color = colorResource(R.color.light_blue_A400))
                .fillMaxWidth()
-               .fillMaxHeight()
-               .background(color = colorResource(R.color.light_blue_A400)),
+               .fillMaxHeight(),
            horizontalAlignment = Alignment.CenterHorizontally,
            verticalArrangement = Arrangement.SpaceBetween
 
@@ -419,14 +422,21 @@ class StopSnoozeActivity : AppCompatActivity() {
    // Stop "Button"
    // Box containing an image (Red octagon) and Text ("Stop")
    fun StopButton() {
+
+
        Box {
            Image(
                painter = painterResource(id = R.drawable.iconmonstr_octagon_1),
                contentDescription = "Stop Button",
                modifier = Modifier
+                   //.background(colorResource(R.color.light_blue_A400))
                    .align(alignment = Alignment.Center)
                    .requiredSize((LocalConfiguration.current.smallestScreenWidthDp * 0.5f).dp)
-                   .clickable { onClickStop() }
+                   .clickable(
+                       onClick = { onClickStop()},
+                       interactionSource = remember { MutableInteractionSource() },
+                       indication = ripple(bounded = true, radius = (LocalConfiguration.current.smallestScreenWidthDp * 0.25f).dp ),
+                   )
            )
            Text(
                text = stringResource(id = R.string.stop_button),

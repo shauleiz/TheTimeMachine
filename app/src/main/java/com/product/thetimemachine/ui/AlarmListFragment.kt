@@ -86,7 +86,7 @@ import java.util.Locale
 class AlarmListFragment : Fragment() {
     private var parent: MainActivity? = null
     private var fragmentView: View? = null
-    private var selectedItems: ArrayList<Int>? = null
+    //private var selectedItems: ArrayList<Int>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +105,7 @@ class AlarmListFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putIntegerArrayList("ARRAY_SI", selectedItems)
+        //outState.putIntegerArrayList("ARRAY_SI", selectedItems)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
