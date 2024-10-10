@@ -1,5 +1,6 @@
 package com.product.thetimemachine.ui
 
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,11 +37,19 @@ import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Calendar
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 
 
 class AlarmEditFrag : Fragment() {
@@ -87,7 +96,9 @@ class AlarmEditFrag : Fragment() {
                 MaterialTheme {
                     Column(
                         horizontalAlignment = CenterHorizontally, //of children
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                     ) {
                         /* Alarm Label */
                         LabelField()
@@ -96,7 +107,7 @@ class AlarmEditFrag : Fragment() {
                         TimePickerField()
 
                         /* Single/Weekly button */
-                        WeeklyOrOneoff ()
+                        AlarmTypeBox()
                     }
                 }
             }
@@ -155,11 +166,14 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun WeeklyOrOneoff () {
-        var selectedIndex by rememberSaveable { mutableStateOf(0) }
+    private fun WeeklyOrOneOff () {
+        var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
         val options = listOf(R.string.single, R.string.weekly)
 
-        SingleChoiceSegmentedButtonRow {
+        SingleChoiceSegmentedButtonRow(modifier = Modifier
+            .fillMaxWidth()
+            //.padding(8.dp)
+        ) {
             options.forEachIndexed { index, label ->
                 SegmentedButton(
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
@@ -170,6 +184,23 @@ class AlarmEditFrag : Fragment() {
                 }
             }
 
+        }
+    }
+
+    @Composable
+    private fun CalendarButton(){
+        Button(onClick = {}) {
+            Icon (
+                painterResource(id = R.drawable.calendar_month_fill0_wght400_grad0_opsz24) ,
+                stringResource(id = R.string.open_date_picker))
+        }
+    }
+
+    @Composable
+    private fun AlarmTypeBox(){
+        Column(modifier = Modifier.padding(8.dp)){
+            WeeklyOrOneOff()
+            CalendarButton()
         }
     }
 }
