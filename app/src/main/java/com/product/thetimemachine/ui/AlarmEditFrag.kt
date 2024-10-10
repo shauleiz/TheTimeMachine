@@ -190,9 +190,10 @@ class AlarmEditFrag : Fragment() {
     @Composable
     private fun CalendarButton(){
         Button(onClick = {}) {
-            Icon (
-                painterResource(id = R.drawable.calendar_month_fill0_wght400_grad0_opsz24) ,
-                stringResource(id = R.string.open_date_picker))
+            Icon(
+                painter = painterResource(id = R.drawable.calendar_month_fill0_wght400_grad0_opsz24),
+                contentDescription = stringResource(id = R.string.open_date_picker),
+                )
         }
     }
 
