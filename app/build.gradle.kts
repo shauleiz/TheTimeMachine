@@ -105,4 +105,5 @@ dependencies {
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation ("androidx.constraintlayout:constraintlayout-core:1.0.4")
     implementation ("androidx.activity:activity-compose:1.9.2")
+    implementation("androidx.compose.material3:material3:1.3.0")
 }

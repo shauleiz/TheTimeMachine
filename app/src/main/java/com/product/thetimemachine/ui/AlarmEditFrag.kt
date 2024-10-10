@@ -1,48 +1,50 @@
 package com.product.thetimemachine.ui
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDefaults
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import androidx.fragment.app.Fragment
 import com.product.thetimemachine.R
+import com.product.thetimemachine.ui.theme.AppTheme
+import java.util.Calendar
+import androidx.appcompat.widget.Toolbar
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 
 
-class AlarmEditFrag  : Fragment() {
+class AlarmEditFrag : Fragment() {
     private var parent: MainActivity? = null
-    private var fragmentView: View? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,9 +67,10 @@ class AlarmEditFrag  : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val AppToolbar = requireActivity().findViewById<Toolbar>(com.product.thetimemachine.R.id.app_toolbar)
-        AppToolbar.setTitle(com.product.thetimemachine.R.string.alarmsetup_title)
-        (activity as AppCompatActivity?)!!.setSupportActionBar(AppToolbar)
+        val appToolbar =
+            requireActivity().findViewById<Toolbar>(R.id.app_toolbar)
+        appToolbar.setTitle(R.string.alarmsetup_title)
+        (activity as AppCompatActivity?)!!.setSupportActionBar(appToolbar)
         parent!!.isDeleteAction = false
         parent!!.isSettingsAction = true
         parent!!.isEditAction = false
@@ -78,60 +81,96 @@ class AlarmEditFrag  : Fragment() {
 
 
     @Composable
-    private fun AlarmEditFragDisplayTop(){
+    private fun AlarmEditFragDisplayTop() {
+        AppTheme(dynamicColor = true) {
+            Surface {
+                MaterialTheme {
+                    Column(
+                        horizontalAlignment = CenterHorizontally, //of children
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        /* Alarm Label */
+                        LabelField()
 
-        var value by rememberSaveable { mutableStateOf("")}
-        var isFocused by rememberSaveable { mutableStateOf(false) }
+                        /* Time Picker */
+                        TimePickerField()
 
-        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-            val refLabel = createRef()
-
-
-            OutlinedTextField(
-                value = value,
-                onValueChange = {value = it},
-                label = {
-                    Text(text = stringResource(id = R.string.label_hint),
-                    color = if (!isFocused && value.isEmpty()) MaterialTheme.colorScheme.outlineVariant else MaterialTheme.colorScheme.onSurface
-                    ) },
-                singleLine = true,
-                placeholder = { Text(
-                    text =stringResource(id = R.string.label_hint),
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                ) },
-                modifier = Modifier
-                    .onFocusChanged { focusState ->
-                        isFocused = focusState.isFocused}
-                    .heightIn(1.dp, Dp.Infinity)
-                    .padding(8.dp)
-                    .constrainAs(refLabel) {
-                        width = fillToConstraints
-                        top.linkTo(parent.top)
-                        linkTo(
-                            start = parent.start,
-                            end = parent.end,
-                            startMargin = 8.dp,
-                            endMargin = 8.dp,
-                            bias = 0.0f,
-                        )
-                    },
-            )
+                        /* Single/Weekly button */
+                        WeeklyOrOneoff ()
+                    }
+                }
+            }
         }
     }
 
-}
+    @Composable
+    private fun LabelField() {
+        var value by rememberSaveable { mutableStateOf("") }
+        var isFocused by rememberSaveable { mutableStateOf(false) }
 
-private fun getLabel(txt: String){}
+        OutlinedTextField(
+            value = value,
+            onValueChange = { value = it },
+            label = {
+                Text(
+                    text = stringResource(id = R.string.label_hint),
+                    color = if (!isFocused && value.isEmpty()) MaterialTheme.colorScheme.outlineVariant else MaterialTheme.colorScheme.onSurface
+                )
+            },
+            singleLine = true,
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.label_hint),
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { focusState -> isFocused = focusState.isFocused }
+                .heightIn(1.dp, Dp.Infinity)
+                .padding(8.dp)
+        )
+    }
 
-@Composable
-fun SimpleComposable() {
-    Scaffold() {it
-        TextField(value = "Text" , onValueChange = {})
+    // TODO: Add icon button to toggle between Dial and InputTimePicker
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun TimePickerField() {
+
+        // Get Current time
+        val currentTime = Calendar.getInstance()
+
+        // Set initial time to current time
+        val timePickerState = rememberTimePickerState(
+            initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+            initialMinute = currentTime.get(Calendar.MINUTE),
+            is24Hour = true,
+        )
+        TimePicker(
+            state = timePickerState,
+            layoutType = TimePickerDefaults.layoutType(),
+            modifier = Modifier
+                .wrapContentWidth(CenterHorizontally),
+        )
+    }
+
+    @Composable
+    private fun WeeklyOrOneoff () {
+        var selectedIndex by rememberSaveable { mutableStateOf(0) }
+        val options = listOf(R.string.single, R.string.weekly)
+
+        SingleChoiceSegmentedButtonRow {
+            options.forEachIndexed { index, label ->
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                    onClick = { selectedIndex = index },
+                    selected = index == selectedIndex
+                ) {
+                    Text(stringResource(id = options[index]))
+                }
+            }
+
+        }
     }
 }
 
-@Preview
-@Composable
-fun SimpleComposablePreview() {
-    SimpleComposable()
-}
