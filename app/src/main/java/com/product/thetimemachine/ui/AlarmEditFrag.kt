@@ -38,6 +38,7 @@ import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Calendar
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -57,6 +58,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 
@@ -100,6 +102,7 @@ class AlarmEditFrag : Fragment() {
 
     @Composable
     private fun AlarmEditFragDisplayTop() {
+        var selectedList =  rememberSaveable { mutableStateOf<List<Boolean>> (mutableListOf(false, false,false, false,false, false, false,) )}
         AppTheme(dynamicColor = true) {
             Surface {
                 MaterialTheme {
@@ -116,7 +119,7 @@ class AlarmEditFrag : Fragment() {
                         TimePickerField()
 
                         /* Single/Weekly button */
-                        AlarmTypeBox()
+                        AlarmTypeBox(selectedList)
                     }
                 }
             }
@@ -207,13 +210,18 @@ class AlarmEditFrag : Fragment() {
     }
 
 
+    private fun onSelectionChange(index:Int,selectedList: MutableState<List<Boolean>>) {
+        var selectedListLocal  = mutableListOf(false, false,false, false,false, false, false,)
+        selectedListLocal = selectedList.value.toMutableList()
+        selectedListLocal[index] = !selectedListLocal[index]
+        selectedList.value = selectedListLocal
+    }
+
     @Composable
-    private fun DayButtons() {
+    private fun DayButtons(selectedList: MutableState<List<Boolean>>) {
         val su_Weekdays = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", )
         val mo_Weekdays = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su", )
 
-        var selectedListLocal  = mutableListOf(false, false,false, false,false, false, false,)
-        var selectedList =  rememberSaveable { mutableStateOf<List<Boolean>> (mutableListOf(false, false,false, false,false, false, false,) )}
 
         // TODO: Put selector here
         val weekdays = su_Weekdays
@@ -221,42 +229,31 @@ class AlarmEditFrag : Fragment() {
         var selectedOption by remember {
             mutableStateOf("")
         }
-        val onSelectionChange = { index: Int ->
-            selectedListLocal = selectedList.value.toMutableList()
-            selectedListLocal[index] = !selectedListLocal[index]
-            selectedList.value = selectedListLocal
-        }
-
-        Log.d("THE_TIME_MACHINE", "DayButtons()[1] selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
 
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp)
         ){
             weekdays.forEachIndexed {   index, s ->
-                Log.d("THE_TIME_MACHINE", "DayButtons()[2] index=$index selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
-
                 Text(
                     text = s,
-                    color = Color.White,
+                    color = if ( selectedList.value[index]) {
+                        MaterialTheme.colorScheme.background
+                    } else {
+                        MaterialTheme.colorScheme.onBackground
+                    },
                     modifier = Modifier
-                        .clip(
-                            shape = RoundedCornerShape(size = 12.dp,),
-                        )
-                        .clickable {
-                            onSelectionChange(index)
-                            Log.d("THE_TIME_MACHINE", "DayButtons()[3] index=$index selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
-
-                        }
+                        .clip(shape = RoundedCornerShape(size = 12.dp,),)
+                        .clickable { onSelectionChange(index, selectedList) }
                         .background(
-                            if ( selectedList.value[index]) {
-                                Log.d("THE_TIME_MACHINE", "DayButtons()[4] index=$index selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
-                                Color.Magenta
+                            if (selectedList.value[index]) {
+                                MaterialTheme.colorScheme.onBackground
                             } else {
-                                Log.d("THE_TIME_MACHINE", "DayButtons()[5] index=$index selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
-                                Color.LightGray
+                                MaterialTheme.colorScheme.primaryContainer
                             }
                         )
                         .padding(
@@ -269,11 +266,11 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun AlarmTypeBox(){
+    private fun AlarmTypeBox(selectedList: MutableState<List<Boolean>>){
         Column(modifier = Modifier.padding(8.dp)){
             WeeklyOrOneOff()
             CalendarButton()
-            DayButtons()
+            DayButtons(selectedList)
         }
     }
 }
