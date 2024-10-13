@@ -210,7 +210,7 @@ class AlarmEditFrag : Fragment() {
     }
 
 
-    private fun onSelectionChange(index:Int,selectedList: MutableState<List<Boolean>>) {
+    private val onSelectionChange  = { index: Int, selectedList: MutableState<List<Boolean>> ->
         var selectedListLocal  = mutableListOf(false, false,false, false,false, false, false,)
         selectedListLocal = selectedList.value.toMutableList()
         selectedListLocal[index] = !selectedListLocal[index]
@@ -218,7 +218,7 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun DayButtons(selectedList: MutableState<List<Boolean>>) {
+    private fun DayButtons(selectedList: MutableState<List<Boolean>>, onSel: (Int, MutableState<List<Boolean>>) -> Unit) {
         val su_Weekdays = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", )
         val mo_Weekdays = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su", )
 
@@ -248,7 +248,7 @@ class AlarmEditFrag : Fragment() {
                     },
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(size = 12.dp,),)
-                        .clickable { onSelectionChange(index, selectedList) }
+                        .clickable { onSel(index, selectedList) }
                         .background(
                             if (selectedList.value[index]) {
                                 MaterialTheme.colorScheme.onBackground
@@ -270,7 +270,7 @@ class AlarmEditFrag : Fragment() {
         Column(modifier = Modifier.padding(8.dp)){
             WeeklyOrOneOff()
             CalendarButton()
-            DayButtons(selectedList)
+            DayButtons(selectedList, onSelectionChange)
         }
     }
 }
