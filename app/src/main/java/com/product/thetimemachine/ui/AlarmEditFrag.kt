@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmViewModel
+import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Calendar
@@ -152,9 +153,11 @@ class AlarmEditFrag : Fragment() {
         var value by rememberSaveable { mutableStateOf(label!!) }
         var isFocused by rememberSaveable { mutableStateOf(false) }
 
+
+
         OutlinedTextField(
             value = value,
-            onValueChange = { value = it },
+            onValueChange = { value = it ; setUpAlarmValues.setLabel(it) },
             label = {
                 Text(
                     text = stringResource(id = R.string.label_hint),
@@ -298,13 +301,51 @@ class AlarmEditFrag : Fragment() {
 
 
     fun CheckmarkClicked(){
-        Log.d("THE_TIME_MACHINE", "CheckmarkClicked() Was called")
+        Log.d("THE_TIME_MACHINE", "CheckmarkClicked() Was called setUpAlarmValues.label=${setUpAlarmValues.label.value}")
+
+        if (setUpAlarmValues==null || setUpAlarmValues.hour == null || setUpAlarmValues.hour.value==null) return
+        if (setUpAlarmValues.minute == null || setUpAlarmValues.minute.value==null) return
+        if (setUpAlarmValues.label == null || setUpAlarmValues.label.value==null) return
+        val c = initParams!!.getLong("INIT_CREATE_TIME")
 
 
+        /*// Prevent creation of a duplicate alarm item
+        if (alarmViewModel.isDuplicate(h,m,c)){
+            String txt = "Duplicate: " + h+":"+m;
+            Log.d("THE_TIME_MACHINE", txt);
 
-        // Remove from list of selected alarms
-        // parent!!.alarmViewModel.clearSelection(item.createTime)
+            new MaterialAlertDialogBuilder(requireContext())
+                  .setMessage(R.string.duplicate_alarm_message)
+                  .setTitle(R.string.duplicate_alarm_title)
+                  .show();
+            return;
+        }*/
 
+        // If modified alarm then use its old Create Time (id)
+        // If new alarm then create it using a new Create Time (id)
+
+
+            // If modified alarm then use its old Create Time (id)
+            // If new alarm then create it using a new Create Time (id)
+            val item = if (!isNewAlarm) AlarmItem(
+                setUpAlarmValues.hour.value!!,
+                setUpAlarmValues.minute.value!!,
+                setUpAlarmValues.label.value, true, c)
+            else AlarmItem(
+                setUpAlarmValues.hour.value!!,
+                setUpAlarmValues.minute.value!!,
+                setUpAlarmValues.label.value, true)
+
+
+        // Add or Update the entry on the list
+        if (isNewAlarm )
+            parent!!.alarmViewModel.AddAlarm(item)
+        else
+            parent!!.alarmViewModel.UpdateAlarm(item)
+
+
+        // Schedule this new/modified alarm
+        item.Exec()
 
         // Display the Alarm List Fragment
         if (parent != null) parent!!.supportFragmentManager
