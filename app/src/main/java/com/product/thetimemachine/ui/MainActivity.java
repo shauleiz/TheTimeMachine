@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.checkmark) {
                assert frag instanceof AlarmEditFrag;
-               ((AlarmEditFrag) frag).CheckmarkClicked();
+               ((AlarmEditFrag) frag).checkmarkClicked();
                 return true;
             }
         }

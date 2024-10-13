@@ -51,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
@@ -184,21 +185,42 @@ class AlarmEditFrag : Fragment() {
     @Composable
     private fun TimePickerField() {
 
+        var hour : Int
+        var minute : Int
+
+        ///// Feed H:M data to Time Picker
+        // Time from Alarm to edit
+        if (!isNewAlarm ) {
+            hour = setUpAlarmValues.hour.value!!
+            minute = setUpAlarmValues.minute.value!!
+        }
+        else {
         // Get Current time
         val currentTime = Calendar.getInstance()
+            hour = currentTime.get(Calendar.HOUR_OF_DAY)
+            minute = currentTime.get(Calendar.MINUTE)
+        }
 
-        // Set initial time to current time
+        // Set initial time
         val timePickerState = rememberTimePickerState(
-            initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-            initialMinute = currentTime.get(Calendar.MINUTE),
-            is24Hour = true,
+            initialHour = hour,
+            initialMinute = minute,
+            is24Hour = true, // TODO: Get from preferences
         )
+
+        // Display Time Picker
         TimePicker(
             state = timePickerState,
             layoutType = TimePickerDefaults.layoutType(),
             modifier = Modifier
                 .wrapContentWidth(CenterHorizontally),
         )
+
+        // Update H:M Values
+        setUpAlarmValues.hour.value = timePickerState.hour
+        setUpAlarmValues.minute.value = timePickerState.minute
+
+
     }
 
     @Composable
@@ -300,29 +322,16 @@ class AlarmEditFrag : Fragment() {
     }
 
 
-    fun CheckmarkClicked(){
-        Log.d("THE_TIME_MACHINE", "CheckmarkClicked() Was called setUpAlarmValues.label=${setUpAlarmValues.label.value}")
+    fun checkmarkClicked(){
 
+        // Null checks
         if (setUpAlarmValues==null || setUpAlarmValues.hour == null || setUpAlarmValues.hour.value==null) return
         if (setUpAlarmValues.minute == null || setUpAlarmValues.minute.value==null) return
         if (setUpAlarmValues.label == null || setUpAlarmValues.label.value==null) return
+
         val c = initParams!!.getLong("INIT_CREATE_TIME")
 
 
-        /*// Prevent creation of a duplicate alarm item
-        if (alarmViewModel.isDuplicate(h,m,c)){
-            String txt = "Duplicate: " + h+":"+m;
-            Log.d("THE_TIME_MACHINE", txt);
-
-            new MaterialAlertDialogBuilder(requireContext())
-                  .setMessage(R.string.duplicate_alarm_message)
-                  .setTitle(R.string.duplicate_alarm_title)
-                  .show();
-            return;
-        }*/
-
-        // If modified alarm then use its old Create Time (id)
-        // If new alarm then create it using a new Create Time (id)
 
 
             // If modified alarm then use its old Create Time (id)
@@ -330,11 +339,14 @@ class AlarmEditFrag : Fragment() {
             val item = if (!isNewAlarm) AlarmItem(
                 setUpAlarmValues.hour.value!!,
                 setUpAlarmValues.minute.value!!,
-                setUpAlarmValues.label.value, true, c)
+                setUpAlarmValues.label.value,
+                true,
+                initParams!!.getLong("INIT_CREATE_TIME"))
             else AlarmItem(
                 setUpAlarmValues.hour.value!!,
                 setUpAlarmValues.minute.value!!,
-                setUpAlarmValues.label.value, true)
+                setUpAlarmValues.label.value,
+                true)
 
 
         // Add or Update the entry on the list
