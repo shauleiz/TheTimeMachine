@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment_container_view);
 
         // Setup Fragment - Only Setting is supported
-        if (frag instanceof SetUpAlarmFragment) {
+        if (frag instanceof SetUpAlarmFragment || frag instanceof AlarmEditFrag) {
             Log.d("THE_TIME_MACHINE", "SetUpAlarmFragment");
             if (itemId == R.id.settings) {
                 Settings();
@@ -182,7 +182,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(homeIntent);
                 return true;
             } else if (itemId == R.id.checkmark) {
-                ((SetUpAlarmFragment) frag).OkClicked();
+               assert frag instanceof AlarmEditFrag;
+               ((AlarmEditFrag) frag).CheckmarkClicked();
                 return true;
             }
         }

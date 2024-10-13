@@ -6,65 +6,63 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Calendar
-import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 
 
 class AlarmEditFrag : Fragment() {
     private var parent: MainActivity? = null
+    private lateinit var setUpAlarmValues: AlarmViewModel.SetUpAlarmValues
+    private var initParams: Bundle? = null
+    var isNewAlarm:Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +70,7 @@ class AlarmEditFrag : Fragment() {
 
         // Set the MainActivity as Parent
         parent = activity as MainActivity?
+        initParams = arguments
     }
 
 
@@ -97,12 +96,29 @@ class AlarmEditFrag : Fragment() {
         parent!!.isDuplicateAction = false
         parent!!.setCheckmarkAction(true)
         parent!!.invalidateOptionsMenu()
+
+        // Get the initial setup values from the ViewModel
+        setUpAlarmValues = parent!!.alarmViewModel.setUpAlarmValues
+
+        // Is it a new Alarm or Alarm to be edited
+        isNewAlarm = initParams!!.getBoolean("INIT_NEWALARM", false)
+
+
     }
 
 
     @Composable
     private fun AlarmEditFragDisplayTop() {
-        var selectedList =  rememberSaveable { mutableStateOf<List<Boolean>> (mutableListOf(false, false,false, false,false, false, false,) )}
+        var selectedList =  rememberSaveable { mutableStateOf<List<Boolean>> (mutableListOf(
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+        ) )}
+
         AppTheme(dynamicColor = true) {
             Surface {
                 MaterialTheme {
@@ -128,7 +144,12 @@ class AlarmEditFrag : Fragment() {
 
     @Composable
     private fun LabelField() {
-        var value by rememberSaveable { mutableStateOf("") }
+        // If editing alarm then get the label
+        val label =
+            if (!isNewAlarm && !setUpAlarmValues.label.value.isNullOrEmpty()) setUpAlarmValues.label.value
+        else ""
+
+        var value by rememberSaveable { mutableStateOf(label!!) }
         var isFocused by rememberSaveable { mutableStateOf(false) }
 
         OutlinedTextField(
@@ -210,8 +231,9 @@ class AlarmEditFrag : Fragment() {
     }
 
 
+    // What to do when one of the weekdays
     private val onSelectionChange  = { index: Int, selectedList: MutableState<List<Boolean>> ->
-        var selectedListLocal  = mutableListOf(false, false,false, false,false, false, false,)
+        var selectedListLocal  = mutableListOf(false, false, false, false, false, false, false)
         selectedListLocal = selectedList.value.toMutableList()
         selectedListLocal[index] = !selectedListLocal[index]
         selectedList.value = selectedListLocal
@@ -219,8 +241,8 @@ class AlarmEditFrag : Fragment() {
 
     @Composable
     private fun DayButtons(selectedList: MutableState<List<Boolean>>, onSel: (Int, MutableState<List<Boolean>>) -> Unit) {
-        val su_Weekdays = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", )
-        val mo_Weekdays = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su", )
+        val su_Weekdays = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
+        val mo_Weekdays = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
 
 
         // TODO: Put selector here
@@ -247,7 +269,7 @@ class AlarmEditFrag : Fragment() {
                         MaterialTheme.colorScheme.onBackground
                     },
                     modifier = Modifier
-                        .clip(shape = RoundedCornerShape(size = 12.dp,),)
+                        .clip(shape = RoundedCornerShape(size = 12.dp))
                         .clickable { onSel(index, selectedList) }
                         .background(
                             if (selectedList.value[index]) {
@@ -272,6 +294,29 @@ class AlarmEditFrag : Fragment() {
             CalendarButton()
             DayButtons(selectedList, onSelectionChange)
         }
+    }
+
+
+    fun CheckmarkClicked(){
+        Log.d("THE_TIME_MACHINE", "CheckmarkClicked() Was called")
+
+
+
+        // Remove from list of selected alarms
+        // parent!!.alarmViewModel.clearSelection(item.createTime)
+
+
+        // Display the Alarm List Fragment
+        if (parent != null) parent!!.supportFragmentManager
+            .beginTransaction()
+            //.replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
+            .replace(R.id.fragment_container_view, AlarmListFragment::class.java, null)
+            .addToBackStack("tag5")
+            .commit()
+
+        // Remove from list of selected alarms
+        // parent!!.alarmViewModel.clearSelection(item.createTime)
+
     }
 }
 
