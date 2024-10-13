@@ -1,7 +1,7 @@
 package com.product.thetimemachine.ui
 
-import android.graphics.drawable.Icon
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,18 +37,27 @@ import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Calendar
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 
 
@@ -197,12 +206,78 @@ class AlarmEditFrag : Fragment() {
         }
     }
 
+
+    @Composable
+    private fun DayButtons() {
+        val su_Weekdays = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", )
+        val mo_Weekdays = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su", )
+
+        var selectedListLocal  = mutableListOf(false, false,false, false,false, false, false,)
+        var selectedList =  rememberSaveable { mutableStateOf<List<Boolean>> (mutableListOf(false, false,false, false,false, false, false,) )}
+
+        // TODO: Put selector here
+        val weekdays = su_Weekdays
+
+        var selectedOption by remember {
+            mutableStateOf("")
+        }
+        val onSelectionChange = { index: Int ->
+            selectedListLocal = selectedList.value.toMutableList()
+            selectedListLocal[index] = !selectedListLocal[index]
+            selectedList.value = selectedListLocal
+        }
+
+        Log.d("THE_TIME_MACHINE", "DayButtons()[1] selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
+
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ){
+            weekdays.forEachIndexed {   index, s ->
+                Log.d("THE_TIME_MACHINE", "DayButtons()[2] index=$index selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
+
+                Text(
+                    text = s,
+                    color = Color.White,
+                    modifier = Modifier
+                        .clip(
+                            shape = RoundedCornerShape(size = 12.dp,),
+                        )
+                        .clickable {
+                            onSelectionChange(index)
+                            Log.d("THE_TIME_MACHINE", "DayButtons()[3] index=$index selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
+
+                        }
+                        .background(
+                            if ( selectedList.value[index]) {
+                                Log.d("THE_TIME_MACHINE", "DayButtons()[4] index=$index selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
+                                Color.Magenta
+                            } else {
+                                Log.d("THE_TIME_MACHINE", "DayButtons()[5] index=$index selectedList=$selectedList  selectedListLocal=$selectedListLocal" )
+                                Color.LightGray
+                            }
+                        )
+                        .padding(
+                            vertical = 12.dp,
+                            horizontal = 16.dp,
+                        ),
+                )
+            }
+        }
+    }
+
     @Composable
     private fun AlarmTypeBox(){
         Column(modifier = Modifier.padding(8.dp)){
             WeeklyOrOneOff()
             CalendarButton()
+            DayButtons()
         }
     }
 }
+
+
+
 
