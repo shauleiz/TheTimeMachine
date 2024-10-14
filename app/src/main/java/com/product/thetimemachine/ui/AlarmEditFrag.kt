@@ -51,7 +51,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
@@ -64,7 +63,8 @@ class AlarmEditFrag : Fragment() {
     private var parent: MainActivity? = null
     private lateinit var setUpAlarmValues: AlarmViewModel.SetUpAlarmValues
     private var initParams: Bundle? = null
-    var isNewAlarm:Boolean = false
+    private var isNewAlarm: Boolean = true
+    private var isOneOff = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,6 +104,7 @@ class AlarmEditFrag : Fragment() {
 
         // Is it a new Alarm or Alarm to be edited
         isNewAlarm = initParams!!.getBoolean("INIT_NEWALARM", false)
+        isOneOff = setUpAlarmValues.isOneOff.value!!
 
 
     }
@@ -111,15 +112,21 @@ class AlarmEditFrag : Fragment() {
 
     @Composable
     private fun AlarmEditFragDisplayTop() {
-        var selectedList =  rememberSaveable { mutableStateOf<List<Boolean>> (mutableListOf(
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-        ) )}
+        val selectedList = rememberSaveable {
+            mutableStateOf<List<Boolean>>(
+                mutableListOf(
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                )
+            )
+        }
+
+        var oneOff by rememberSaveable { mutableStateOf(isOneOff) }
 
         AppTheme(dynamicColor = true) {
             Surface {
@@ -137,7 +144,7 @@ class AlarmEditFrag : Fragment() {
                         TimePickerField()
 
                         /* Single/Weekly button */
-                        AlarmTypeBox(selectedList)
+                        AlarmTypeBox(selectedList, oneOff)
                     }
                 }
             }
@@ -149,7 +156,7 @@ class AlarmEditFrag : Fragment() {
         // If editing alarm then get the label
         val label =
             if (!isNewAlarm && !setUpAlarmValues.label.value.isNullOrEmpty()) setUpAlarmValues.label.value
-        else ""
+            else ""
 
         var value by rememberSaveable { mutableStateOf(label!!) }
         var isFocused by rememberSaveable { mutableStateOf(false) }
@@ -158,7 +165,7 @@ class AlarmEditFrag : Fragment() {
 
         OutlinedTextField(
             value = value,
-            onValueChange = { value = it ; setUpAlarmValues.setLabel(it) },
+            onValueChange = { value = it; setUpAlarmValues.setLabel(it) },
             label = {
                 Text(
                     text = stringResource(id = R.string.label_hint),
@@ -185,18 +192,17 @@ class AlarmEditFrag : Fragment() {
     @Composable
     private fun TimePickerField() {
 
-        var hour : Int
-        var minute : Int
+        var hour: Int
+        var minute: Int
 
         ///// Feed H:M data to Time Picker
         // Time from Alarm to edit
-        if (!isNewAlarm ) {
+        if (!isNewAlarm) {
             hour = setUpAlarmValues.hour.value!!
             minute = setUpAlarmValues.minute.value!!
-        }
-        else {
-        // Get Current time
-        val currentTime = Calendar.getInstance()
+        } else {
+            // Get Current time
+            val currentTime = Calendar.getInstance()
             hour = currentTime.get(Calendar.HOUR_OF_DAY)
             minute = currentTime.get(Calendar.MINUTE)
         }
@@ -224,12 +230,19 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun WeeklyOrOneOff () {
-        var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+    private fun WeeklyOrOneOff(oneOff: Boolean) {
+
+        // Text to put on buttons
         val options = listOf(R.string.single, R.string.weekly)
 
-        SingleChoiceSegmentedButtonRow(modifier = Modifier
-            .fillMaxWidth()
+        // Index of selected button: 0=One Off ; 1=Weekly
+        var selectedIndex by rememberSaveable { mutableIntStateOf(if (oneOff) 0 else 1) }
+
+
+        // Segmented Buttons: Single/Weekly
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier
+                .fillMaxWidth()
             //.padding(8.dp)
         ) {
             options.forEachIndexed { index, label ->
@@ -238,34 +251,41 @@ class AlarmEditFrag : Fragment() {
                     onClick = { selectedIndex = index },
                     selected = index == selectedIndex
                 ) {
-                    Text(stringResource(id = options[index]))
+                    Text(stringResource(id =label))
                 }
             }
 
         }
+
+        // Write back to ViewModel oneOff variable
+        setUpAlarmValues.setOneOff(if (selectedIndex == 0) true else false)
+
     }
 
     @Composable
-    private fun CalendarButton(){
+    private fun CalendarButton() {
         Button(onClick = {}) {
             Icon(
                 painter = painterResource(id = R.drawable.calendar_month_fill0_wght400_grad0_opsz24),
                 contentDescription = stringResource(id = R.string.open_date_picker),
-                )
+            )
         }
     }
 
 
     // What to do when one of the weekdays
-    private val onSelectionChange  = { index: Int, selectedList: MutableState<List<Boolean>> ->
-        var selectedListLocal  = mutableListOf(false, false, false, false, false, false, false)
+    private val onSelectionChange = { index: Int, selectedList: MutableState<List<Boolean>> ->
+        var selectedListLocal = mutableListOf(false, false, false, false, false, false, false)
         selectedListLocal = selectedList.value.toMutableList()
         selectedListLocal[index] = !selectedListLocal[index]
         selectedList.value = selectedListLocal
     }
 
     @Composable
-    private fun DayButtons(selectedList: MutableState<List<Boolean>>, onSel: (Int, MutableState<List<Boolean>>) -> Unit) {
+    private fun DayButtons(
+        selectedList: MutableState<List<Boolean>>,
+        onSel: (Int, MutableState<List<Boolean>>) -> Unit
+    ) {
         val su_Weekdays = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
         val mo_Weekdays = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
 
@@ -284,11 +304,11 @@ class AlarmEditFrag : Fragment() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 4.dp)
-        ){
-            weekdays.forEachIndexed {   index, s ->
+        ) {
+            weekdays.forEachIndexed { index, s ->
                 Text(
                     text = s,
-                    color = if ( selectedList.value[index]) {
+                    color = if (selectedList.value[index]) {
                         MaterialTheme.colorScheme.background
                     } else {
                         MaterialTheme.colorScheme.onBackground
@@ -313,44 +333,45 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun AlarmTypeBox(selectedList: MutableState<List<Boolean>>){
-        Column(modifier = Modifier.padding(8.dp)){
-            WeeklyOrOneOff()
+    private fun AlarmTypeBox(selectedList: MutableState<List<Boolean>>, oneOff:Boolean) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            WeeklyOrOneOff(oneOff)
             CalendarButton()
             DayButtons(selectedList, onSelectionChange)
         }
     }
 
 
-    fun checkmarkClicked(){
+    fun checkmarkClicked() {
 
         // Null checks
-        if (setUpAlarmValues==null || setUpAlarmValues.hour == null || setUpAlarmValues.hour.value==null) return
-        if (setUpAlarmValues.minute == null || setUpAlarmValues.minute.value==null) return
-        if (setUpAlarmValues.label == null || setUpAlarmValues.label.value==null) return
+        if (setUpAlarmValues == null || setUpAlarmValues.hour == null || setUpAlarmValues.hour.value == null) return
+        if (setUpAlarmValues.minute == null || setUpAlarmValues.minute.value == null) return
+        if (setUpAlarmValues.label == null || setUpAlarmValues.label.value == null) return
 
         val c = initParams!!.getLong("INIT_CREATE_TIME")
 
 
+        // If modified alarm then use its old Create Time (id)
+        // If new alarm then create it using a new Create Time (id)
+        val item = if (!isNewAlarm) AlarmItem(
+            setUpAlarmValues.hour.value!!,
+            setUpAlarmValues.minute.value!!,
+            setUpAlarmValues.label.value,
+            true,
+            initParams!!.getLong("INIT_CREATE_TIME")
+        )
+        else AlarmItem(
+            setUpAlarmValues.hour.value!!,
+            setUpAlarmValues.minute.value!!,
+            setUpAlarmValues.label.value,
+            true
+        )
 
-
-            // If modified alarm then use its old Create Time (id)
-            // If new alarm then create it using a new Create Time (id)
-            val item = if (!isNewAlarm) AlarmItem(
-                setUpAlarmValues.hour.value!!,
-                setUpAlarmValues.minute.value!!,
-                setUpAlarmValues.label.value,
-                true,
-                initParams!!.getLong("INIT_CREATE_TIME"))
-            else AlarmItem(
-                setUpAlarmValues.hour.value!!,
-                setUpAlarmValues.minute.value!!,
-                setUpAlarmValues.label.value,
-                true)
-
+        item.isOneOff = setUpAlarmValues.isOneOff.value!!
 
         // Add or Update the entry on the list
-        if (isNewAlarm )
+        if (isNewAlarm)
             parent!!.alarmViewModel.AddAlarm(item)
         else
             parent!!.alarmViewModel.UpdateAlarm(item)
