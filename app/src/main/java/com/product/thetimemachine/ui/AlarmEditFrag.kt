@@ -1,6 +1,7 @@
 package com.product.thetimemachine.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +38,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -64,6 +64,7 @@ class AlarmEditFrag : Fragment() {
     private var initParams: Bundle? = null
     private var isNewAlarm: Boolean = true
     private var isOneOff = true
+    private var weekdays = 0;
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,20 +105,19 @@ class AlarmEditFrag : Fragment() {
         // Is it a new Alarm or Alarm to be edited
         isNewAlarm = initParams!!.getBoolean("INIT_NEWALARM", false)
         isOneOff = setUpAlarmValues.isOneOff.value!!
+        weekdays = setUpAlarmValues.weekDays.value!!
 
+        Log.d("THE_TIME_MACHINE", "onViewCreated():  weekdays = $weekdays")
 
     }
 
 
     @Composable
     private fun AlarmEditFragDisplayTop() {
-        val selectedDaysList = rememberSaveable {
-            mutableStateOf<List<Boolean>>(
-                mutableListOf(false, false, false, false, false, false, false)
-            )
-        }
-
+        val weekdays = rememberSaveable { mutableStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
+
+        Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop():  weekdays = $weekdays")
 
         AppTheme(dynamicColor = true) {
             Surface {
@@ -135,7 +135,7 @@ class AlarmEditFrag : Fragment() {
                         TimePickerField()
 
                         /* Single/Weekly button */
-                        AlarmTypeBox(selectedDaysList, oneOff)
+                        AlarmTypeBox(weekdays, oneOff)
                     }
                 }
             }
@@ -254,14 +254,12 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun CalendarButton(selectedDaysList: List<Boolean> , oneOff: Boolean) {
+    private fun CalendarButton(selectedDays : Int , oneOff: Boolean) {
 
         // Type of button: 0=One Off ; 1=Weekly
         //var buttonType by rememberSaveable { mutableIntStateOf(if (oneOff) 0 else 1) }
         var buttonType = if (oneOff) 0 else 1
-        var noneSelected = false//by rememberSaveable { mutableStateOf(false) }
-
-        selectedDaysList.forEach(  {day->if (day==true) noneSelected = true})
+        var noneSelected = selectedDays==0
 
 
         Button(
@@ -279,18 +277,10 @@ class AlarmEditFrag : Fragment() {
     }
 
 
-    // What to do when one of the weekdays
-    private val onSelectionChange = { index: Int, selectedList: List<Boolean> ->
-        var selectedListLocal = mutableListOf(false, false, false, false, false, false, false)
-        selectedListLocal = selectedList.toMutableList()
-        selectedListLocal[index] = !selectedListLocal[index]
-        //selectedList = selectedListLocal
-    }
-
     @Composable
     private fun DayButtons(
-        selectedList: List<Boolean>,
-        onSel: (Int, List<Boolean>) -> Unit
+        selectedDays: Int,
+        onSel: (Int) -> Unit
     ) {
         val su_Weekdays = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
         val mo_Weekdays = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
@@ -310,16 +300,16 @@ class AlarmEditFrag : Fragment() {
             weekdays.forEachIndexed { index, s ->
                 Text(
                     text = s,
-                    color = if (selectedList[index]) {
+                    color = if  ((selectedDays and (1 shl index)) >0) {
                         MaterialTheme.colorScheme.background
                     } else {
                         MaterialTheme.colorScheme.onBackground
                     },
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(size = 12.dp))
-                        .clickable { onSel(index, selectedList) }
+                        .clickable { onSel(index) }
                         .background(
-                            if (selectedList[index]) {
+                            if ((selectedDays and (1 shl index)) > 0) {
                                 MaterialTheme.colorScheme.onBackground
                             } else {
                                 MaterialTheme.colorScheme.primaryContainer
@@ -332,30 +322,34 @@ class AlarmEditFrag : Fragment() {
                 )
             }
         }
+
+
+        // Write back to ViewModel oneOff variable
+        setUpAlarmValues.setWeekDays(selectedDays)
     }
 
     @Composable
-    private fun AlarmTypeBox(selectedDaysList: MutableState<List<Boolean>>, oneOff:MutableState<Boolean>) {
+    private fun AlarmTypeBox(selectedDaysx : MutableState<Int>, oneOff:MutableState<Boolean>) {
 
         // Hoisted State: One Off
         var oneOff by rememberSaveable { mutableStateOf(oneOff.value) }
         var setOneOff =  {v : Boolean-> oneOff = v}
 
-        var selectedDaysList by rememberSaveable { mutableStateOf(selectedDaysList.value) }
-        var setSelectedDaysList = { index: Int, selectedList: List<Boolean> ->
-            var selectedListLocal = mutableListOf(false, false, false, false, false, false, false)
-            selectedListLocal = selectedList.toMutableList()
-            selectedListLocal[index] = !selectedListLocal[index]
-            selectedDaysList = selectedListLocal}
+        var selectedDays by rememberSaveable { mutableStateOf(selectedDaysx.value) }
+        var setSelectedDays = { index: Int ->
+            val mask = 1 shl index
+            selectedDays = selectedDays xor mask
+        }
 
+        Log.d("THE_TIME_MACHINE", "AlarmTypeBox():  selectedDaysx = $selectedDaysx")
 
 
 
 
         Column(modifier = Modifier.padding(8.dp)) {
             WeeklyOrOneOff(oneOff, setOneOff)
-            CalendarButton(selectedDaysList, oneOff)
-            DayButtons(selectedDaysList, setSelectedDaysList)
+            CalendarButton(selectedDays, oneOff)
+            DayButtons(selectedDays, setSelectedDays)
         }
     }
 
@@ -388,6 +382,9 @@ class AlarmEditFrag : Fragment() {
 
         // Update OneOff Value in ViewModel
         item.isOneOff = setUpAlarmValues.isOneOff.value!!
+
+        // Selected weekdays
+        item.weekDays = setUpAlarmValues.weekDays.value!!
 
         // And finally:
         // Add or Update the entry on the list
