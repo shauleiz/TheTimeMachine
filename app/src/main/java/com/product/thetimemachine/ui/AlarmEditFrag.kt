@@ -257,14 +257,12 @@ class AlarmEditFrag : Fragment() {
     private fun CalendarButton(selectedDays : Int , oneOff: Boolean) {
 
         // Type of button: 0=One Off ; 1=Weekly
-        //var buttonType by rememberSaveable { mutableIntStateOf(if (oneOff) 0 else 1) }
         var buttonType = if (oneOff) 0 else 1
-        var noneSelected = selectedDays==0
 
 
         Button(
-            onClick = {},
-            enabled = !(buttonType==1 && noneSelected)
+            onClick = {}, // TODO: Launch the correct calendar
+            enabled = (oneOff ||  selectedDays!=0)
         ) {
             Icon(
                 painter = painterResource(id = if (buttonType==0)
@@ -337,14 +335,10 @@ class AlarmEditFrag : Fragment() {
 
         var selectedDays by rememberSaveable { mutableStateOf(selectedDaysx.value) }
         var setSelectedDays = { index: Int ->
-            val mask = 1 shl index
-            selectedDays = selectedDays xor mask
+            selectedDays = selectedDays xor (1 shl index)
         }
 
         Log.d("THE_TIME_MACHINE", "AlarmTypeBox():  selectedDaysx = $selectedDaysx")
-
-
-
 
         Column(modifier = Modifier.padding(8.dp)) {
             WeeklyOrOneOff(oneOff, setOneOff)
@@ -381,10 +375,12 @@ class AlarmEditFrag : Fragment() {
         )
 
         // Update OneOff Value in ViewModel
-        item.isOneOff = setUpAlarmValues.isOneOff.value!!
+        item.isOneOff = setUpAlarmValues.isOneOff.value!! ||  (setUpAlarmValues.weekDays.value!! == 0)
 
         // Selected weekdays
         item.weekDays = setUpAlarmValues.weekDays.value!!
+
+
 
         // And finally:
         // Add or Update the entry on the list
