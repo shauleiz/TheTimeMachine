@@ -1,5 +1,6 @@
 package com.product.thetimemachine.ui
 
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,6 +33,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -48,6 +50,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -56,6 +59,7 @@ import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Calendar
+import java.util.Locale
 
 
 class AlarmEditFrag : Fragment() {
@@ -274,6 +278,18 @@ class AlarmEditFrag : Fragment() {
         }
     }
 
+    @Composable
+    private fun NextAlarmText(timeAsMinutes: Int){
+
+        Text(
+            text = displayTargetAlarm(timeAsMinutes),
+            textAlign =  TextAlign.Center,
+            modifier = Modifier.padding(
+                vertical = 12.dp,
+                horizontal = 16.dp,
+            ),
+        )
+    }
 
     @Composable
     private fun DayButtons(
@@ -366,11 +382,97 @@ class AlarmEditFrag : Fragment() {
         Column(modifier = Modifier.padding(8.dp)) {
             WeeklyOrOneOff(oneOff, setOneOff)
             CalendarButton(selectedDays, oneOff)
-            DayButtons(selectedDays, setSelectedDays)
+            if (oneOff)
+                NextAlarmText(0)
+            else
+                DayButtons(selectedDays, setSelectedDays)
         }
     }
 
+    @Composable
+    private fun displayTargetAlarm(timeAsMinutes: Int): String {
+        var out = ""
 
+        // Get time/date values
+        val hh = if (setUpAlarmValues.hour.value != null) setUpAlarmValues.hour.value!!
+        else 0
+        val mn = if (setUpAlarmValues.minute.value != null) setUpAlarmValues.minute.value!!
+        else 0
+        val dd = if (setUpAlarmValues.dayOfMonth.value != null) setUpAlarmValues.dayOfMonth.value!!
+        else 0
+        val mm = if (setUpAlarmValues.month.value != null) setUpAlarmValues.month.value!!
+        else 0
+        val yy = if (setUpAlarmValues.year.value != null) setUpAlarmValues.year.value!!
+        else 0
+
+        // Create a calendar object and modify it
+        val nowInMillis = System.currentTimeMillis()
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = nowInMillis
+
+        if (dd > 0 && mm > 0 && yy > 0) calendar[yy, mm, dd, hh, mn] = 0
+        else {
+            calendar[Calendar.HOUR_OF_DAY] = hh
+            calendar[Calendar.MINUTE] = mn
+            if (isInThePast(calendar.timeInMillis)) calendar.timeInMillis =
+                calendar.timeInMillis + 24 * 60 * 60 * 1000
+            //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
+        }
+
+
+        // Create an output string
+        val format =
+            SimpleDateFormat(getString(R.string.time_format_display), Locale.US)
+        out = format.format(calendar.timeInMillis)
+
+        // Determine Today/Tomorrow
+        if (isToday(calendar.timeInMillis)) out += getString(R.string.today_in_brackets)
+        else if (isTomorrow(calendar.timeInMillis)) {
+            out += getString(R.string.tomorrow_in_brackets)
+        }
+
+        //Log.d("THE_TIME_MACHINE", "displayTargetAlarm(): " + out);
+        return out
+    }
+
+    private fun isInThePast(alarmInMillis: Long): Boolean {
+        val now = System.currentTimeMillis()
+        return (alarmInMillis < now)
+    }
+    private fun isToday(alarmInMillis: Long): Boolean {
+        val now = System.currentTimeMillis()
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = now
+
+        // Get time of today's midnight (minus a second)
+        calendar[Calendar.HOUR_OF_DAY] = 23
+        calendar[Calendar.MINUTE] = 59
+        calendar[Calendar.SECOND] = 59
+        val lastSecondOfDay = calendar.timeInMillis
+
+
+        return (alarmInMillis in now..lastSecondOfDay)
+    }
+
+    private fun isTomorrow(alarmInMillis: Long): Boolean {
+        val now = System.currentTimeMillis()
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = now + 24 * 60 * 60 * 1000
+
+        // Get time of tomorrow's midnight (minus a second)
+        calendar[Calendar.HOUR_OF_DAY] = 23
+        calendar[Calendar.MINUTE] = 59
+        calendar[Calendar.SECOND] = 59
+        val lastSecondOfDay = calendar.timeInMillis
+
+        // Get time of tomorrow's first second
+        calendar[Calendar.HOUR_OF_DAY] = 0
+        calendar[Calendar.MINUTE] = 0
+        calendar[Calendar.SECOND] = 0
+        val firstSecondOfDay = calendar.timeInMillis
+
+        return (alarmInMillis in firstSecondOfDay..lastSecondOfDay)
+    }
     fun checkmarkClicked() {
 
         // Null checks
