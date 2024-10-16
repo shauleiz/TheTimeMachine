@@ -277,16 +277,27 @@ class AlarmEditFrag : Fragment() {
 
     @Composable
     private fun DayButtons(
-        selectedDays: Int,
+        selectedDaysExt: Int,
         onSel: (Int) -> Unit
     ) {
-        val su_Weekdays = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
-        val mo_Weekdays = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
 
+        // If first day in week is Sunday then 0 else 1
+        val firstDayInWeek =  if (SettingsFragment.pref_first_day_of_week() == "Su") 0 else 1
 
-        // TODO: Put selector here
-        val weekdays = su_Weekdays
+        // List of labels on the weekdays buttons
+        val weekdays =
+            if (firstDayInWeek == 0)
+        listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
+        else
+            listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
 
+        // Shift selected days to suit a Monday-week
+        var selectedDays = selectedDaysExt
+        if (firstDayInWeek == 1){
+            val sunday = selectedDays and 1
+            selectedDays = selectedDays shr 1
+            selectedDays+=sunday*0x40
+        }
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -322,6 +333,12 @@ class AlarmEditFrag : Fragment() {
         }
 
 
+        // If a Monday week - re-adjust selected days to norm (=Sunday week)
+        if (firstDayInWeek == 1){
+            selectedDays= selectedDays shl 1
+            if ((selectedDays and 0x80) >0) selectedDays+=1
+            selectedDays = selectedDays and 0x7F
+        }
         // Write back to ViewModel oneOff variable
         setUpAlarmValues.setWeekDays(selectedDays)
     }
@@ -333,9 +350,15 @@ class AlarmEditFrag : Fragment() {
         var oneOff by rememberSaveable { mutableStateOf(oneOff.value) }
         var setOneOff =  {v : Boolean-> oneOff = v}
 
+
+
         var selectedDays by rememberSaveable { mutableStateOf(selectedDaysx.value) }
         var setSelectedDays = { index: Int ->
-            selectedDays = selectedDays xor (1 shl index)
+            var i:Int
+            i = if (SettingsFragment.pref_first_day_of_week() == "Mo"){
+                if (index==6) 0 else index+1
+            } else index
+            selectedDays = selectedDays xor (1 shl i)
         }
 
         Log.d("THE_TIME_MACHINE", "AlarmTypeBox():  selectedDaysx = $selectedDaysx")
