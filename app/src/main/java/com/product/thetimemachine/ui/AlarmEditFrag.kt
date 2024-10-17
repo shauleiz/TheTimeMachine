@@ -115,11 +115,37 @@ class AlarmEditFrag : Fragment() {
 
     }
 
+    private fun getInitialHour() : Int {
+        if (!isNewAlarm) {
+            return setUpAlarmValues.hour.value!!
+        } else {
+            // Get Current time
+            val currentTime = Calendar.getInstance()
+            return currentTime.get(Calendar.HOUR_OF_DAY)
+        }
+    }
 
+    private fun getInitialMinute() : Int {
+        if (!isNewAlarm) {
+            return setUpAlarmValues.minute.value!!
+        } else {
+            // Get Current time
+            val currentTime = Calendar.getInstance()
+            return currentTime.get(Calendar.MINUTE)
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun AlarmEditFragDisplayTop() {
         val weekdays = rememberSaveable { mutableStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
+        // Set initial time
+        val timePickerState = rememberTimePickerState(
+            initialHour = getInitialHour(),
+            initialMinute = getInitialMinute(),
+            is24Hour = SettingsFragment.pref_is24HourClock(),
+        )
 
         Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop():  weekdays = $weekdays")
 
@@ -136,10 +162,10 @@ class AlarmEditFrag : Fragment() {
                         LabelField()
 
                         /* Time Picker */
-                        TimePickerField()
+                        TimePickerField(timePickerState)
 
                         /* Single/Weekly button */
-                        AlarmTypeBox(weekdays, oneOff)
+                        AlarmTypeBox(timePickerState, weekdays, oneOff)
                     }
                 }
             }
@@ -185,29 +211,10 @@ class AlarmEditFrag : Fragment() {
     // TODO: Add icon button to toggle between Dial and InputTimePicker
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun TimePickerField() {
+    private fun TimePickerField(timePickerState:TimePickerState) {
 
-        var hour: Int
-        var minute: Int
-
-        ///// Feed H:M data to Time Picker
-        // Time from Alarm to edit
-        if (!isNewAlarm) {
-            hour = setUpAlarmValues.hour.value!!
-            minute = setUpAlarmValues.minute.value!!
-        } else {
-            // Get Current time
-            val currentTime = Calendar.getInstance()
-            hour = currentTime.get(Calendar.HOUR_OF_DAY)
-            minute = currentTime.get(Calendar.MINUTE)
-        }
-
-        // Set initial time
-        val timePickerState = rememberTimePickerState(
-            initialHour = hour,
-            initialMinute = minute,
-            is24Hour = true, // TODO: Get from preferences
-        )
+        // Update mode
+        timePickerState.is24hour = SettingsFragment.pref_is24HourClock()
 
         // Display Time Picker
         TimePicker(
@@ -278,11 +285,12 @@ class AlarmEditFrag : Fragment() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun NextAlarmText(timeAsMinutes: Int){
+    private fun NextAlarmText(timePickerState: TimePickerState){
 
         Text(
-            text = displayTargetAlarm(timeAsMinutes),
+            text = displayTargetAlarm(timePickerState.hour, timePickerState.minute),
             textAlign =  TextAlign.Center,
             modifier = Modifier.padding(
                 vertical = 12.dp,
@@ -359,8 +367,9 @@ class AlarmEditFrag : Fragment() {
         setUpAlarmValues.setWeekDays(selectedDays)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun AlarmTypeBox(selectedDaysx : MutableState<Int>, oneOff:MutableState<Boolean>) {
+    private fun AlarmTypeBox(timePickerState: TimePickerState, selectedDaysx : MutableState<Int>, oneOff:MutableState<Boolean>) {
 
         // Hoisted State: One Off
         var oneOff by rememberSaveable { mutableStateOf(oneOff.value) }
@@ -383,21 +392,17 @@ class AlarmEditFrag : Fragment() {
             WeeklyOrOneOff(oneOff, setOneOff)
             CalendarButton(selectedDays, oneOff)
             if (oneOff)
-                NextAlarmText(0)
+                NextAlarmText(timePickerState)
             else
-                DayButtons(selectedDays, setSelectedDays)
+                DayButtons( selectedDays, setSelectedDays)
         }
     }
 
     @Composable
-    private fun displayTargetAlarm(timeAsMinutes: Int): String {
+    private fun displayTargetAlarm(hour: Int, minute: Int): String {
         var out = ""
 
-        // Get time/date values
-        val hh = if (setUpAlarmValues.hour.value != null) setUpAlarmValues.hour.value!!
-        else 0
-        val mn = if (setUpAlarmValues.minute.value != null) setUpAlarmValues.minute.value!!
-        else 0
+        // Get date values
         val dd = if (setUpAlarmValues.dayOfMonth.value != null) setUpAlarmValues.dayOfMonth.value!!
         else 0
         val mm = if (setUpAlarmValues.month.value != null) setUpAlarmValues.month.value!!
@@ -410,10 +415,10 @@ class AlarmEditFrag : Fragment() {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = nowInMillis
 
-        if (dd > 0 && mm > 0 && yy > 0) calendar[yy, mm, dd, hh, mn] = 0
+        if (dd > 0 && mm > 0 && yy > 0) calendar[yy, mm, dd, hour, minute] = 0
         else {
-            calendar[Calendar.HOUR_OF_DAY] = hh
-            calendar[Calendar.MINUTE] = mn
+            calendar[Calendar.HOUR_OF_DAY] = hour
+            calendar[Calendar.MINUTE] = minute
             if (isInThePast(calendar.timeInMillis)) calendar.timeInMillis =
                 calendar.timeInMillis + 24 * 60 * 60 * 1000
             //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
