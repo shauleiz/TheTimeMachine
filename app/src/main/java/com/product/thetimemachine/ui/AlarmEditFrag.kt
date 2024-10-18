@@ -17,12 +17,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -45,14 +48,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
@@ -166,6 +172,9 @@ class AlarmEditFrag : Fragment() {
 
                         /* Single/Weekly button */
                         AlarmTypeBox(timePickerState, weekdays, oneOff)
+
+                        /* Preferences */
+                        ItemPreferences()
                     }
                 }
             }
@@ -478,6 +487,165 @@ class AlarmEditFrag : Fragment() {
 
         return (alarmInMillis in firstSecondOfDay..lastSecondOfDay)
     }
+
+
+
+    @Composable
+    private fun ItemPreferences() {
+
+        // Preference related constants
+        val typography = MaterialTheme.typography
+
+        val styledText = typography.titleMedium
+        val styledSecondaryText = typography.bodyMedium // Alpha=0.5f
+        val styledOverlineText = typography.labelSmall
+        val styledTrailing = typography.bodySmall
+
+
+        // Menu Items
+        val ringDurationList = listOf(
+            Pair("15 Seconds", "15Seconds"), Pair("30 Seconds", "30Seconds"),
+            Pair("45 Seconds", "45Seconds"), Pair("1 Minute", "60Seconds"),
+            Pair("2 Minute", "120Seconds"), Pair("5 Minute", "300Seconds"),
+        )
+        val ringRepeatList = listOf(
+            Pair("Never", "0T"), Pair("1 Time", "1T"),
+            Pair("2 Times", "2T"), Pair("5 Times", "5T"),
+            Pair("10 Times", "10T"), Pair("Forever", "100T"),
+        )
+        val snoozeDurationList = listOf(
+            Pair("30 Seconds", "30Seconds"), Pair("1 Minute", "60Seconds"),
+            Pair("2 Minute", "120Seconds"), Pair("3 Minute", "180Seconds"),
+            Pair("5 Minutes", "300Seconds"), Pair("6 Minutes", "360Seconds"),
+            Pair("7 Minutes", "420Seconds"), Pair("10 Minutes", "600Seconds"),
+        )
+        val vibrationPatternList = listOf(
+            Pair("None", "none"), Pair("Single short beat", "ssb"),
+            Pair("Three short beats", "tsb"), Pair("Single long beat", "slb"),
+            Pair("Repeating short beats", "rsb"), Pair("Repeating long beats", "rlb"),
+            Pair("Continuous", "cont"),
+        )
+        val alarmSoundList = listOf(
+            Pair("No Sound (mute)", "silent"),
+            Pair("Standard Digital", "a30_seconds_alarm_72117"),
+            Pair("Clock Alarm", "clock_alarm_8761"),
+            Pair("Digital Alarm", "digital_alarm_2_151919"),
+            Pair("Digital Beep-Beep", "digital_alarm_clock_151920"),
+            Pair("Electronic Alarm Clock", "electronic_alarm_clock_151927"),
+            Pair("Old Mechanic Alarm Clock", "old_mechanic_alarm_clock_140410"),
+            Pair("Oversimplified Alarm Clock", "oversimplified_alarm_clock_113180"),
+            Pair("Rooster", "rooster"),
+        )
+        val gradualVolumeList = listOf(
+            Pair("None", "00"), Pair("30 Seconds", "30"),
+            Pair("1 Minute", "60"), Pair("2 Minute", "120"),
+            Pair("3 Minute", "180"),
+        )
+
+        // Initialize all variables
+        var ringDuration by rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }
+        var ringRepeat by rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat.value) }
+        var snoozeDuration by rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration.value) }
+        var vibrationPattern by rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern.value) }
+        var alarmSound by rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }
+        var gradualVolume by rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }
+
+        Column(modifier = Modifier.padding(start = 8.dp)) {
+
+            // Title: Ring & Snooze
+            Text(
+                text = stringResource(R.string.ring_and_snooze),
+                style = styledOverlineText,//MaterialTheme.typography.bodyMedium,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(bottom = 8.dp, top = 40.dp)
+            )
+            HorizontalDivider(modifier = Modifier.padding(bottom = 16.dp))
+
+
+            // Entry1: Ring For
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(bottom = 16.dp, start = 8.dp, top = 16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.music_note_fill0_wght400_grad0_opsz24),
+                    contentDescription = stringResource(id = R.string.ring_duration),
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.secondaryContainer,
+                            shape = CircleShape
+                        )
+                        .padding(16.dp)
+                        .align(Alignment.CenterVertically)
+                        .size(30.dp)
+                )
+                Column(
+                    modifier = Modifier.padding(start = 16.dp),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.ring_duration),
+                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                    )
+                    Text(
+                        text = "Testing ",
+                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
+                        //fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .alpha(0.5f)
+                            .padding(top = 16.dp)
+                    )
+                }
+            }
+
+            // Entry2: Ring Repeat
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(bottom = 16.dp, start = 8.dp, top = 16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.music_note_fill0_wght400_grad0_opsz24),
+                    contentDescription = stringResource(id = R.string.ring_duration),
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.secondaryContainer,
+                            shape = CircleShape
+                        )
+                        .padding(16.dp)
+                        .align(Alignment.CenterVertically)
+                        .size(30.dp)
+                )
+                Column(
+                    modifier = Modifier.padding(start = 16.dp),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.ring_duration),
+                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                    )
+                    Text(
+                        text = "Testing ",
+                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
+                        //fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .alpha(0.5f)
+                            .padding(top = 16.dp)
+                    )
+                }
+            }
+        }
+    }
+
     fun checkmarkClicked() {
 
         // Null checks
