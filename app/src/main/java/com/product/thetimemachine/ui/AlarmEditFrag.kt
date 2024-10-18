@@ -550,6 +550,8 @@ class AlarmEditFrag : Fragment() {
         var alarmSound by rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }
         var gradualVolume by rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }
 
+        val popMenuRingFor = {}
+
         Column(modifier = Modifier.padding(start = 8.dp)) {
 
             // Title: Ring & Snooze
@@ -566,7 +568,11 @@ class AlarmEditFrag : Fragment() {
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(bottom = 16.dp, start = 8.dp, top = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClickLabel = stringResource(id = R.string.ring_duration)) {
+                        popMenuRingFor }
+                    .padding(bottom = 16.dp,  top = 16.dp),
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.music_note_fill0_wght400_grad0_opsz24),
@@ -581,7 +587,7 @@ class AlarmEditFrag : Fragment() {
                         .size(30.dp)
                 )
                 Column(
-                    modifier = Modifier.padding(start = 16.dp),
+                    modifier = Modifier.padding(start = 24.dp),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.Start
                 ) {
