@@ -43,6 +43,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -59,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
@@ -75,6 +77,48 @@ class AlarmEditFrag : Fragment() {
     private var isNewAlarm: Boolean = true
     private var isOneOff = true
     private var weekdays = 0;
+
+
+    // Menu Items
+    val ringDurationList = listOf(
+        Pair("15 Seconds", "15Seconds"), Pair("30 Seconds", "30Seconds"),
+        Pair("45 Seconds", "45Seconds"), Pair("1 Minute", "60Seconds"),
+        Pair("2 Minute", "120Seconds"), Pair("5 Minute", "300Seconds"),
+    )
+    val ringRepeatList = listOf(
+        Pair("Never", "0T"), Pair("1 Time", "1T"),
+        Pair("2 Times", "2T"), Pair("5 Times", "5T"),
+        Pair("10 Times", "10T"), Pair("Forever", "100T"),
+    )
+    val snoozeDurationList = listOf(
+        Pair("30 Seconds", "30Seconds"), Pair("1 Minute", "60Seconds"),
+        Pair("2 Minute", "120Seconds"), Pair("3 Minute", "180Seconds"),
+        Pair("5 Minutes", "300Seconds"), Pair("6 Minutes", "360Seconds"),
+        Pair("7 Minutes", "420Seconds"), Pair("10 Minutes", "600Seconds"),
+    )
+    val vibrationPatternList = listOf(
+        Pair("None", "none"), Pair("Single short beat", "ssb"),
+        Pair("Three short beats", "tsb"), Pair("Single long beat", "slb"),
+        Pair("Repeating short beats", "rsb"), Pair("Repeating long beats", "rlb"),
+        Pair("Continuous", "cont"),
+    )
+    val alarmSoundList = listOf(
+        Pair("No Sound (mute)", "silent"),
+        Pair("Standard Digital", "a30_seconds_alarm_72117"),
+        Pair("Clock Alarm", "clock_alarm_8761"),
+        Pair("Digital Alarm", "digital_alarm_2_151919"),
+        Pair("Digital Beep-Beep", "digital_alarm_clock_151920"),
+        Pair("Electronic Alarm Clock", "electronic_alarm_clock_151927"),
+        Pair("Old Mechanic Alarm Clock", "old_mechanic_alarm_clock_140410"),
+        Pair("Oversimplified Alarm Clock", "oversimplified_alarm_clock_113180"),
+        Pair("Rooster", "rooster"),
+    )
+    val gradualVolumeList = listOf(
+        Pair("None", "00"), Pair("30 Seconds", "30"),
+        Pair("1 Minute", "60"), Pair("2 Minute", "120"),
+        Pair("3 Minute", "180"),
+    )
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -495,52 +539,11 @@ class AlarmEditFrag : Fragment() {
 
         // Preference related constants
         val typography = MaterialTheme.typography
-
         val styledText = typography.titleMedium
         val styledSecondaryText = typography.bodyMedium // Alpha=0.5f
         val styledOverlineText = typography.labelSmall
         val styledTrailing = typography.bodySmall
 
-
-        // Menu Items
-        val ringDurationList = listOf(
-            Pair("15 Seconds", "15Seconds"), Pair("30 Seconds", "30Seconds"),
-            Pair("45 Seconds", "45Seconds"), Pair("1 Minute", "60Seconds"),
-            Pair("2 Minute", "120Seconds"), Pair("5 Minute", "300Seconds"),
-        )
-        val ringRepeatList = listOf(
-            Pair("Never", "0T"), Pair("1 Time", "1T"),
-            Pair("2 Times", "2T"), Pair("5 Times", "5T"),
-            Pair("10 Times", "10T"), Pair("Forever", "100T"),
-        )
-        val snoozeDurationList = listOf(
-            Pair("30 Seconds", "30Seconds"), Pair("1 Minute", "60Seconds"),
-            Pair("2 Minute", "120Seconds"), Pair("3 Minute", "180Seconds"),
-            Pair("5 Minutes", "300Seconds"), Pair("6 Minutes", "360Seconds"),
-            Pair("7 Minutes", "420Seconds"), Pair("10 Minutes", "600Seconds"),
-        )
-        val vibrationPatternList = listOf(
-            Pair("None", "none"), Pair("Single short beat", "ssb"),
-            Pair("Three short beats", "tsb"), Pair("Single long beat", "slb"),
-            Pair("Repeating short beats", "rsb"), Pair("Repeating long beats", "rlb"),
-            Pair("Continuous", "cont"),
-        )
-        val alarmSoundList = listOf(
-            Pair("No Sound (mute)", "silent"),
-            Pair("Standard Digital", "a30_seconds_alarm_72117"),
-            Pair("Clock Alarm", "clock_alarm_8761"),
-            Pair("Digital Alarm", "digital_alarm_2_151919"),
-            Pair("Digital Beep-Beep", "digital_alarm_clock_151920"),
-            Pair("Electronic Alarm Clock", "electronic_alarm_clock_151927"),
-            Pair("Old Mechanic Alarm Clock", "old_mechanic_alarm_clock_140410"),
-            Pair("Oversimplified Alarm Clock", "oversimplified_alarm_clock_113180"),
-            Pair("Rooster", "rooster"),
-        )
-        val gradualVolumeList = listOf(
-            Pair("None", "00"), Pair("30 Seconds", "30"),
-            Pair("1 Minute", "60"), Pair("2 Minute", "120"),
-            Pair("3 Minute", "180"),
-        )
 
         // Initialize all variables
         var ringDuration by rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }
@@ -550,7 +553,36 @@ class AlarmEditFrag : Fragment() {
         var alarmSound by rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }
         var gradualVolume by rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }
 
-        val popMenuRingFor = {}
+        // Set to true in order to open the dialog
+        var ringDurationDialog by remember { mutableStateOf(false) } // Set initial value to false so that dialog is not displayed initially
+        
+        if (ringDurationDialog) {
+            Dialog(onDismissRequest = {  ringDurationDialog = false }) {
+                Column(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceBright,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Start,
+                ){
+                    Text(
+                        text = stringResource(id = R.string.ring_duration),
+                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Left,
+                        modifier =  Modifier
+                            .padding(top=32.dp, bottom = 16.dp, start = 16.dp)
+                            .fillMaxWidth()
+                    )
+                }
+            }
+
+
+        }
 
         Column(modifier = Modifier.padding(start = 8.dp)) {
 
@@ -571,8 +603,9 @@ class AlarmEditFrag : Fragment() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClickLabel = stringResource(id = R.string.ring_duration)) {
-                        popMenuRingFor }
-                    .padding(bottom = 16.dp,  top = 16.dp),
+                        ringDurationDialog = true
+                    }
+                    .padding(bottom = 16.dp, top = 16.dp),
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.music_note_fill0_wght400_grad0_opsz24),
@@ -651,6 +684,8 @@ class AlarmEditFrag : Fragment() {
             }
         }
     }
+
+
 
     fun checkmarkClicked() {
 
