@@ -116,9 +116,9 @@ class AlarmEditFrag : Fragment() {
         Pair("Rooster", "rooster"),
     )
     val gradualVolumeList = listOf(
-        Pair("None", "00"), Pair("30 Seconds", "30"),
-        Pair("1 Minute", "60"), Pair("2 Minute", "120"),
-        Pair("3 Minute", "180"),
+        Pair("None", "00Seconds"), Pair("30 Seconds", "30Seconds"),
+        Pair("1 Minute", "60Seconds"), Pair("2 Minute", "120Seconds"),
+        Pair("3 Minute", "180Seconds"),
     )
 
 
@@ -560,14 +560,7 @@ class AlarmEditFrag : Fragment() {
         )
 
 
-        // Initialize all variables
-        var ringDuration by rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }
-        var ringRepeat by rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat.value) }
-        var snoozeDuration by rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration.value) }
-        var vibrationPattern by rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern.value) }
-        var alarmSound by rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }
-        var gradualVolume by rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }
-
+        // List of all entries
         val listOfPrefs = listOf(
             PrefData(
                 title = R.string.ring_and_snooze
@@ -626,56 +619,56 @@ class AlarmEditFrag : Fragment() {
             ),
         )
 
-
-        // Set to true in order to open the dialog
-        var ringDurationDialog by remember { mutableStateOf(false) } // Set initial value to false so that dialog is not displayed initially
-
-        if (listOfPrefs[1].showDialog!!.value) {
-            Dialog(onDismissRequest = { listOfPrefs[1].showDialog!!.value = false }) {
-                Column(
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceBright,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start,
-                ) {
-                    // Title
-                    Text(
-                        text = stringResource(id = R.string.ring_duration),
-                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Left,
+        // Display Dialog
+        listOfPrefs.forEachIndexed() { index, entry ->
+            if (entry.showDialog != null && entry.showDialog.value) {
+                Dialog(onDismissRequest = { entry.showDialog.value = false }) {
+                    Column(
                         modifier = Modifier
-                            .padding(top = 32.dp, bottom = 16.dp, start = 16.dp)
-                            .fillMaxWidth()
-                    )
-
-                    // Loop on all entries in the list
-                    // Every entry is a row with a radio button and text
-                    // The row is clickable 
-                    listOfPrefs[1].list!!.forEachIndexed { index, pair ->
-                        Row(horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically,
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceBright,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start,
+                    ) {
+                        // Title
+                        Text(
+                            text = stringResource(id = entry.title),
+                            style = styledTrailing,//MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Left,
                             modifier = Modifier
+                                .padding(top = 32.dp, bottom = 16.dp, start = 16.dp)
                                 .fillMaxWidth()
-                                .clickable { }
-                        ) {
-                            RadioButton(
-                                selected = ringDuration == pair.second,
-                                onClick = { /*TODO*/ })
-                            Text(pair.first)
+                        )
+
+                        // Loop on all entries in the list
+                        // Every entry is a row with a radio button and text
+                        // The row is clickable
+                        entry.list!!.forEachIndexed { i, pair ->
+                            Log.d("THE_TIME_MACHINE", "index=$index ; i=$i ; pair.second=$pair.second ; entry.currentValue!!.value=$entry.currentValue!!.value ")
+                            Row(horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { }
+                            ) {
+                                RadioButton(
+                                    selected = entry.currentValue!!.value == pair.second,
+                                    onClick = { /*TODO*/ })
+                                Text(pair.first)
+                            }
                         }
                     }
                 }
+
+                Log.d("THE_TIME_MACHINE", "index=$index ; ")
+
             }
-
-
         }
-
 
         /// Composable parts of the Preferences display as Internal Functions
 
