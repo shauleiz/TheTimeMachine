@@ -29,6 +29,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -568,23 +569,90 @@ class AlarmEditFrag : Fragment() {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start,
                 ){
+                    // Title
                     Text(
                         text = stringResource(id = R.string.ring_duration),
                         style = styledTrailing,//MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         textAlign = TextAlign.Left,
-                        modifier =  Modifier
-                            .padding(top=32.dp, bottom = 16.dp, start = 16.dp)
+                        modifier = Modifier
+                            .padding(top = 32.dp, bottom = 16.dp, start = 16.dp)
                             .fillMaxWidth()
                     )
+
+                    // Loop on all entries in the list
+                    // Every entry is a row with a radio button and text
+                    // The row is clickable 
+                    ringDurationList.forEachIndexed { index, pair ->
+                        Row(horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { }
+                            ){
+                            RadioButton(selected = ringDuration == pair.second, onClick = { /*TODO*/ })
+                        }
+                    }
                 }
             }
 
 
         }
 
-        Column(modifier = Modifier.padding(start = 8.dp)) {
+        /// Composable parts of the Preferences display as Internal Functions
+
+        // Icon to display
+        // Id imageId==0 then do nothing
+        @Composable
+        fun PrefIcon(imageId : Int):Unit{
+            if (imageId==0) return
+
+            Icon(
+                painter = painterResource(id = imageId),
+                contentDescription = stringResource(id = R.string.ring_duration),
+                modifier = Modifier
+                    .background(
+                        MaterialTheme.colorScheme.secondaryContainer,
+                        shape = CircleShape
+                    )
+                    .padding(16.dp)
+                    //.align(Alignment.CenterVertically)
+                    .size(30.dp)
+            )
+        }
+
+        // Title of preference
+        @Composable
+        fun PrefTitle(titleID : Int): Unit {
+            Text(
+                text = stringResource(id = titleID),
+                style = styledTrailing,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+            )
+        }
+
+        fun getEntryValueStr(value : String, list :  List<Pair<String, String>>) : String {
+            list.forEach(){ if (it.second==value)  return it.first}
+            return ""
+        }
+
+        @Composable
+        fun PrefSelValue(value : String, list :  List<Pair<String, String>>) : Unit {
+            Text(
+                text = getEntryValueStr(value,  list),
+                style = styledTrailing,
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .alpha(0.5f)
+                    .padding(top = 16.dp)
+            )
+        }
+
+
+
+        Column(verticalArrangement = Arrangement.Center, modifier = Modifier.padding(start = 8.dp)) {
 
             // Title: Ring & Snooze
             Text(
@@ -607,81 +675,17 @@ class AlarmEditFrag : Fragment() {
                     }
                     .padding(bottom = 16.dp, top = 16.dp),
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.music_note_fill0_wght400_grad0_opsz24),
-                    contentDescription = stringResource(id = R.string.ring_duration),
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.secondaryContainer,
-                            shape = CircleShape
-                        )
-                        .padding(16.dp)
-                        .align(Alignment.CenterVertically)
-                        .size(30.dp)
-                )
+                PrefIcon(R.drawable.music_note_fill0_wght400_grad0_opsz24)
                 Column(
                     modifier = Modifier.padding(start = 24.dp),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.ring_duration),
-                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                    )
-                    Text(
-                        text = "Testing ",
-                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
-                        //fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        modifier = Modifier
-                            .alpha(0.5f)
-                            .padding(top = 16.dp)
-                    )
+                    PrefTitle(R.string.ring_duration)
+                    PrefSelValue(value = ringDuration!!, ringDurationList)
                 }
             }
-
-            // Entry2: Ring Repeat
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(bottom = 16.dp, start = 8.dp, top = 16.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.music_note_fill0_wght400_grad0_opsz24),
-                    contentDescription = stringResource(id = R.string.ring_duration),
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.secondaryContainer,
-                            shape = CircleShape
-                        )
-                        .padding(16.dp)
-                        .align(Alignment.CenterVertically)
-                        .size(30.dp)
-                )
-                Column(
-                    modifier = Modifier.padding(start = 16.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.ring_duration),
-                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                    )
-                    Text(
-                        text = "Testing ",
-                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
-                        //fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        modifier = Modifier
-                            .alpha(0.5f)
-                            .padding(top = 16.dp)
-                    )
-                }
-            }
+        /////////////////////////////////////////////////////////////////
         }
     }
 
