@@ -673,7 +673,7 @@ class AlarmEditFrag : Fragment() {
                 fontSize = 16.sp,
                 modifier = Modifier
                     .alpha(0.5f)
-                    .padding(top = 16.dp)
+                    .padding(top = 6.dp)
             )
         }
 
@@ -718,14 +718,9 @@ class AlarmEditFrag : Fragment() {
 
 
 
+        // List of all preferences and section titles
         Column(verticalArrangement = Arrangement.Center, modifier = Modifier.padding(start = 8.dp)) {
-
-            // Title: Ring & Snooze
-
-
-            PrefRow(0)
-            PrefRow(1)
-        /////////////////////////////////////////////////////////////////
+            listOfPrefs.forEachIndexed(){index, _ -> PrefRow(index = index) }
         }
     }
 
