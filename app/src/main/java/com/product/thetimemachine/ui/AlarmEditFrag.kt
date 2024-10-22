@@ -66,6 +66,7 @@ import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
+import com.product.thetimemachine.ui.SettingsFragment.ringDuration
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Calendar
 import java.util.Locale
@@ -545,6 +546,15 @@ class AlarmEditFrag : Fragment() {
         val styledOverlineText = typography.labelSmall
         val styledTrailing = typography.bodySmall
 
+        // Preferences Data Class
+        data class PrefData(
+            val title: Int=0,
+            val currentValue : MutableState<String?>,
+            val list :  List<Pair<String, String>>? = null,
+            val iconId : Int = 0,
+            val showDialog: MutableState<Boolean>,)
+
+
 
         // Initialize all variables
         var ringDuration by rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }
@@ -554,11 +564,20 @@ class AlarmEditFrag : Fragment() {
         var alarmSound by rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }
         var gradualVolume by rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }
 
+        val listOfPrefs = listOf(PrefData(
+            title = R.string.ring_duration,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }),
+            list = ringDurationList,
+            iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
+            showDialog = remember { mutableStateOf(false) }
+        )
+        )
+
         // Set to true in order to open the dialog
         var ringDurationDialog by remember { mutableStateOf(false) } // Set initial value to false so that dialog is not displayed initially
         
-        if (ringDurationDialog) {
-            Dialog(onDismissRequest = {  ringDurationDialog = false }) {
+        if (listOfPrefs[0].showDialog.value) {
+            Dialog(onDismissRequest = {  listOfPrefs[0].showDialog.value = false }) {
                 Column(
                     modifier = Modifier
                         .background(
@@ -584,7 +603,7 @@ class AlarmEditFrag : Fragment() {
                     // Loop on all entries in the list
                     // Every entry is a row with a radio button and text
                     // The row is clickable 
-                    ringDurationList.forEachIndexed { index, pair ->
+                    listOfPrefs[0].list!!.forEachIndexed { index, pair ->
                         Row(horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -599,6 +618,8 @@ class AlarmEditFrag : Fragment() {
 
 
         }
+
+
 
         /// Composable parts of the Preferences display as Internal Functions
 
@@ -670,19 +691,21 @@ class AlarmEditFrag : Fragment() {
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(onClickLabel = stringResource(id = R.string.ring_duration)) {
-                        ringDurationDialog = true
+                    .clickable(onClickLabel = stringResource(id = listOfPrefs[0].title)) {
+                        listOfPrefs[0].showDialog.value = true
                     }
                     .padding(bottom = 16.dp, top = 16.dp),
             ) {
-                PrefIcon(R.drawable.music_note_fill0_wght400_grad0_opsz24)
+                PrefIcon(listOfPrefs[0].iconId)
                 Column(
                     modifier = Modifier.padding(start = 24.dp),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    PrefTitle(R.string.ring_duration)
-                    PrefSelValue(value = ringDuration!!, ringDurationList)
+                    PrefTitle(listOfPrefs[0].title)
+                    PrefSelValue(
+                        value =listOfPrefs[0].currentValue.value!!,
+                        list = listOfPrefs[0].list!!)
                 }
             }
         /////////////////////////////////////////////////////////////////
