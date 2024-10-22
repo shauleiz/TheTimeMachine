@@ -64,10 +64,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
-import com.product.thetimemachine.ui.SettingsFragment.ringDuration
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Calendar
 import java.util.Locale
@@ -555,6 +555,7 @@ class AlarmEditFrag : Fragment() {
         data class PrefData(
             val title: Int = 0,
             val currentValue: MutableState<String?>? = null,
+            val origValue: MutableLiveData<String>? = null,
             val list: List<Pair<String, String>>? = null,
             val iconId: Int = 0,
             val showDialog: MutableState<Boolean>? = null,
@@ -570,6 +571,7 @@ class AlarmEditFrag : Fragment() {
             PrefData(
                 title = R.string.ring_duration,
                 currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }),
+                origValue = setUpAlarmValues.ringDuration,
                 list = ringDurationList,
                 iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
                 showDialog = remember { mutableStateOf(false) }),
@@ -577,6 +579,7 @@ class AlarmEditFrag : Fragment() {
             PrefData(
                 title = R.string.times_to_keep_on_ringing,
                 currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat.value) }),
+                origValue = setUpAlarmValues.ringRepeat,
                 list = ringRepeatList,
                 iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
                 showDialog = remember { mutableStateOf(false) }
@@ -586,6 +589,7 @@ class AlarmEditFrag : Fragment() {
             PrefData(
                 title = R.string.snooze_for,
                 currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration.value) }),
+                origValue = setUpAlarmValues.snoozeDuration,
                 list = snoozeDurationList,
                 iconId = R.drawable.snooze_fill0_wght400_grad0_opsz24,
                 showDialog = remember { mutableStateOf(false) }
@@ -598,6 +602,7 @@ class AlarmEditFrag : Fragment() {
             PrefData(
                 title = R.string.vibration_pattern,
                 currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern.value) }),
+                origValue = setUpAlarmValues.vibrationPattern,
                 list = vibrationPatternList,
                 iconId = R.drawable.vibration_opsz24,
                 showDialog = remember { mutableStateOf(false) }
@@ -606,6 +611,7 @@ class AlarmEditFrag : Fragment() {
             PrefData(
                 title = R.string.alarm_sounds,
                 currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }),
+                origValue = setUpAlarmValues.alarmSound,
                 list = alarmSoundList,
                 iconId = R.drawable.library_music_fill0_wght400_grad0_opsz24,
                 showDialog = remember { mutableStateOf(false) }
@@ -614,6 +620,7 @@ class AlarmEditFrag : Fragment() {
             PrefData(
                 title = R.string.gradual_volume_increase,
                 currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }),
+                origValue = setUpAlarmValues.gradualVolume,
                 list = gradualVolumeList,
                 iconId = R.drawable.gradual_increase_opsz24,
                 showDialog = remember { mutableStateOf(false) }
@@ -674,7 +681,10 @@ class AlarmEditFrag : Fragment() {
                                 .fillMaxWidth()){
                             TextButton({ entry.showDialog.value = false}){Text(stringResource(id = R.string.cancel_general))}
                             TextButton({
-                                entry.currentValue!!.value = selected ; entry.showDialog.value = false}) {
+                                entry.currentValue!!.value = selected
+                                entry.origValue!!.value = selected
+                                entry.showDialog.value = false
+                            }) {
                                 Text(stringResource(id = R.string.ok_general))}
                         }
                     }
@@ -814,6 +824,14 @@ class AlarmEditFrag : Fragment() {
 
         // Selected weekdays
         item.weekDays = setUpAlarmValues.weekDays.value!!
+
+        // Update Preferences
+        item.ringDuration = setUpAlarmValues.ringDuration.value!!
+        item.ringRepeat = setUpAlarmValues.ringRepeat.value!!
+        item.snoozeDuration = setUpAlarmValues.snoozeDuration.value!!
+        item.vibrationPattern = setUpAlarmValues.vibrationPattern.value!!
+        item.alarmSound = setUpAlarmValues.alarmSound.value!!
+        item.gradualVolume = setUpAlarmValues.gradualVolume.value!!
 
 
         // And finally:
