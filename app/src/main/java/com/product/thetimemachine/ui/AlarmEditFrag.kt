@@ -35,6 +35,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
@@ -622,6 +623,9 @@ class AlarmEditFrag : Fragment() {
         // Display Dialog
         listOfPrefs.forEachIndexed() { index, entry ->
             if (entry.showDialog != null && entry.showDialog.value) {
+
+                var selected by rememberSaveable { mutableStateOf( entry.currentValue!!.value)}
+
                 Dialog(onDismissRequest = { entry.showDialog.value = false }) {
                     Column(
                         modifier = Modifier
@@ -649,23 +653,33 @@ class AlarmEditFrag : Fragment() {
                         // Every entry is a row with a radio button and text
                         // The row is clickable
                         entry.list!!.forEachIndexed { i, pair ->
-                            Log.d("THE_TIME_MACHINE", "index=$index ; i=$i ; pair.second=$pair.second ; entry.currentValue!!.value=$entry.currentValue!!.value ")
                             Row(horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { }
+                                    .clickable {selected = pair.second }
                             ) {
                                 RadioButton(
-                                    selected = entry.currentValue!!.value == pair.second,
-                                    onClick = { /*TODO*/ })
+                                    selected = selected == pair.second,
+                                    onClick = {  selected = pair.second })
                                 Text(pair.first)
                             }
+                        }
+
+                        // Cancel/OK Buttons
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()){
+                            TextButton({ entry.showDialog.value = false}){Text(stringResource(id = R.string.cancel_general))}
+                            TextButton({
+                                entry.currentValue!!.value = selected ; entry.showDialog.value = false}) {
+                                Text(stringResource(id = R.string.ok_general))}
                         }
                     }
                 }
 
-                Log.d("THE_TIME_MACHINE", "index=$index ; ")
 
             }
         }

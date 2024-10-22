@@ -113,6 +113,9 @@
     <string name="minute_plural">" minutes "</string>
     <string name="minute_singular">"1 minute "</string>
     <string name="from_now">from now</string>
+    <string name="ok_general">OK</string>
+    <string name="cancel_general">CANCEL</string>
+
 
     <!--     Preferences:  Default Values -->
     <string name="ring_duration_def">30Seconds</string>
