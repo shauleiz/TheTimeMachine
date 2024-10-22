@@ -122,7 +122,6 @@ class AlarmEditFrag : Fragment() {
     )
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -167,7 +166,7 @@ class AlarmEditFrag : Fragment() {
 
     }
 
-    private fun getInitialHour() : Int {
+    private fun getInitialHour(): Int {
         if (!isNewAlarm) {
             return setUpAlarmValues.hour.value!!
         } else {
@@ -177,7 +176,7 @@ class AlarmEditFrag : Fragment() {
         }
     }
 
-    private fun getInitialMinute() : Int {
+    private fun getInitialMinute(): Int {
         if (!isNewAlarm) {
             return setUpAlarmValues.minute.value!!
         } else {
@@ -266,7 +265,7 @@ class AlarmEditFrag : Fragment() {
     // TODO: Add icon button to toggle between Dial and InputTimePicker
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun TimePickerField(timePickerState:TimePickerState) {
+    private fun TimePickerField(timePickerState: TimePickerState) {
 
         // Update mode
         timePickerState.is24hour = SettingsFragment.pref_is24HourClock()
@@ -287,7 +286,7 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun WeeklyOrOneOff(oneOff: Boolean, onClick:(Boolean) -> Unit) {
+    private fun WeeklyOrOneOff(oneOff: Boolean, onClick: (Boolean) -> Unit) {
 
         // Text to put on buttons
         val options = listOf(R.string.single, R.string.weekly)
@@ -305,10 +304,10 @@ class AlarmEditFrag : Fragment() {
             options.forEachIndexed { index, label ->
                 SegmentedButton(
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                    onClick = { selectedIndex = index ; onClick(index == 0)},
+                    onClick = { selectedIndex = index; onClick(index == 0) },
                     selected = index == selectedIndex
                 ) {
-                    Text(stringResource(id =label))
+                    Text(stringResource(id = label))
                 }
             }
 
@@ -320,7 +319,7 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun CalendarButton(selectedDays : Int , oneOff: Boolean) {
+    private fun CalendarButton(selectedDays: Int, oneOff: Boolean) {
 
         // Type of button: 0=One Off ; 1=Weekly
         var buttonType = if (oneOff) 0 else 1
@@ -328,12 +327,14 @@ class AlarmEditFrag : Fragment() {
 
         Button(
             onClick = {}, // TODO: Launch the correct calendar
-            enabled = (oneOff ||  selectedDays!=0)
+            enabled = (oneOff || selectedDays != 0)
         ) {
             Icon(
-                painter = painterResource(id = if (buttonType==0)
-                    R.drawable.calendar_month_fill0_wght400_grad0_opsz24
-                else R.drawable.calendar_month_24dp_fill0_wght400_grad0_opsz24_x),
+                painter = painterResource(
+                    id = if (buttonType == 0)
+                        R.drawable.calendar_month_fill0_wght400_grad0_opsz24
+                    else R.drawable.calendar_month_24dp_fill0_wght400_grad0_opsz24_x
+                ),
 
                 contentDescription = stringResource(id = R.string.open_date_picker),
             )
@@ -342,11 +343,11 @@ class AlarmEditFrag : Fragment() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun NextAlarmText(timePickerState: TimePickerState){
+    private fun NextAlarmText(timePickerState: TimePickerState) {
 
         Text(
             text = displayTargetAlarm(timePickerState.hour, timePickerState.minute),
-            textAlign =  TextAlign.Center,
+            textAlign = TextAlign.Center,
             modifier = Modifier.padding(
                 vertical = 12.dp,
                 horizontal = 16.dp,
@@ -361,21 +362,21 @@ class AlarmEditFrag : Fragment() {
     ) {
 
         // If first day in week is Sunday then 0 else 1
-        val firstDayInWeek =  if (SettingsFragment.pref_first_day_of_week() == "Su") 0 else 1
+        val firstDayInWeek = if (SettingsFragment.pref_first_day_of_week() == "Su") 0 else 1
 
         // List of labels on the weekdays buttons
         val weekdays =
             if (firstDayInWeek == 0)
-        listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
-        else
-            listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
+                listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
+            else
+                listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
 
         // Shift selected days to suit a Monday-week
         var selectedDays = selectedDaysExt
-        if (firstDayInWeek == 1){
+        if (firstDayInWeek == 1) {
             val sunday = selectedDays and 1
             selectedDays = selectedDays shr 1
-            selectedDays+=sunday*0x40
+            selectedDays += sunday * 0x40
         }
 
         Row(
@@ -388,7 +389,7 @@ class AlarmEditFrag : Fragment() {
             weekdays.forEachIndexed { index, s ->
                 Text(
                     text = s,
-                    color = if  ((selectedDays and (1 shl index)) >0) {
+                    color = if ((selectedDays and (1 shl index)) > 0) {
                         MaterialTheme.colorScheme.background
                     } else {
                         MaterialTheme.colorScheme.onBackground
@@ -413,9 +414,9 @@ class AlarmEditFrag : Fragment() {
 
 
         // If a Monday week - re-adjust selected days to norm (=Sunday week)
-        if (firstDayInWeek == 1){
-            selectedDays= selectedDays shl 1
-            if ((selectedDays and 0x80) >0) selectedDays+=1
+        if (firstDayInWeek == 1) {
+            selectedDays = selectedDays shl 1
+            if ((selectedDays and 0x80) > 0) selectedDays += 1
             selectedDays = selectedDays and 0x7F
         }
         // Write back to ViewModel oneOff variable
@@ -424,19 +425,22 @@ class AlarmEditFrag : Fragment() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun AlarmTypeBox(timePickerState: TimePickerState, selectedDaysx : MutableState<Int>, oneOff:MutableState<Boolean>) {
+    private fun AlarmTypeBox(
+        timePickerState: TimePickerState,
+        selectedDaysx: MutableState<Int>,
+        oneOff: MutableState<Boolean>
+    ) {
 
         // Hoisted State: One Off
         var oneOff by rememberSaveable { mutableStateOf(oneOff.value) }
-        var setOneOff =  {v : Boolean-> oneOff = v}
-
+        var setOneOff = { v: Boolean -> oneOff = v }
 
 
         var selectedDays by rememberSaveable { mutableStateOf(selectedDaysx.value) }
         var setSelectedDays = { index: Int ->
-            var i:Int
-            i = if (SettingsFragment.pref_first_day_of_week() == "Mo"){
-                if (index==6) 0 else index+1
+            var i: Int
+            i = if (SettingsFragment.pref_first_day_of_week() == "Mo") {
+                if (index == 6) 0 else index + 1
             } else index
             selectedDays = selectedDays xor (1 shl i)
         }
@@ -449,7 +453,7 @@ class AlarmEditFrag : Fragment() {
             if (oneOff)
                 NextAlarmText(timePickerState)
             else
-                DayButtons( selectedDays, setSelectedDays)
+                DayButtons(selectedDays, setSelectedDays)
         }
     }
 
@@ -499,6 +503,7 @@ class AlarmEditFrag : Fragment() {
         val now = System.currentTimeMillis()
         return (alarmInMillis < now)
     }
+
     private fun isToday(alarmInMillis: Long): Boolean {
         val now = System.currentTimeMillis()
         val calendar = Calendar.getInstance()
@@ -535,7 +540,6 @@ class AlarmEditFrag : Fragment() {
     }
 
 
-
     @Composable
     private fun ItemPreferences() {
 
@@ -548,12 +552,12 @@ class AlarmEditFrag : Fragment() {
 
         // Preferences Data Class
         data class PrefData(
-            val title: Int=0,
-            val currentValue : MutableState<String?>? = null,
-            val list :  List<Pair<String, String>>? = null,
-            val iconId : Int = 0,
-            val showDialog: MutableState<Boolean>? = null,)
-
+            val title: Int = 0,
+            val currentValue: MutableState<String?>? = null,
+            val list: List<Pair<String, String>>? = null,
+            val iconId: Int = 0,
+            val showDialog: MutableState<Boolean>? = null,
+        )
 
 
         // Initialize all variables
@@ -576,13 +580,58 @@ class AlarmEditFrag : Fragment() {
                 iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
                 showDialog = remember { mutableStateOf(false) }),
 
-            )
+            PrefData(
+                title = R.string.times_to_keep_on_ringing,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat.value) }),
+                list = ringRepeatList,
+                iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+
+
+            PrefData(
+                title = R.string.snooze_for,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration.value) }),
+                list = snoozeDurationList,
+                iconId = R.drawable.snooze_fill0_wght400_grad0_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+
+            PrefData(
+                title = R.string.sound_and_vibration
+            ),
+
+            PrefData(
+                title = R.string.vibration_pattern,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern.value) }),
+                list = vibrationPatternList,
+                iconId = R.drawable.vibration_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+
+            PrefData(
+                title = R.string.alarm_sounds,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }),
+                list = alarmSoundList,
+                iconId = R.drawable.library_music_fill0_wght400_grad0_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+
+            PrefData(
+                title = R.string.gradual_volume_increase,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }),
+                list = gradualVolumeList,
+                iconId = R.drawable.gradual_increase_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+        )
+
 
         // Set to true in order to open the dialog
         var ringDurationDialog by remember { mutableStateOf(false) } // Set initial value to false so that dialog is not displayed initially
-        
+
         if (listOfPrefs[1].showDialog!!.value) {
-            Dialog(onDismissRequest = {  listOfPrefs[1].showDialog!!.value = false }) {
+            Dialog(onDismissRequest = { listOfPrefs[1].showDialog!!.value = false }) {
                 Column(
                     modifier = Modifier
                         .background(
@@ -592,7 +641,7 @@ class AlarmEditFrag : Fragment() {
                         .fillMaxWidth(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start,
-                ){
+                ) {
                     // Title
                     Text(
                         text = stringResource(id = R.string.ring_duration),
@@ -614,8 +663,10 @@ class AlarmEditFrag : Fragment() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { }
-                            ){
-                            RadioButton(selected = ringDuration == pair.second, onClick = { /*TODO*/ })
+                        ) {
+                            RadioButton(
+                                selected = ringDuration == pair.second,
+                                onClick = { /*TODO*/ })
                             Text(pair.first)
                         }
                     }
@@ -626,18 +677,17 @@ class AlarmEditFrag : Fragment() {
         }
 
 
-
         /// Composable parts of the Preferences display as Internal Functions
 
         // Icon to display
         // Id imageId==0 then do nothing
         @Composable
-        fun PrefIcon(imageId : Int):Unit{
-            if (imageId==0) return
+        fun PrefIcon(imageId: Int, title: Int): Unit {
+            if (imageId == 0) return
 
             Icon(
                 painter = painterResource(id = imageId),
-                contentDescription = stringResource(id = R.string.ring_duration),
+                contentDescription = stringResource(id = title),
                 modifier = Modifier
                     .background(
                         MaterialTheme.colorScheme.secondaryContainer,
@@ -651,7 +701,7 @@ class AlarmEditFrag : Fragment() {
 
         // Title of preference
         @Composable
-        fun PrefTitle(titleID : Int): Unit {
+        fun PrefTitle(titleID: Int): Unit {
             Text(
                 text = stringResource(id = titleID),
                 style = styledTrailing,
@@ -660,15 +710,15 @@ class AlarmEditFrag : Fragment() {
             )
         }
 
-        fun getEntryValueStr(value : String, list :  List<Pair<String, String>>) : String {
-            list.forEach(){ if (it.second==value)  return it.first}
+        fun getEntryValueStr(value: String, list: List<Pair<String, String>>): String {
+            list.forEach() { if (it.second == value) return it.first }
             return ""
         }
 
         @Composable
-        fun PrefSelValue(value : String, list :  List<Pair<String, String>>) : Unit {
+        fun PrefSelValue(value: String, list: List<Pair<String, String>>): Unit {
             Text(
-                text = getEntryValueStr(value,  list),
+                text = getEntryValueStr(value, list),
                 style = styledTrailing,
                 fontSize = 16.sp,
                 modifier = Modifier
@@ -678,9 +728,8 @@ class AlarmEditFrag : Fragment() {
         }
 
         @Composable
-        fun PrefRow(index: Int) : Unit {
-            if (listOfPrefs[index].list != null)
-            { // Normal row
+        fun PrefRow(index: Int): Unit {
+            if (listOfPrefs[index].list != null) { // Normal row
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.Top,
@@ -691,7 +740,7 @@ class AlarmEditFrag : Fragment() {
                         }
                         .padding(bottom = 16.dp, top = 16.dp),
                 ) {
-                    PrefIcon(listOfPrefs[index].iconId)
+                    PrefIcon(listOfPrefs[index].iconId, listOfPrefs[index].title)
                     Column(
                         modifier = Modifier.padding(start = 24.dp),
                         verticalArrangement = Arrangement.Top,
@@ -699,13 +748,12 @@ class AlarmEditFrag : Fragment() {
                     ) {
                         PrefTitle(listOfPrefs[index].title)
                         PrefSelValue(
-                            value =listOfPrefs[index].currentValue!!.value!!,
-                            list = listOfPrefs[index].list!!)
+                            value = listOfPrefs[index].currentValue!!.value!!,
+                            list = listOfPrefs[index].list!!
+                        )
                     }
                 }
-            }
-            else
-            { // Header
+            } else { // Header
                 Text(
                     text = stringResource(listOfPrefs[index].title),
                     style = styledOverlineText,//MaterialTheme.typography.bodyMedium,
@@ -717,13 +765,14 @@ class AlarmEditFrag : Fragment() {
         }
 
 
-
         // List of all preferences and section titles
-        Column(verticalArrangement = Arrangement.Center, modifier = Modifier.padding(start = 8.dp)) {
-            listOfPrefs.forEachIndexed(){index, _ -> PrefRow(index = index) }
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(start = 8.dp)
+        ) {
+            listOfPrefs.forEachIndexed() { index, _ -> PrefRow(index = index) }
         }
     }
-
 
 
     fun checkmarkClicked() {
@@ -753,11 +802,11 @@ class AlarmEditFrag : Fragment() {
         )
 
         // Update OneOff Value in ViewModel
-        item.isOneOff = setUpAlarmValues.isOneOff.value!! ||  (setUpAlarmValues.weekDays.value!! == 0)
+        item.isOneOff =
+            setUpAlarmValues.isOneOff.value!! || (setUpAlarmValues.weekDays.value!! == 0)
 
         // Selected weekdays
         item.weekDays = setUpAlarmValues.weekDays.value!!
-
 
 
         // And finally:
