@@ -549,10 +549,10 @@ class AlarmEditFrag : Fragment() {
         // Preferences Data Class
         data class PrefData(
             val title: Int=0,
-            val currentValue : MutableState<String?>,
+            val currentValue : MutableState<String?>? = null,
             val list :  List<Pair<String, String>>? = null,
             val iconId : Int = 0,
-            val showDialog: MutableState<Boolean>,)
+            val showDialog: MutableState<Boolean>? = null,)
 
 
 
@@ -564,20 +564,25 @@ class AlarmEditFrag : Fragment() {
         var alarmSound by rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }
         var gradualVolume by rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }
 
-        val listOfPrefs = listOf(PrefData(
-            title = R.string.ring_duration,
-            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }),
-            list = ringDurationList,
-            iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
-            showDialog = remember { mutableStateOf(false) }
-        )
-        )
+        val listOfPrefs = listOf(
+            PrefData(
+                title = R.string.ring_and_snooze
+            ),
+
+            PrefData(
+                title = R.string.ring_duration,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }),
+                list = ringDurationList,
+                iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
+                showDialog = remember { mutableStateOf(false) }),
+
+            )
 
         // Set to true in order to open the dialog
         var ringDurationDialog by remember { mutableStateOf(false) } // Set initial value to false so that dialog is not displayed initially
         
-        if (listOfPrefs[0].showDialog.value) {
-            Dialog(onDismissRequest = {  listOfPrefs[0].showDialog.value = false }) {
+        if (listOfPrefs[1].showDialog!!.value) {
+            Dialog(onDismissRequest = {  listOfPrefs[1].showDialog!!.value = false }) {
                 Column(
                     modifier = Modifier
                         .background(
@@ -603,7 +608,7 @@ class AlarmEditFrag : Fragment() {
                     // Loop on all entries in the list
                     // Every entry is a row with a radio button and text
                     // The row is clickable 
-                    listOfPrefs[0].list!!.forEachIndexed { index, pair ->
+                    listOfPrefs[1].list!!.forEachIndexed { index, pair ->
                         Row(horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -611,6 +616,7 @@ class AlarmEditFrag : Fragment() {
                                 .clickable { }
                             ){
                             RadioButton(selected = ringDuration == pair.second, onClick = { /*TODO*/ })
+                            Text(pair.first)
                         }
                     }
                 }
@@ -671,43 +677,54 @@ class AlarmEditFrag : Fragment() {
             )
         }
 
+        @Composable
+        fun PrefRow(index: Int) : Unit {
+            if (listOfPrefs[index].list != null)
+            { // Normal row
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.Top,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClickLabel = stringResource(id = listOfPrefs[index].title)) {
+                            listOfPrefs[index].showDialog!!.value = true
+                        }
+                        .padding(bottom = 16.dp, top = 16.dp),
+                ) {
+                    PrefIcon(listOfPrefs[index].iconId)
+                    Column(
+                        modifier = Modifier.padding(start = 24.dp),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        PrefTitle(listOfPrefs[index].title)
+                        PrefSelValue(
+                            value =listOfPrefs[index].currentValue!!.value!!,
+                            list = listOfPrefs[index].list!!)
+                    }
+                }
+            }
+            else
+            { // Header
+                Text(
+                    text = stringResource(listOfPrefs[index].title),
+                    style = styledOverlineText,//MaterialTheme.typography.bodyMedium,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(bottom = 8.dp, top = 40.dp)
+                )
+                HorizontalDivider(modifier = Modifier.padding(bottom = 16.dp))
+            }
+        }
+
 
 
         Column(verticalArrangement = Arrangement.Center, modifier = Modifier.padding(start = 8.dp)) {
 
             // Title: Ring & Snooze
-            Text(
-                text = stringResource(R.string.ring_and_snooze),
-                style = styledOverlineText,//MaterialTheme.typography.bodyMedium,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp, top = 40.dp)
-            )
-            HorizontalDivider(modifier = Modifier.padding(bottom = 16.dp))
 
 
-            // Entry1: Ring For
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClickLabel = stringResource(id = listOfPrefs[0].title)) {
-                        listOfPrefs[0].showDialog.value = true
-                    }
-                    .padding(bottom = 16.dp, top = 16.dp),
-            ) {
-                PrefIcon(listOfPrefs[0].iconId)
-                Column(
-                    modifier = Modifier.padding(start = 24.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    PrefTitle(listOfPrefs[0].title)
-                    PrefSelValue(
-                        value =listOfPrefs[0].currentValue.value!!,
-                        list = listOfPrefs[0].list!!)
-                }
-            }
+            PrefRow(0)
+            PrefRow(1)
         /////////////////////////////////////////////////////////////////
         }
     }
