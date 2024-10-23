@@ -1,5 +1,6 @@
 package com.product.thetimemachine.ui
 
+import android.content.res.Configuration
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -38,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
+import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -55,6 +58,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -215,11 +219,27 @@ class AlarmEditFrag : Fragment() {
                         /* Alarm Label */
                         LabelField()
 
-                        /* Time Picker */
-                        TimePickerField(timePickerState)
+                        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                            // Portrait
+                            /* Time Picker */
+                            TimePickerField(timePickerState)
 
-                        /* Single/Weekly button */
-                        AlarmTypeBox(timePickerState, weekdays, oneOff)
+                            /* Single/Weekly button */
+                            AlarmTypeBox(timePickerState, weekdays, oneOff)
+                        } else {
+                            Row(verticalAlignment = Alignment.Top,
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier
+                                .fillMaxWidth()
+                            ){
+                                // Landscape
+                                /* Time Picker */
+                                TimePickerField(timePickerState)
+
+                                /* Single/Weekly button */
+                                AlarmTypeBox(timePickerState, weekdays, oneOff)
+                            }
+                        }
 
                         /* Preferences */
                         ItemPreferences()
@@ -276,9 +296,8 @@ class AlarmEditFrag : Fragment() {
         // Display Time Picker
         TimePicker(
             state = timePickerState,
-            layoutType = TimePickerDefaults.layoutType(),
-            modifier = Modifier
-                .wrapContentWidth(CenterHorizontally),
+            layoutType = TimePickerLayoutType.Vertical,
+            modifier = Modifier.padding(16.dp)
         )
 
         // Update H:M Values
@@ -392,12 +411,15 @@ class AlarmEditFrag : Fragment() {
             weekdays.forEachIndexed { index, s ->
                 Text(
                     text = s,
+                    textAlign = TextAlign.Center,
                     color = if ((selectedDays and (1 shl index)) > 0) {
                         MaterialTheme.colorScheme.background
                     } else {
                         MaterialTheme.colorScheme.onBackground
                     },
                     modifier = Modifier
+                        .padding(horizontal = 4.dp,)
+                        .weight(1f)
                         .clip(shape = RoundedCornerShape(size = 12.dp))
                         .clickable { onSel(index) }
                         .background(
@@ -407,10 +429,7 @@ class AlarmEditFrag : Fragment() {
                                 MaterialTheme.colorScheme.primaryContainer
                             }
                         )
-                        .padding(
-                            vertical = 12.dp,
-                            horizontal = 16.dp,
-                        ),
+                        .padding(top = 8.dp, bottom = 8.dp),
                 )
             }
         }
@@ -450,7 +469,9 @@ class AlarmEditFrag : Fragment() {
 
         Log.d("THE_TIME_MACHINE", "AlarmTypeBox():  selectedDaysx = $selectedDaysx")
 
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier
+            .padding(8.dp)
+        ) {
             WeeklyOrOneOff(oneOff, setOneOff)
             CalendarButton(selectedDays, oneOff)
             if (oneOff)
@@ -463,6 +484,48 @@ class AlarmEditFrag : Fragment() {
     @Composable
     private fun displayTargetAlarm(hour: Int, minute: Int): String {
         var out = ""
+
+        /// Helper Functions
+        fun isInThePast(alarmInMillis: Long): Boolean {
+            val now = System.currentTimeMillis()
+            return (alarmInMillis < now)
+        }
+
+        fun isToday(alarmInMillis: Long): Boolean {
+            val now = System.currentTimeMillis()
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = now
+
+            // Get time of today's midnight (minus a second)
+            calendar[Calendar.HOUR_OF_DAY] = 23
+            calendar[Calendar.MINUTE] = 59
+            calendar[Calendar.SECOND] = 59
+            val lastSecondOfDay = calendar.timeInMillis
+
+
+            return (alarmInMillis in now..lastSecondOfDay)
+        }
+
+        fun isTomorrow(alarmInMillis: Long): Boolean {
+            val now = System.currentTimeMillis()
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = now + 24 * 60 * 60 * 1000
+
+            // Get time of tomorrow's midnight (minus a second)
+            calendar[Calendar.HOUR_OF_DAY] = 23
+            calendar[Calendar.MINUTE] = 59
+            calendar[Calendar.SECOND] = 59
+            val lastSecondOfDay = calendar.timeInMillis
+
+            // Get time of tomorrow's first second
+            calendar[Calendar.HOUR_OF_DAY] = 0
+            calendar[Calendar.MINUTE] = 0
+            calendar[Calendar.SECOND] = 0
+            val firstSecondOfDay = calendar.timeInMillis
+
+            return (alarmInMillis in firstSecondOfDay..lastSecondOfDay)
+        }
+
 
         // Get date values
         val dd = if (setUpAlarmValues.dayOfMonth.value != null) setUpAlarmValues.dayOfMonth.value!!
@@ -502,45 +565,6 @@ class AlarmEditFrag : Fragment() {
         return out
     }
 
-    private fun isInThePast(alarmInMillis: Long): Boolean {
-        val now = System.currentTimeMillis()
-        return (alarmInMillis < now)
-    }
-
-    private fun isToday(alarmInMillis: Long): Boolean {
-        val now = System.currentTimeMillis()
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = now
-
-        // Get time of today's midnight (minus a second)
-        calendar[Calendar.HOUR_OF_DAY] = 23
-        calendar[Calendar.MINUTE] = 59
-        calendar[Calendar.SECOND] = 59
-        val lastSecondOfDay = calendar.timeInMillis
-
-
-        return (alarmInMillis in now..lastSecondOfDay)
-    }
-
-    private fun isTomorrow(alarmInMillis: Long): Boolean {
-        val now = System.currentTimeMillis()
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = now + 24 * 60 * 60 * 1000
-
-        // Get time of tomorrow's midnight (minus a second)
-        calendar[Calendar.HOUR_OF_DAY] = 23
-        calendar[Calendar.MINUTE] = 59
-        calendar[Calendar.SECOND] = 59
-        val lastSecondOfDay = calendar.timeInMillis
-
-        // Get time of tomorrow's first second
-        calendar[Calendar.HOUR_OF_DAY] = 0
-        calendar[Calendar.MINUTE] = 0
-        calendar[Calendar.SECOND] = 0
-        val firstSecondOfDay = calendar.timeInMillis
-
-        return (alarmInMillis in firstSecondOfDay..lastSecondOfDay)
-    }
 
 
     @Composable
