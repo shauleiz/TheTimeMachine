@@ -68,6 +68,8 @@ import androidx.lifecycle.MutableLiveData
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
+import com.product.thetimemachine.ui.SettingsFragment.sound
+import com.product.thetimemachine.ui.SettingsFragment.vibrate
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Calendar
 import java.util.Locale
@@ -561,7 +563,6 @@ class AlarmEditFrag : Fragment() {
             val showDialog: MutableState<Boolean>? = null,
         )
 
-
         // List of all entries
         val listOfPrefs = listOf(
             PrefData(
@@ -627,6 +628,15 @@ class AlarmEditFrag : Fragment() {
             ),
         )
 
+        // TODO: Write a callback function to give a sample of vibration & Sound pattern
+        // Use SettingsFragment::vibrate and SettingsFragment::sound
+        // Call from Row/Radio button OnClick
+        fun playVibOrSound(index : Int, pattern : String) : Unit{
+            Log.d("THE_TIME_MACHINE", "playVibOrSound():  index = $index ; pattern = $pattern")
+            if (listOfPrefs[index].title == R.string.vibration_pattern) vibrate(pattern)
+            else if (listOfPrefs[index].title == R.string.alarm_sounds) sound(pattern)
+        }
+
         // Display Dialog
         listOfPrefs.forEachIndexed() { index, entry ->
             if (entry.showDialog != null && entry.showDialog.value) {
@@ -659,16 +669,18 @@ class AlarmEditFrag : Fragment() {
                         // Loop on all entries in the list
                         // Every entry is a row with a radio button and text
                         // The row is clickable
-                        entry.list!!.forEachIndexed { i, pair ->
+                        entry.list!!.forEachIndexed { _, pair ->
                             Row(horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
+                                    .padding(bottom = 16.dp, start = 16.dp)
                                     .fillMaxWidth()
-                                    .clickable {selected = pair.second }
+                                    .clickable {selected = pair.second ; playVibOrSound(index, pair.second)}
                             ) {
                                 RadioButton(
                                     selected = selected == pair.second,
-                                    onClick = {  selected = pair.second })
+                                    onClick = null)
+
                                 Text(pair.first)
                             }
                         }
