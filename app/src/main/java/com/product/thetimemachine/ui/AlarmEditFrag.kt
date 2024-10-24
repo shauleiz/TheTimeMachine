@@ -14,13 +14,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,16 +37,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -88,6 +86,15 @@ class AlarmEditFrag : Fragment() {
     private var isNewAlarm: Boolean = true
     private var isOneOff = true
     private var weekdays = 0;
+    data class PrefData(
+        val title: Int = 0,
+        val currentValue: MutableState<String?>? = null,
+        val origValue: MutableLiveData<String>? = null,
+        val list: List<Pair<String, String>>? = null,
+        val iconId: Int = 0,
+        val showDialog: MutableState<Boolean>? = null,
+    )
+
 
 
     // Menu Items
@@ -199,6 +206,74 @@ class AlarmEditFrag : Fragment() {
     @Composable
     private fun AlarmEditFragDisplayTop() {
 
+
+        // List of all entries
+        val listOfPrefs_ = listOf(
+            PrefData(
+                title = R.string.ring_and_snooze
+            ),
+
+            PrefData(
+                title = R.string.ring_duration,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }),
+                origValue = setUpAlarmValues.ringDuration,
+                list = ringDurationList,
+                iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
+                showDialog = remember { mutableStateOf(false) }),
+
+            PrefData(
+                title = R.string.times_to_keep_on_ringing,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat.value) }),
+                origValue = setUpAlarmValues.ringRepeat,
+                list = ringRepeatList,
+                iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+
+
+            PrefData(
+                title = R.string.snooze_for,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration.value) }),
+                origValue = setUpAlarmValues.snoozeDuration,
+                list = snoozeDurationList,
+                iconId = R.drawable.snooze_fill0_wght400_grad0_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+
+            PrefData(
+                title = R.string.sound_and_vibration
+            ),
+
+            PrefData(
+                title = R.string.vibration_pattern,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern.value) }),
+                origValue = setUpAlarmValues.vibrationPattern,
+                list = vibrationPatternList,
+                iconId = R.drawable.vibration_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+
+            PrefData(
+                title = R.string.alarm_sounds,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }),
+                origValue = setUpAlarmValues.alarmSound,
+                list = alarmSoundList,
+                iconId = R.drawable.library_music_fill0_wght400_grad0_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+
+            PrefData(
+                title = R.string.gradual_volume_increase,
+                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }),
+                origValue = setUpAlarmValues.gradualVolume,
+                list = gradualVolumeList,
+                iconId = R.drawable.gradual_increase_opsz24,
+                showDialog = remember { mutableStateOf(false) }
+            ),
+        )
+        val listOfPrefs = remember { mutableStateListOf<PrefData>()}
+        listOfPrefs.addAll(listOfPrefs_)
+
         // State Variables
         val weekdays = rememberSaveable { mutableStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
@@ -216,6 +291,7 @@ class AlarmEditFrag : Fragment() {
             } else index
             weekdays.value = weekdays.value xor (1 shl i)
         }
+
 
         AppTheme(dynamicColor = true) {
             Surface {
@@ -243,7 +319,7 @@ class AlarmEditFrag : Fragment() {
                                 timePickerState,)
 
                             /* Preferences */
-                            ItemPreferences()
+                            ItemPreferences(listOfPrefs)
 
                         } else {
                             // Landscape
@@ -267,7 +343,7 @@ class AlarmEditFrag : Fragment() {
                                         timePickerState,)
 
                                     /* Preferences */
-                                    ItemPreferences()
+                                    ItemPreferences(listOfPrefs)
                                 }
                             }
                         }
@@ -584,7 +660,7 @@ class AlarmEditFrag : Fragment() {
 
 
     @Composable
-    private fun ItemPreferences() {
+    private fun ItemPreferences(listOfPrefs: List<PrefData>) {
 
         // Preference related constants
         val typography = MaterialTheme.typography
@@ -593,80 +669,6 @@ class AlarmEditFrag : Fragment() {
         val styledOverlineText = typography.labelSmall
         val styledTrailing = typography.bodySmall
 
-        // Preferences Data Class
-        data class PrefData(
-            val title: Int = 0,
-            val currentValue: MutableState<String?>? = null,
-            val origValue: MutableLiveData<String>? = null,
-            val list: List<Pair<String, String>>? = null,
-            val iconId: Int = 0,
-            val showDialog: MutableState<Boolean>? = null,
-        )
-
-        // List of all entries
-        val listOfPrefs = listOf(
-            PrefData(
-                title = R.string.ring_and_snooze
-            ),
-
-            PrefData(
-                title = R.string.ring_duration,
-                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }),
-                origValue = setUpAlarmValues.ringDuration,
-                list = ringDurationList,
-                iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
-                showDialog = remember { mutableStateOf(false) }),
-
-            PrefData(
-                title = R.string.times_to_keep_on_ringing,
-                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat.value) }),
-                origValue = setUpAlarmValues.ringRepeat,
-                list = ringRepeatList,
-                iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
-                showDialog = remember { mutableStateOf(false) }
-            ),
-
-
-            PrefData(
-                title = R.string.snooze_for,
-                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration.value) }),
-                origValue = setUpAlarmValues.snoozeDuration,
-                list = snoozeDurationList,
-                iconId = R.drawable.snooze_fill0_wght400_grad0_opsz24,
-                showDialog = remember { mutableStateOf(false) }
-            ),
-
-            PrefData(
-                title = R.string.sound_and_vibration
-            ),
-
-            PrefData(
-                title = R.string.vibration_pattern,
-                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern.value) }),
-                origValue = setUpAlarmValues.vibrationPattern,
-                list = vibrationPatternList,
-                iconId = R.drawable.vibration_opsz24,
-                showDialog = remember { mutableStateOf(false) }
-            ),
-
-            PrefData(
-                title = R.string.alarm_sounds,
-                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }),
-                origValue = setUpAlarmValues.alarmSound,
-                list = alarmSoundList,
-                iconId = R.drawable.library_music_fill0_wght400_grad0_opsz24,
-                showDialog = remember { mutableStateOf(false) }
-            ),
-
-            PrefData(
-                title = R.string.gradual_volume_increase,
-                currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }),
-                origValue = setUpAlarmValues.gradualVolume,
-                list = gradualVolumeList,
-                iconId = R.drawable.gradual_increase_opsz24,
-                showDialog = remember { mutableStateOf(false) }
-            ),
-        )
 
         // TODO: Write a callback function to give a sample of vibration & Sound pattern
         // Use SettingsFragment::vibrate and SettingsFragment::sound
@@ -716,10 +718,8 @@ class AlarmEditFrag : Fragment() {
                                     .padding(bottom = 16.dp, start = 16.dp)
                                     .fillMaxWidth()
                                     .clickable {
-                                        selected = pair.second; playVibOrSound(
-                                        index,
-                                        pair.second
-                                    )
+                                        selected = pair.second
+                                        playVibOrSound(index, pair.second)
                                     }
                             ) {
                                 RadioButton(
@@ -844,7 +844,7 @@ class AlarmEditFrag : Fragment() {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(start = 8.dp)
         ) {
-            listOfPrefs.forEachIndexed() { index, _ -> PrefRow(index = index) }
+            listOfPrefs.forEachIndexed() { index, _ ->  key(index){PrefRow(index = index)}  }
         }
     }
 
