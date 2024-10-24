@@ -42,8 +42,10 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -196,6 +198,8 @@ class AlarmEditFrag : Fragment() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun AlarmEditFragDisplayTop() {
+
+        // State Variables
         val weekdays = rememberSaveable { mutableStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
         // Set initial time
@@ -205,7 +209,13 @@ class AlarmEditFrag : Fragment() {
             is24Hour = SettingsFragment.pref_is24HourClock(),
         )
 
-        Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop():  weekdays = $weekdays")
+        // Event Handlers
+        val setSelectedDays = { index: Int ->
+            val i = if (SettingsFragment.pref_first_day_of_week() == "Mo") {
+                if (index == 6) 0 else index + 1
+            } else index
+            weekdays.value = weekdays.value xor (1 shl i)
+        }
 
         AppTheme(dynamicColor = true) {
             Surface {
@@ -225,24 +235,44 @@ class AlarmEditFrag : Fragment() {
                             TimePickerField(timePickerState)
 
                             /* Single/Weekly button */
-                            AlarmTypeBox(timePickerState, weekdays, oneOff)
+                            AlarmTypeBox(
+                                oneOff,
+                                {oneOff.value = it},
+                                weekdays,
+                                setSelectedDays,
+                                timePickerState,)
+
+                            /* Preferences */
+                            ItemPreferences()
+
                         } else {
+                            // Landscape
                             Row(verticalAlignment = Alignment.Top,
                                 horizontalArrangement = Arrangement.Start,
                                 modifier = Modifier
                                 .fillMaxWidth()
                             ){
-                                // Landscape
                                 /* Time Picker */
                                 TimePickerField(timePickerState)
 
-                                /* Single/Weekly button */
-                                AlarmTypeBox(timePickerState, weekdays, oneOff)
+                                VerticalDivider(thickness = 4.dp,)
+
+                                Column() {
+                                    /* Single/Weekly button */
+                                    AlarmTypeBox(
+                                        oneOff,
+                                        {oneOff.value = it},
+                                        weekdays,
+                                        setSelectedDays,
+                                        timePickerState,)
+
+                                    /* Preferences */
+                                    ItemPreferences()
+                                }
                             }
                         }
 
-                        /* Preferences */
-                        ItemPreferences()
+
                     }
                 }
             }
@@ -448,36 +478,22 @@ class AlarmEditFrag : Fragment() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun AlarmTypeBox(
+        oneOff: MutableState<Boolean>,
+        setOneOff: (Boolean)->Unit,
+        selectedDays: MutableState<Int>,
+        setSelectedDays: (Int)->Unit,
         timePickerState: TimePickerState,
-        selectedDaysx: MutableState<Int>,
-        oneOff: MutableState<Boolean>
     ) {
-
-        // Hoisted State: One Off
-        var oneOff by rememberSaveable { mutableStateOf(oneOff.value) }
-        var setOneOff = { v: Boolean -> oneOff = v }
-
-
-        var selectedDays by rememberSaveable { mutableStateOf(selectedDaysx.value) }
-        var setSelectedDays = { index: Int ->
-            var i: Int
-            i = if (SettingsFragment.pref_first_day_of_week() == "Mo") {
-                if (index == 6) 0 else index + 1
-            } else index
-            selectedDays = selectedDays xor (1 shl i)
-        }
-
-        Log.d("THE_TIME_MACHINE", "AlarmTypeBox():  selectedDaysx = $selectedDaysx")
 
         Column(modifier = Modifier
             .padding(8.dp)
         ) {
-            WeeklyOrOneOff(oneOff, setOneOff)
-            CalendarButton(selectedDays, oneOff)
-            if (oneOff)
+            WeeklyOrOneOff(oneOff.value, setOneOff)
+            CalendarButton(selectedDays.value, oneOff.value)
+            if (oneOff.value)
                 NextAlarmText(timePickerState)
             else
-                DayButtons(selectedDays, setSelectedDays)
+                DayButtons(selectedDays.value, setSelectedDays)
         }
     }
 
@@ -699,7 +715,12 @@ class AlarmEditFrag : Fragment() {
                                 modifier = Modifier
                                     .padding(bottom = 16.dp, start = 16.dp)
                                     .fillMaxWidth()
-                                    .clickable {selected = pair.second ; playVibOrSound(index, pair.second)}
+                                    .clickable {
+                                        selected = pair.second; playVibOrSound(
+                                        index,
+                                        pair.second
+                                    )
+                                    }
                             ) {
                                 RadioButton(
                                     selected = selected == pair.second,
@@ -894,6 +915,7 @@ class AlarmEditFrag : Fragment() {
 
     }
 }
+
 
 
 
