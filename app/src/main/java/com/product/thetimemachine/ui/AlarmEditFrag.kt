@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,6 +55,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -67,6 +69,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -85,6 +88,7 @@ import com.product.thetimemachine.ui.SettingsFragment.sound
 import com.product.thetimemachine.ui.SettingsFragment.vibrate
 import com.product.thetimemachine.ui.theme.AppTheme
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import java.time.DayOfWeek
 import java.time.YearMonth
 import java.util.Calendar
 import java.util.Locale
@@ -886,6 +890,21 @@ class AlarmEditFrag : Fragment() {
     @Composable
     private fun DisplayCalendar(showDialog : Boolean,  onDismiss : ()->Unit, selectionType : CalendarSelection){
 
+
+        val currentMonth = remember { YearMonth.now() }
+        val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
+        val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
+        val firstDayOfWeek =
+            if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
+            else DayOfWeek.MONDAY
+
+        val state = rememberCalendarState(
+            startMonth = startMonth,
+            endMonth = endMonth,
+            firstVisibleMonth = currentMonth,
+            firstDayOfWeek = firstDayOfWeek,
+        )
+
         @Composable
         fun Day(day: CalendarDay) {
             Box(
@@ -901,36 +920,51 @@ class AlarmEditFrag : Fragment() {
             }
         }
 
-        val currentMonth = remember { YearMonth.now() }
-        val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
-        val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
-        val firstDayOfWeek = remember { firstDayOfWeekFromLocale() } // Available from the library
+        @Composable
+        fun DaysOfWeekTitle() {
+            // List of labels on the weekdays buttons
+            val daysOfWeek =
+                if (SettingsFragment.pref_first_day_of_week() == "Su")
+                    listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
+                else
+                    listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
 
-        val state = rememberCalendarState(
-            startMonth = startMonth,
-            endMonth = endMonth,
-            firstVisibleMonth = currentMonth,
-            firstDayOfWeek = firstDayOfWeek
-        )
-
-
+            Row(modifier = Modifier.fillMaxWidth()) {
+                for (dayOfWeek in daysOfWeek) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                        text = dayOfWeek,)
+                }
+            }
+        }
 
         if (showDialog) {
+            state.firstDayOfWeek = if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
+            else DayOfWeek.MONDAY
             Dialog(onDismissRequest = { onDismiss() }) {
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Top,
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.surfaceBright,
                             shape = RoundedCornerShape(16.dp)
                         )
                         .fillMaxWidth(),
                 ) {
-                    Text("Calendar")
-
-                    VerticalCalendar(
+                    Text("Calendar", //TODO: Replace by 'string'
+                        fontSize = 30.sp,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally)
+                            .background(MaterialTheme.colorScheme.secondary)
+                            .padding(16.dp)
+                    )
+                    DaysOfWeekTitle()
+                    HorizontalCalendar(
                         state = state,
                         dayContent = { Day(it) }
                     )
