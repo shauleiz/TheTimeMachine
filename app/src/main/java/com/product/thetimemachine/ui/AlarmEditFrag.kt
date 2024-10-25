@@ -89,6 +89,7 @@ import com.product.thetimemachine.ui.SettingsFragment.vibrate
 import com.product.thetimemachine.ui.theme.AppTheme
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.YearMonth
 import java.util.Calendar
 import java.util.Locale
@@ -310,7 +311,7 @@ class AlarmEditFrag : Fragment() {
         }
 
         // Display Calendar Dialog
-        DisplayCalendar(showCalendarDialog, {showCalendarDialog=false}, calendarSelType)
+        DisplayCalendar(showCalendarDialog, {showCalendarDialog=false ; }, calendarSelType)
 
         AppTheme(dynamicColor = true) {
             Surface {
@@ -897,6 +898,7 @@ class AlarmEditFrag : Fragment() {
         val firstDayOfWeek =
             if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
             else DayOfWeek.MONDAY
+        var selectedDate by rememberSaveable { mutableStateOf<LocalDate?>(null) }
 
         val state = rememberCalendarState(
             startMonth = startMonth,
@@ -905,12 +907,18 @@ class AlarmEditFrag : Fragment() {
             firstDayOfWeek = firstDayOfWeek,
         )
 
+        // Square that displays a single day on the calendar
         @Composable
-        fun Day(day: CalendarDay) {
+        fun Day(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceBright)
-                    .aspectRatio(1f),
+                    //.background(MaterialTheme.colorScheme.surfaceBright)
+                    .aspectRatio(1f)
+                    .background(color = if (isSelected) Color.Green else Color.Transparent)
+                    .clickable(
+                        enabled = day.position == DayPosition.MonthDate,
+                        onClick = { onClick(day) }
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -920,6 +928,7 @@ class AlarmEditFrag : Fragment() {
             }
         }
 
+        // Strip of names of days above the calendar main area
         @Composable
         fun DaysOfWeekTitle() {
             // List of labels on the weekdays buttons
@@ -942,7 +951,7 @@ class AlarmEditFrag : Fragment() {
         if (showDialog) {
             state.firstDayOfWeek = if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
             else DayOfWeek.MONDAY
-            Dialog(onDismissRequest = { onDismiss() }) {
+            Dialog(onDismissRequest = { onDismiss() ; selectedDate=null }) {
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Top,
@@ -954,7 +963,7 @@ class AlarmEditFrag : Fragment() {
                         )
                         .fillMaxWidth(),
                 ) {
-                    Text("Calendar", //TODO: Replace by 'string'
+                    Text("Calendar", //TODO: Selected date
                         fontSize = 30.sp,
                         color = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier
@@ -966,7 +975,11 @@ class AlarmEditFrag : Fragment() {
                     DaysOfWeekTitle()
                     HorizontalCalendar(
                         state = state,
-                        dayContent = { Day(it) }
+                        dayContent  = { day ->
+                            Day(day, isSelected = selectedDate == day.date) { day ->
+                                selectedDate = if (selectedDate == day.date) null else day.date
+                            }
+                        }
                     )
                 }
             }
