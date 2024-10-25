@@ -275,6 +275,8 @@ class AlarmEditFrag : Fragment() {
         listOfPrefs.addAll(listOfPrefs_)
 
         // State Variables
+        var showCalendarDialog  by remember { mutableStateOf(false) }
+        var calendarSelType : CalendarSelection by remember { mutableStateOf(CalendarSelection.Single) }
         val weekdays = rememberSaveable { mutableStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
         // Set initial time
@@ -292,6 +294,8 @@ class AlarmEditFrag : Fragment() {
             weekdays.value = weekdays.value xor (1 shl i)
         }
 
+        // Display Calendar Dialog
+        DisplayCalendar(showCalendarDialog, {showCalendarDialog=false}, calendarSelType)
 
         AppTheme(dynamicColor = true) {
             Surface {
@@ -312,6 +316,12 @@ class AlarmEditFrag : Fragment() {
 
                             /* Single/Weekly button */
                             AlarmTypeBox(
+                                {
+                                    showCalendarDialog= true
+                                    calendarSelType = if (it) CalendarSelection.Single else CalendarSelection.Multiple
+                                    Log.d("THE_TIME_MACHINE", "AlarmTypeBox(): showCalendarDialog=$showCalendarDialog ; calendarSelType=$calendarSelType");
+
+                                },
                                 oneOff,
                                 {oneOff.value = it},
                                 weekdays,
@@ -336,6 +346,9 @@ class AlarmEditFrag : Fragment() {
                                 Column() {
                                     /* Single/Weekly button */
                                     AlarmTypeBox(
+                                        {
+                                            calendarSelType = if (it) CalendarSelection.Single else CalendarSelection.Multiple
+                                            showCalendarDialog= true},
                                         oneOff,
                                         {oneOff.value = it},
                                         weekdays,
@@ -347,8 +360,6 @@ class AlarmEditFrag : Fragment() {
                                 }
                             }
                         }
-
-
                     }
                 }
             }
@@ -447,14 +458,14 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun CalendarButton(selectedDays: Int, oneOff: Boolean) {
+    private fun CalendarButton(onCalendarClicked: (Boolean) -> Unit , selectedDays: Int, oneOff: Boolean) {
 
         // Type of button: 0=One Off ; 1=Weekly
         var buttonType = if (oneOff) 0 else 1
 
 
         Button(
-            onClick = {}, // TODO: Launch the correct calendar
+            onClick = { onCalendarClicked(buttonType == 0) },
             enabled = (oneOff || selectedDays != 0)
         ) {
             Icon(
@@ -554,6 +565,7 @@ class AlarmEditFrag : Fragment() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun AlarmTypeBox(
+        onCalendarClicked: (Boolean)->Unit,
         oneOff: MutableState<Boolean>,
         setOneOff: (Boolean)->Unit,
         selectedDays: MutableState<Int>,
@@ -565,7 +577,7 @@ class AlarmEditFrag : Fragment() {
             .padding(8.dp)
         ) {
             WeeklyOrOneOff(oneOff.value, setOneOff)
-            CalendarButton(selectedDays.value, oneOff.value)
+            CalendarButton(onCalendarClicked, selectedDays.value, oneOff.value)
             if (oneOff.value)
                 NextAlarmText(timePickerState)
             else
@@ -848,6 +860,42 @@ class AlarmEditFrag : Fragment() {
         }
     }
 
+
+    enum class CalendarOrient {
+        Vertical,
+        Horizontal
+    }
+
+    enum class CalendarSelection{
+        Single,
+        Multiple,
+        Range,
+    }
+
+    @Composable
+    private fun DisplayCalendar(showDialog : Boolean,  onDismiss : ()->Unit, selectionType : CalendarSelection){
+
+
+        Log.d("THE_TIME_MACHINE", "DisplayCalendar()[2]: showDialog=$showDialog ")
+
+
+        if (showDialog) {
+            Dialog(onDismissRequest = { onDismiss() }) {
+                Column(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceBright,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Start,
+                ) {
+                    Text("Calendar")
+                }
+            }
+        }
+    }
 
     fun checkmarkClicked() {
 
