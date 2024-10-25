@@ -12,8 +12,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -57,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -69,12 +72,20 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import com.kizitonwose.calendar.compose.HorizontalCalendar
+import com.kizitonwose.calendar.compose.VerticalCalendar
+import com.kizitonwose.calendar.compose.rememberCalendarState
+import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.DayPosition
+import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.SettingsFragment.sound
 import com.product.thetimemachine.ui.SettingsFragment.vibrate
 import com.product.thetimemachine.ui.theme.AppTheme
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import java.time.YearMonth
 import java.util.Calendar
 import java.util.Locale
 
@@ -875,23 +886,54 @@ class AlarmEditFrag : Fragment() {
     @Composable
     private fun DisplayCalendar(showDialog : Boolean,  onDismiss : ()->Unit, selectionType : CalendarSelection){
 
+        @Composable
+        fun Day(day: CalendarDay) {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+                    .aspectRatio(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = day.date.dayOfMonth.toString(),
+                    color = if (day.position == DayPosition.MonthDate) MaterialTheme.colorScheme.onSurface else Color.Gray
+                )
+            }
+        }
 
-        Log.d("THE_TIME_MACHINE", "DisplayCalendar()[2]: showDialog=$showDialog ")
+        val currentMonth = remember { YearMonth.now() }
+        val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
+        val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
+        val firstDayOfWeek = remember { firstDayOfWeekFromLocale() } // Available from the library
+
+        val state = rememberCalendarState(
+            startMonth = startMonth,
+            endMonth = endMonth,
+            firstVisibleMonth = currentMonth,
+            firstDayOfWeek = firstDayOfWeek
+        )
+
 
 
         if (showDialog) {
             Dialog(onDismissRequest = { onDismiss() }) {
                 Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top,
                     modifier = Modifier
+                        .fillMaxSize()
                         .background(
                             color = MaterialTheme.colorScheme.surfaceBright,
                             shape = RoundedCornerShape(16.dp)
                         )
                         .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start,
                 ) {
                     Text("Calendar")
+
+                    VerticalCalendar(
+                        state = state,
+                        dayContent = { Day(it) }
+                    )
                 }
             }
         }
