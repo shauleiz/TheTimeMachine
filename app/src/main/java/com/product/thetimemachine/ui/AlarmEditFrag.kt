@@ -66,6 +66,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,6 +76,7 @@ import androidx.lifecycle.MutableLiveData
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
@@ -285,8 +287,8 @@ class AlarmEditFrag : Fragment() {
         listOfPrefs.addAll(listOfPrefs_)
 
         // State Variables
-        var showCalendarDialog  by remember { mutableStateOf(false) }
-        var calendarSelType : CalendarSelection by remember { mutableStateOf(CalendarSelection.Single) }
+        var showCalendarDialog  by rememberSaveable { mutableStateOf(false) }
+        var calendarSelType : CalendarSelection by rememberSaveable { mutableStateOf(CalendarSelection.Single) }
         val weekdays = rememberSaveable { mutableStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
         // Set initial time
@@ -981,6 +983,22 @@ class AlarmEditFrag : Fragment() {
         }
 
         @Composable
+        fun MonthTitle(calendarMonth: CalendarMonth){
+            Column() {
+                Text(
+                    text = calendarMonth.yearMonth.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }
+                            + "  " + calendarMonth.yearMonth.year,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                )
+                DaysOfWeekTitle()
+            }
+        }
+
+        @Composable
         fun HeaderText(date: LocalDate?) : String {
             if (date == null) return "Select Date" // TODO: Replace
 
@@ -991,10 +1009,12 @@ class AlarmEditFrag : Fragment() {
             return String.format("%.3s, %d %.3s %d", dow, dom, month.name, year)
         }
 
+
+
         if (showDialog) {
             state.firstDayOfWeek = if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
             else DayOfWeek.MONDAY
-            Dialog(onDismissRequest = { onDismiss() ; selectedDate=null }) {
+            Dialog(onDismissRequest = { onDismiss() ; selectedDate = ld }) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1019,9 +1039,10 @@ class AlarmEditFrag : Fragment() {
                             )
                             .padding(16.dp)
                     )
-                    DaysOfWeekTitle()
+
                     HorizontalCalendar(
                         state = state,
+                        monthHeader = {MonthTitle(it) },
                         dayContent  = { day ->
                             Day(day, isSelected = selectedDate == day.date) { day ->
                                 selectedDate = if (selectedDate == day.date) null else day.date
@@ -1034,7 +1055,7 @@ class AlarmEditFrag : Fragment() {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()){
-                        TextButton({  onDismiss()}){Text(stringResource(id = R.string.cancel_general))}
+                        TextButton({  onDismiss() ; selectedDate = ld}){Text(stringResource(id = R.string.cancel_general))}
                         TextButton({ onOkClicked(selectedDate) }) {
                             Text(stringResource(id = R.string.ok_general))}
                     }
