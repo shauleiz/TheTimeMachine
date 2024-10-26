@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +54,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -69,25 +67,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import com.kizitonwose.calendar.compose.HorizontalCalendar
-import com.kizitonwose.calendar.compose.VerticalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.DayPosition
-import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.SettingsFragment.sound
 import com.product.thetimemachine.ui.SettingsFragment.vibrate
 import com.product.thetimemachine.ui.theme.AppTheme
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -312,6 +306,21 @@ class AlarmEditFrag : Fragment() {
 
         // Display Calendar Dialog
         DisplayCalendar(showCalendarDialog, {showCalendarDialog=false ; }, calendarSelType)
+        {
+            if (it==null) {
+                setUpAlarmValues.year.value = 0
+                setUpAlarmValues.month.value = 0
+                setUpAlarmValues.dayOfMonth.value = 0
+            }
+            else {
+                setUpAlarmValues.year.value = it.year
+                setUpAlarmValues.month.value = it.monthValue-1
+                setUpAlarmValues.dayOfMonth.value = it.dayOfMonth
+                setUpAlarmValues.setFutureDate(true)
+                setUpAlarmValues.setOneOff(true)
+            }
+            showCalendarDialog = false;
+        }
 
         AppTheme(dynamicColor = true) {
             Surface {
@@ -333,16 +342,21 @@ class AlarmEditFrag : Fragment() {
                             /* Single/Weekly button */
                             AlarmTypeBox(
                                 {
-                                    showCalendarDialog= true
-                                    calendarSelType = if (it) CalendarSelection.Single else CalendarSelection.Multiple
-                                    Log.d("THE_TIME_MACHINE", "AlarmTypeBox(): showCalendarDialog=$showCalendarDialog ; calendarSelType=$calendarSelType");
+                                    showCalendarDialog = true
+                                    calendarSelType =
+                                        if (it) CalendarSelection.Single else CalendarSelection.Multiple
+                                    Log.d(
+                                        "THE_TIME_MACHINE",
+                                        "AlarmTypeBox(): showCalendarDialog=$showCalendarDialog ; calendarSelType=$calendarSelType"
+                                    );
 
                                 },
                                 oneOff,
-                                {oneOff.value = it},
+                                { oneOff.value = it },
                                 weekdays,
                                 setSelectedDays,
-                                timePickerState,)
+                                timePickerState,
+                            )
 
                             /* Preferences */
                             ItemPreferences(listOfPrefs)
@@ -357,19 +371,22 @@ class AlarmEditFrag : Fragment() {
                                 /* Time Picker */
                                 TimePickerField(timePickerState)
 
-                                VerticalDivider(thickness = 4.dp,)
+                                VerticalDivider(thickness = 4.dp)
 
                                 Column() {
                                     /* Single/Weekly button */
                                     AlarmTypeBox(
                                         {
-                                            calendarSelType = if (it) CalendarSelection.Single else CalendarSelection.Multiple
-                                            showCalendarDialog= true},
+                                            calendarSelType =
+                                                if (it) CalendarSelection.Single else CalendarSelection.Multiple
+                                            showCalendarDialog = true
+                                        },
                                         oneOff,
-                                        {oneOff.value = it},
+                                        { oneOff.value = it },
                                         weekdays,
                                         setSelectedDays,
-                                        timePickerState,)
+                                        timePickerState,
+                                    )
 
                                     /* Preferences */
                                     ItemPreferences(listOfPrefs)
@@ -551,7 +568,7 @@ class AlarmEditFrag : Fragment() {
                         MaterialTheme.colorScheme.onBackground
                     },
                     modifier = Modifier
-                        .padding(horizontal = 4.dp,)
+                        .padding(horizontal = 4.dp)
                         .weight(1f)
                         .clip(shape = RoundedCornerShape(size = 12.dp))
                         .clickable { onSel(index) }
@@ -889,16 +906,30 @@ class AlarmEditFrag : Fragment() {
     }
 
     @Composable
-    private fun DisplayCalendar(showDialog : Boolean,  onDismiss : ()->Unit, selectionType : CalendarSelection){
+    private fun DisplayCalendar(
+        showDialog : Boolean,
+        onDismiss : ()->Unit,
+        selectionType : CalendarSelection,
+        onOkClicked: (LocalDate?) -> Unit
+    ){
+
+        // Get date from alarm
+        val yy = setUpAlarmValues.year.value!!
+        val mm = setUpAlarmValues.month.value!!
+        val dd = setUpAlarmValues.dayOfMonth.value!!
 
 
-        val currentMonth = remember { YearMonth.now() }
+        // Use date from alarm if exists else calculate current date
+        val ym = if (yy !=0 && mm != 0) YearMonth.of(yy,mm+1) else YearMonth.now()
+        val ld = if (yy !=0 && mm != 0 && dd != 0) LocalDate.of(yy,mm+1,dd) else null
+
+        val currentMonth = remember { ym }
         val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
         val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
         val firstDayOfWeek =
             if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
             else DayOfWeek.MONDAY
-        var selectedDate by rememberSaveable { mutableStateOf<LocalDate?>(null) }
+        var selectedDate by rememberSaveable { mutableStateOf<LocalDate?>(ld) }
 
         val state = rememberCalendarState(
             startMonth = startMonth,
@@ -943,9 +974,21 @@ class AlarmEditFrag : Fragment() {
                     Text(
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center,
-                        text = dayOfWeek,)
+                        text = dayOfWeek,
+                    )
                 }
             }
+        }
+
+        @Composable
+        fun HeaderText(date: LocalDate?) : String {
+            if (date == null) return "Select Date" // TODO: Replace
+
+            val dom = date.dayOfMonth
+            val year = date.year
+            val month = date.month
+            val dow = date.dayOfWeek
+            return String.format("%.3s, %d %.3s %d", dow, dom, month.name, year)
         }
 
         if (showDialog) {
@@ -953,23 +996,27 @@ class AlarmEditFrag : Fragment() {
             else DayOfWeek.MONDAY
             Dialog(onDismissRequest = { onDismiss() ; selectedDate=null }) {
                 Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Top,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
+                            shape = RoundedCornerShape(16.dp),
                             color = MaterialTheme.colorScheme.surfaceBright,
-                            shape = RoundedCornerShape(16.dp)
                         )
                         .fillMaxWidth(),
-                ) {
-                    Text("Calendar", //TODO: Selected date
-                        fontSize = 30.sp,
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top,
+
+                ) {/**/
+                    Text(HeaderText(selectedDate),
+                        fontSize = 24.sp,
                         color = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.CenterHorizontally)
-                            .background(MaterialTheme.colorScheme.secondary)
+                            .background(
+                                color = MaterialTheme.colorScheme.secondary,
+                                shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
+                            )
                             .padding(16.dp)
                     )
                     DaysOfWeekTitle()
@@ -981,6 +1028,16 @@ class AlarmEditFrag : Fragment() {
                             }
                         }
                     )
+                    // Cancel/OK Buttons
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()){
+                        TextButton({  onDismiss()}){Text(stringResource(id = R.string.cancel_general))}
+                        TextButton({ onOkClicked(selectedDate) }) {
+                            Text(stringResource(id = R.string.ok_general))}
+                    }
                 }
             }
         }
@@ -1015,6 +1072,22 @@ class AlarmEditFrag : Fragment() {
         // Update OneOff Value in ViewModel
         item.isOneOff =
             setUpAlarmValues.isOneOff.value!! || (setUpAlarmValues.weekDays.value!! == 0)
+
+        // Is it a specified date in the future
+        item.futureDate = setUpAlarmValues.isFutureDate.value!!
+        if (item.futureDate) {
+            item.dayOfMonth = setUpAlarmValues.dayOfMonth.value!!
+            item.month = setUpAlarmValues.month.value!!
+            item.year = setUpAlarmValues.year.value!!
+        }
+        else {
+            item.dayOfMonth = 0
+            item.month = 0
+            item.year = 0
+        }
+
+        Log.d("THE_TIME_MACHINE", "checkmarkClicked():  item.isOneOff = ${item.isOneOff} ; item.futureDate=${item.futureDate}")
+
 
         // Selected weekdays
         item.weekDays = setUpAlarmValues.weekDays.value!!
