@@ -60,6 +60,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -91,8 +92,6 @@ import java.util.Calendar
 import java.util.Locale
 
 /* TODO:
-        - Never show inDate/outDate as selected
-        - Change selection to Circle of reverse colors
         - Create Text-Styles of each type of Calendar part.
         - Make selection of past-dates impossible - show a warning dialog box
 */
@@ -949,11 +948,29 @@ class AlarmEditFrag : Fragment() {
         // Square that displays a single day on the calendar
         @Composable
         fun Day(day: CalendarDay, today : LocalDate, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
+
+            @Composable
+            fun backgroundColor() : Color {
+                return when{
+                    isSelected && day.position == DayPosition.MonthDate -> MaterialTheme.colorScheme.secondary
+                    else -> Color.Transparent
+                }
+            }
+
+            @Composable
+            fun textColor() : Color {
+                return when {
+                    isSelected && day.position == DayPosition.MonthDate  -> MaterialTheme.colorScheme.onSecondary
+                    day.position == DayPosition.MonthDate -> MaterialTheme.colorScheme.onSurface
+                    else -> Color.Transparent
+                }
+            }
+
             Box(
                 modifier = Modifier
                     //.background(MaterialTheme.colorScheme.surfaceBright)
                     .aspectRatio(1f)
-                    .background(color = if (isSelected) Color.Green else Color.Transparent)
+                    .background(color = backgroundColor(), shape = CircleShape)
                     .clickable(
                         enabled = day.position == DayPosition.MonthDate,
                         onClick = { onClick(day) }
@@ -962,7 +979,7 @@ class AlarmEditFrag : Fragment() {
             ) {
                 Text(
                     text = day.date.dayOfMonth.toString(),
-                    color = if (day.position == DayPosition.MonthDate) MaterialTheme.colorScheme.onSurface else Color.Transparent,
+                    color = textColor(),
                     fontWeight =  if (day.date == today!!) FontWeight.Bold else FontWeight.Normal
                 )
             }
