@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.background
@@ -15,16 +16,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -91,7 +99,6 @@ import java.util.Locale
 
 /* TODO:
         - Create Text-Styles of each type of Calendar part.
-        - Make selection of past-dates impossible - show a warning dialog box
 */
 
 class AlarmEditFrag : Fragment() {
@@ -291,6 +298,7 @@ class AlarmEditFrag : Fragment() {
 
         // State Variables
         var showCalendarDialog  by rememberSaveable { mutableStateOf(false) }
+        var showErrorDialog by rememberSaveable { mutableStateOf(false) }
         var calendarSelType : CalendarSelection by rememberSaveable { mutableStateOf(CalendarSelection.Single) }
         val weekdays = rememberSaveable { mutableIntStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
@@ -312,20 +320,33 @@ class AlarmEditFrag : Fragment() {
         // Display Calendar Dialog
         DisplayCalendar(showCalendarDialog, {showCalendarDialog=false ; }, calendarSelType)
         {
+            Log.d("THE_TIME_MACHINE", "DisplayCalendar(): it=$it ; now=${LocalDate.now()}");
+
             if (it==null) {
                 setUpAlarmValues.year.value = 0
                 setUpAlarmValues.month.value = 0
                 setUpAlarmValues.dayOfMonth.value = 0
+                showCalendarDialog = false
             }
+           else if (it.isBefore(LocalDate.now())) {
+               // Error
+                Log.d("THE_TIME_MACHINE", "DisplayCalendar(): ERROR")
+                showErrorDialog = true
+           }
             else {
                 setUpAlarmValues.year.value = it.year
                 setUpAlarmValues.month.value = it.monthValue-1
                 setUpAlarmValues.dayOfMonth.value = it.dayOfMonth
                 setUpAlarmValues.setFutureDate(true)
                 setUpAlarmValues.setOneOff(true)
+                showCalendarDialog = false
             }
-            showCalendarDialog = false
+
         }
+
+        // Display error dialog - user selected a date in the past
+        DisplayWrongDateDialog(showErrorDialog, {showErrorDialog = false})
+
 
         AppTheme(dynamicColor = true) {
             Surface {
@@ -710,13 +731,13 @@ class AlarmEditFrag : Fragment() {
 
     @Composable
     private fun ItemPreferences(listOfPrefs: List<PrefData>) {
-
         // Preference related constants
         val typography = MaterialTheme.typography
-        //val styledText = typography.titleMedium
+        val styledText = typography.titleMedium
         //val styledSecondaryText = typography.bodyMedium // Alpha=0.5f
         val styledOverLineText = typography.labelSmall
         val styledTrailing = typography.bodySmall
+
 
 
         // TODO: Write a callback function to give a sample of vibration & Sound pattern
@@ -902,6 +923,38 @@ class AlarmEditFrag : Fragment() {
         Single,
         Multiple,
         //Range,
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun DisplayWrongDateDialog( showDialog : Boolean, onDismiss : ()->Unit,){
+        if (!showDialog) return
+        BasicAlertDialog(
+            //title = R.string.title_error,
+            //text = "LLL",
+            onDismissRequest = {onDismiss()}
+            //confirmButton = null
+        ) {
+            Surface(
+                modifier = Modifier.wrapContentWidth().wrapContentHeight(),
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = AlertDialogDefaults.TonalElevation
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(text = stringResource(R.string.title_error),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.error,)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = stringResource(R.string.alarm_in_the_past))
+                    TextButton(
+                        onClick = { onDismiss() },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("Confirm")
+                    }
+                }
+            }
+        }
     }
 
     @Composable
