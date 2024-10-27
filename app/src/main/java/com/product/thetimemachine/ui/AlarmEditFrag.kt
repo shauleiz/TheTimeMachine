@@ -60,14 +60,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -102,7 +100,7 @@ class AlarmEditFrag : Fragment() {
     private var initParams: Bundle? = null
     private var isNewAlarm: Boolean = true
     private var isOneOff = true
-    private var weekdays = 0;
+    private var weekdays = 0
     data class PrefData(
         val title: Int = 0,
         val currentValue: MutableState<String?>? = null,
@@ -115,29 +113,29 @@ class AlarmEditFrag : Fragment() {
 
 
     // Menu Items
-    val ringDurationList = listOf(
+    private val ringDurationList = listOf(
         Pair("15 Seconds", "15Seconds"), Pair("30 Seconds", "30Seconds"),
         Pair("45 Seconds", "45Seconds"), Pair("1 Minute", "60Seconds"),
         Pair("2 Minute", "120Seconds"), Pair("5 Minute", "300Seconds"),
     )
-    val ringRepeatList = listOf(
+    private val ringRepeatList = listOf(
         Pair("Never", "0T"), Pair("1 Time", "1T"),
         Pair("2 Times", "2T"), Pair("5 Times", "5T"),
         Pair("10 Times", "10T"), Pair("Forever", "100T"),
     )
-    val snoozeDurationList = listOf(
+    private val snoozeDurationList = listOf(
         Pair("30 Seconds", "30Seconds"), Pair("1 Minute", "60Seconds"),
         Pair("2 Minute", "120Seconds"), Pair("3 Minute", "180Seconds"),
         Pair("5 Minutes", "300Seconds"), Pair("6 Minutes", "360Seconds"),
         Pair("7 Minutes", "420Seconds"), Pair("10 Minutes", "600Seconds"),
     )
-    val vibrationPatternList = listOf(
+    private val vibrationPatternList = listOf(
         Pair("None", "none"), Pair("Single short beat", "ssb"),
         Pair("Three short beats", "tsb"), Pair("Single long beat", "slb"),
         Pair("Repeating short beats", "rsb"), Pair("Repeating long beats", "rlb"),
         Pair("Continuous", "cont"),
     )
-    val alarmSoundList = listOf(
+    private val alarmSoundList = listOf(
         Pair("No Sound (mute)", "silent"),
         Pair("Standard Digital", "a30_seconds_alarm_72117"),
         Pair("Clock Alarm", "clock_alarm_8761"),
@@ -148,7 +146,7 @@ class AlarmEditFrag : Fragment() {
         Pair("Oversimplified Alarm Clock", "oversimplified_alarm_clock_113180"),
         Pair("Rooster", "rooster"),
     )
-    val gradualVolumeList = listOf(
+    private val gradualVolumeList = listOf(
         Pair("None", "00Seconds"), Pair("30 Seconds", "30Seconds"),
         Pair("1 Minute", "60Seconds"), Pair("2 Minute", "120Seconds"),
         Pair("3 Minute", "180Seconds"),
@@ -225,7 +223,7 @@ class AlarmEditFrag : Fragment() {
 
 
         // List of all entries
-        val listOfPrefs_ = listOf(
+        val listOfPrefsEx = listOf(
             PrefData(
                 title = R.string.ring_and_snooze
             ),
@@ -289,12 +287,12 @@ class AlarmEditFrag : Fragment() {
             ),
         )
         val listOfPrefs = remember { mutableStateListOf<PrefData>()}
-        listOfPrefs.addAll(listOfPrefs_)
+        listOfPrefs.addAll(listOfPrefsEx)
 
         // State Variables
         var showCalendarDialog  by rememberSaveable { mutableStateOf(false) }
         var calendarSelType : CalendarSelection by rememberSaveable { mutableStateOf(CalendarSelection.Single) }
-        val weekdays = rememberSaveable { mutableStateOf(weekdays) }
+        val weekdays = rememberSaveable { mutableIntStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
         // Set initial time
         val timePickerState = rememberTimePickerState(
@@ -308,7 +306,7 @@ class AlarmEditFrag : Fragment() {
             val i = if (SettingsFragment.pref_first_day_of_week() == "Mo") {
                 if (index == 6) 0 else index + 1
             } else index
-            weekdays.value = weekdays.value xor (1 shl i)
+            weekdays.intValue = weekdays.intValue xor (1 shl i)
         }
 
         // Display Calendar Dialog
@@ -326,7 +324,7 @@ class AlarmEditFrag : Fragment() {
                 setUpAlarmValues.setFutureDate(true)
                 setUpAlarmValues.setOneOff(true)
             }
-            showCalendarDialog = false;
+            showCalendarDialog = false
         }
 
         AppTheme(dynamicColor = true) {
@@ -355,7 +353,7 @@ class AlarmEditFrag : Fragment() {
                                     Log.d(
                                         "THE_TIME_MACHINE",
                                         "AlarmTypeBox(): showCalendarDialog=$showCalendarDialog ; calendarSelType=$calendarSelType"
-                                    );
+                                    )
 
                                 },
                                 oneOff,
@@ -380,7 +378,7 @@ class AlarmEditFrag : Fragment() {
 
                                 VerticalDivider(thickness = 4.dp)
 
-                                Column() {
+                                Column {
                                     /* Single/Weekly button */
                                     AlarmTypeBox(
                                         {
@@ -501,7 +499,7 @@ class AlarmEditFrag : Fragment() {
     private fun CalendarButton(onCalendarClicked: (Boolean) -> Unit , selectedDays: Int, oneOff: Boolean) {
 
         // Type of button: 0=One Off ; 1=Weekly
-        var buttonType = if (oneOff) 0 else 1
+        val buttonType = if (oneOff) 0 else 1
 
 
         Button(
@@ -627,7 +625,7 @@ class AlarmEditFrag : Fragment() {
 
     @Composable
     private fun displayTargetAlarm(hour: Int, minute: Int): String {
-        var out = ""
+        var out : String
 
         /// Helper Functions
         fun isInThePast(alarmInMillis: Long): Boolean {
@@ -688,8 +686,7 @@ class AlarmEditFrag : Fragment() {
         else {
             calendar[Calendar.HOUR_OF_DAY] = hour
             calendar[Calendar.MINUTE] = minute
-            if (isInThePast(calendar.timeInMillis)) calendar.timeInMillis =
-                calendar.timeInMillis + 24 * 60 * 60 * 1000
+            if (isInThePast(calendar.timeInMillis)) calendar.timeInMillis += 24 * 60 * 60 * 1000
             //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
         }
 
@@ -716,23 +713,23 @@ class AlarmEditFrag : Fragment() {
 
         // Preference related constants
         val typography = MaterialTheme.typography
-        val styledText = typography.titleMedium
-        val styledSecondaryText = typography.bodyMedium // Alpha=0.5f
-        val styledOverlineText = typography.labelSmall
+        //val styledText = typography.titleMedium
+        //val styledSecondaryText = typography.bodyMedium // Alpha=0.5f
+        val styledOverLineText = typography.labelSmall
         val styledTrailing = typography.bodySmall
 
 
         // TODO: Write a callback function to give a sample of vibration & Sound pattern
         // Use SettingsFragment::vibrate and SettingsFragment::sound
         // Call from Row/Radio button OnClick
-        fun playVibOrSound(index : Int, pattern : String) : Unit{
+        fun playVibOrSound(index : Int, pattern : String) {
             Log.d("THE_TIME_MACHINE", "playVibOrSound():  index = $index ; pattern = $pattern")
             if (listOfPrefs[index].title == R.string.vibration_pattern) vibrate(pattern)
             else if (listOfPrefs[index].title == R.string.alarm_sounds) sound(pattern)
         }
 
         // Display Dialog
-        listOfPrefs.forEachIndexed() { index, entry ->
+        listOfPrefs.forEachIndexed { index, entry ->
             if (entry.showDialog != null && entry.showDialog.value) {
 
                 var selected by rememberSaveable { mutableStateOf( entry.currentValue!!.value)}
@@ -808,7 +805,7 @@ class AlarmEditFrag : Fragment() {
         // Icon to display
         // Id imageId==0 then do nothing
         @Composable
-        fun PrefIcon(imageId: Int, title: Int): Unit {
+        fun PrefIcon(imageId: Int, title: Int) {
             if (imageId == 0) return
 
             Icon(
@@ -827,7 +824,7 @@ class AlarmEditFrag : Fragment() {
 
         // Title of preference
         @Composable
-        fun PrefTitle(titleID: Int): Unit {
+        fun PrefTitle(titleID: Int){
             Text(
                 text = stringResource(id = titleID),
                 style = styledTrailing,
@@ -837,12 +834,12 @@ class AlarmEditFrag : Fragment() {
         }
 
         fun getEntryValueStr(value: String, list: List<Pair<String, String>>): String {
-            list.forEach() { if (it.second == value) return it.first }
+            list.forEach { if (it.second == value) return it.first }
             return ""
         }
 
         @Composable
-        fun PrefSelValue(value: String, list: List<Pair<String, String>>): Unit {
+        fun PrefSelValue(value: String, list: List<Pair<String, String>>) {
             Text(
                 text = getEntryValueStr(value, list),
                 style = styledTrailing,
@@ -854,7 +851,7 @@ class AlarmEditFrag : Fragment() {
         }
 
         @Composable
-        fun PrefRow(index: Int): Unit {
+        fun PrefRow(index: Int){
             if (listOfPrefs[index].list != null) { // Normal row
                 Row(
                     horizontalArrangement = Arrangement.Start,
@@ -882,7 +879,7 @@ class AlarmEditFrag : Fragment() {
             } else { // Header
                 Text(
                     text = stringResource(listOfPrefs[index].title),
-                    style = styledOverlineText,//MaterialTheme.typography.bodyMedium,
+                    style = styledOverLineText,//MaterialTheme.typography.bodyMedium,
                     fontSize = 16.sp,
                     modifier = Modifier.padding(bottom = 8.dp, top = 40.dp)
                 )
@@ -896,20 +893,15 @@ class AlarmEditFrag : Fragment() {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(start = 8.dp)
         ) {
-            listOfPrefs.forEachIndexed() { index, _ ->  key(index){PrefRow(index = index)}  }
+            listOfPrefs.forEachIndexed{ index, _ ->  key(index){PrefRow(index = index)}  }
         }
     }
 
 
-    enum class CalendarOrient {
-        Vertical,
-        Horizontal
-    }
-
     enum class CalendarSelection{
         Single,
         Multiple,
-        Range,
+        //Range,
     }
 
     @Composable
@@ -936,7 +928,7 @@ class AlarmEditFrag : Fragment() {
         val firstDayOfWeek =
             if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
             else DayOfWeek.MONDAY
-        var selectedDate by rememberSaveable { mutableStateOf<LocalDate?>(ld) }
+        var selectedDate by rememberSaveable { mutableStateOf(ld) }
 
         val state = rememberCalendarState(
             startMonth = startMonth,
@@ -980,7 +972,7 @@ class AlarmEditFrag : Fragment() {
                 Text(
                     text = day.date.dayOfMonth.toString(),
                     color = textColor(),
-                    fontWeight =  if (day.date == today!!) FontWeight.Bold else FontWeight.Normal
+                    fontWeight =  if (day.date == today) FontWeight.Bold else FontWeight.Normal
                 )
             }
         }
@@ -1008,7 +1000,7 @@ class AlarmEditFrag : Fragment() {
 
         @Composable
         fun MonthTitle(calendarMonth: CalendarMonth){
-            Column() {
+            Column {
                 Text(
                     text = calendarMonth.yearMonth.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }
                             + "  " + calendarMonth.yearMonth.year,
@@ -1030,7 +1022,7 @@ class AlarmEditFrag : Fragment() {
             val year = date.year
             val month = date.month
             val dow = date.dayOfWeek
-            return String.format("%.3s, %d %.3s %d", dow, dom, month.name, year)
+            return String.format(Locale.ROOT,"%.3s, %d %.3s %d", dow, dom, month.name, year)
         }
 
 
@@ -1058,7 +1050,7 @@ class AlarmEditFrag : Fragment() {
                         color = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .align(Alignment.CenterHorizontally)
+                            .align(CenterHorizontally)
                             .background(
                                 color = MaterialTheme.colorScheme.secondary,
                                 shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
@@ -1070,8 +1062,8 @@ class AlarmEditFrag : Fragment() {
                         state = state,
                         monthHeader = {MonthTitle(it) },
                         dayContent  = { day ->
-                            Day(day, today, isSelected = selectedDate == day.date) { day ->
-                                selectedDate = if (selectedDate == day.date) null else day.date
+                            Day(day, today, isSelected = selectedDate == day.date) {
+                                selectedDate = if (selectedDate == it.date) null else it.date
                             }
                         }
                     )
@@ -1093,11 +1085,11 @@ class AlarmEditFrag : Fragment() {
     fun checkmarkClicked() {
 
         // Null checks
-        if (setUpAlarmValues == null || setUpAlarmValues.hour == null || setUpAlarmValues.hour.value == null) return
+        if (setUpAlarmValues.hour == null || setUpAlarmValues.hour.value == null) return
         if (setUpAlarmValues.minute == null || setUpAlarmValues.minute.value == null) return
         if (setUpAlarmValues.label == null || setUpAlarmValues.label.value == null) return
 
-        val c = initParams!!.getLong("INIT_CREATE_TIME")
+        //val c = initParams!!.getLong("INIT_CREATE_TIME")
 
 
         // If modified alarm then use its old Create Time (id)
