@@ -90,6 +90,12 @@ import java.time.YearMonth
 import java.util.Calendar
 import java.util.Locale
 
+/* TODO:
+        - Never show inDate/outDate as selected
+        - Change selection to Circle of reverse colors
+        - Create Text-Styles of each type of Calendar part.
+        - Make selection of past-dates impossible - show a warning dialog box
+*/
 
 class AlarmEditFrag : Fragment() {
     private var parent: MainActivity? = null
@@ -942,7 +948,7 @@ class AlarmEditFrag : Fragment() {
 
         // Square that displays a single day on the calendar
         @Composable
-        fun Day(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
+        fun Day(day: CalendarDay, today : LocalDate, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
             Box(
                 modifier = Modifier
                     //.background(MaterialTheme.colorScheme.surfaceBright)
@@ -956,7 +962,8 @@ class AlarmEditFrag : Fragment() {
             ) {
                 Text(
                     text = day.date.dayOfMonth.toString(),
-                    color = if (day.position == DayPosition.MonthDate) MaterialTheme.colorScheme.onSurface else Color.Gray
+                    color = if (day.position == DayPosition.MonthDate) MaterialTheme.colorScheme.onSurface else Color.Transparent,
+                    fontWeight =  if (day.date == today!!) FontWeight.Bold else FontWeight.Normal
                 )
             }
         }
@@ -1012,8 +1019,10 @@ class AlarmEditFrag : Fragment() {
 
 
         if (showDialog) {
-            state.firstDayOfWeek = if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
-            else DayOfWeek.MONDAY
+            state.firstDayOfWeek =
+                if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
+                else DayOfWeek.MONDAY
+            val today = LocalDate.now()
             Dialog(onDismissRequest = { onDismiss() ; selectedDate = ld }) {
                 Column(
                     modifier = Modifier
@@ -1044,7 +1053,7 @@ class AlarmEditFrag : Fragment() {
                         state = state,
                         monthHeader = {MonthTitle(it) },
                         dayContent  = { day ->
-                            Day(day, isSelected = selectedDate == day.date) { day ->
+                            Day(day, today, isSelected = selectedDate == day.date) { day ->
                                 selectedDate = if (selectedDate == day.date) null else day.date
                             }
                         }
