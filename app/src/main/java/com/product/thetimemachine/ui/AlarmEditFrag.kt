@@ -30,7 +30,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -241,7 +240,7 @@ class AlarmEditFrag : Fragment() {
                 origValue = setUpAlarmValues.ringDuration,
                 list = ringDurationList,
                 iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
-                showDialog = remember { mutableStateOf(false) }),
+                showDialog = rememberSaveable { mutableStateOf(false) }),
 
             PrefData(
                 title = R.string.times_to_keep_on_ringing,
@@ -249,7 +248,7 @@ class AlarmEditFrag : Fragment() {
                 origValue = setUpAlarmValues.ringRepeat,
                 list = ringRepeatList,
                 iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
-                showDialog = remember { mutableStateOf(false) }
+                showDialog = rememberSaveable { mutableStateOf(false) }
             ),
 
 
@@ -259,7 +258,7 @@ class AlarmEditFrag : Fragment() {
                 origValue = setUpAlarmValues.snoozeDuration,
                 list = snoozeDurationList,
                 iconId = R.drawable.snooze_fill0_wght400_grad0_opsz24,
-                showDialog = remember { mutableStateOf(false) }
+                showDialog = rememberSaveable { mutableStateOf(false) }
             ),
 
             PrefData(
@@ -272,7 +271,7 @@ class AlarmEditFrag : Fragment() {
                 origValue = setUpAlarmValues.vibrationPattern,
                 list = vibrationPatternList,
                 iconId = R.drawable.vibration_opsz24,
-                showDialog = remember { mutableStateOf(false) }
+                showDialog = rememberSaveable { mutableStateOf(false) }
             ),
 
             PrefData(
@@ -281,7 +280,7 @@ class AlarmEditFrag : Fragment() {
                 origValue = setUpAlarmValues.alarmSound,
                 list = alarmSoundList,
                 iconId = R.drawable.library_music_fill0_wght400_grad0_opsz24,
-                showDialog = remember { mutableStateOf(false) }
+                showDialog = rememberSaveable { mutableStateOf(false) }
             ),
 
             PrefData(
@@ -290,7 +289,7 @@ class AlarmEditFrag : Fragment() {
                 origValue = setUpAlarmValues.gradualVolume,
                 list = gradualVolumeList,
                 iconId = R.drawable.gradual_increase_opsz24,
-                showDialog = remember { mutableStateOf(false) }
+                showDialog = rememberSaveable { mutableStateOf(false) }
             ),
         )
         val listOfPrefs = remember { mutableStateListOf<PrefData>()}
@@ -320,7 +319,7 @@ class AlarmEditFrag : Fragment() {
         // Display Calendar Dialog
         DisplayCalendar(showCalendarDialog, {showCalendarDialog=false ; }, calendarSelType)
         {
-            Log.d("THE_TIME_MACHINE", "DisplayCalendar(): it=$it ; now=${LocalDate.now()}");
+            Log.d("THE_TIME_MACHINE", "DisplayCalendar(): it=$it ; now=${LocalDate.now()}")
 
             if (it==null) {
                 setUpAlarmValues.year.value = 0
@@ -345,7 +344,7 @@ class AlarmEditFrag : Fragment() {
         }
 
         // Display error dialog - user selected a date in the past
-        DisplayWrongDateDialog(showErrorDialog, {showErrorDialog = false})
+        DisplayWrongDateDialog(showErrorDialog){showErrorDialog = false}
 
 
         AppTheme(dynamicColor = true) {
@@ -733,7 +732,7 @@ class AlarmEditFrag : Fragment() {
     private fun ItemPreferences(listOfPrefs: List<PrefData>) {
         // Preference related constants
         val typography = MaterialTheme.typography
-        val styledText = typography.titleMedium
+        //val styledText = typography.titleMedium
         //val styledSecondaryText = typography.bodyMedium // Alpha=0.5f
         val styledOverLineText = typography.labelSmall
         val styledTrailing = typography.bodySmall
@@ -753,7 +752,7 @@ class AlarmEditFrag : Fragment() {
         listOfPrefs.forEachIndexed { index, entry ->
             if (entry.showDialog != null && entry.showDialog.value) {
 
-                var selected by rememberSaveable { mutableStateOf( entry.currentValue!!.value)}
+                var selected by  rememberSaveable { mutableStateOf( entry.currentValue!!)}
 
                 Dialog(onDismissRequest = { entry.showDialog.value = false }) {
                     Column(
@@ -788,12 +787,12 @@ class AlarmEditFrag : Fragment() {
                                     .padding(bottom = 16.dp, start = 16.dp)
                                     .fillMaxWidth()
                                     .clickable {
-                                        selected = pair.second
+                                        selected.value = pair.second
                                         playVibOrSound(index, pair.second)
                                     }
                             ) {
                                 RadioButton(
-                                    selected = selected == pair.second,
+                                    selected = selected.value == pair.second,
                                     onClick = null)
 
                                 Text(pair.first)
@@ -808,8 +807,8 @@ class AlarmEditFrag : Fragment() {
                                 .fillMaxWidth()){
                             TextButton({ entry.showDialog.value = false}){Text(stringResource(id = R.string.cancel_general))}
                             TextButton({
-                                entry.currentValue!!.value = selected
-                                entry.origValue!!.value = selected
+                                entry.currentValue!!.value = selected.value
+                                entry.origValue!!.value = selected.value
                                 entry.showDialog.value = false
                             }) {
                                 Text(stringResource(id = R.string.ok_general))}
@@ -927,30 +926,41 @@ class AlarmEditFrag : Fragment() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun DisplayWrongDateDialog( showDialog : Boolean, onDismiss : ()->Unit,){
+    private fun DisplayWrongDateDialog( showDialog : Boolean, onDismiss : ()->Unit) {
         if (!showDialog) return
         BasicAlertDialog(
             //title = R.string.title_error,
             //text = "LLL",
-            onDismissRequest = {onDismiss()}
+            onDismissRequest = { onDismiss() }
             //confirmButton = null
-        ) {
-            Surface(
-                modifier = Modifier.wrapContentWidth().wrapContentHeight(),
-                shape = MaterialTheme.shapes.large,
-                tonalElevation = AlertDialogDefaults.TonalElevation
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = stringResource(R.string.title_error),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.error,)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = stringResource(R.string.alarm_in_the_past))
-                    TextButton(
-                        onClick = { onDismiss() },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text("Confirm")
+        )
+        {
+
+            AppTheme(dynamicColor = true) {
+                Surface(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .wrapContentHeight(),
+                    shape = MaterialTheme.shapes.large,
+                    tonalElevation = AlertDialogDefaults.TonalElevation
+                )
+                {
+                    MaterialTheme {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = stringResource(R.string.title_error),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(text = stringResource(R.string.alarm_in_the_past))
+                            TextButton(
+                                onClick = { onDismiss() },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text("Confirm")
+                            }
+                        }
                     }
                 }
             }
@@ -962,8 +972,8 @@ class AlarmEditFrag : Fragment() {
         showDialog : Boolean,
         onDismiss : ()->Unit,
         selectionType : CalendarSelection,
-        onOkClicked: (LocalDate?) -> Unit
-    ){
+        onOkClicked: (LocalDate?) -> Unit,
+    ) {
 
         // Get date from alarm
         val yy = setUpAlarmValues.year.value!!
@@ -972,8 +982,8 @@ class AlarmEditFrag : Fragment() {
 
 
         // Use date from alarm if exists else calculate current date
-        val ym = if (yy !=0 && mm != 0) YearMonth.of(yy,mm+1) else YearMonth.now()
-        val ld = if (yy !=0 && mm != 0 && dd != 0) LocalDate.of(yy,mm+1,dd) else null
+        val ym = if (yy != 0 && mm != 0) YearMonth.of(yy, mm + 1) else YearMonth.now()
+        val ld = if (yy != 0 && mm != 0 && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
 
         val currentMonth = remember { ym }
         val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
@@ -992,20 +1002,25 @@ class AlarmEditFrag : Fragment() {
 
         // Square that displays a single day on the calendar
         @Composable
-        fun Day(day: CalendarDay, today : LocalDate, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
+        fun Day(
+            day: CalendarDay,
+            today: LocalDate,
+            isSelected: Boolean,
+            onClick: (CalendarDay) -> Unit
+        ) {
 
             @Composable
-            fun backgroundColor() : Color {
-                return when{
+            fun backgroundColor(): Color {
+                return when {
                     isSelected && day.position == DayPosition.MonthDate -> MaterialTheme.colorScheme.secondary
                     else -> Color.Transparent
                 }
             }
 
             @Composable
-            fun textColor() : Color {
+            fun textColor(): Color {
                 return when {
-                    isSelected && day.position == DayPosition.MonthDate  -> MaterialTheme.colorScheme.onSecondary
+                    isSelected && day.position == DayPosition.MonthDate -> MaterialTheme.colorScheme.onSecondary
                     day.position == DayPosition.MonthDate -> MaterialTheme.colorScheme.onSurface
                     else -> Color.Transparent
                 }
@@ -1014,18 +1029,20 @@ class AlarmEditFrag : Fragment() {
             Box(
                 modifier = Modifier
                     //.background(MaterialTheme.colorScheme.surfaceBright)
+                    //.indication(null, LocalIndication.current)
                     .aspectRatio(1f)
-                    .background(color = backgroundColor(), shape = CircleShape)
-                    .clickable(
-                        enabled = day.position == DayPosition.MonthDate,
-                        onClick = { onClick(day) }
-                    ),
+                    .background(color = backgroundColor(), shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = day.date.dayOfMonth.toString(),
                     color = textColor(),
-                    fontWeight =  if (day.date == today) FontWeight.Bold else FontWeight.Normal
+                    fontWeight = if (day.date == today) FontWeight.Bold else FontWeight.Normal,
+                    modifier = Modifier.clickable(
+                        enabled = day.position == DayPosition.MonthDate,
+                        onClick = { onClick(day) }
+                    ),
+
                 )
             }
         }
@@ -1052,10 +1069,11 @@ class AlarmEditFrag : Fragment() {
         }
 
         @Composable
-        fun MonthTitle(calendarMonth: CalendarMonth){
+        fun MonthTitle(calendarMonth: CalendarMonth) {
             Column {
                 Text(
-                    text = calendarMonth.yearMonth.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }
+                    text = calendarMonth.yearMonth.month.name.lowercase()
+                        .replaceFirstChar { it.uppercaseChar() }
                             + "  " + calendarMonth.yearMonth.year,
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp,
@@ -1068,14 +1086,14 @@ class AlarmEditFrag : Fragment() {
         }
 
         @Composable
-        fun HeaderText(date: LocalDate?) : String {
+        fun HeaderText(date: LocalDate?): String {
             if (date == null) return "Select Date" // TODO: Replace
 
             val dom = date.dayOfMonth
             val year = date.year
             val month = date.month
             val dow = date.dayOfWeek
-            return String.format(Locale.ROOT,"%.3s, %d %.3s %d", dow, dom, month.name, year)
+            return String.format(Locale.ROOT, "%.3s, %d %.3s %d", dow, dom, month.name, year)
         }
 
 
@@ -1085,50 +1103,67 @@ class AlarmEditFrag : Fragment() {
                 if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
                 else DayOfWeek.MONDAY
             val today = LocalDate.now()
-            Dialog(onDismissRequest = { onDismiss() ; selectedDate = ld }) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            shape = RoundedCornerShape(16.dp),
-                            color = MaterialTheme.colorScheme.surfaceBright,
-                        )
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Top,
+            Dialog(onDismissRequest = { onDismiss(); selectedDate = ld }) {
+                AppTheme(dynamicColor = true) {
+                    Surface() {
+                        MaterialTheme {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        shape = RoundedCornerShape(16.dp),
+                                        color = MaterialTheme.colorScheme.surfaceBright,
+                                    )
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Top,
 
-                ) {/**/
-                    Text(HeaderText(selectedDate),
-                        fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(CenterHorizontally)
-                            .background(
-                                color = MaterialTheme.colorScheme.secondary,
-                                shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
-                            )
-                            .padding(16.dp)
-                    )
+                                ) {/**/
+                                Text(
+                                    HeaderText(selectedDate),
+                                    fontSize = 24.sp,
+                                    color = MaterialTheme.colorScheme.onSecondary,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .align(CenterHorizontally)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            shape = RoundedCornerShape(
+                                                topEnd = 16.dp,
+                                                topStart = 16.dp
+                                            )
+                                        )
+                                        .padding(16.dp)
+                                )
 
-                    HorizontalCalendar(
-                        state = state,
-                        monthHeader = {MonthTitle(it) },
-                        dayContent  = { day ->
-                            Day(day, today, isSelected = selectedDate == day.date) {
-                                selectedDate = if (selectedDate == it.date) null else it.date
+                                HorizontalCalendar(
+                                    state = state,
+                                    monthHeader = { MonthTitle(it) },
+                                    dayContent = { day ->
+                                        Day(day, today, isSelected = selectedDate == day.date) {
+                                            selectedDate =
+                                                if (selectedDate == it.date) null else it.date
+                                        }
+                                    }
+                                )
+                                // Cancel/OK Buttons
+                                Row(
+                                    horizontalArrangement = Arrangement.End,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    TextButton({ onDismiss(); selectedDate = ld }) {
+                                        Text(
+                                            stringResource(id = R.string.cancel_general)
+                                        )
+                                    }
+                                    TextButton({ onOkClicked(selectedDate) }) {
+                                        Text(stringResource(id = R.string.ok_general))
+                                    }
+                                }
                             }
                         }
-                    )
-                    // Cancel/OK Buttons
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()){
-                        TextButton({  onDismiss() ; selectedDate = ld}){Text(stringResource(id = R.string.cancel_general))}
-                        TextButton({ onOkClicked(selectedDate) }) {
-                            Text(stringResource(id = R.string.ok_general))}
                     }
                 }
             }
