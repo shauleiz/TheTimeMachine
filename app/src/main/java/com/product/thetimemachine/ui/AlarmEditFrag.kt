@@ -748,7 +748,7 @@ class AlarmEditFrag : Fragment() {
             else if (listOfPrefs[index].title == R.string.alarm_sounds) sound(pattern)
         }
 
-        // Display Dialog
+        // Display Preference Dialog
         listOfPrefs.forEachIndexed { index, entry ->
             if (entry.showDialog != null && entry.showDialog.value) {
 
@@ -1098,6 +1098,7 @@ class AlarmEditFrag : Fragment() {
 
 
 
+        // Calendar Dialog - Single day selection
         if (showDialog) {
             state.firstDayOfWeek =
                 if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
@@ -1105,19 +1106,14 @@ class AlarmEditFrag : Fragment() {
             val today = LocalDate.now()
             Dialog(onDismissRequest = { onDismiss(); selectedDate = ld }) {
                 AppTheme(dynamicColor = true) {
-                    Surface() {
+                    Surface(modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(color = MaterialTheme.colorScheme.surfaceBright,),) {
                         MaterialTheme {
                             Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        shape = RoundedCornerShape(16.dp),
-                                        color = MaterialTheme.colorScheme.surfaceBright,
-                                    )
-                                    .fillMaxWidth(),
                                 horizontalAlignment = Alignment.Start,
                                 verticalArrangement = Arrangement.Top,
-
                                 ) {/**/
                                 Text(
                                     HeaderText(selectedDate),
@@ -1126,13 +1122,7 @@ class AlarmEditFrag : Fragment() {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .align(CenterHorizontally)
-                                        .background(
-                                            color = MaterialTheme.colorScheme.secondary,
-                                            shape = RoundedCornerShape(
-                                                topEnd = 16.dp,
-                                                topStart = 16.dp
-                                            )
-                                        )
+                                        .background(color = MaterialTheme.colorScheme.secondary,)
                                         .padding(16.dp)
                                 )
 
