@@ -7,11 +7,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -1010,6 +1011,8 @@ class AlarmEditFrag : Fragment() {
             onClick: (CalendarDay) -> Unit
         ) {
 
+            val interactionSource = remember { MutableInteractionSource() }
+
             @Composable
             fun backgroundColor(): Color {
                 return when {
@@ -1030,7 +1033,8 @@ class AlarmEditFrag : Fragment() {
             Box(
                 modifier = Modifier
                     //.background(MaterialTheme.colorScheme.surfaceBright)
-                    //.indication(null, LocalIndication.current)
+
+                    .indication(interactionSource = interactionSource, indication = null)
                     .aspectRatio(1f)
                     .background(color = backgroundColor(), shape = CircleShape),
                 contentAlignment = Alignment.Center
@@ -1039,11 +1043,14 @@ class AlarmEditFrag : Fragment() {
                     text = day.date.dayOfMonth.toString(),
                     color = textColor(),
                     fontWeight = if (day.date == today) FontWeight.Bold else FontWeight.Normal,
-                    modifier = Modifier.clickable(
-                        enabled = day.position == DayPosition.MonthDate,
-                        onClick = { onClick(day) }
-                    ),
-
+                    modifier = Modifier
+                        .indication(interactionSource = interactionSource, indication = null)
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null,
+                            enabled = day.position == DayPosition.MonthDate,
+                            onClick = { onClick(day) }
+                        )
                 )
             }
         }
@@ -1107,10 +1114,12 @@ class AlarmEditFrag : Fragment() {
             val today = LocalDate.now()
             Dialog(onDismissRequest = { onDismiss(); selectedDate = ld }) {
                 AppTheme(dynamicColor = isDynamicColor) {
-                    Surface(modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(color = MaterialTheme.colorScheme.surfaceBright,),) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(color = MaterialTheme.colorScheme.surfaceBright),
+                    ) {
                         MaterialTheme {
                             Column(
                                 horizontalAlignment = Alignment.Start,
@@ -1123,7 +1132,7 @@ class AlarmEditFrag : Fragment() {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .align(CenterHorizontally)
-                                        .background(color = MaterialTheme.colorScheme.secondary,)
+                                        .background(color = MaterialTheme.colorScheme.secondary)
                                         .padding(16.dp)
                                 )
 
@@ -1169,10 +1178,12 @@ class AlarmEditFrag : Fragment() {
             val today = LocalDate.now()
             Dialog(onDismissRequest = { onDismiss(); selectedDate = ld }) {
                 AppTheme(dynamicColor = isDynamicColor) {
-                    Surface(modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(color = MaterialTheme.colorScheme.surfaceBright,),) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(color = MaterialTheme.colorScheme.surfaceBright),
+                    ) {
                         MaterialTheme {
                             Column(
                                 horizontalAlignment = Alignment.Start,
@@ -1185,7 +1196,7 @@ class AlarmEditFrag : Fragment() {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .align(CenterHorizontally)
-                                        .background(color = MaterialTheme.colorScheme.secondary,)
+                                        .background(color = MaterialTheme.colorScheme.secondary)
                                         .padding(16.dp)
                                 )
 
