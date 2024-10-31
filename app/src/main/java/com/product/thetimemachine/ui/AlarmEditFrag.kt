@@ -301,7 +301,7 @@ class AlarmEditFrag : Fragment() {
         var showCalendarDialog  by rememberSaveable { mutableStateOf(false) }
         var showErrorDialog by rememberSaveable { mutableStateOf(false) }
         var calendarSelType : CalendarSelection by rememberSaveable { mutableStateOf(CalendarSelection.Single) }
-        val weekdays = rememberSaveable { mutableIntStateOf(weekdays) }
+        val weekDays = rememberSaveable { mutableIntStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
         // Set initial time
         val timePickerState = rememberTimePickerState(
@@ -315,11 +315,11 @@ class AlarmEditFrag : Fragment() {
             val i = if (SettingsFragment.pref_first_day_of_week() == "Mo") {
                 if (index == 6) 0 else index + 1
             } else index
-            weekdays.intValue = weekdays.intValue xor (1 shl i)
+            weekDays.intValue = weekDays.intValue xor (1 shl i)
         }
 
         // Display Calendar Dialog
-        DisplayCalendar(showCalendarDialog, {showCalendarDialog=false ; }, calendarSelType)
+        DisplayCalendar(showCalendarDialog, {showCalendarDialog=false ; }, calendarSelType, weekDays.intValue)
         {
             Log.d("THE_TIME_MACHINE", "DisplayCalendar(): it=$it ; now=${LocalDate.now()}")
 
@@ -380,7 +380,7 @@ class AlarmEditFrag : Fragment() {
                                 },
                                 oneOff,
                                 { oneOff.value = it },
-                                weekdays,
+                                weekDays,
                                 setSelectedDays,
                                 timePickerState,
                             )
@@ -410,7 +410,7 @@ class AlarmEditFrag : Fragment() {
                                         },
                                         oneOff,
                                         { oneOff.value = it },
-                                        weekdays,
+                                        weekDays,
                                         setSelectedDays,
                                         timePickerState,
                                     )
@@ -974,6 +974,7 @@ class AlarmEditFrag : Fragment() {
         showDialog : Boolean,
         onDismiss : ()->Unit,
         selectionType : CalendarSelection = CalendarSelection.Single,
+        selectedDays : Int = 0,
         onOkClicked: (LocalDate?) -> Unit,
     ) {
 
@@ -1012,6 +1013,7 @@ class AlarmEditFrag : Fragment() {
         ) {
 
             val interactionSource = remember { MutableInteractionSource() }
+            val isSelected = isSelected
 
             @Composable
             fun backgroundColor(): Color {
@@ -1104,6 +1106,13 @@ class AlarmEditFrag : Fragment() {
             return String.format(Locale.ROOT, "%.3s, %d %.3s %d", dow, dom, month.name, year)
         }
 
+        fun isDaySelected (calendarDay: CalendarDay, weekDays: Int) : Boolean{
+            var dw = calendarDay.date.dayOfWeek.value;
+            var mask = 1 shl dw%7
+            var selected = (mask and weekDays) > 0
+            Log.d("THE_TIME_MACHINE", "isDaySelected():  dw=$dw ; mask=$mask ; selected=$selected ; Day=$calendarDay.date")
+            return selected
+        }
 
 
         // Calendar Dialog - Single day selection
@@ -1204,7 +1213,7 @@ class AlarmEditFrag : Fragment() {
                                     state = state,
                                     monthHeader = { MonthTitle(it) },
                                     dayContent = { day ->
-                                        Day(day, today, isSelected = selectedDate == day.date) {
+                                        Day(day, today,  isSelected = isDaySelected(day, selectedDays)) {
                                             selectedDate =
                                                 if (selectedDate == it.date) null else it.date
                                         }
