@@ -91,6 +91,8 @@ import java.util.Locale
 class AlarmListFragment : Fragment() {
     private var parent: MainActivity? = null
     private var fragmentView: View? = null
+    private val isDynamicColor = false
+
     //private var selectedItems: ArrayList<Int>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -344,7 +346,7 @@ class AlarmListFragment : Fragment() {
     /* Top level Display - Call Portrait/Landscape Content View */
     @Composable
     fun AlarmListFragDisplayTop() {
-        AppTheme(dynamicColor = true) {
+        AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
                     AlarmListFragDisplay(parent!!.alarmViewModel)

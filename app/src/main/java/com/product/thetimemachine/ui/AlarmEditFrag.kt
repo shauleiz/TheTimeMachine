@@ -107,6 +107,7 @@ class AlarmEditFrag : Fragment() {
     private var isNewAlarm: Boolean = true
     private var isOneOff = true
     private var weekdays = 0
+    private val isDynamicColor = false
     data class PrefData(
         val title: Int = 0,
         val currentValue: MutableState<String?>? = null,
@@ -347,7 +348,7 @@ class AlarmEditFrag : Fragment() {
         DisplayWrongDateDialog(showErrorDialog){showErrorDialog = false}
 
 
-        AppTheme(dynamicColor = true) {
+        AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
                     Column(
@@ -936,7 +937,7 @@ class AlarmEditFrag : Fragment() {
         )
         {
 
-            AppTheme(dynamicColor = true) {
+            AppTheme(dynamicColor = isDynamicColor) {
                 Surface(
                     modifier = Modifier
                         .wrapContentWidth()
@@ -971,7 +972,7 @@ class AlarmEditFrag : Fragment() {
     private fun DisplayCalendar(
         showDialog : Boolean,
         onDismiss : ()->Unit,
-        selectionType : CalendarSelection,
+        selectionType : CalendarSelection = CalendarSelection.Single,
         onOkClicked: (LocalDate?) -> Unit,
     ) {
 
@@ -1099,13 +1100,13 @@ class AlarmEditFrag : Fragment() {
 
 
         // Calendar Dialog - Single day selection
-        if (showDialog) {
+        if (showDialog && selectionType == CalendarSelection.Single) {
             state.firstDayOfWeek =
                 if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
                 else DayOfWeek.MONDAY
             val today = LocalDate.now()
             Dialog(onDismissRequest = { onDismiss(); selectedDate = ld }) {
-                AppTheme(dynamicColor = true) {
+                AppTheme(dynamicColor = isDynamicColor) {
                     Surface(modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
@@ -1158,6 +1159,69 @@ class AlarmEditFrag : Fragment() {
                 }
             }
         }
+
+
+        // Calendar Dialog - Selection of exceptions
+        if (showDialog && selectionType == CalendarSelection.Multiple) {
+            state.firstDayOfWeek =
+                if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
+                else DayOfWeek.MONDAY
+            val today = LocalDate.now()
+            Dialog(onDismissRequest = { onDismiss(); selectedDate = ld }) {
+                AppTheme(dynamicColor = isDynamicColor) {
+                    Surface(modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(color = MaterialTheme.colorScheme.surfaceBright,),) {
+                        MaterialTheme {
+                            Column(
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Top,
+                            ) {/**/
+                                Text(
+                                    "Dates to Exclude:", // TODO: Replace
+                                    fontSize = 24.sp,
+                                    color = MaterialTheme.colorScheme.onSecondary,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .align(CenterHorizontally)
+                                        .background(color = MaterialTheme.colorScheme.secondary,)
+                                        .padding(16.dp)
+                                )
+
+                                HorizontalCalendar(
+                                    state = state,
+                                    monthHeader = { MonthTitle(it) },
+                                    dayContent = { day ->
+                                        Day(day, today, isSelected = selectedDate == day.date) {
+                                            selectedDate =
+                                                if (selectedDate == it.date) null else it.date
+                                        }
+                                    }
+                                )
+                                // Cancel/OK Buttons
+                                Row(
+                                    horizontalArrangement = Arrangement.End,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    TextButton({ onDismiss(); selectedDate = ld }) {
+                                        Text(
+                                            stringResource(id = R.string.cancel_general)
+                                        )
+                                    }
+                                    TextButton({ onOkClicked(selectedDate) }) {
+                                        Text(stringResource(id = R.string.ok_general))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     fun checkmarkClicked() {
