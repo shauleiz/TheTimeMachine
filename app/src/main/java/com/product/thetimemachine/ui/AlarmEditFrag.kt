@@ -80,6 +80,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -95,6 +97,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 /* TODO:
@@ -224,6 +227,43 @@ class AlarmEditFrag : Fragment() {
             return currentTime.get(Calendar.MINUTE)
         }
     }
+
+    // Converts selected Dates in JSON string format to List<Date>
+    // Each entry in format "YYYYMMYY" (e.g. "20240630")
+    private fun ExceptionDates2Date(dates: String?): List<Date> {
+        val dateList: MutableList<Date> = ArrayList()
+
+        if (dates == null || dates.isEmpty()) return dateList
+
+
+        // From JSON to Array of strings
+        val listOfMyClassObject = object : TypeToken<ArrayList<String?>?>() {}.type
+        val gson = Gson()
+        val dateListStr = gson.fromJson<List<String>>(dates, listOfMyClassObject)
+
+        // Test list of strings
+        if (dateListStr == null || dateListStr.isEmpty()) return dateList
+
+        // Convert each string to Date
+        var d: Int
+        var m: Int
+        var y: Int
+        var yyyymmdd: Int
+        val cal = Calendar.getInstance()
+        for (dateStr in dateListStr) {
+            yyyymmdd = dateStr.toInt()
+            d = yyyymmdd % 100
+            m = (yyyymmdd / 100) % 100 - 1
+            y = (yyyymmdd / 10000)
+            cal.clear()
+            cal[y, m] = d
+            dateList.add(cal.time)
+        }
+
+        Log.d("THE_TIME_MACHINE", "ExceptionDates2Date():  dateList = $dateList")
+        return dateList
+    }
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -704,13 +744,31 @@ class AlarmEditFrag : Fragment() {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = nowInMillis
 
+        Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[1]: dd=$dd ; mm=$mm ; yy=$yy")
         if (dd > 0 && mm > 0 && yy > 0) calendar[yy, mm, dd, hour, minute] = 0
         else {
             calendar[Calendar.HOUR_OF_DAY] = hour
             calendar[Calendar.MINUTE] = minute
-            if (isInThePast(calendar.timeInMillis)) calendar.timeInMillis += 24 * 60 * 60 * 1000
-            //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
         }
+
+        Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[2]:" +
+                "Year=${calendar.get(Calendar.YEAR)}  " +
+                "Month=${calendar.get(Calendar.MONTH)}  " +
+                "Day=${calendar.get(Calendar.DAY_OF_MONTH)}  " +
+                "Hour=${calendar.get(Calendar.HOUR)}  " +
+                "Minute=${calendar.get(Calendar.MINUTE)}  " +
+                "")
+
+            if (isInThePast(calendar.timeInMillis)) {
+                Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[3]: Is in the Past")
+                calendar.timeInMillis = nowInMillis
+                calendar[Calendar.HOUR_OF_DAY] = hour
+                calendar[Calendar.MINUTE] = minute
+                if (isInThePast(calendar.timeInMillis))
+                    calendar.timeInMillis += 24 * 60 * 60 * 1000
+            }
+            //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
+
 
 
         // Create an output string
@@ -1107,12 +1165,11 @@ class AlarmEditFrag : Fragment() {
         }
 
         fun isDaySelected (calendarDay: CalendarDay, weekDays: Int) : Boolean{
-            var dw = calendarDay.date.dayOfWeek.value;
-            var mask = 1 shl dw%7
-            var selected = (mask and weekDays) > 0
-            Log.d("THE_TIME_MACHINE", "isDaySelected():  dw=$dw ; mask=$mask ; selected=$selected ; Day=$calendarDay.date")
-            return selected
+            val mask = 1 shl calendarDay.date.dayOfWeek.value%7
+            return (mask and weekDays) > 0
         }
+
+
 
 
         // Calendar Dialog - Single day selection
@@ -1181,10 +1238,15 @@ class AlarmEditFrag : Fragment() {
 
         // Calendar Dialog - Selection of exceptions
         if (showDialog && selectionType == CalendarSelection.Multiple) {
+
             state.firstDayOfWeek =
                 if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
                 else DayOfWeek.MONDAY
             val today = LocalDate.now()
+
+            // Get the dates that are an exception
+            val selectedDates = ExceptionDates2Date(setUpAlarmValues.exceptionDates.getValue());
+
             Dialog(onDismissRequest = { onDismiss(); selectedDate = ld }) {
                 AppTheme(dynamicColor = isDynamicColor) {
                     Surface(
@@ -1214,8 +1276,7 @@ class AlarmEditFrag : Fragment() {
                                     monthHeader = { MonthTitle(it) },
                                     dayContent = { day ->
                                         Day(day, today,  isSelected = isDaySelected(day, selectedDays)) {
-                                            selectedDate =
-                                                if (selectedDate == it.date) null else it.date
+                                            selectedDate = if (selectedDate == it.date) null else it.date
                                         }
                                     }
                                 )
