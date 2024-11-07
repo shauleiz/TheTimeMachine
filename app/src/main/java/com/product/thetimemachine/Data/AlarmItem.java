@@ -520,6 +520,30 @@ public class AlarmItem {
 
    }
 
+   /* True if the alarm is explicitly set to the past */
+   public boolean isInThePast(){
+
+      // When date not explicit -> not in the past
+      if (getYear()==0 || getMonth()==0 || getDayOfMonth()==0)
+         return false;
+
+      // Get time current time
+      Calendar nowCal = Calendar.getInstance();
+      nowCal.setTimeInMillis(System.currentTimeMillis());
+
+      // Convert alarm time to to Calendar
+      Calendar alarmCal = Calendar.getInstance();
+      alarmCal.setTimeInMillis(System.currentTimeMillis());
+      alarmCal.set(Calendar.YEAR, getYear());
+      alarmCal.set(Calendar.MONTH, getMonth());
+      alarmCal.set(Calendar.DAY_OF_MONTH, getDayOfMonth());
+      alarmCal.set(Calendar.HOUR_OF_DAY, getHour());
+      alarmCal.set(Calendar.MINUTE, getMinute());
+      alarmCal.set(Calendar.SECOND, 30);
+
+      return alarmCal.getTimeInMillis()< nowCal.getTimeInMillis();
+   }
+
    /* True if the alarm is set for tomorrow */
    public boolean isTomorrow(){
       long today_midnight, tomorrow_midnight, tomorrow_last_sec, alarm_time;
