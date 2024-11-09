@@ -676,7 +676,7 @@ class AlarmListFragment : Fragment() {
             if (alarmItem.isOneOff) {
 
                 // Today - Active(Red) or inactive (pale Primary)
-                if (alarmItem.isToday()) {
+                if (alarmItem.isNotInThePast() && alarmItem.isToday()) {
                     //val todayColorId = if (alarmItem.isActive) colorResource(R.color.RealRed) else MaterialTheme.colorScheme.inversePrimary
                     return ((buildAnnotatedString {
                         withStyle(style = SpanStyle(color = colorResource(R.color.RealRed))) {
@@ -686,7 +686,7 @@ class AlarmListFragment : Fragment() {
                 }
 
                 // Tomorrow - Active(Blue) or inactive (pale Primary)
-                if (alarmItem.isTomorrow()) {
+                if (alarmItem.isNotInThePast() && alarmItem.isTomorrow()) {
                     //val tomorrowColorId = if (alarmItem.isActive) colorResource(R.color.light_blue_600) else MaterialTheme.colorScheme.inversePrimary
                     return ((buildAnnotatedString {
                         withStyle(style = SpanStyle(color = colorResource(R.color.light_blue_600))) {
@@ -785,6 +785,9 @@ class AlarmListFragment : Fragment() {
 
             // Reset snooze
             item.resetSnoozeCounter()
+
+            if (checked)
+                item.recalculateDate(); // If is an explicit date and in the past - change date to the near future
 
             // Update View Model - this also causes recomposition
             parent!!.alarmViewModel.UpdateAlarm(item)

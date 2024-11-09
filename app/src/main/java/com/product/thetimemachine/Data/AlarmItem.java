@@ -435,7 +435,7 @@ public class AlarmItem {
          calendar.setTimeInMillis(System.currentTimeMillis() + snoozeDelay);
 
       // if alarm time has already passed, increment day by 1
-      if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+      if (calendar.getTimeInMillis() <= System.currentTimeMillis() && !isFutureDate() ) {
          calendar.setTimeInMillis(calendar.getTimeInMillis()+ DAY_IN_MILLIS);
       }
 
@@ -536,6 +536,56 @@ public class AlarmItem {
       tomorrow_last_sec = tomorrow_midnight+24*60*60*1000-1000;
       alarm_time = alarmTimeInMillis();
       return alarm_time >= tomorrow_midnight && alarm_time <= tomorrow_last_sec;
+   }
+
+   /* True if the alarm is explicitly set to the past */
+   public boolean isNotInThePast(){
+
+      // When date not explicit -> not in the past
+      if (getYear()==0 || getMonth()==0 || getDayOfMonth()==0)
+         return true;
+
+      // Get time current time
+      Calendar nowCal = Calendar.getInstance();
+      nowCal.setTimeInMillis(System.currentTimeMillis());
+
+      // Convert alarm time to to Calendar
+      Calendar alarmCal = Calendar.getInstance();
+      alarmCal.setTimeInMillis(System.currentTimeMillis());
+      alarmCal.set(Calendar.YEAR, getYear());
+      alarmCal.set(Calendar.MONTH, getMonth());
+      alarmCal.set(Calendar.DAY_OF_MONTH, getDayOfMonth());
+      alarmCal.set(Calendar.HOUR_OF_DAY, getHour());
+      alarmCal.set(Calendar.MINUTE, getMinute());
+      alarmCal.set(Calendar.SECOND, 30);
+
+      return alarmCal.getTimeInMillis() >= nowCal.getTimeInMillis();
+   }
+
+   /*If alarm is explicitly set to the past then change the explicit date to Today or tomorrow */
+   public void recalculateDate(){
+      Log.d("THE_TIME_MACHINE", "recalculateDate()[1]");
+      if (isNotInThePast()) return;
+      Log.d("THE_TIME_MACHINE", "recalculateDate()[2]");
+
+      // Get time current time
+      Calendar nowCal = Calendar.getInstance();
+      nowCal.setTimeInMillis(System.currentTimeMillis());
+
+      Log.d("THE_TIME_MACHINE", "recalculateDate()[3] getHour="+getHour()+" ; getMinute="+getMinute()+" ; getDayOfMonth "+ getDayOfMonth());
+
+      // Check if the alarm can still ring today
+      if (
+            (nowCal.get(Calendar.MINUTE) + nowCal.get(Calendar.HOUR_OF_DAY)*24) >
+                  (getMinute() + getHour()*24)){
+         nowCal.setTimeInMillis(System.currentTimeMillis()+24*60*60*1000);
+      }
+
+      setDayOfMonth(nowCal.get(Calendar.DAY_OF_MONTH));
+      setMonth(nowCal.get(Calendar.MONTH));
+      setYear(nowCal.get(Calendar.YEAR));
+      Log.d("THE_TIME_MACHINE", "recalculateDate()[4] getHour="+getHour()+" ; getMinute="+getMinute()+" ; getDayOfMonth "+ getDayOfMonth());
+
    }
 
    // Copy Global preferences to Item preferences

@@ -1350,6 +1350,7 @@ class AlarmEditFrag : Fragment() {
 
         Log.d("THE_TIME_MACHINE", "checkmarkClicked():  item.isOneOff = ${item.isOneOff} ; item.futureDate=${item.futureDate}")
 
+        item.recalculateDate(); // If is an explicit date and in the past - change date to the near future
 
         // Selected weekdays
         item.weekDays = setUpAlarmValues.weekDays.value!!
