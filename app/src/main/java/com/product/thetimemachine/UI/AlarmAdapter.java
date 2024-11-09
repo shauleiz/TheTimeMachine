@@ -228,13 +228,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
         // Is it a One-Off case? If so, is the alarm set for today or tomorrow?
         if (alarmItem.isOneOff()){
-            if (!alarmItem.isInThePast() && alarmItem.isToday()) {
+            if (alarmItem.isNotInThePast() && alarmItem.isToday()) {
                 word = new SpannableString(context.getString(R.string.day_today));
                 if (alarmItem.isActive())
                     word.setSpan(new ForegroundColorSpan(Color.RED),
                       0, word.length(),
                       Spannable.SPAN_INCLUSIVE_INCLUSIVE);}
-            else if (!alarmItem.isInThePast() && alarmItem.isTomorrow()) {
+            else if (alarmItem.isNotInThePast() && alarmItem.isTomorrow()) {
                 word = new SpannableString(context.getString(R.string.day_tomorrow));
                 if (alarmItem.isActive())
                     word.setSpan(new ForegroundColorSpan(getColor(context,

@@ -24,7 +24,6 @@ import com.product.thetimemachine.Application.TheTimeMachineApp;
 import com.product.thetimemachine.R;
 import com.product.thetimemachine.UI.MainActivity;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -401,6 +400,9 @@ public class AlarmItem {
 
    /*  Convert alarm time to milliseconds    */
    public long alarmTimeInMillis() {
+
+      Log.d("THE_TIME_MACHINE", "alarmTimeInMillis()[1]");
+
       // Get the time for the next Alarm, in Milliseconds
       Calendar calendar = Calendar.getInstance();
       calendar.setTimeInMillis(System.currentTimeMillis());
@@ -409,11 +411,14 @@ public class AlarmItem {
       calendar.set(Calendar.SECOND, 0);
       calendar.set(Calendar.MILLISECOND, 0);
 
+      Log.d("THE_TIME_MACHINE", "alarmTimeInMillis()[2] calendar = " + calendar);
+
       // If this a future date by given calendar date
       if (isFutureDate() && getDayOfMonth()>0 && getMonth()>0 && getYear()>0){
          calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
          calendar.set(Calendar.MONTH,month);
          calendar.set(Calendar.YEAR,year);
+         Log.d("THE_TIME_MACHINE", "alarmTimeInMillis()[3] calendar = " + calendar);
       }
       // If this is a repeating alarm then the base date is now.
       /*else if (!isOneOff()){
@@ -436,8 +441,9 @@ public class AlarmItem {
          calendar.setTimeInMillis(System.currentTimeMillis() + snoozeDelay);
 
       // if alarm time has already passed, increment day by 1
-      if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+      if (calendar.getTimeInMillis() <= System.currentTimeMillis() && !isFutureDate() ) {
          calendar.setTimeInMillis(calendar.getTimeInMillis()+ DAY_IN_MILLIS);
+         Log.d("THE_TIME_MACHINE", "alarmTimeInMillis()[4] calendar = " + calendar);
       }
 
       return calendar.getTimeInMillis();
@@ -521,11 +527,11 @@ public class AlarmItem {
    }
 
    /* True if the alarm is explicitly set to the past */
-   public boolean isInThePast(){
+   public boolean isNotInThePast(){
 
       // When date not explicit -> not in the past
       if (getYear()==0 || getMonth()==0 || getDayOfMonth()==0)
-         return false;
+         return true;
 
       // Get time current time
       Calendar nowCal = Calendar.getInstance();
@@ -541,7 +547,26 @@ public class AlarmItem {
       alarmCal.set(Calendar.MINUTE, getMinute());
       alarmCal.set(Calendar.SECOND, 30);
 
-      return alarmCal.getTimeInMillis()< nowCal.getTimeInMillis();
+      return alarmCal.getTimeInMillis() >= nowCal.getTimeInMillis();
+   }
+
+   /*If alarm is explicitly set to the past then change the explicit date to Today or tomorrow */
+   public void recalculateDate(){
+      if (isNotInThePast()) return;
+
+      // Get time current time
+      Calendar nowCal = Calendar.getInstance();
+      nowCal.setTimeInMillis(System.currentTimeMillis());
+
+      // Check if the alarm can still ring today
+      if (
+            (nowCal.get(Calendar.MINUTE) + nowCal.get(Calendar.HOUR_OF_DAY)*24) >
+                  (getMinute() + getHour()*24)){
+         nowCal.setTimeInMillis(System.currentTimeMillis()+24*60*60*1000);
+      }
+      setDayOfMonth(nowCal.get(Calendar.DAY_OF_MONTH));
+      setMonth(nowCal.get(Calendar.MONTH));
+      setYear(nowCal.get(Calendar.YEAR));
    }
 
    /* True if the alarm is set for tomorrow */

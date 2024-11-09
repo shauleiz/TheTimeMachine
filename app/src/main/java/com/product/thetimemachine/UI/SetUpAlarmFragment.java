@@ -890,6 +890,8 @@ public boolean isInThePast(long alarmInMillis){
             }
         }
 
+       item.recalculateDate(); // If is an explicit date and in the past - change date to the near future
+
         // Preferences
         item.setRingDuration(setUpAlarmValues.getRingDuration().getValue());
         item.setRingRepeat(setUpAlarmValues.getRingRepeat().getValue());

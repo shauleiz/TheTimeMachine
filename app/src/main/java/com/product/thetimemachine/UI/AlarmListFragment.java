@@ -287,6 +287,10 @@ public class AlarmListFragment extends Fragment {
         boolean active = ((CheckBox)view).isChecked();
         item.setActive(active);
         item.resetSnoozeCounter();
+
+        if (active)
+           item.recalculateDate(); // If is an explicit date and in the past - change date to the near future
+
         // Update View Model
         parent.alarmViewModel.UpdateAlarm(item);
 
