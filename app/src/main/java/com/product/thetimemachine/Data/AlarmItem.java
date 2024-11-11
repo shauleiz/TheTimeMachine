@@ -409,7 +409,7 @@ public class AlarmItem {
       calendar.set(Calendar.MILLISECOND, 0);
 
       // If this a future date by given calendar date
-      if (isFutureDate() && getDayOfMonth()>0 && getMonth()>0 && getYear()>0){
+      if (isFutureDate() && getDayOfMonth()>0  && getYear()>0){
          calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
          calendar.set(Calendar.MONTH,month);
          calendar.set(Calendar.YEAR,year);

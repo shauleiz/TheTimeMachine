@@ -745,7 +745,7 @@ class AlarmEditFrag : Fragment() {
         calendar.timeInMillis = nowInMillis
 
         Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[1]: dd=$dd ; mm=$mm ; yy=$yy")
-        if (dd > 0 && mm > 0 && yy > 0) calendar[yy, mm, dd, hour, minute] = 0
+        if (dd > 0  && yy > 0) calendar[yy, mm, dd, hour, minute] = 0
         else {
             calendar[Calendar.HOUR_OF_DAY] = hour
             calendar[Calendar.MINUTE] = minute
@@ -1043,8 +1043,8 @@ class AlarmEditFrag : Fragment() {
 
 
         // Use date from alarm if exists else calculate current date
-        val ym = if (yy != 0 && mm != 0) YearMonth.of(yy, mm + 1) else YearMonth.now()
-        val ld = if (yy != 0 && mm != 0 && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
+        val ym = if (yy != 0) YearMonth.of(yy, mm + 1) else YearMonth.now()
+        val ld = if (yy != 0  && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
 
         val currentMonth = remember { ym }
         val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
