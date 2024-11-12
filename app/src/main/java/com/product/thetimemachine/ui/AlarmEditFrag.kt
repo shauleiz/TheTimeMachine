@@ -1083,9 +1083,16 @@ class AlarmEditFrag : Fragment() {
 
             @Composable
             fun textColor(): Color {
+
+                var alph = 1.0f
+                if (day.date.isBefore(today)) alph = 0.3f
+                val txtSel = MaterialTheme.colorScheme.onSecondary.copy(alpha = alph)
+                val txtNorm = MaterialTheme.colorScheme.onSurface.copy(alpha = alph)
+
+
                 return when {
-                    isSelected && day.position == DayPosition.MonthDate -> MaterialTheme.colorScheme.onSecondary
-                    day.position == DayPosition.MonthDate -> MaterialTheme.colorScheme.onSurface
+                    isSelected && day.position == DayPosition.MonthDate -> txtSel
+                    day.position == DayPosition.MonthDate -> txtNorm
                     else -> Color.Transparent
                 }
             }
