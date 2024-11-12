@@ -68,6 +68,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -1075,9 +1077,27 @@ class AlarmEditFrag : Fragment() {
 
             @Composable
             fun backgroundColor(): Color {
+
+                // Selected weekdays are marked with dim background
+                val alph = when {
+                    selectionType == CalendarSelection.Single -> 1.0f
+                    else -> 0.5f
+                }
+                val  bgColor = MaterialTheme.colorScheme.secondary.copy(alpha = alph)
+
+                // Selected dates (that are visible) are marked with solid color background
+                // Other date do not have a background color
                 return when {
-                    isSelected && day.position == DayPosition.MonthDate -> MaterialTheme.colorScheme.secondary
+                    isSelected && day.position == DayPosition.MonthDate -> bgColor
                     else -> Color.Transparent
+                }
+            }
+
+            @Composable
+            fun backgroundShape() : Shape {
+                return when {
+                    selectionType == CalendarSelection.Single -> CircleShape
+                    else -> RectangleShape
                 }
             }
 
@@ -1103,7 +1123,7 @@ class AlarmEditFrag : Fragment() {
 
                     .indication(interactionSource = interactionSource, indication = null)
                     .aspectRatio(1f)
-                    .background(color = backgroundColor(), shape = CircleShape),
+                    .background(color = backgroundColor(), shape = backgroundShape()),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
