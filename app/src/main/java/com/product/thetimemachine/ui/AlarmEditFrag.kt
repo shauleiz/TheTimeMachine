@@ -99,7 +99,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 /* TODO:
@@ -232,8 +231,8 @@ class AlarmEditFrag : Fragment() {
 
     // Converts selected Dates in JSON string format to List<Date>
     // Each entry in format "YYYYMMYY" (e.g. "20240630")
-    private fun ExceptionDates2Date(dates: String?): List<Date> {
-        val dateList: MutableList<Date> = ArrayList()
+    private fun exceptionDates2Date(dates: String?): MutableList<LocalDate> {
+        val dateList: MutableList<LocalDate> = ArrayList()
 
         if (dates == null || dates.isEmpty()) return dateList
 
@@ -247,19 +246,12 @@ class AlarmEditFrag : Fragment() {
         if (dateListStr == null || dateListStr.isEmpty()) return dateList
 
         // Convert each string to Date
-        var d: Int
-        var m: Int
-        var y: Int
-        var yyyymmdd: Int
-        val cal = Calendar.getInstance()
         for (dateStr in dateListStr) {
-            yyyymmdd = dateStr.toInt()
-            d = yyyymmdd % 100
-            m = (yyyymmdd / 100) % 100 - 1
-            y = (yyyymmdd / 10000)
-            cal.clear()
-            cal[y, m] = d
-            dateList.add(cal.time)
+            val yyyymmdd = dateStr.toInt()
+            val d = yyyymmdd % 100
+            val m = (yyyymmdd / 100) % 100 - 1
+            val y = (yyyymmdd / 10000)
+            dateList.add(LocalDate.of(y,m,d))
         }
 
         Log.d("THE_TIME_MACHINE", "ExceptionDates2Date():  dateList = $dateList")
@@ -1029,6 +1021,8 @@ class AlarmEditFrag : Fragment() {
         }
     }
 
+
+
     @Composable
     private fun DisplayCalendar(
         showDialog : Boolean,
@@ -1043,6 +1037,8 @@ class AlarmEditFrag : Fragment() {
         val mm = setUpAlarmValues.month.value!!
         val dd = setUpAlarmValues.dayOfMonth.value!!
 
+        // Get the dates that are an exception
+        val selectedDates = rememberSaveable  {mutableStateOf(exceptionDates2Date(setUpAlarmValues.exceptionDates.getValue()))}
 
         // Use date from alarm if exists else calculate current date
         val ym = if (yy != 0) YearMonth.of(yy, mm + 1) else YearMonth.now()
@@ -1191,12 +1187,43 @@ class AlarmEditFrag : Fragment() {
             return String.format(Locale.ROOT, "%.3s, %d %.3s %d", dow, dom, month.name, year)
         }
 
-        fun isDaySelected (calendarDay: CalendarDay, weekDays: Int) : Boolean{
+        // Multi-selection calendar: Is day selected?
+        // It is if day is one of the weekDays (Days selected for repeating alarms) AND
+        // it is not mentioned in the list of exception days
+        @Composable
+        fun isDaySelected (calendarDay: CalendarDay, weekDays: Int, selectedDates : MutableList<LocalDate>) : Boolean{
+            Log.d("THE_TIME_MACHINE", "isDaySelected():  calendarDay: $calendarDay")
+
+            // Search for date in list of exceptions
+            // If found - then NOT selected
+            selectedDates.forEachIndexed(){i, exep ->
+                if (exep == calendarDay.date) { return false }}
+
             val mask = 1 shl calendarDay.date.dayOfWeek.value%7
             return (mask and weekDays) > 0
         }
 
+        fun toggleDaySelection(day: CalendarDay) : MutableList<LocalDate> {
 
+            Log.d("THE_TIME_MACHINE", "toggleDaySelection():  day: $day")
+            var tmpList  = ArrayList<LocalDate>()
+            tmpList.addAll(selectedDates.value)
+
+            // Search for date in list of exceptions
+            // If found - remove it from list
+            tmpList.forEachIndexed(){i, exep ->
+                if (exep == day.date) {
+                    tmpList.removeAt(i)
+                    selectedDates.value.addAll(tmpList)
+                    return selectedDates.value
+                }
+            }
+
+            // Did not find - add it to list
+            tmpList.add(day.date)
+            selectedDates.value.addAll(tmpList)
+            return selectedDates.value
+        }
 
 
         // Calendar Dialog - Single day selection
@@ -1271,10 +1298,8 @@ class AlarmEditFrag : Fragment() {
                 else DayOfWeek.MONDAY
             val today = LocalDate.now()
 
-            // Get the dates that are an exception
-            val selectedDates = ExceptionDates2Date(setUpAlarmValues.exceptionDates.getValue());
 
-            Dialog(onDismissRequest = { onDismiss(); selectedDate = ld }) {
+            Dialog(onDismissRequest = { onDismiss() }) {
                 AppTheme(dynamicColor = isDynamicColor) {
                     Surface(
                         modifier = Modifier
@@ -1302,9 +1327,7 @@ class AlarmEditFrag : Fragment() {
                                     state = state,
                                     monthHeader = { MonthTitle(it) },
                                     dayContent = { day ->
-                                        Day(day, today,  isSelected = isDaySelected(day, selectedDays)) {
-                                            selectedDate = if (selectedDate == it.date) null else it.date
-                                        }
+                                        Day(day, today,  isSelected = isDaySelected(day, selectedDays, selectedDates.value)) { toggleDaySelection(day)}
                                     }
                                 )
                                 // Cancel/OK Buttons
