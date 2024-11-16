@@ -1037,8 +1037,6 @@ class AlarmEditFrag : Fragment() {
         val mm = setUpAlarmValues.month.value!!
         val dd = setUpAlarmValues.dayOfMonth.value!!
 
-        // Get the dates that are an exception
-        val selectedDates = rememberSaveable  {mutableStateOf(exceptionDates2Date(setUpAlarmValues.exceptionDates.getValue()))}
 
         // Use date from alarm if exists else calculate current date
         val ym = if (yy != 0) YearMonth.of(yy, mm + 1) else YearMonth.now()
@@ -1050,7 +1048,10 @@ class AlarmEditFrag : Fragment() {
         val firstDayOfWeek =
             if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
             else DayOfWeek.MONDAY
+
         var selectedDate by rememberSaveable { mutableStateOf(ld) }
+        // Get the dates that are an exception
+        var selectedDates by rememberSaveable  {mutableStateOf(exceptionDates2Date(setUpAlarmValues.exceptionDates.getValue()))}
 
         val state = rememberCalendarState(
             startMonth = startMonth,
@@ -1192,7 +1193,6 @@ class AlarmEditFrag : Fragment() {
         // it is not mentioned in the list of exception days
         @Composable
         fun isDaySelected (calendarDay: CalendarDay, weekDays: Int, selectedDates : MutableList<LocalDate>) : Boolean{
-            Log.d("THE_TIME_MACHINE", "isDaySelected():  calendarDay: $calendarDay")
 
             // Search for date in list of exceptions
             // If found - then NOT selected
@@ -1207,24 +1207,40 @@ class AlarmEditFrag : Fragment() {
 
             Log.d("THE_TIME_MACHINE", "toggleDaySelection():  day: $day")
             var tmpList  = ArrayList<LocalDate>()
-            tmpList.addAll(selectedDates.value)
+            tmpList.addAll(selectedDates)
 
             // Search for date in list of exceptions
             // If found - remove it from list
             tmpList.forEachIndexed(){i, exep ->
                 if (exep == day.date) {
                     tmpList.removeAt(i)
-                    selectedDates.value.addAll(tmpList)
-                    return selectedDates.value
+                    selectedDates.clear()
+                    selectedDates.addAll(tmpList)
+                    Log.d("THE_TIME_MACHINE", "toggleDaySelection()[REM]:  selectedDates: $selectedDates")
+                    return selectedDates
                 }
             }
 
             // Did not find - add it to list
             tmpList.add(day.date)
-            selectedDates.value.addAll(tmpList)
-            return selectedDates.value
+            selectedDates.clear()
+            selectedDates.addAll(tmpList)
+            Log.d("THE_TIME_MACHINE", "toggleDaySelection()[ADD]:  selectedDates: $selectedDates")
+            return selectedDates
         }
 
+        @Composable
+        fun Test1(selectedDates : LocalDate?){
+            Log.d("THE_TIME_MACHINE", "Test1():  selectedDates: $selectedDates")
+        }
+
+        @Composable
+        fun Test2(selectedDates : MutableList<LocalDate>){
+            Log.d("THE_TIME_MACHINE", "Test1():  selectedDates: $selectedDates")
+        }
+
+        Test1(selectedDate)
+        Test2(selectedDates)
 
         // Calendar Dialog - Single day selection
         if (showDialog && selectionType == CalendarSelection.Single) {
@@ -1327,7 +1343,7 @@ class AlarmEditFrag : Fragment() {
                                     state = state,
                                     monthHeader = { MonthTitle(it) },
                                     dayContent = { day ->
-                                        Day(day, today,  isSelected = isDaySelected(day, selectedDays, selectedDates.value)) { toggleDaySelection(day)}
+                                        Day(day, today,  isSelected = isDaySelected(day, selectedDays, selectedDates)  ) { selectedDates = toggleDaySelection(day)}
                                     }
                                 )
                                 // Cancel/OK Buttons
