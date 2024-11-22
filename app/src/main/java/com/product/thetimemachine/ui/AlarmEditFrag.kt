@@ -352,8 +352,15 @@ class AlarmEditFrag : Fragment() {
             weekDays.intValue = weekDays.intValue xor (1 shl i)
         }
 
+            // Get date from alarm
+            val yy = setUpAlarmValues.year.value!!
+            val mm = setUpAlarmValues.month.value!!
+            val dd = setUpAlarmValues.dayOfMonth.value!!
+            val ld = if (yy != 0  && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
+
+
         // Display Calendar Dialog
-        DisplayCalendar(showCalendarDialog, {showCalendarDialog=false ; }, calendarSelType, weekDays.intValue)
+        DisplayCalendar(showCalendarDialog, {showCalendarDialog=false ; }, calendarSelType, weekDays.intValue, ld)
         {
             Log.d("THE_TIME_MACHINE", "DisplayCalendar(): it=$it ; now=${LocalDate.now()}")
 
@@ -1029,27 +1036,30 @@ class AlarmEditFrag : Fragment() {
         onDismiss : ()->Unit,
         selectionType : CalendarSelection = CalendarSelection.Single,
         selectedDays : Int = 0,
+        origSelectedDate : LocalDate? = null,
         onOkClicked: (LocalDate?) -> Unit,
     ) {
 
-        // Get date from alarm
-        val yy = setUpAlarmValues.year.value!!
-        val mm = setUpAlarmValues.month.value!!
-        val dd = setUpAlarmValues.dayOfMonth.value!!
-
+        // Convert alarm date to LocalDate
+        // If no need to show dialog box then reset selectedDate to its original value
+        var selectedDate by rememberSaveable { mutableStateOf(origSelectedDate) }
+        if (!showDialog) {
+            selectedDate = origSelectedDate
+            return
+        }
 
         // Use date from alarm if exists else calculate current date
-        val ym = if (yy != 0) YearMonth.of(yy, mm + 1) else YearMonth.now()
-        val ld = if (yy != 0  && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
-
+        val ym = if (setUpAlarmValues.year.value!! != 0)
+            YearMonth.of(setUpAlarmValues.year.value!!, setUpAlarmValues.month.value!! + 1)
+        else YearMonth.now()
         val currentMonth = remember { ym }
+
         val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
         val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
         val firstDayOfWeek =
             if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
             else DayOfWeek.MONDAY
 
-        var selectedDate by rememberSaveable { mutableStateOf(ld) }
         // Get the dates that are an exception
         var selectedDates by rememberSaveable  {mutableStateOf(exceptionDates2Date(setUpAlarmValues.exceptionDates.getValue()))}
 
@@ -1248,7 +1258,7 @@ class AlarmEditFrag : Fragment() {
                 if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
                 else DayOfWeek.MONDAY
             val today = LocalDate.now()
-            Dialog(onDismissRequest = { onDismiss(); selectedDate = ld }) {
+            Dialog(onDismissRequest = { onDismiss() }) {
                 AppTheme(dynamicColor = isDynamicColor) {
                     Surface(
                         modifier = Modifier
@@ -1289,7 +1299,7 @@ class AlarmEditFrag : Fragment() {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                 ) {
-                                    TextButton({ onDismiss(); selectedDate = ld }) {
+                                    TextButton({ onDismiss() }) {
                                         Text(
                                             stringResource(id = R.string.cancel_general)
                                         )
@@ -1353,7 +1363,7 @@ class AlarmEditFrag : Fragment() {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                 ) {
-                                    TextButton({ onDismiss(); selectedDate = ld }) {
+                                    TextButton({ onDismiss()  }) {
                                         Text(
                                             stringResource(id = R.string.cancel_general)
                                         )
