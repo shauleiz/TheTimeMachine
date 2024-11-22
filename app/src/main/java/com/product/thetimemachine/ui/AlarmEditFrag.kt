@@ -98,8 +98,10 @@ import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
+
 
 /* TODO:
         - Create Text-Styles of each type of Calendar part.
@@ -258,6 +260,34 @@ class AlarmEditFrag : Fragment() {
         return dateList
     }
 
+    // Converts selected Dates in JSON string format to List<Date>
+    // Each entry in format "YYYYMMYY" (e.g. "20240630")
+    private fun exceptionDates2String(dates: String?): String {
+        val dateList: MutableList<LocalDate> = ArrayList()
+
+        if (dates == null || dates.isEmpty()) return ""
+
+
+        // From JSON to Array of strings
+        val listOfMyClassObject = object : TypeToken<ArrayList<String?>?>() {}.type
+        val gson = Gson()
+        val dateListStr = gson.fromJson<List<String>>(dates, listOfMyClassObject)
+
+        // Test list of strings
+        if (dateListStr == null || dateListStr.isEmpty()) return ""
+
+        // Target
+        var yyyymmdd = ""
+
+        // Convert each string to Date
+        for (dateStr in dateListStr) {
+            yyyymmdd = yyyymmdd + " " + dateStr.toString()
+        }
+
+        Log.d("THE_TIME_MACHINE", "ExceptionDates2Date():  dateList = $dateList")
+        return yyyymmdd
+    }
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -358,9 +388,17 @@ class AlarmEditFrag : Fragment() {
             val dd = setUpAlarmValues.dayOfMonth.value!!
             val ld = if (yy != 0  && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
 
+        // Create a string of dates that are exception to the rule (weekdays)
+        val exeptions = exceptionDates2String(setUpAlarmValues.exceptionDates.getValue())
 
         // Display Calendar Dialog
-        DisplayCalendar(showCalendarDialog, {showCalendarDialog=false ; }, calendarSelType, weekDays.intValue, ld)
+        DisplayCalendar(
+            showDialog =  showCalendarDialog,
+            onDismiss = {showCalendarDialog=false },
+            selectionType = calendarSelType,
+            weekdays = weekDays.intValue,
+            origSelectedDate = ld,
+            originalExceptions =  exeptions)
         {
             Log.d("THE_TIME_MACHINE", "DisplayCalendar(): it=$it ; now=${LocalDate.now()}")
 
@@ -370,7 +408,7 @@ class AlarmEditFrag : Fragment() {
                 setUpAlarmValues.dayOfMonth.value = 0
                 showCalendarDialog = false
             }
-           else if (it.isBefore(LocalDate.now())) {
+           else if ((it as LocalDate).isBefore(LocalDate.now())) {
                // Error
                 Log.d("THE_TIME_MACHINE", "DisplayCalendar(): ERROR")
                 showErrorDialog = true
@@ -1035,9 +1073,10 @@ class AlarmEditFrag : Fragment() {
         showDialog : Boolean,
         onDismiss : ()->Unit,
         selectionType : CalendarSelection = CalendarSelection.Single,
-        selectedDays : Int = 0,
+        weekdays : Int = 0,
         origSelectedDate : LocalDate? = null,
-        onOkClicked: (LocalDate?) -> Unit,
+        originalExceptions : String = "",
+        onOkClicked: (Any?) -> Unit,
     ) {
 
         // Convert alarm date to LocalDate
@@ -1051,7 +1090,8 @@ class AlarmEditFrag : Fragment() {
         // Use date from alarm if exists else calculate current date
         val ym = if (setUpAlarmValues.year.value!! != 0)
             YearMonth.of(setUpAlarmValues.year.value!!, setUpAlarmValues.month.value!! + 1)
-        else YearMonth.now()
+        else
+            YearMonth.now()
         val currentMonth = remember { ym }
 
         val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
@@ -1061,7 +1101,7 @@ class AlarmEditFrag : Fragment() {
             else DayOfWeek.MONDAY
 
         // Get the dates that are an exception
-        var selectedDates by rememberSaveable  {mutableStateOf(exceptionDates2Date(setUpAlarmValues.exceptionDates.getValue()))}
+        var selectedDates by rememberSaveable  {mutableStateOf(originalExceptions)}
 
         val state = rememberCalendarState(
             startMonth = startMonth,
@@ -1202,41 +1242,40 @@ class AlarmEditFrag : Fragment() {
         // It is if day is one of the weekDays (Days selected for repeating alarms) AND
         // it is not mentioned in the list of exception days
         @Composable
-        fun isDaySelected (calendarDay: CalendarDay, weekDays: Int, selectedDates : MutableList<LocalDate>) : Boolean{
+        fun isDaySelected (day: CalendarDay, weekDays: Int, selectedDates : String) : Boolean{
+
+            // Convert the calendarDay to String of type yyyymmdd
+            val formatters = DateTimeFormatter.ofPattern("uuuuMMdd")
+            val dayString: String = day.date.format(formatters)
 
             // Search for date in list of exceptions
             // If found - then NOT selected
-            selectedDates.forEachIndexed(){i, exep ->
-                if (exep == calendarDay.date) { return false }}
+            if (selectedDates.contains(dayString)) return false
 
-            val mask = 1 shl calendarDay.date.dayOfWeek.value%7
+            val mask = 1 shl day.date.dayOfWeek.value%7
             return (mask and weekDays) > 0
         }
 
-        fun toggleDaySelection(day: CalendarDay) : MutableList<LocalDate> {
+        fun toggleDaySelection(day: CalendarDay, selectedDates : String) : String {
 
             Log.d("THE_TIME_MACHINE", "toggleDaySelection():  day: $day")
-            var tmpList  = ArrayList<LocalDate>()
-            tmpList.addAll(selectedDates)
+           var modifiedDates = selectedDates
+
+
+            // Convert the calendarDay to String of type yyyymmdd
+            val formatters = DateTimeFormatter.ofPattern("uuuuMMdd")
+            val dayString: String = day.date.format(formatters)
+
 
             // Search for date in list of exceptions
             // If found - remove it from list
-            tmpList.forEachIndexed(){i, exep ->
-                if (exep == day.date) {
-                    tmpList.removeAt(i)
-                    selectedDates.clear()
-                    selectedDates.addAll(tmpList)
-                    Log.d("THE_TIME_MACHINE", "toggleDaySelection()[REM]:  selectedDates: $selectedDates")
-                    return selectedDates
-                }
-            }
+            if (modifiedDates.contains(dayString))
+                modifiedDates = modifiedDates.replace(dayString, "")
+            else
+                modifiedDates = "$modifiedDates $dayString"
 
-            // Did not find - add it to list
-            tmpList.add(day.date)
-            selectedDates.clear()
-            selectedDates.addAll(tmpList)
-            Log.d("THE_TIME_MACHINE", "toggleDaySelection()[ADD]:  selectedDates: $selectedDates")
-            return selectedDates
+
+            return modifiedDates
         }
 
         @Composable
@@ -1245,7 +1284,7 @@ class AlarmEditFrag : Fragment() {
         }
 
         @Composable
-        fun Test2(selectedDates : MutableList<LocalDate>){
+        fun Test2(selectedDates : String){
             Log.d("THE_TIME_MACHINE", "Test1():  selectedDates: $selectedDates")
         }
 
@@ -1352,8 +1391,11 @@ class AlarmEditFrag : Fragment() {
                                 HorizontalCalendar(
                                     state = state,
                                     monthHeader = { MonthTitle(it) },
-                                    dayContent = { day ->
-                                        Day(day, today,  isSelected = isDaySelected(day, selectedDays, selectedDates)  ) { selectedDates = toggleDaySelection(day)}
+                                    dayContent = {
+                                        Day(day = it,
+                                            today = today,
+                                            isSelected = isDaySelected(it, weekdays, selectedDates)
+                                        ) { selectedDates = toggleDaySelection(it, selectedDates) }
                                     }
                                 )
                                 // Cancel/OK Buttons
