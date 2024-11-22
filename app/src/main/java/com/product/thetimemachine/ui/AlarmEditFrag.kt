@@ -1256,11 +1256,19 @@ class AlarmEditFrag : Fragment() {
             return (mask and weekDays) > 0
         }
 
-        fun toggleDaySelection(day: CalendarDay, selectedDates : String) : String {
+        fun toggleDaySelection(day: CalendarDay, weekDays: Int, selectedDates : String) : String {
 
             Log.d("THE_TIME_MACHINE", "toggleDaySelection():  day: $day")
            var modifiedDates = selectedDates
 
+            // If in the past - ignore
+            if (day.date.isBefore(LocalDate.now()))
+                return selectedDates
+
+            // If not a preselected weekday - ignore
+            val mask = 1 shl day.date.dayOfWeek.value%7
+            if ((mask and weekDays) == 0)
+                return selectedDates
 
             // Convert the calendarDay to String of type yyyymmdd
             val formatters = DateTimeFormatter.ofPattern("uuuuMMdd")
@@ -1395,7 +1403,7 @@ class AlarmEditFrag : Fragment() {
                                         Day(day = it,
                                             today = today,
                                             isSelected = isDaySelected(it, weekdays, selectedDates)
-                                        ) { selectedDates = toggleDaySelection(it, selectedDates) }
+                                        ) { selectedDates = toggleDaySelection(it, weekdays, selectedDates) }
                                     }
                                 )
                                 // Cancel/OK Buttons
