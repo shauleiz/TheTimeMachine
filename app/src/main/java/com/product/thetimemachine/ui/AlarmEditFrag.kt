@@ -107,6 +107,8 @@ import java.util.Locale
         - Create Text-Styles of each type of Calendar part.
 */
 
+private const val s1 = "Select Date"
+
 class AlarmEditFrag : Fragment() {
     private var parent: MainActivity? = null
     private lateinit var setUpAlarmValues: AlarmViewModel.SetUpAlarmValues
@@ -295,7 +297,6 @@ class AlarmEditFrag : Fragment() {
         val noNumber = "\\D+".toRegex()
         val list = trimmed.split(noNumber)
 
-        Log.d("THE_TIME_MACHINE", "string2ExceptionDates(): trimmed = $trimmed")
         Log.d("THE_TIME_MACHINE", "string2ExceptionDates(): list = $list")
 
         // Convert list of strings to a single JSON string
@@ -1261,14 +1262,25 @@ class AlarmEditFrag : Fragment() {
 
         @Composable
         fun HeaderText(date: LocalDate?): String {
-            if (date == null) return "Select Date" // TODO: Replace
 
-            val dom = date.dayOfMonth
-            val year = date.year
-            val month = date.month
-            val dow = date.dayOfWeek
-            return String.format(Locale.ROOT, "%.3s, %d %.3s %d", dow, dom, month.name, year)
+            if (selectionType == CalendarSelection.Single) {
+                if (date == null) return  stringResource(R.string.select_date)
+
+                val dom = date.dayOfMonth
+                val year = date.year
+                val month = date.month
+                val dow = date.dayOfWeek
+                return String.format(Locale.ROOT, "%.3s, %d %.3s %d", dow, dom, month.name, year)
+            }
+
+            if (selectionType == CalendarSelection.Multiple) {
+                return stringResource(R.string.dates_to_exclude)
+            }
+
+            return ""
         }
+
+
 
         // Multi-selection calendar: Is day selected?
         // It is if day is one of the weekDays (Days selected for repeating alarms) AND
@@ -1337,6 +1349,7 @@ class AlarmEditFrag : Fragment() {
                 if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
                 else DayOfWeek.MONDAY
             val today = LocalDate.now()
+
             Dialog(onDismissRequest = { onDismiss() }) {
                 AppTheme(dynamicColor = isDynamicColor) {
                     Surface(
@@ -1403,7 +1416,6 @@ class AlarmEditFrag : Fragment() {
                 else DayOfWeek.MONDAY
             val today = LocalDate.now()
 
-
             Dialog(onDismissRequest = { onDismiss() }) {
                 AppTheme(dynamicColor = isDynamicColor) {
                     Surface(
@@ -1418,7 +1430,7 @@ class AlarmEditFrag : Fragment() {
                                 verticalArrangement = Arrangement.Top,
                             ) {/**/
                                 Text(
-                                    "Dates to Exclude:", // TODO: Replace
+                                    HeaderText(selectedDate),
                                     fontSize = 24.sp,
                                     color = MaterialTheme.colorScheme.onSecondary,
                                     modifier = Modifier
