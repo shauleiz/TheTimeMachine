@@ -263,10 +263,8 @@ class AlarmEditFrag : Fragment() {
     // Converts selected Dates in JSON string format to List<Date>
     // Each entry in format "YYYYMMYY" (e.g. "20240630")
     private fun exceptionDates2String(dates: String?): String {
-        val dateList: MutableList<LocalDate> = ArrayList()
-
-        if (dates == null || dates.isEmpty()) return ""
-
+        Log.d("THE_TIME_MACHINE", "exceptionDates2String(): dates = $dates")
+        if (dates.isNullOrEmpty()) return ""
 
         // From JSON to Array of strings
         val listOfMyClassObject = object : TypeToken<ArrayList<String?>?>() {}.type
@@ -284,8 +282,25 @@ class AlarmEditFrag : Fragment() {
             yyyymmdd = yyyymmdd + " " + dateStr.toString()
         }
 
-        Log.d("THE_TIME_MACHINE", "ExceptionDates2Date():  dateList = $dateList")
         return yyyymmdd
+    }
+
+    private fun string2ExceptionDates(input: String): String {
+
+        if (input.isNullOrEmpty()) return ""
+
+        Log.d("THE_TIME_MACHINE", "string2ExceptionDates(): input = $input")
+
+        val trimmed = input.trim()
+        val noNumber = "\\D+".toRegex()
+        val list = trimmed.split(noNumber)
+
+        Log.d("THE_TIME_MACHINE", "string2ExceptionDates(): trimmed = $trimmed")
+        Log.d("THE_TIME_MACHINE", "string2ExceptionDates(): list = $list")
+
+        // Convert list of strings to a single JSON string
+        val gson = Gson()
+        return gson.toJson(list)
     }
 
 
@@ -391,6 +406,40 @@ class AlarmEditFrag : Fragment() {
         // Create a string of dates that are exception to the rule (weekdays)
         val exeptions = exceptionDates2String(setUpAlarmValues.exceptionDates.getValue())
 
+        // Exit DisplayCalendar (Single selection) with OK pressed
+        val singleSelectionCalOkPressed = {value : LocalDate? ->
+            Log.d("THE_TIME_MACHINE", "DisplayCalendar()[SINGLE]: value=$value ; now=${LocalDate.now()}")
+
+            if (value==null) {
+                setUpAlarmValues.year.value = 0
+                setUpAlarmValues.month.value = 0
+                setUpAlarmValues.dayOfMonth.value = 0
+                showCalendarDialog = false
+            }
+            else if (value.isBefore(LocalDate.now())) {
+                // Error
+                Log.d("THE_TIME_MACHINE", "DisplayCalendar(): ERROR")
+                showErrorDialog = true
+            }
+            else {
+                setUpAlarmValues.year.value = value.year
+                setUpAlarmValues.month.value = value.monthValue-1
+                setUpAlarmValues.dayOfMonth.value = value.dayOfMonth
+                setUpAlarmValues.setFutureDate(true)
+                setUpAlarmValues.setOneOff(true)
+                showCalendarDialog = false
+            }
+        }
+
+        // Exit DisplayCalendar (Single selection) with OK pressed
+        val multiSelectionCalOkPressed = { value: String ->
+            Log.d("THE_TIME_MACHINE", "DisplayCalendar()[MULTI]: value=$value ; now=${LocalDate.now()}")
+            setUpAlarmValues.exceptionDates.value = string2ExceptionDates(value)
+            showCalendarDialog = false
+            Log.d("THE_TIME_MACHINE", "DisplayCalendar()[MULTI]: setUpAlarmValues.exceptionDates.value=${setUpAlarmValues.exceptionDates.value} ")
+        }
+
+
         // Display Calendar Dialog
         DisplayCalendar(
             showDialog =  showCalendarDialog,
@@ -400,28 +449,11 @@ class AlarmEditFrag : Fragment() {
             origSelectedDate = ld,
             originalExceptions =  exeptions)
         {
-            Log.d("THE_TIME_MACHINE", "DisplayCalendar(): it=$it ; now=${LocalDate.now()}")
-
-            if (it==null) {
-                setUpAlarmValues.year.value = 0
-                setUpAlarmValues.month.value = 0
-                setUpAlarmValues.dayOfMonth.value = 0
-                showCalendarDialog = false
-            }
-           else if ((it as LocalDate).isBefore(LocalDate.now())) {
-               // Error
-                Log.d("THE_TIME_MACHINE", "DisplayCalendar(): ERROR")
-                showErrorDialog = true
-           }
-            else {
-                setUpAlarmValues.year.value = it.year
-                setUpAlarmValues.month.value = it.monthValue-1
-                setUpAlarmValues.dayOfMonth.value = it.dayOfMonth
-                setUpAlarmValues.setFutureDate(true)
-                setUpAlarmValues.setOneOff(true)
-                showCalendarDialog = false
-            }
-
+            if (calendarSelType == CalendarSelection.Single)
+                singleSelectionCalOkPressed(it as LocalDate?)
+            else if (calendarSelType == CalendarSelection.Multiple)
+                multiSelectionCalOkPressed(it as String)
+            else showCalendarDialog = false
         }
 
         // Display error dialog - user selected a date in the past
@@ -1418,7 +1450,7 @@ class AlarmEditFrag : Fragment() {
                                             stringResource(id = R.string.cancel_general)
                                         )
                                     }
-                                    TextButton({ onOkClicked(selectedDate) }) {
+                                    TextButton({ onOkClicked(selectedDates) }) {
                                         Text(stringResource(id = R.string.ok_general))
                                     }
                                 }
@@ -1478,8 +1510,9 @@ class AlarmEditFrag : Fragment() {
 
         item.recalculateDate(); // If is an explicit date and in the past - change date to the near future
 
-        // Selected weekdays
+        // Selected weekdays and dates that are exceptions
         item.weekDays = setUpAlarmValues.weekDays.value!!
+        item.exceptionDatesStr = setUpAlarmValues.exceptionDates.value!!
 
         // Update Preferences
         item.ringDuration = setUpAlarmValues.ringDuration.value!!
