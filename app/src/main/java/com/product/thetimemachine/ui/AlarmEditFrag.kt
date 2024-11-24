@@ -938,7 +938,11 @@ class AlarmEditFrag : Fragment() {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()){
-                            TextButton({ entry.showDialog.value = false}){Text(stringResource(id = R.string.cancel_general))}
+                            TextButton({ entry.showDialog.value = false}){
+                                Text(stringResource(id = R.string.cancel_general)
+                                )
+                            }
+
                             TextButton({
                                 entry.currentValue!!.value = selected.value
                                 entry.origValue!!.value = selected.value
@@ -1358,7 +1362,7 @@ class AlarmEditFrag : Fragment() {
         Test2(selectedDates)
 
         // Calendar Dialog - Single day selection
-        if (showDialog && selectionType == CalendarSelection.Single) {
+        if (showDialog ) {
             state.firstDayOfWeek =
                 if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
                 else DayOfWeek.MONDAY
@@ -1415,7 +1419,12 @@ class AlarmEditFrag : Fragment() {
                                             stringResource(id = R.string.cancel_general)
                                         )
                                     }
-                                    TextButton({ onOkClicked(selectedDate) }) {
+                                    TextButton({
+                                        if (selectionType == CalendarSelection.Multiple)
+                                            onOkClicked(selectedDates)
+                                        if (selectionType == CalendarSelection.Single)
+                                            onOkClicked(selectedDate)
+                                    }) {
                                         Text(stringResource(id = R.string.ok_general))
                                     }
                                 }
@@ -1426,7 +1435,7 @@ class AlarmEditFrag : Fragment() {
             }
         }
 
-
+/*
         // Calendar Dialog - Selection of exceptions
         if (showDialog && selectionType == CalendarSelection.Multiple) {
 
@@ -1486,7 +1495,12 @@ class AlarmEditFrag : Fragment() {
                                             stringResource(id = R.string.cancel_general)
                                         )
                                     }
-                                    TextButton({ onOkClicked(selectedDates) }) {
+                                    TextButton({
+                                        if (selectionType == CalendarSelection.Multiple)
+                                            onOkClicked(selectedDates)
+                                        if (selectionType == CalendarSelection.Single)
+                                            onOkClicked(selectedDate)
+                                    }) {
                                         Text(stringResource(id = R.string.ok_general))
                                     }
                                 }
@@ -1496,7 +1510,7 @@ class AlarmEditFrag : Fragment() {
                 }
             }
         }
-
+        */
     }
 
     fun checkmarkClicked() {
