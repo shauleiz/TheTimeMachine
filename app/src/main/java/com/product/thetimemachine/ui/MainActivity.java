@@ -164,14 +164,15 @@ public class MainActivity extends AppCompatActivity {
         checkmarkItem.setVisible(checkmarkAction);
         return super.onPrepareOptionsMenu(menu);
     }
-
+    /**/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment_container_view);
 
+        /**/
         // Setup Fragment - Only Setting is supported
-        if (frag instanceof SetUpAlarmFragment || frag instanceof AlarmEditFrag) {
+        if (/*frag instanceof SetUpAlarmFragment ||*/ frag instanceof AlarmEditFrag) {
             Log.d("THE_TIME_MACHINE", "SetUpAlarmFragment");
             if (itemId == R.id.settings) {
                 Settings();
@@ -187,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         }
+
 
         // Alarm List Fragment - Act according to selected item
         else if (frag instanceof AlarmListFragment) {
