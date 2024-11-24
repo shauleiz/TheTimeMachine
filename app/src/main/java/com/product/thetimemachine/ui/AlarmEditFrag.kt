@@ -76,7 +76,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -108,7 +107,6 @@ import java.util.Locale
         - Create Text-Styles of each type of Calendar part.
 */
 
-private const val s1 = "Select Date"
 
 class AlarmEditFrag : Fragment() {
     private var parent: MainActivity? = null
@@ -234,34 +232,7 @@ class AlarmEditFrag : Fragment() {
         }
     }
 
-    // Converts selected Dates in JSON string format to List<Date>
-    // Each entry in format "YYYYMMYY" (e.g. "20240630")
-    private fun exceptionDates2Date(dates: String?): MutableList<LocalDate> {
-        val dateList: MutableList<LocalDate> = ArrayList()
 
-        if (dates == null || dates.isEmpty()) return dateList
-
-
-        // From JSON to Array of strings
-        val listOfMyClassObject = object : TypeToken<ArrayList<String?>?>() {}.type
-        val gson = Gson()
-        val dateListStr = gson.fromJson<List<String>>(dates, listOfMyClassObject)
-
-        // Test list of strings
-        if (dateListStr == null || dateListStr.isEmpty()) return dateList
-
-        // Convert each string to Date
-        for (dateStr in dateListStr) {
-            val yyyymmdd = dateStr.toInt()
-            val d = yyyymmdd % 100
-            val m = (yyyymmdd / 100) % 100 - 1
-            val y = (yyyymmdd / 10000)
-            dateList.add(LocalDate.of(y,m,d))
-        }
-
-        Log.d("THE_TIME_MACHINE", "ExceptionDates2Date():  dateList = $dateList")
-        return dateList
-    }
 
     // Converts selected Dates in JSON string format to List<Date>
     // Each entry in format "YYYYMMYY" (e.g. "20240630")
@@ -290,7 +261,7 @@ class AlarmEditFrag : Fragment() {
 
     private fun string2ExceptionDates(input: String): String {
 
-        if (input.isNullOrEmpty()) return ""
+        if (input.isEmpty()) return ""
 
         Log.d("THE_TIME_MACHINE", "string2ExceptionDates(): input = $input")
 
@@ -451,11 +422,11 @@ class AlarmEditFrag : Fragment() {
             origSelectedDate = ld,
             originalExceptions =  exeptions)
         {
-            if (calendarSelType == CalendarSelection.Single)
-                singleSelectionCalOkPressed(it as LocalDate?)
-            else if (calendarSelType == CalendarSelection.Multiple)
-                multiSelectionCalOkPressed(it as String)
-            else showCalendarDialog = false
+            when (calendarSelType) {
+                CalendarSelection.Single -> singleSelectionCalOkPressed(it as LocalDate?)
+                CalendarSelection.Multiple -> multiSelectionCalOkPressed(it as String)
+                else -> showCalendarDialog = false
+            }
         }
 
         // Display error dialog - user selected a date in the past
@@ -885,7 +856,7 @@ class AlarmEditFrag : Fragment() {
         listOfPrefs.forEachIndexed { index, entry ->
             if (entry.showDialog != null && entry.showDialog.value) {
 
-                var selected by  rememberSaveable { mutableStateOf( entry.currentValue!!)}
+                val selected by  rememberSaveable { mutableStateOf( entry.currentValue!!)}
 
                 Dialog(onDismissRequest = { entry.showDialog.value = false }) {
                     Column(
@@ -1435,82 +1406,6 @@ class AlarmEditFrag : Fragment() {
             }
         }
 
-/*
-        // Calendar Dialog - Selection of exceptions
-        if (showDialog && selectionType == CalendarSelection.Multiple) {
-
-            state.firstDayOfWeek =
-                if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
-                else DayOfWeek.MONDAY
-            val today = LocalDate.now()
-
-            Dialog(onDismissRequest = { onDismiss() }) {
-                AppTheme(dynamicColor = isDynamicColor) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(color = MaterialTheme.colorScheme.surfaceBright),
-                    ) {
-                        MaterialTheme {
-                            Column(
-                                horizontalAlignment = Alignment.Start,
-                                verticalArrangement = Arrangement.Top,
-                            ) {/**/
-                                Text(
-                                    HeaderText(selectedDate),
-                                    fontSize = 24.sp,
-                                    color = MaterialTheme.colorScheme.onSecondary,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .align(CenterHorizontally)
-                                        .background(color = MaterialTheme.colorScheme.secondary)
-                                        .padding(16.dp)
-                                )
-
-                                HorizontalCalendar(
-                                    state = state,
-                                    monthHeader = { MonthTitle(it) },
-                                    dayContent = {
-                                        Day(day = it,
-                                            today = today,
-                                            isSelected = isDaySelected(it, weekdays, selectedDates, selectedDate)
-                                        ) {
-                                            if (selectionType == CalendarSelection.Multiple)
-                                                selectedDates = toggleDaySelection(it, weekdays, selectedDates)
-                                            if (selectionType == CalendarSelection.Single)
-                                                selectedDate = if (selectedDate == it.date) null else it.date
-                                        }
-                                    }
-                                )
-                                // Cancel/OK Buttons
-                                Row(
-                                    horizontalArrangement = Arrangement.End,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    TextButton({ onDismiss()  }) {
-                                        Text(
-                                            stringResource(id = R.string.cancel_general)
-                                        )
-                                    }
-                                    TextButton({
-                                        if (selectionType == CalendarSelection.Multiple)
-                                            onOkClicked(selectedDates)
-                                        if (selectionType == CalendarSelection.Single)
-                                            onOkClicked(selectedDate)
-                                    }) {
-                                        Text(stringResource(id = R.string.ok_general))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        */
     }
 
     fun checkmarkClicked() {
@@ -1558,7 +1453,7 @@ class AlarmEditFrag : Fragment() {
 
         Log.d("THE_TIME_MACHINE", "checkmarkClicked():  item.isOneOff = ${item.isOneOff} ; item.futureDate=${item.futureDate}")
 
-        item.recalculateDate(); // If is an explicit date and in the past - change date to the near future
+        item.recalculateDate() // If is an explicit date and in the past - change date to the near future
 
         // Selected weekdays and dates that are exceptions
         item.weekDays = setUpAlarmValues.weekDays.value!!
