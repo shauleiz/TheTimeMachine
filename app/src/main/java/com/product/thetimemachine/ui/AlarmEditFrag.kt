@@ -1288,19 +1288,31 @@ class AlarmEditFrag : Fragment() {
         // It is if day is one of the weekDays (Days selected for repeating alarms) AND
         // it is not mentioned in the list of exception days
         @Composable
-        fun isDaySelected (day: CalendarDay, weekDays: Int, selectedDates : String) : Boolean{
+        fun isDaySelected (day: CalendarDay,
+                           weekDays: Int=0,
+                           selectedDates : String="",
+                           selectedDate: LocalDate? = null) : Boolean {
 
-            // Convert the calendarDay to String of type yyyymmdd
-            val formatters = DateTimeFormatter.ofPattern("uuuuMMdd")
-            val dayString: String = day.date.format(formatters)
+            if (selectionType == CalendarSelection.Multiple) {
+                // Convert the calendarDay to String of type yyyymmdd
+                val formatters = DateTimeFormatter.ofPattern("uuuuMMdd")
+                val dayString: String = day.date.format(formatters)
 
-            // Search for date in list of exceptions
-            // If found - then NOT selected
-            if (selectedDates.contains(dayString)) return false
+                // Search for date in list of exceptions
+                // If found - then NOT selected
+                if (selectedDates.contains(dayString)) return false
 
-            val mask = 1 shl day.date.dayOfWeek.value%7
-            return (mask and weekDays) > 0
+                val mask = 1 shl day.date.dayOfWeek.value % 7
+                return (mask and weekDays) > 0
+            }
+
+            if (selectionType == CalendarSelection.Single){
+                return selectedDate == day.date
+            }
+
+            return false
         }
+
 
         fun toggleDaySelection(day: CalendarDay, weekDays: Int, selectedDates : String) : String {
 
@@ -1379,10 +1391,15 @@ class AlarmEditFrag : Fragment() {
                                 HorizontalCalendar(
                                     state = state,
                                     monthHeader = { MonthTitle(it) },
-                                    dayContent = { day ->
-                                        Day(day, today, isSelected = selectedDate == day.date) {
-                                            selectedDate =
-                                                if (selectedDate == it.date) null else it.date
+                                    dayContent = {
+                                        Day(day = it,
+                                            today = today,
+                                            isSelected = isDaySelected(it, weekdays, selectedDates, selectedDate)
+                                        ) {
+                                            if (selectionType == CalendarSelection.Multiple)
+                                                selectedDates = toggleDaySelection(it, weekdays, selectedDates)
+                                            if (selectionType == CalendarSelection.Single)
+                                                selectedDate = if (selectedDate == it.date) null else it.date
                                         }
                                     }
                                 )
@@ -1448,8 +1465,13 @@ class AlarmEditFrag : Fragment() {
                                     dayContent = {
                                         Day(day = it,
                                             today = today,
-                                            isSelected = isDaySelected(it, weekdays, selectedDates)
-                                        ) { selectedDates = toggleDaySelection(it, weekdays, selectedDates) }
+                                            isSelected = isDaySelected(it, weekdays, selectedDates, selectedDate)
+                                        ) {
+                                            if (selectionType == CalendarSelection.Multiple)
+                                                selectedDates = toggleDaySelection(it, weekdays, selectedDates)
+                                            if (selectionType == CalendarSelection.Single)
+                                                selectedDate = if (selectedDate == it.date) null else it.date
+                                        }
                                     }
                                 )
                                 // Cancel/OK Buttons
