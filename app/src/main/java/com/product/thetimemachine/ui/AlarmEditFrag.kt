@@ -76,6 +76,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -1268,9 +1269,10 @@ class AlarmEditFrag : Fragment() {
 
                 val dom = date.dayOfMonth
                 val year = date.year
-                val month = date.month
-                val dow = date.dayOfWeek
-                return String.format(Locale.ROOT, "%.3s, %d %.3s %d", dow, dom, month.name, year)
+                val month = date.month.name.lowercase().replaceFirstChar{  it.titlecase(Locale.getDefault()) }
+                val dow = date.dayOfWeek.name.lowercase().replaceFirstChar{  it.titlecase(Locale.getDefault()) }
+
+                return String.format(Locale.ROOT, "%.3s, %d %.3s %d", dow, dom, month, year)
             }
 
             if (selectionType == CalendarSelection.Multiple) {
