@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
-                    .add(R.id.fragment_container_view, AlarmListFragment.class, null)
+                    .add(R.id.fragment_container_view, AlarmListFrag.class, null)
                     //.addToBackStack("tag1")
                     .commit();
       }
@@ -191,16 +191,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Alarm List Fragment - Act according to selected item
-        else if (frag instanceof AlarmListFragment) {
-            Log.v("THE_TIME_MACHINE", "AlarmListFragment");
+        else if (frag instanceof AlarmListFrag) {
+            Log.v("THE_TIME_MACHINE", "AlarmListFrag");
             if (itemId == R.id.delete) {
-                ((AlarmListFragment) frag).deleteSelectedAlarms();
+                ((AlarmListFrag) frag).deleteSelectedAlarms();
                 return true;
             } else if (itemId == R.id.edit) {
-                ((AlarmListFragment) frag).editSelectedAlarm();
+                ((AlarmListFrag) frag).editSelectedAlarm();
                 return true;
             } else if (itemId == R.id.duplicate) {
-                ((AlarmListFragment) frag).duplicateSelectedAlarm();
+                ((AlarmListFrag) frag).duplicateSelectedAlarm();
                 return true;
             } else if (itemId == R.id.settings) {
                 Settings();

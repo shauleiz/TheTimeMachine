@@ -26,7 +26,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -70,8 +69,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
-import androidx.constraintlayout.compose.atLeast
-import androidx.constraintlayout.compose.atMost
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
@@ -88,7 +85,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class AlarmListFragment : Fragment() {
+class AlarmListFrag : Fragment() {
     private var parent: MainActivity? = null
     private var fragmentView: View? = null
     private val isDynamicColor = false

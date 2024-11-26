@@ -1483,7 +1483,7 @@ class AlarmEditFrag : Fragment() {
         if (parent != null) parent!!.supportFragmentManager
             .beginTransaction()
             //.replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
-            .replace(R.id.fragment_container_view, AlarmListFragment::class.java, null)
+            .replace(R.id.fragment_container_view, AlarmListFrag::class.java, null)
             .addToBackStack("tag5")
             .commit()
 
