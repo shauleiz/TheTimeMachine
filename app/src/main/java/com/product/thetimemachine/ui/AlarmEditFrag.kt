@@ -107,6 +107,61 @@ import java.util.Locale
         - Create Text-Styles of each type of Calendar part.
 */
 
+/***********************************************************************************************/
+/* *
+*  *  General Preference Section
+* */
+
+data class PrefData(
+    val title: Int = 0,
+    val currentValue: MutableState<String?>? = null,
+    val origValue: MutableLiveData<String>? = null,
+    val list: List<Pair<String, String>>? = null,
+    val iconId: Int = 0,
+    val showDialog: MutableState<Boolean>? = null,
+)
+
+// Menu Items
+private val ringDurationList = listOf(
+    Pair("15 Seconds", "15Seconds"), Pair("30 Seconds", "30Seconds"),
+    Pair("45 Seconds", "45Seconds"), Pair("1 Minute", "60Seconds"),
+    Pair("2 Minute", "120Seconds"), Pair("5 Minute", "300Seconds"),
+)
+private val ringRepeatList = listOf(
+    Pair("Never", "0T"), Pair("1 Time", "1T"),
+    Pair("2 Times", "2T"), Pair("5 Times", "5T"),
+    Pair("10 Times", "10T"), Pair("Forever", "100T"),
+)
+private val snoozeDurationList = listOf(
+    Pair("30 Seconds", "30Seconds"), Pair("1 Minute", "60Seconds"),
+    Pair("2 Minute", "120Seconds"), Pair("3 Minute", "180Seconds"),
+    Pair("5 Minutes", "300Seconds"), Pair("6 Minutes", "360Seconds"),
+    Pair("7 Minutes", "420Seconds"), Pair("10 Minutes", "600Seconds"),
+)
+private val vibrationPatternList = listOf(
+    Pair("None", "none"), Pair("Single short beat", "ssb"),
+    Pair("Three short beats", "tsb"), Pair("Single long beat", "slb"),
+    Pair("Repeating short beats", "rsb"), Pair("Repeating long beats", "rlb"),
+    Pair("Continuous", "cont"),
+)
+private val alarmSoundList = listOf(
+    Pair("No Sound (mute)", "silent"),
+    Pair("Standard Digital", "a30_seconds_alarm_72117"),
+    Pair("Clock Alarm", "clock_alarm_8761"),
+    Pair("Digital Alarm", "digital_alarm_2_151919"),
+    Pair("Digital Beep-Beep", "digital_alarm_clock_151920"),
+    Pair("Electronic Alarm Clock", "electronic_alarm_clock_151927"),
+    Pair("Old Mechanic Alarm Clock", "old_mechanic_alarm_clock_140410"),
+    Pair("Oversimplified Alarm Clock", "oversimplified_alarm_clock_113180"),
+    Pair("Rooster", "rooster"),
+)
+private val gradualVolumeList = listOf(
+    Pair("None", "00Seconds"), Pair("30 Seconds", "30Seconds"),
+    Pair("1 Minute", "60Seconds"), Pair("2 Minute", "120Seconds"),
+    Pair("3 Minute", "180Seconds"),
+)
+
+/***********************************************************************************************/
 
 class AlarmEditFrag : Fragment() {
     private var parent: MainActivity? = null
@@ -116,56 +171,10 @@ class AlarmEditFrag : Fragment() {
     private var isOneOff = true
     private var weekdays = 0
     private val isDynamicColor = false
-    data class PrefData(
-        val title: Int = 0,
-        val currentValue: MutableState<String?>? = null,
-        val origValue: MutableLiveData<String>? = null,
-        val list: List<Pair<String, String>>? = null,
-        val iconId: Int = 0,
-        val showDialog: MutableState<Boolean>? = null,
-    )
 
 
 
-    // Menu Items
-    private val ringDurationList = listOf(
-        Pair("15 Seconds", "15Seconds"), Pair("30 Seconds", "30Seconds"),
-        Pair("45 Seconds", "45Seconds"), Pair("1 Minute", "60Seconds"),
-        Pair("2 Minute", "120Seconds"), Pair("5 Minute", "300Seconds"),
-    )
-    private val ringRepeatList = listOf(
-        Pair("Never", "0T"), Pair("1 Time", "1T"),
-        Pair("2 Times", "2T"), Pair("5 Times", "5T"),
-        Pair("10 Times", "10T"), Pair("Forever", "100T"),
-    )
-    private val snoozeDurationList = listOf(
-        Pair("30 Seconds", "30Seconds"), Pair("1 Minute", "60Seconds"),
-        Pair("2 Minute", "120Seconds"), Pair("3 Minute", "180Seconds"),
-        Pair("5 Minutes", "300Seconds"), Pair("6 Minutes", "360Seconds"),
-        Pair("7 Minutes", "420Seconds"), Pair("10 Minutes", "600Seconds"),
-    )
-    private val vibrationPatternList = listOf(
-        Pair("None", "none"), Pair("Single short beat", "ssb"),
-        Pair("Three short beats", "tsb"), Pair("Single long beat", "slb"),
-        Pair("Repeating short beats", "rsb"), Pair("Repeating long beats", "rlb"),
-        Pair("Continuous", "cont"),
-    )
-    private val alarmSoundList = listOf(
-        Pair("No Sound (mute)", "silent"),
-        Pair("Standard Digital", "a30_seconds_alarm_72117"),
-        Pair("Clock Alarm", "clock_alarm_8761"),
-        Pair("Digital Alarm", "digital_alarm_2_151919"),
-        Pair("Digital Beep-Beep", "digital_alarm_clock_151920"),
-        Pair("Electronic Alarm Clock", "electronic_alarm_clock_151927"),
-        Pair("Old Mechanic Alarm Clock", "old_mechanic_alarm_clock_140410"),
-        Pair("Oversimplified Alarm Clock", "oversimplified_alarm_clock_113180"),
-        Pair("Rooster", "rooster"),
-    )
-    private val gradualVolumeList = listOf(
-        Pair("None", "00Seconds"), Pair("30 Seconds", "30Seconds"),
-        Pair("1 Minute", "60Seconds"), Pair("2 Minute", "120Seconds"),
-        Pair("3 Minute", "180Seconds"),
-    )
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -253,7 +262,7 @@ class AlarmEditFrag : Fragment() {
 
         // Convert each string to Date
         for (dateStr in dateListStr) {
-            yyyymmdd = yyyymmdd + " " + dateStr.toString()
+            yyyymmdd = yyyymmdd + " " + dateStr
         }
 
         return yyyymmdd
@@ -377,7 +386,7 @@ class AlarmEditFrag : Fragment() {
             val ld = if (yy != 0  && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
 
         // Create a string of dates that are exception to the rule (weekdays)
-        val exeptions = exceptionDates2String(setUpAlarmValues.exceptionDates.getValue())
+        val exceptions = exceptionDates2String(setUpAlarmValues.exceptionDates.getValue())
 
         // Exit DisplayCalendar (Single selection) with OK pressed
         val singleSelectionCalOkPressed = {value : LocalDate? ->
@@ -420,12 +429,11 @@ class AlarmEditFrag : Fragment() {
             selectionType = calendarSelType,
             weekdays = weekDays.intValue,
             origSelectedDate = ld,
-            originalExceptions =  exeptions)
+            originalExceptions =  exceptions)
         {
             when (calendarSelType) {
                 CalendarSelection.Single -> singleSelectionCalOkPressed(it as LocalDate?)
                 CalendarSelection.Multiple -> multiSelectionCalOkPressed(it as String)
-                else -> showCalendarDialog = false
             }
         }
 
@@ -856,9 +864,10 @@ class AlarmEditFrag : Fragment() {
         listOfPrefs.forEachIndexed { index, entry ->
             if (entry.showDialog != null && entry.showDialog.value) {
 
-                val selected by  rememberSaveable { mutableStateOf( entry.currentValue!!)}
 
-                Dialog(onDismissRequest = { entry.showDialog.value = false }) {
+                Dialog(onDismissRequest = {
+                    entry.showDialog.value = false
+                    entry.currentValue!!.value = entry.origValue!!.value }) {
                     Column(
                         modifier = Modifier
                             .background(
@@ -891,12 +900,12 @@ class AlarmEditFrag : Fragment() {
                                     .padding(bottom = 16.dp, start = 16.dp)
                                     .fillMaxWidth()
                                     .clickable {
-                                        selected.value = pair.second
+                                        entry.currentValue!!.value = pair.second
                                         playVibOrSound(index, pair.second)
                                     }
                             ) {
                                 RadioButton(
-                                    selected = selected.value == pair.second,
+                                    selected = entry.currentValue!!.value == pair.second,
                                     onClick = null)
 
                                 Text(pair.first)
@@ -909,14 +918,16 @@ class AlarmEditFrag : Fragment() {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()){
-                            TextButton({ entry.showDialog.value = false}){
+                            TextButton({
+                                entry.showDialog.value = false
+                                entry.currentValue!!.value = entry.origValue!!.value}){
                                 Text(stringResource(id = R.string.cancel_general)
                                 )
                             }
 
                             TextButton({
-                                entry.currentValue!!.value = selected.value
-                                entry.origValue!!.value = selected.value
+                                //entry.currentValue!!.value = selected
+                                entry.origValue!!.value = entry.currentValue!!.value
                                 entry.showDialog.value = false
                             }) {
                                 Text(stringResource(id = R.string.ok_general))}
@@ -999,7 +1010,7 @@ class AlarmEditFrag : Fragment() {
                     ) {
                         PrefTitle(listOfPrefs[index].title)
                         PrefSelValue(
-                            value = listOfPrefs[index].currentValue!!.value!!,
+                            value = listOfPrefs[index].origValue!!.value!!,
                             list = listOfPrefs[index].list!!
                         )
                     }
@@ -1135,11 +1146,11 @@ class AlarmEditFrag : Fragment() {
             fun backgroundColor(): Color {
 
                 // Selected weekdays are marked with dim background
-                val alph = when {
+                val bgAlpha = when {
                     selectionType == CalendarSelection.Single -> 1.0f
                     else -> 0.5f
                 }
-                val  bgColor = MaterialTheme.colorScheme.secondary.copy(alpha = alph)
+                val  bgColor = MaterialTheme.colorScheme.secondary.copy(alpha = bgAlpha)
 
                 // Selected dates (that are visible) are marked with solid color background
                 // Other date do not have a background color
