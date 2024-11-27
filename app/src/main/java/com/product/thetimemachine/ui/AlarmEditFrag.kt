@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -35,11 +34,9 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -54,7 +51,6 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -64,7 +60,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -81,7 +76,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -92,8 +86,6 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
-import com.product.thetimemachine.ui.SettingsFragment.sound
-import com.product.thetimemachine.ui.SettingsFragment.vibrate
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -107,327 +99,6 @@ import java.util.Locale
         - Create Text-Styles of each type of Calendar part.
 */
 
-/***********************************************************************************************/
-/* *
-*  *  General Preference Section
-* */
-
-data class PrefData(
-    val title: Int = 0,
-    val currentValue: MutableState<String?>? = null,
-    val origValue: MutableLiveData<String>? = null,
-    val list: List<Pair<String, String>>? = null,
-    val iconId: Int = 0,
-    val showDialog: MutableState<Boolean>? = null,
-)
-
-// Menu Items
-val ringDurationList = listOf(
-    Pair("15 Seconds", "15Seconds"), Pair("30 Seconds", "30Seconds"),
-    Pair("45 Seconds", "45Seconds"), Pair("1 Minute", "60Seconds"),
-    Pair("2 Minute", "120Seconds"), Pair("5 Minute", "300Seconds"),
-)
-val ringRepeatList = listOf(
-    Pair("Never", "0T"), Pair("1 Time", "1T"),
-    Pair("2 Times", "2T"), Pair("5 Times", "5T"),
-    Pair("10 Times", "10T"), Pair("Forever", "100T"),
-)
-val snoozeDurationList = listOf(
-    Pair("30 Seconds", "30Seconds"), Pair("1 Minute", "60Seconds"),
-    Pair("2 Minute", "120Seconds"), Pair("3 Minute", "180Seconds"),
-    Pair("5 Minutes", "300Seconds"), Pair("6 Minutes", "360Seconds"),
-    Pair("7 Minutes", "420Seconds"), Pair("10 Minutes", "600Seconds"),
-)
-val vibrationPatternList = listOf(
-    Pair("None", "none"), Pair("Single short beat", "ssb"),
-    Pair("Three short beats", "tsb"), Pair("Single long beat", "slb"),
-    Pair("Repeating short beats", "rsb"), Pair("Repeating long beats", "rlb"),
-    Pair("Continuous", "cont"),
-)
-val alarmSoundList = listOf(
-    Pair("No Sound (mute)", "silent"),
-    Pair("Standard Digital", "a30_seconds_alarm_72117"),
-    Pair("Clock Alarm", "clock_alarm_8761"),
-    Pair("Digital Alarm", "digital_alarm_2_151919"),
-    Pair("Digital Beep-Beep", "digital_alarm_clock_151920"),
-    Pair("Electronic Alarm Clock", "electronic_alarm_clock_151927"),
-    Pair("Old Mechanic Alarm Clock", "old_mechanic_alarm_clock_140410"),
-    Pair("Oversimplified Alarm Clock", "oversimplified_alarm_clock_113180"),
-    Pair("Rooster", "rooster"),
-)
-val gradualVolumeList = listOf(
-    Pair("None", "00Seconds"), Pair("30 Seconds", "30Seconds"),
-    Pair("1 Minute", "60Seconds"), Pair("2 Minute", "120Seconds"),
-    Pair("3 Minute", "180Seconds"),
-)
-
-@Composable
-fun getListOfItemPrefferences(setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : List<PrefData>{
-val listOfPrefs = listOf(
-    PrefData(
-        title = R.string.ring_and_snooze
-    ),
-
-    PrefData(
-        title = R.string.ring_duration,
-        currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }),
-        origValue = setUpAlarmValues.ringDuration,
-        list = ringDurationList,
-        iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
-        showDialog = rememberSaveable { mutableStateOf(false) }),
-
-    PrefData(
-        title = R.string.times_to_keep_on_ringing,
-        currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat.value) }),
-        origValue = setUpAlarmValues.ringRepeat,
-        list = ringRepeatList,
-        iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
-        showDialog = rememberSaveable { mutableStateOf(false) }
-    ),
-
-
-    PrefData(
-        title = R.string.snooze_for,
-        currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration.value) }),
-        origValue = setUpAlarmValues.snoozeDuration,
-        list = snoozeDurationList,
-        iconId = R.drawable.snooze_fill0_wght400_grad0_opsz24,
-        showDialog = rememberSaveable { mutableStateOf(false) }
-    ),
-
-    PrefData(
-        title = R.string.sound_and_vibration
-    ),
-
-    PrefData(
-        title = R.string.vibration_pattern,
-        currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern.value) }),
-        origValue = setUpAlarmValues.vibrationPattern,
-        list = vibrationPatternList,
-        iconId = R.drawable.vibration_opsz24,
-        showDialog = rememberSaveable { mutableStateOf(false) }
-    ),
-
-    PrefData(
-        title = R.string.alarm_sounds,
-        currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound.value) }),
-        origValue = setUpAlarmValues.alarmSound,
-        list = alarmSoundList,
-        iconId = R.drawable.library_music_fill0_wght400_grad0_opsz24,
-        showDialog = rememberSaveable { mutableStateOf(false) }
-    ),
-
-    PrefData(
-        title = R.string.gradual_volume_increase,
-        currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume.value) }),
-        origValue = setUpAlarmValues.gradualVolume,
-        list = gradualVolumeList,
-        iconId = R.drawable.gradual_increase_opsz24,
-        showDialog = rememberSaveable { mutableStateOf(false) }
-    ),
-)
-return listOfPrefs
-}
-
-
-@Composable
-private fun ItemPreferences(listOfPrefs: List<PrefData>) {
-    // Preference related constants
-    val typography = MaterialTheme.typography
-    //val styledText = typography.titleMedium
-    //val styledSecondaryText = typography.bodyMedium // Alpha=0.5f
-    val styledOverLineText = typography.labelSmall
-    val styledTrailing = typography.bodySmall
-
-
-
-    // TODO: Write a callback function to give a sample of vibration & Sound pattern
-    // Use SettingsFragment::vibrate and SettingsFragment::sound
-    // Call from Row/Radio button OnClick
-    fun playVibOrSound(index : Int, pattern : String) {
-        Log.d("THE_TIME_MACHINE", "playVibOrSound():  index = $index ; pattern = $pattern")
-        if (listOfPrefs[index].title == R.string.vibration_pattern) vibrate(pattern)
-        else if (listOfPrefs[index].title == R.string.alarm_sounds) sound(pattern)
-    }
-
-    // Display Preference Dialog
-    listOfPrefs.forEachIndexed { index, entry ->
-        if (entry.showDialog != null && entry.showDialog.value) {
-
-
-            Dialog(onDismissRequest = {
-                entry.showDialog.value = false
-                entry.currentValue!!.value = entry.origValue!!.value }) {
-                Column(
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceBright,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start,
-                ) {
-                    // Title
-                    Text(
-                        text = stringResource(id = entry.title),
-                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Left,
-                        modifier = Modifier
-                            .padding(top = 32.dp, bottom = 16.dp, start = 16.dp)
-                            .fillMaxWidth()
-                    )
-
-                    // Loop on all entries in the list
-                    // Every entry is a row with a radio button and text
-                    // The row is clickable
-                    entry.list!!.forEachIndexed { _, pair ->
-                        Row(horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(bottom = 16.dp, start = 16.dp)
-                                .fillMaxWidth()
-                                .clickable {
-                                    entry.currentValue!!.value = pair.second
-                                    playVibOrSound(index, pair.second)
-                                }
-                        ) {
-                            RadioButton(
-                                selected = entry.currentValue!!.value == pair.second,
-                                onClick = null)
-
-                            Text(pair.first)
-                        }
-                    }
-
-                    // Cancel/OK Buttons
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()){
-                        TextButton({
-                            entry.showDialog.value = false
-                            entry.currentValue!!.value = entry.origValue!!.value}){
-                            Text(stringResource(id = R.string.cancel_general)
-                            )
-                        }
-
-                        TextButton({
-                            //entry.currentValue!!.value = selected
-                            entry.origValue!!.value = entry.currentValue!!.value
-                            entry.showDialog.value = false
-                        }) {
-                            Text(stringResource(id = R.string.ok_general))}
-                    }
-                }
-            }
-
-
-        }
-    }
-
-    /// Composable parts of the Preferences display as Internal Functions
-
-    // Icon to display
-    // Id imageId==0 then do nothing
-    @Composable
-    fun PrefIcon(imageId: Int, title: Int) {
-        if (imageId == 0) return
-
-        Icon(
-            painter = painterResource(id = imageId),
-            contentDescription = stringResource(id = title),
-            modifier = Modifier
-                .background(
-                    MaterialTheme.colorScheme.secondaryContainer,
-                    shape = CircleShape
-                )
-                .padding(16.dp)
-                //.align(Alignment.CenterVertically)
-                .size(30.dp)
-        )
-    }
-
-    // Title of preference
-    @Composable
-    fun PrefTitle(titleID: Int){
-        Text(
-            text = stringResource(id = titleID),
-            style = styledTrailing,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-        )
-    }
-
-    fun getEntryValueStr(value: String, list: List<Pair<String, String>>): String {
-        list.forEach { if (it.second == value) return it.first }
-        return ""
-    }
-
-    @Composable
-    fun PrefSelValue(value: String, list: List<Pair<String, String>>) {
-        Text(
-            text = getEntryValueStr(value, list),
-            style = styledTrailing,
-            fontSize = 16.sp,
-            modifier = Modifier
-                .alpha(0.5f)
-                .padding(top = 6.dp)
-        )
-    }
-
-    @Composable
-    fun PrefRow(index: Int){
-        if (listOfPrefs[index].list != null) { // Normal row
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClickLabel = stringResource(id = listOfPrefs[index].title)) {
-                        listOfPrefs[index].showDialog!!.value = true
-                    }
-                    .padding(bottom = 16.dp, top = 16.dp),
-            ) {
-                PrefIcon(listOfPrefs[index].iconId, listOfPrefs[index].title)
-                Column(
-                    modifier = Modifier.padding(start = 24.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    PrefTitle(listOfPrefs[index].title)
-                    PrefSelValue(
-                        value = listOfPrefs[index].origValue!!.value!!,
-                        list = listOfPrefs[index].list!!
-                    )
-                }
-            }
-        } else { // Header
-            Text(
-                text = stringResource(listOfPrefs[index].title),
-                style = styledOverLineText,//MaterialTheme.typography.bodyMedium,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp, top = 40.dp)
-            )
-            HorizontalDivider(modifier = Modifier.padding(bottom = 16.dp))
-        }
-    }
-
-
-    // List of all preferences and section titles
-    Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(start = 8.dp)
-    ) {
-        listOfPrefs.forEachIndexed{ index, _ ->  key(index){PrefRow(index = index)}  }
-    }
-}
-
-
-/***********************************************************************************************/
 
 class AlarmEditFrag : Fragment() {
     private var parent: MainActivity? = null
@@ -558,7 +229,7 @@ class AlarmEditFrag : Fragment() {
 
 
         // List of all entries
-        val listOfPrefsEx = getListOfItemPrefferences(setUpAlarmValues)
+        val listOfPrefsEx = getListOfItemPreferences(setUpAlarmValues)
         val listOfPrefs = remember { mutableStateListOf<PrefData>()}
         listOfPrefs.addAll(listOfPrefsEx)
 
