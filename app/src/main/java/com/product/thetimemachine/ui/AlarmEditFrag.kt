@@ -315,6 +315,10 @@ class AlarmEditFrag : Fragment() {
         // Display error dialog - user selected a date in the past
         DisplayWrongDateDialog(showErrorDialog){showErrorDialog = false}
 
+        fun onPrefDialogOK(index: Int, value: String?){
+            Log.d("THE_TIME_MACHINE", "onPrefDialogOK(): index=$index ; value=$value ")
+            getListOfPrefLiveData(setUpAlarmValues)[index]?.value = value
+        }
 
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
@@ -353,7 +357,7 @@ class AlarmEditFrag : Fragment() {
                             )
 
                             /* Preferences */
-                            ItemPreferences(listOfPrefs)
+                            ItemPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
 
                         } else {
                             // Landscape
@@ -383,7 +387,7 @@ class AlarmEditFrag : Fragment() {
                                     )
 
                                     /* Preferences */
-                                    ItemPreferences(listOfPrefs)
+                                    ItemPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
                                 }
                             }
                         }
