@@ -282,10 +282,7 @@ fun ItemPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                         }
 
                         TextButton({
-                            //entry.currentValue!!.value = selected
-                            entry.origValue!!.value = entry.currentValue!!.value
-                            entry.showDialog.value = false
-                            onOK(index, entry.currentValue.value)
+                            onOK(index, entry.currentValue!!.value)
                         }) {
                             Text(stringResource(id = R.string.ok_general))
                         }

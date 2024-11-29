@@ -315,9 +315,12 @@ class AlarmEditFrag : Fragment() {
         // Display error dialog - user selected a date in the past
         DisplayWrongDateDialog(showErrorDialog){showErrorDialog = false}
 
-        fun onPrefDialogOK(index: Int, value: String?){
+        // Execute when preferences dialog OK button pressed
+        val onPrefDialogOK = {index : Int, value : String? ->
             Log.d("THE_TIME_MACHINE", "onPrefDialogOK(): index=$index ; value=$value ")
             getListOfPrefLiveData(setUpAlarmValues)[index]?.value = value
+            listOfPrefs[index].showDialog?.value =  false
+            listOfPrefs[index].origValue?.value = value
         }
 
         AppTheme(dynamicColor = isDynamicColor) {
