@@ -81,6 +81,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.1")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.1")
     implementation("androidx.databinding:databinding-runtime:8.6.1")
+    implementation("androidx.datastore:datastore-android:1.1.1")
 
 
     testImplementation("junit:junit:4.13.2")
@@ -109,4 +110,7 @@ dependencies {
 
     // The compose calendar library for Android
     implementation("com.kizitonwose.calendar:compose:2.6.0")
+
+    // The Compose Datastore Preferences
+    implementation ("androidx.datastore:datastore-preferences:1.1.1")
 }

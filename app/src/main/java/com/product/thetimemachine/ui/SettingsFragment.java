@@ -1,5 +1,6 @@
 package com.product.thetimemachine.ui;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferencesName;
 import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
 
 import android.content.Context;
@@ -90,8 +91,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
       // Called everytime one of the Shared Preferences (Setting) has changed
       // Get the shared preferences and using the KEY find its new value
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-      //String newPref = preferences.getString(key, "");
-      //Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() Called: KEY=" + key +" Value="+ newPref);
+     // String name = getDefaultSharedPreferencesName ( context);
+      //Log.d("THE_TIME_MACHINE", "onSharedPreferenceChanged() name = " + name);
 
       assert key != null;
       if (key.equals(context.getString(R.string.key_ring_repeat))) ringRepeat = preferences.getString(key, "");

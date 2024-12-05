@@ -236,7 +236,8 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager()
               .beginTransaction()
-              .replace(R.id.fragment_container_view, new SettingsFragment())
+              .replace(R.id.fragment_container_view, new SettingsFrag())
+              //.replace(R.id.fragment_container_view, new SettingsFragment())
               .addToBackStack("tag_settings")
               .commit();
     }
