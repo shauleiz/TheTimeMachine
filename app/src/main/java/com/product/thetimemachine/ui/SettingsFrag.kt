@@ -15,8 +15,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -24,11 +29,12 @@ import androidx.datastore.migrations.SharedPreferencesMigration
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import com.product.thetimemachine.R
-import com.product.thetimemachine.ui.SettingsFrag.PreferencesKeys.KEY_H12_24
+import com.product.thetimemachine.ui.PreferencesKeys.KEY_SORT_SEPARATE
 import com.product.thetimemachine.ui.theme.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -39,6 +45,19 @@ import java.util.Objects
 
 const val USER_PREFERENCES_NAME = "the_time_machine_preferences_datastore"
 
+// TODO: Use R.string instead of hardcoded strings
+private object PreferencesKeys {
+    val KEY_H12_24 = stringPreferencesKey("KEY_H12_24")
+    val KEY_RING_DURATION = stringPreferencesKey("KEY_RING_DURATION")
+    val KEY_FIRST_DAY = stringPreferencesKey("KEY_FIRST_DAY")
+    val KEY_RING_REPEAT = stringPreferencesKey("KEY_RING_REPEAT")
+    val KEY_VIBRATION_PATTERN = stringPreferencesKey("KEY_VIBRATION_PATTERN")
+    val KEY_ALARM_SOUND = stringPreferencesKey("KEY_ALARM_SOUND")
+    val KEY_SORT_TYPE = stringPreferencesKey("KEY_SORT_TYPE")
+    val KEY_GRADUAL_VOLUME = stringPreferencesKey("KEY_GRADUAL_VOLUME")
+    val KEY_TIME_FORMAT = stringPreferencesKey("KEY_TIME_FORMAT")
+    val KEY_SORT_SEPARATE = booleanPreferencesKey("KEY_SORT_SEPARATE")
+}
 
 
 data class UserPreferences(
@@ -55,20 +74,6 @@ private val Context.timemachinedataStore by preferencesDataStore(
 private const val isDynamicColor = false
 
 class SettingsFrag : Fragment() {
-
-    // TODO: Use R.string instead of hardcoded strings
-    private object PreferencesKeys {
-        val KEY_H12_24 = stringPreferencesKey("KEY_H12_24")
-        val KEY_RING_DURATION = stringPreferencesKey("KEY_RING_DURATION")
-        val KEY_FIRST_DAY = stringPreferencesKey("KEY_FIRST_DAY")
-        val KEY_RING_REPEAT = stringPreferencesKey("KEY_RING_REPEAT")
-        val KEY_VIBRATION_PATTERN = stringPreferencesKey("KEY_VIBRATION_PATTERN")
-        val KEY_ALARM_SOUND = stringPreferencesKey("KEY_ALARM_SOUND")
-        val KEY_SORT_TYPE = stringPreferencesKey("KEY_SORT_TYPE")
-        val KEY_GRADUAL_VOLUME = stringPreferencesKey("KEY_GRADUAL_VOLUME")
-        val KEY_TIME_FORMAT = stringPreferencesKey("KEY_TIME_FORMAT")
-        val KEY_SORT_SEPARATE = booleanPreferencesKey("KEY_SORT_SEPARATE")
-    }
 
     lateinit var parent: MainActivity
     lateinit var userPreferencesFlow: Flow<UserPreferences>
@@ -133,18 +138,25 @@ class SettingsFrag : Fragment() {
 
         // Get our show completed value, defaulting to false if not set:
         val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: false
-        val hour12Or24 =   preferences[KEY_H12_24] ?: "Error"
-
-        Log.d("THE_TIME_MACHINE", "mapUserPreferences():  preferences[PreferencesKeys.KEY_H12_24] = ${preferences[PreferencesKeys.KEY_H12_24]}")
-        Log.d("THE_TIME_MACHINE", "mapUserPreferences():  sortSeparate = $sortSeparate ; hour12Or24 = $hour12Or24")
+        val hour12Or24 =   preferences[PreferencesKeys.KEY_H12_24] ?: "Error"
 
         return UserPreferences(hour12Or24, sortSeparate)
     }
 
+    private suspend fun updateSortSeparate(sortSeparate : Boolean) {
+        parent.timemachinedataStore.edit { preferences ->
+            preferences[KEY_SORT_SEPARATE] = sortSeparate
+        }
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun SettingsFragDisplayTop() {
+
+
+        val  prefs  = runBlocking { fetchInitialPreferences() }
+        var sortSeparate by remember { mutableStateOf(prefs.sortSeparate) }
+        
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
@@ -154,9 +166,10 @@ class SettingsFrag : Fragment() {
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
+                        Switch(checked = sortSeparate, onCheckedChange =  { sortSeparate = it; runBlocking {updateSortSeparate(it)}})
+                        
+                        Text (sortSeparate.toString())
 
-                        val  prefs  = runBlocking { fetchInitialPreferences() }
-                        Text (prefs.sortSeparate.toString())
                         Text (prefs.hour12Or24)
                     }
                 }
