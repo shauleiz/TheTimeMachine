@@ -79,8 +79,8 @@ import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.SettingsFragment.pref_first_day_of_week
-import com.product.thetimemachine.ui.SettingsFragment.pref_is24HourClock
 import com.product.thetimemachine.ui.theme.AppTheme
+import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -124,6 +124,7 @@ class AlarmListFrag : Fragment() {
         parent!!.UpdateOptionMenu()
 
     }
+
 
 
     // Called while initializing the activity.
@@ -587,7 +588,7 @@ class AlarmListFrag : Fragment() {
     private fun sortAlarmList(list: MutableList<AlarmItem>) : List<AlarmItem>{
         // Sorting
         val comparatorType = SettingsFragment.pref_sort_type()
-        val separate = SettingsFragment.pref_sort_separate()
+        val separate = isSortSeparate(parent)
         val sortedList = remember(comparatorType, list) {
             if (separate) {
                 when (comparatorType) {
@@ -636,7 +637,7 @@ class AlarmListFrag : Fragment() {
         private fun getAmPm24h(alarmItem: AlarmItem): Int {
             // Time
             val h = alarmItem.getHour()
-            return if (pref_is24HourClock())
+            return if (isPref24h(parent))
                 (R.string.format_24h)
             else {
                 if (h == 0) {
@@ -654,7 +655,7 @@ class AlarmListFrag : Fragment() {
 
             // Time
             var h = alarmItem.getHour()
-            if (!pref_is24HourClock())
+            if (!isPref24h(parent))
             {
                 if (h == 0) {
                     h = 12

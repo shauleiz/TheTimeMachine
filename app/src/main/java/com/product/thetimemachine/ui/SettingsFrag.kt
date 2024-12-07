@@ -1,6 +1,7 @@
 package com.product.thetimemachine.ui
 
 
+import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.os.Bundle
 import android.preference.PreferenceManager.getDefaultSharedPreferencesName
@@ -25,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.datastore.migrations.SharedPreferencesMigration
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -46,7 +46,7 @@ import java.util.Objects
 const val USER_PREFERENCES_NAME = "the_time_machine_preferences_datastore"
 
 // TODO: Use R.string instead of hardcoded strings
-private object PreferencesKeys {
+object PreferencesKeys {
     val KEY_H12_24 = stringPreferencesKey("KEY_H12_24")
     val KEY_RING_DURATION = stringPreferencesKey("KEY_RING_DURATION")
     val KEY_FIRST_DAY = stringPreferencesKey("KEY_FIRST_DAY")
@@ -64,7 +64,7 @@ data class UserPreferences(
     val hour12Or24 : String,
     val sortSeparate: Boolean,
 )
-private val Context.timemachinedataStore by preferencesDataStore(
+val Context.timeMachinedataStore by preferencesDataStore(
     name = USER_PREFERENCES_NAME,
     produceMigrations = { context ->
         listOf(SharedPreferencesMigration(context, getDefaultSharedPreferencesName ( context)))
@@ -73,6 +73,33 @@ private val Context.timemachinedataStore by preferencesDataStore(
 
 private const val isDynamicColor = false
 
+fun mapUserPreferences(preferences: Preferences): UserPreferences {
+
+    Log.d("THE_TIME_MACHINE", "mapUserPreferences():  preferences = $preferences")
+
+    // Get our show completed value, defaulting to false if not set:
+    val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: false
+    val hour12Or24 =   preferences[PreferencesKeys.KEY_H12_24] ?: "Error"
+
+    return UserPreferences(hour12Or24, sortSeparate)
+}
+
+suspend fun fetchInitialPreferences(parent : MainActivity) =
+    mapUserPreferences(parent.timeMachinedataStore.data.first().toPreferences())
+
+fun getPrefs (parent : MainActivity) : UserPreferences {return runBlocking { fetchInitialPreferences(parent) }}
+
+fun isPref24h(parent : MainActivity?) : Boolean {
+    if (parent==null) return false
+    return  getPrefs(parent).hour12Or24.equals("h24") // TODO: Change to R.string
+}
+
+fun isSortSeparate(parent : MainActivity?) : Boolean {
+    if (parent==null) return false
+    return  getPrefs(parent).sortSeparate
+}
+
+////////////////////////////////////////////////////////////////////////////////
 class SettingsFrag : Fragment() {
 
     lateinit var parent: MainActivity
@@ -82,7 +109,7 @@ class SettingsFrag : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         parent = activity as MainActivity
-        userPreferencesFlow  = parent.timemachinedataStore.data.map { preferences ->
+        userPreferencesFlow  = parent.timeMachinedataStore.data.map { preferences ->
             val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: false
             val hour12Or24 =   preferences[PreferencesKeys.KEY_H12_24] ?: "Err"
             UserPreferences(hour12Or24, sortSeparate)
@@ -95,7 +122,7 @@ class SettingsFrag : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Start the compose display
         return ComposeView(requireContext()).apply { setContent { SettingsFragDisplayTop() } }
     }
@@ -112,7 +139,7 @@ class SettingsFrag : Fragment() {
     override fun onDestroy() {
         // Remove the Up arrow
 
-        val actionBar = checkNotNull(parent!!.supportActionBar)
+        val actionBar = checkNotNull(parent.supportActionBar)
         actionBar.setDisplayHomeAsUpEnabled(false)
 
         super.onDestroy()
@@ -128,23 +155,10 @@ class SettingsFrag : Fragment() {
         //Objects.requireNonNull<SharedPreferences>(getPreferenceManager().getSharedPreferences()).unregisterOnSharedPreferenceChangeListener(this)
     }
 
-    suspend fun fetchInitialPreferences() =
-        mapUserPreferences(parent.timemachinedataStore.data.first().toPreferences())
 
-
-    private fun mapUserPreferences(preferences: Preferences): UserPreferences {
-
-        Log.d("THE_TIME_MACHINE", "mapUserPreferences():  preferences = $preferences")
-
-        // Get our show completed value, defaulting to false if not set:
-        val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: false
-        val hour12Or24 =   preferences[PreferencesKeys.KEY_H12_24] ?: "Error"
-
-        return UserPreferences(hour12Or24, sortSeparate)
-    }
 
     private suspend fun updateSortSeparate(sortSeparate : Boolean) {
-        parent.timemachinedataStore.edit { preferences ->
+        parent.timeMachinedataStore.edit { preferences ->
             preferences[KEY_SORT_SEPARATE] = sortSeparate
         }
     }
@@ -154,7 +168,7 @@ class SettingsFrag : Fragment() {
     private fun SettingsFragDisplayTop() {
 
 
-        val  prefs  = runBlocking { fetchInitialPreferences() }
+        val  prefs  = getPrefs(parent)
         var sortSeparate by remember { mutableStateOf(prefs.sortSeparate) }
         
         AppTheme(dynamicColor = isDynamicColor) {
