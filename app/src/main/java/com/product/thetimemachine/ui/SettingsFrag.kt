@@ -1,7 +1,6 @@
 package com.product.thetimemachine.ui
 
 
-import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.os.Bundle
 import android.preference.PreferenceManager.getDefaultSharedPreferencesName
@@ -20,6 +19,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,6 +33,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
+import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.PreferencesKeys.KEY_SORT_SEPARATE
 import com.product.thetimemachine.ui.theme.AppTheme
@@ -55,14 +56,22 @@ object PreferencesKeys {
     val KEY_ALARM_SOUND = stringPreferencesKey("KEY_ALARM_SOUND")
     val KEY_SORT_TYPE = stringPreferencesKey("KEY_SORT_TYPE")
     val KEY_GRADUAL_VOLUME = stringPreferencesKey("KEY_GRADUAL_VOLUME")
-    val KEY_TIME_FORMAT = stringPreferencesKey("KEY_TIME_FORMAT")
+    val KEY_SNOOZE_DURATION = stringPreferencesKey("KEY_SNOOZE_DURATION")
     val KEY_SORT_SEPARATE = booleanPreferencesKey("KEY_SORT_SEPARATE")
 }
 
 
 data class UserPreferences(
+    val ringRepeat : String,
+    val ringDuration : String,
+    val snoozeDuration : String,
     val hour12Or24 : String,
+    val firstDayWeek : String,
+    val vibrationPattern : String,
+    val alarmSound : String,
+    val sortType : String,
     val sortSeparate: Boolean,
+    val gradualVolume : String,
 )
 val Context.timeMachinedataStore by preferencesDataStore(
     name = USER_PREFERENCES_NAME,
@@ -77,11 +86,20 @@ fun mapUserPreferences(preferences: Preferences): UserPreferences {
 
     Log.d("THE_TIME_MACHINE", "mapUserPreferences():  preferences = $preferences")
 
-    // Get our show completed value, defaulting to false if not set:
-    val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: false
+    val ringRepeat = preferences[PreferencesKeys.KEY_RING_REPEAT] ?: "Error"
+    val ringDuration =   preferences[PreferencesKeys.KEY_RING_DURATION] ?: "Error"
+    val snoozeDuration =   preferences[PreferencesKeys.KEY_SNOOZE_DURATION] ?: "Error"
     val hour12Or24 =   preferences[PreferencesKeys.KEY_H12_24] ?: "Error"
+    val firstDayWeek =   preferences[PreferencesKeys.KEY_FIRST_DAY] ?: "Error"
+    val vibratePattern =   preferences[PreferencesKeys.KEY_VIBRATION_PATTERN] ?: "Error"
+    val alarmSound =   preferences[PreferencesKeys.KEY_ALARM_SOUND] ?: "Error"
+    val sortType =   preferences[PreferencesKeys.KEY_SORT_TYPE] ?: "Error"
+    val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: false
+    val gradualVolume =   preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: "Error"
 
-    return UserPreferences(hour12Or24, sortSeparate)
+    return UserPreferences(ringRepeat, ringDuration, snoozeDuration,
+        hour12Or24, firstDayWeek, vibratePattern, alarmSound, sortType,
+        sortSeparate, gradualVolume)
 }
 
 suspend fun fetchInitialPreferences(parent : MainActivity) =
@@ -104,15 +122,15 @@ class SettingsFrag : Fragment() {
 
     lateinit var parent: MainActivity
     lateinit var userPreferencesFlow: Flow<UserPreferences>
+    private lateinit var setUpAlarmValues: UserPreferences
+
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         parent = activity as MainActivity
         userPreferencesFlow  = parent.timeMachinedataStore.data.map { preferences ->
-            val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: false
-            val hour12Or24 =   preferences[PreferencesKeys.KEY_H12_24] ?: "Err"
-            UserPreferences(hour12Or24, sortSeparate)
+            mapUserPreferences(preferences)
         }
 
         super.onCreate(savedInstanceState)
@@ -123,6 +141,7 @@ class SettingsFrag : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setUpAlarmValues = getPrefs(parent)
         // Start the compose display
         return ComposeView(requireContext()).apply { setContent { SettingsFragDisplayTop() } }
     }
@@ -145,15 +164,6 @@ class SettingsFrag : Fragment() {
         super.onDestroy()
     }
 
-    override fun onResume() {
-        super.onResume()
-        //Objects.requireNonNull<SharedPreferences>(getPreferenceManager().getSharedPreferences()).registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //Objects.requireNonNull<SharedPreferences>(getPreferenceManager().getSharedPreferences()).unregisterOnSharedPreferenceChangeListener(this)
-    }
 
 
 
@@ -167,10 +177,25 @@ class SettingsFrag : Fragment() {
     @Composable
     private fun SettingsFragDisplayTop() {
 
+        // List of all entries
+        val listOfPrefsEx = getListOfGeneralPreferences(setUpAlarmValues)
+        val listOfPrefs = remember { mutableStateListOf<PrefData>() }
+        listOfPrefs.addAll(listOfPrefsEx)
+
 
         val  prefs  = getPrefs(parent)
         var sortSeparate by remember { mutableStateOf(prefs.sortSeparate) }
-        
+
+
+        // Execute when preferences dialog OK button pressed
+        val onPrefDialogOK = {index : Int, value : String? ->
+            Log.d("THE_TIME_MACHINE", "onPrefDialogOK(): index=$index ; value=$value ")
+            //getListOfPrefLiveData(setUpAlarmValues)[index]?.value = value
+            listOfPrefs[index].showDialog?.value =  false
+            listOfPrefs[index].origValue?.value = value
+        }
+
+
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
@@ -185,6 +210,10 @@ class SettingsFrag : Fragment() {
                         Text (sortSeparate.toString())
 
                         Text (prefs.hour12Or24)
+
+                        /* Preferences */
+                        ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
+
                     }
                 }
             }

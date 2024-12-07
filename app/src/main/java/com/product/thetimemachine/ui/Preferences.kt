@@ -32,12 +32,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.MutableLiveData
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.SettingsFragment.sound
 import com.product.thetimemachine.ui.SettingsFragment.vibrate
-import java.time.Clock
 
 /***********************************************************************************************/
 /* *
@@ -167,23 +167,93 @@ fun getListOfItemPreferences(setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) 
 }
 
 @Composable
-fun getListOfGeneralPreferences(setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : List<PrefData>{
+fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefData> {
 
     val TimeFormatList = listOf(
         PrefData(
-        title = R.string.time_format
+            title = R.string.time_format
         ),
 
         PrefData(
             title = R.string.clock_format,
-            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }),
-            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration.value) }),
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.hour12Or24) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.hour12Or24) }),
+            list = timeFormatList,
+            iconId = R.drawable.mdi__wrench_clock_outline,
+            showDialog = rememberSaveable { mutableStateOf(false) }),
+
+        PrefData(
+            title = R.string.first_day_of_week,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.firstDayWeek) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.firstDayWeek) }),
+            list = firstDayList,
+            iconId = R.drawable.today_fill0_wght400_grad0_opsz24,
+            showDialog = rememberSaveable { mutableStateOf(false) }),
+
+        PrefData(
+            title = R.string.ring_and_snooze
+        ),
+
+        PrefData(
+            title = R.string.ring_duration,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration) }),
             list = ringDurationList,
             iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
-            showDialog = rememberSaveable { mutableStateOf(false) })
+            showDialog = rememberSaveable { mutableStateOf(false) }),
+
+        PrefData(
+            title = R.string.times_to_keep_on_ringing,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat) }),
+            list = ringRepeatList,
+            iconId = R.drawable.music_note_fill0_wght400_grad0_opsz24,
+            showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
+
+
+        PrefData(
+            title = R.string.snooze_for,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration) }),
+            list = snoozeDurationList,
+            iconId = R.drawable.snooze_fill0_wght400_grad0_opsz24,
+            showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
+
+        PrefData(
+            title = R.string.sound_and_vibration
+        ),
+
+        PrefData(
+            title = R.string.vibration_pattern,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern) }),
+            list = vibrationPatternList,
+            iconId = R.drawable.vibration_opsz24,
+            showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
+
+        PrefData(
+            title = R.string.alarm_sounds,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound) }),
+            list = alarmSoundList,
+            iconId = R.drawable.library_music_fill0_wght400_grad0_opsz24,
+            showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
+
+        PrefData(
+            title = R.string.gradual_volume_increase,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume) }),
+            list = gradualVolumeList,
+            iconId = R.drawable.gradual_increase_opsz24,
+            showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
     )
 
-    return getListOfItemPreferences(setUpAlarmValues)
+    return TimeFormatList
 }
 
 fun getListOfPrefLiveData (setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : List< MutableLiveData<String>?>{
@@ -196,7 +266,7 @@ fun getListOfPrefLiveData (setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : 
 }
 
 @Composable
-fun ItemPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : String?)->Unit) {
+fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : String?)->Unit) {
     // Preference related constants
     val typography = MaterialTheme.typography
     //val styledText = typography.titleMedium

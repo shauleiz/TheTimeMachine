@@ -360,7 +360,7 @@ class AlarmEditFrag : Fragment() {
                             )
 
                             /* Preferences */
-                            ItemPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
+                            ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
 
                         } else {
                             // Landscape
@@ -390,7 +390,7 @@ class AlarmEditFrag : Fragment() {
                                     )
 
                                     /* Preferences */
-                                    ItemPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
+                                    ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
                                 }
                             }
                         }

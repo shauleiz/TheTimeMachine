@@ -37,7 +37,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +46,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -80,7 +78,6 @@ import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.SettingsFragment.pref_first_day_of_week
 import com.product.thetimemachine.ui.theme.AppTheme
-import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -107,10 +104,7 @@ class AlarmListFrag : Fragment() {
         return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        //outState.putIntegerArrayList("ARRAY_SI", selectedItems)
-    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -365,22 +359,20 @@ class AlarmListFrag : Fragment() {
             // Display "Add" floating button
             floatingActionButton =  {DisplayAddFloatButton()},
             floatingActionButtonPosition = FabPosition.End,
-        ) {it
-            DisplayAlarmList(alarmList)
-        }
+        ) { DisplayAlarmList(alarmList, it) }
 
     }
 
 
     @Composable
-    fun DisplayAlarmList (list: MutableList<AlarmItem>?) {
+    fun DisplayAlarmList (list: MutableList<AlarmItem>?, pad : PaddingValues) {
         if (list == null) return
 
         // Sorting
         val sortedList = sortAlarmList(list)
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(pad),
             contentPadding = PaddingValues(16.dp),
         ) {
             items(
@@ -391,7 +383,7 @@ class AlarmListFrag : Fragment() {
     }
 
 
-    @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun DisplayAlarmItem(alarmItem: AlarmItem) {
 
@@ -538,7 +530,7 @@ class AlarmListFrag : Fragment() {
 
 
                     // Alarm Active Checkbox
-                    val isChecked = remember { mutableStateOf(false) }
+                    //val isChecked = remember { mutableStateOf(false) }
                     Checkbox(
                         checked = alarmItem.isActive,
                         onCheckedChange = { onActiveChange(alarmItem, it) },
@@ -788,7 +780,7 @@ class AlarmListFrag : Fragment() {
             item.resetSnoozeCounter()
 
             if (checked)
-                item.recalculateDate(); // If is an explicit date and in the past - change date to the near future
+                item.recalculateDate() // If is an explicit date and in the past - change date to the near future
 
             // Update View Model - this also causes recomposition
             parent!!.alarmViewModel.UpdateAlarm(item)
