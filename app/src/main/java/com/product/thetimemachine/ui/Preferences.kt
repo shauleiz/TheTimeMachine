@@ -15,12 +15,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,10 +34,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.MutableLiveData
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.R
+import com.product.thetimemachine.ui.SettingsFragment.sortSeparate
 import com.product.thetimemachine.ui.SettingsFragment.sound
 import com.product.thetimemachine.ui.SettingsFragment.vibrate
 
@@ -51,7 +53,7 @@ data class PrefData(
     val list: List<Pair<String, String>>? = null,
     val iconId: Int = 0,
     val showDialog: MutableState<Boolean>? = null,
-    val isDialog: Boolean? = true,
+    val isDialog: Boolean = true,
 )
 
 // Menu Items
@@ -221,9 +223,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
             showDialog = rememberSaveable { mutableStateOf(false) }
         ),
 
-        PrefData(
-            title = R.string.sound_and_vibration
-        ),
+
 
         PrefData(
             title = R.string.vibration_pattern,
@@ -250,6 +250,29 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
             list = gradualVolumeList,
             iconId = R.drawable.gradual_increase_opsz24,
             showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
+
+        PrefData(
+            title = R.string.alarm_list_conf
+        ),
+
+        PrefData(
+            title = R.string.sort_alarms_list,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortType) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortType) }),
+            list = sortTypeList,
+            iconId = R.drawable.sort_fill0_wght400_grad0_opsz24,
+            showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
+
+        PrefData(
+            title = R.string.inactive_alarms_at_the_bottom,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortSeparate.toString()) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortSeparate.toString()) }),
+            list = sortTypeList,
+            iconId = R.drawable.sort_fill0_wght400_grad0_opsz24, // TODO: Replace icon
+            showDialog = rememberSaveable { mutableStateOf(false) },
+            isDialog = false
         ),
     )
 
@@ -287,7 +310,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
 
     // Display Preference Dialog
     listOfPrefs.forEachIndexed { index, entry ->
-        if (entry.showDialog != null && entry.showDialog.value) {
+        if (entry.showDialog != null && entry.showDialog.value && entry.isDialog) {
 
 
             Dialog(onDismissRequest = {
@@ -331,7 +354,8 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                         ) {
                             RadioButton(
                                 selected = entry.currentValue!!.value == pair.second,
-                                onClick = null)
+                                onClick = null
+                            )
 
                             Text(pair.first)
                         }
@@ -404,14 +428,20 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
 
     @Composable
     fun PrefSelValue(value: String, list: List<Pair<String, String>>) {
-        Text(
-            text = getEntryValueStr(value, list),
-            style = styledTrailing,
-            fontSize = 16.sp,
-            modifier = Modifier
-                .alpha(0.5f)
-                .padding(top = 6.dp)
-        )
+            Text(
+                text = getEntryValueStr(value, list),
+                style = styledTrailing,
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .alpha(0.5f)
+                    .padding(top = 6.dp)
+            )
+    }
+
+    @Composable
+    fun PrefSwitch(value: String){
+        val on = rememberSaveable { mutableStateOf( value.toBoolean())}
+        Switch(checked = on.value, onCheckedChange =  { on.value = it})
     }
 
     @Composable
@@ -434,10 +464,13 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                     horizontalAlignment = Alignment.Start
                 ) {
                     PrefTitle(listOfPrefs[index].title)
-                    PrefSelValue(
+                    if (listOfPrefs[index].isDialog)
+                        PrefSelValue(
                         value = listOfPrefs[index].origValue!!.value!!,
-                        list = listOfPrefs[index].list!!
-                    )
+                        list = listOfPrefs[index].list!!,
+                        )
+                    else
+                        PrefSwitch(value = listOfPrefs[index].origValue!!.value!!,)
                 }
             }
         } else { // Header
