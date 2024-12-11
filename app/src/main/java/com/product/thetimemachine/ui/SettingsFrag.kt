@@ -70,7 +70,7 @@ data class UserPreferences(
     val vibrationPattern : String,
     val alarmSound : String,
     val sortType : String,
-    val sortSeparate: Boolean,
+    val sortSeparate: String,
     val gradualVolume : String,
 )
 val Context.timeMachinedataStore by preferencesDataStore(
@@ -94,7 +94,7 @@ fun mapUserPreferences(preferences: Preferences): UserPreferences {
     val vibratePattern =   preferences[PreferencesKeys.KEY_VIBRATION_PATTERN] ?: "Error"
     val alarmSound =   preferences[PreferencesKeys.KEY_ALARM_SOUND] ?: "Error"
     val sortType =   preferences[PreferencesKeys.KEY_SORT_TYPE] ?: "Error"
-    val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: false
+    val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE].toString() ?: "Error"
     val gradualVolume =   preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: "Error"
 
     return UserPreferences(ringRepeat, ringDuration, snoozeDuration,
@@ -114,7 +114,7 @@ fun isPref24h(parent : MainActivity?) : Boolean {
 
 fun isSortSeparate(parent : MainActivity?) : Boolean {
     if (parent==null) return false
-    return  getPrefs(parent).sortSeparate
+    return  getPrefs(parent).sortSeparate.toBoolean()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -205,7 +205,7 @@ class SettingsFrag : Fragment() {
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        Switch(checked = sortSeparate, onCheckedChange =  { sortSeparate = it; runBlocking {updateSortSeparate(it)}})
+                        Switch(checked = sortSeparate.toBoolean(), onCheckedChange =  { sortSeparate = it.toString(); runBlocking {updateSortSeparate(it)}})
                         
                         Text (sortSeparate.toString())
 

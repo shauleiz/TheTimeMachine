@@ -40,6 +40,8 @@ import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.SettingsFragment.sortSeparate
 import com.product.thetimemachine.ui.SettingsFragment.sound
 import com.product.thetimemachine.ui.SettingsFragment.vibrate
+import androidx.datastore.preferences.core.Preferences
+
 
 /***********************************************************************************************/
 /* *
@@ -54,6 +56,7 @@ data class PrefData(
     val iconId: Int = 0,
     val showDialog: MutableState<Boolean>? = null,
     val isDialog: Boolean = true,
+    val prefKey: Preferences.Key<String>? = null
 )
 
 // Menu Items
@@ -178,6 +181,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.clock_format,
+            prefKey = PreferencesKeys.KEY_H12_24,
             currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.hour12Or24) }),
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.hour12Or24) }),
             list = timeFormatList,
