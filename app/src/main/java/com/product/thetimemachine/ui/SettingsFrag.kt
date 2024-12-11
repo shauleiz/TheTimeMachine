@@ -36,6 +36,7 @@ import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.PreferencesKeys.KEY_SORT_SEPARATE
+import com.product.thetimemachine.ui.SettingsFragment.sortSeparate
 import com.product.thetimemachine.ui.theme.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -57,7 +58,7 @@ object PreferencesKeys {
     val KEY_SORT_TYPE = stringPreferencesKey("KEY_SORT_TYPE")
     val KEY_GRADUAL_VOLUME = stringPreferencesKey("KEY_GRADUAL_VOLUME")
     val KEY_SNOOZE_DURATION = stringPreferencesKey("KEY_SNOOZE_DURATION")
-    val KEY_SORT_SEPARATE = booleanPreferencesKey("KEY_SORT_SEPARATE")
+    val KEY_SORT_SEPARATE = stringPreferencesKey("KEY_SORT_SEPARATE")
 }
 
 
@@ -104,6 +105,14 @@ fun mapUserPreferences(preferences: Preferences): UserPreferences {
 
 suspend fun fetchInitialPreferences(parent : MainActivity) =
     mapUserPreferences(parent.timeMachinedataStore.data.first().toPreferences())
+
+fun updatePref(parent : MainActivity, key : Preferences.Key<String>, value: String) {
+    runBlocking {
+        parent.timeMachinedataStore.edit { preferences ->
+            preferences[key] = value
+        }
+    }
+}
 
 fun getPrefs (parent : MainActivity) : UserPreferences {return runBlocking { fetchInitialPreferences(parent) }}
 
@@ -165,11 +174,11 @@ class SettingsFrag : Fragment() {
     }
 
 
-
-
-    private suspend fun updateSortSeparate(sortSeparate : Boolean) {
-        parent.timeMachinedataStore.edit { preferences ->
-            preferences[KEY_SORT_SEPARATE] = sortSeparate
+    private fun updateSortSeparate(sortSeparate: Boolean) {
+        runBlocking {
+            parent.timeMachinedataStore.edit { preferences ->
+                preferences[KEY_SORT_SEPARATE] = sortSeparate.toString()
+            }
         }
     }
 
@@ -205,7 +214,7 @@ class SettingsFrag : Fragment() {
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        Switch(checked = sortSeparate.toBoolean(), onCheckedChange =  { sortSeparate = it.toString(); runBlocking {updateSortSeparate(it)}})
+                        Switch(checked = sortSeparate.toBoolean(), onCheckedChange =  { sortSeparate = it.toString(); updatePref(parent, KEY_SORT_SEPARATE, it.toString())})
                         
                         Text (sortSeparate.toString())
 
