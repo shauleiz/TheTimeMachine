@@ -248,7 +248,7 @@ class AlarmEditFrag : Fragment() {
 
         // Event Handlers
         val setSelectedDays = { index: Int ->
-            val i = if (SettingsFragment.pref_first_day_of_week() == "Mo") {
+            val i = if (getPrefFirstDayOfWeek(parent) == "Mo") {
                 if (index == 6) 0 else index + 1
             } else index
             weekDays.intValue = weekDays.intValue xor (1 shl i)
@@ -535,7 +535,7 @@ class AlarmEditFrag : Fragment() {
     ) {
 
         // If first day in week is Sunday then 0 else 1
-        val firstDayInWeek = if (SettingsFragment.pref_first_day_of_week() == "Su") 0 else 1
+        val firstDayInWeek = if (getPrefFirstDayOfWeek(parent) == "Su") 0 else 1
 
         // List of labels on the weekdays buttons
         val weekdays =
@@ -803,7 +803,7 @@ class AlarmEditFrag : Fragment() {
         val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
         val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
         val firstDayOfWeek =
-            if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
+            if (getPrefFirstDayOfWeek(parent) == "Su") DayOfWeek.SUNDAY
             else DayOfWeek.MONDAY
 
         // Get the dates that are an exception
@@ -900,7 +900,7 @@ class AlarmEditFrag : Fragment() {
         fun DaysOfWeekTitle() {
             // List of labels on the weekdays buttons
             val daysOfWeek =
-                if (SettingsFragment.pref_first_day_of_week() == "Su")
+                if (getPrefFirstDayOfWeek(parent) == "Su")
                     listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
                 else
                     listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
@@ -1032,7 +1032,7 @@ class AlarmEditFrag : Fragment() {
         // Calendar Dialog - Single day selection
         if (showDialog ) {
             state.firstDayOfWeek =
-                if (SettingsFragment.pref_first_day_of_week() == "Su") DayOfWeek.SUNDAY
+                if (getPrefFirstDayOfWeek(parent) == "Su") DayOfWeek.SUNDAY
                 else DayOfWeek.MONDAY
             val today = LocalDate.now()
 

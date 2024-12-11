@@ -76,7 +76,6 @@ import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
-import com.product.thetimemachine.ui.SettingsFragment.pref_first_day_of_week
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -580,7 +579,7 @@ class AlarmListFrag : Fragment() {
     private fun sortAlarmList(list: MutableList<AlarmItem>) : List<AlarmItem>{
         // Sorting
         val comparatorType = SettingsFragment.pref_sort_type()
-        val separate = isSortSeparate(parent)
+        val separate = isPrefSortSeparate(parent)
         val sortedList = remember(comparatorType, list) {
             if (separate) {
                 when (comparatorType) {
@@ -715,7 +714,7 @@ class AlarmListFrag : Fragment() {
             val weekdaysString: String
 
             // Get the array os 'skips' and the correct weekdays string
-            when (pref_first_day_of_week()) {
+            when (getPrefFirstDayOfWeek(parent)) {
                 "Su" -> {
                     weekdaysString = stringResource(R.string.su_mo_tu_we_th_fr_sa)
                     genArray = suArray

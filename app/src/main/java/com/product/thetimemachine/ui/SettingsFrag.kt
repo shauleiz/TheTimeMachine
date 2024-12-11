@@ -15,8 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -28,15 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
-import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.PreferencesKeys.KEY_SORT_SEPARATE
-import com.product.thetimemachine.ui.SettingsFragment.sortSeparate
 import com.product.thetimemachine.ui.theme.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -106,7 +101,8 @@ fun mapUserPreferences(preferences: Preferences): UserPreferences {
 suspend fun fetchInitialPreferences(parent : MainActivity) =
     mapUserPreferences(parent.timeMachinedataStore.data.first().toPreferences())
 
-fun updatePref(parent : MainActivity, key : Preferences.Key<String>, value: String) {
+fun updatePref(parent : MainActivity, key : Preferences.Key<String>?, value: String?) {
+    if (key == null || value == null) return
     runBlocking {
         parent.timeMachinedataStore.edit { preferences ->
             preferences[key] = value
@@ -121,10 +117,16 @@ fun isPref24h(parent : MainActivity?) : Boolean {
     return  getPrefs(parent).hour12Or24.equals("h24") // TODO: Change to R.string
 }
 
-fun isSortSeparate(parent : MainActivity?) : Boolean {
+fun isPrefSortSeparate(parent : MainActivity?) : Boolean {
     if (parent==null) return false
     return  getPrefs(parent).sortSeparate.toBoolean()
 }
+
+fun getPrefFirstDayOfWeek(parent : MainActivity?) : String {
+    if (parent==null) return ""
+    return  getPrefs(parent).firstDayWeek
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 class SettingsFrag : Fragment() {
@@ -199,9 +201,9 @@ class SettingsFrag : Fragment() {
         // Execute when preferences dialog OK button pressed
         val onPrefDialogOK = {index : Int, value : String? ->
             Log.d("THE_TIME_MACHINE", "onPrefDialogOK(): index=$index ; value=$value ")
-            //getListOfPrefLiveData(setUpAlarmValues)[index]?.value = value
             listOfPrefs[index].showDialog?.value =  false
             listOfPrefs[index].origValue?.value = value
+            updatePref(parent, listOfPrefs[index].prefKey, value)
         }
 
 
@@ -214,12 +216,6 @@ class SettingsFrag : Fragment() {
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        Switch(checked = sortSeparate.toBoolean(), onCheckedChange =  { sortSeparate = it.toString(); updatePref(parent, KEY_SORT_SEPARATE, it.toString())})
-                        
-                        Text (sortSeparate.toString())
-
-                        Text (prefs.hour12Or24)
-
                         /* Preferences */
                         ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
 

@@ -174,7 +174,7 @@ fun getListOfItemPreferences(setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) 
 @Composable
 fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefData> {
 
-    val TimeFormatList = listOf(
+    val timeFormatList = listOf(
         PrefData(
             title = R.string.time_format
         ),
@@ -190,6 +190,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.first_day_of_week,
+            prefKey = PreferencesKeys.KEY_FIRST_DAY,
             currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.firstDayWeek) }),
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.firstDayWeek) }),
             list = firstDayList,
@@ -202,6 +203,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.ring_duration,
+            prefKey = PreferencesKeys.KEY_RING_DURATION,
             currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration) }),
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringDuration) }),
             list = ringDurationList,
@@ -210,6 +212,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.times_to_keep_on_ringing,
+            prefKey = PreferencesKeys.KEY_RING_REPEAT,
             currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat) }),
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.ringRepeat) }),
             list = ringRepeatList,
@@ -220,6 +223,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.snooze_for,
+            prefKey = PreferencesKeys.KEY_SNOOZE_DURATION,
             currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration) }),
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.snoozeDuration) }),
             list = snoozeDurationList,
@@ -231,6 +235,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.vibration_pattern,
+            prefKey = PreferencesKeys.KEY_VIBRATION_PATTERN,
             currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern) }),
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.vibrationPattern) }),
             list = vibrationPatternList,
@@ -240,6 +245,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.alarm_sounds,
+            prefKey = PreferencesKeys.KEY_ALARM_SOUND,
             currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound) }),
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.alarmSound) }),
             list = alarmSoundList,
@@ -249,6 +255,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.gradual_volume_increase,
+            prefKey = PreferencesKeys.KEY_GRADUAL_VOLUME,
             currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume) }),
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.gradualVolume) }),
             list = gradualVolumeList,
@@ -262,6 +269,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.sort_alarms_list,
+            prefKey = PreferencesKeys.KEY_SORT_TYPE,
             currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortType) }),
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortType) }),
             list = sortTypeList,
@@ -271,8 +279,9 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
         PrefData(
             title = R.string.inactive_alarms_at_the_bottom,
-            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortSeparate.toString()) }),
-            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortSeparate.toString()) }),
+            prefKey = PreferencesKeys.KEY_SORT_SEPARATE,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortSeparate) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.sortSeparate) }),
             list = sortTypeList,
             iconId = R.drawable.sort_fill0_wght400_grad0_opsz24, // TODO: Replace icon
             showDialog = rememberSaveable { mutableStateOf(false) },
@@ -280,7 +289,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
         ),
     )
 
-    return TimeFormatList
+    return timeFormatList
 }
 
 fun getListOfPrefLiveData (setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : List< MutableLiveData<String>?>{
@@ -444,18 +453,19 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
 
 
     @Composable
-    fun PrefSwitch(index: Int){
+    fun PrefSwitch(index: Int, onOK : (index: Int, value : String?)->Unit){
         val on = rememberSaveable { mutableStateOf( listOfPrefs[index].origValue!!.value.toBoolean())}
         val toggle = listOfPrefs[index].showDialog?.value ?: false
         if (toggle){
             on.value = !on.value
+            onOK(index, on.value.toString())
             listOfPrefs[index].showDialog?.value = false
         }
         Switch(checked = on.value, onCheckedChange = null /*{ on.value = it}*/)
     }
 
     @Composable
-    fun PrefRow(index: Int){
+    fun PrefRow(index: Int, onOK : (index: Int, value : String?)->Unit){
         if (listOfPrefs[index].list != null) { // Normal row
             Row(
                 horizontalArrangement = Arrangement.Start,
@@ -480,7 +490,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                             list = listOfPrefs[index].list!!,
                             )
                     else
-                        PrefSwitch(index)
+                        PrefSwitch(index, onOK)
                 }
             }
         } else { // Header
@@ -500,7 +510,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(start = 8.dp)
     ) {
-        listOfPrefs.forEachIndexed{ index, _ ->  key(index){PrefRow(index = index)}  }
+        listOfPrefs.forEachIndexed{ index, _ ->  key(index){PrefRow(index, onOK)}  }
     }
 }
 
