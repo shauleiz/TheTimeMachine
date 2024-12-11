@@ -243,7 +243,7 @@ class AlarmEditFrag : Fragment() {
         val timePickerState = rememberTimePickerState(
             initialHour = getInitialHour(),
             initialMinute = getInitialMinute(),
-            is24Hour = SettingsFragment.pref_is24HourClock(),
+            is24Hour = isPref24h(parent),
         )
 
         // Event Handlers
@@ -442,7 +442,7 @@ class AlarmEditFrag : Fragment() {
     private fun TimePickerField(timePickerState: TimePickerState) {
 
         // Update mode
-        timePickerState.is24hour = SettingsFragment.pref_is24HourClock()
+        timePickerState.is24hour = isPref24h(parent)
 
         // Display Time Picker
         TimePicker(

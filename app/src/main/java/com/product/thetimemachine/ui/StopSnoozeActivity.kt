@@ -170,8 +170,10 @@ class StopSnoozeActivity : AppCompatActivity() {
        volumeControlStream = AudioManager.STREAM_ALARM
 
        // Set The time format
-       dateFormat = if (SettingsFragment.pref_is24HourClock()) SimpleDateFormat("H:mm", Locale.US)
-       else SimpleDateFormat("h:mm a", Locale.US)
+       dateFormat = if (isPref24h(applicationContext))
+           SimpleDateFormat("H:mm", Locale.US)
+       else
+           SimpleDateFormat("h:mm a", Locale.US)
 
        // Hide system bars
        val windowInsetsController =  WindowCompat.getInsetsController(window, window.decorView)

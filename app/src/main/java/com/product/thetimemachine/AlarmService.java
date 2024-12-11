@@ -11,9 +11,10 @@ import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_duration;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_repeat;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_vibration_pattern;
 import static com.product.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
-import static com.product.thetimemachine.ui.SettingsFragment.pref_is24HourClock;
+import static com.product.thetimemachine.ui.SettingsFragKt.isPref24h;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -40,6 +41,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.product.thetimemachine.Data.AlarmItem;
+import com.product.thetimemachine.ui.MainActivity;
 import com.product.thetimemachine.ui.StopSnoozeActivity;
 
 import java.io.IOException;
@@ -81,7 +83,7 @@ public class AlarmService  extends Service {
       if (builder == null || builder.build() == null) return START_NOT_STICKY;
 
       // Set The time format
-      if (pref_is24HourClock())
+      if (isPref24h(appContext))
          dateFormat = new SimpleDateFormat("H:mm",Locale.US);
       else
          dateFormat = new SimpleDateFormat("h:mm a",Locale.US);

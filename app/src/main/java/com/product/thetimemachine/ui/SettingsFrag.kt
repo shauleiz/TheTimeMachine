@@ -1,6 +1,7 @@
 package com.product.thetimemachine.ui
 
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.preference.PreferenceManager.getDefaultSharedPreferencesName
@@ -98,10 +99,10 @@ fun mapUserPreferences(preferences: Preferences): UserPreferences {
         sortSeparate, gradualVolume)
 }
 
-suspend fun fetchInitialPreferences(parent : MainActivity) =
+suspend fun fetchInitialPreferences(parent : Context) =
     mapUserPreferences(parent.timeMachinedataStore.data.first().toPreferences())
 
-fun updatePref(parent : MainActivity, key : Preferences.Key<String>?, value: String?) {
+fun updatePref(parent : Activity, key : Preferences.Key<String>?, value: String?) {
     if (key == null || value == null) return
     runBlocking {
         parent.timeMachinedataStore.edit { preferences ->
@@ -110,19 +111,19 @@ fun updatePref(parent : MainActivity, key : Preferences.Key<String>?, value: Str
     }
 }
 
-fun getPrefs (parent : MainActivity) : UserPreferences {return runBlocking { fetchInitialPreferences(parent) }}
+fun getPrefs (parent : Context) : UserPreferences {return runBlocking { fetchInitialPreferences(parent) }}
 
-fun isPref24h(parent : MainActivity?) : Boolean {
+fun isPref24h(parent : Context?) : Boolean {
     if (parent==null) return false
     return  getPrefs(parent).hour12Or24.equals("h24") // TODO: Change to R.string
 }
 
-fun isPrefSortSeparate(parent : MainActivity?) : Boolean {
+fun isPrefSortSeparate(parent : Context?) : Boolean {
     if (parent==null) return false
     return  getPrefs(parent).sortSeparate.toBoolean()
 }
 
-fun getPrefFirstDayOfWeek(parent : MainActivity?) : String {
+fun getPrefFirstDayOfWeek(parent : Context?) : String {
     if (parent==null) return ""
     return  getPrefs(parent).firstDayWeek
 }
