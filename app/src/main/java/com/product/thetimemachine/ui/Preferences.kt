@@ -438,10 +438,16 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
             )
     }
 
+
     @Composable
-    fun PrefSwitch(value: String){
-        val on = rememberSaveable { mutableStateOf( value.toBoolean())}
-        Switch(checked = on.value, onCheckedChange =  { on.value = it})
+    fun PrefSwitch(index: Int){
+        val on = rememberSaveable { mutableStateOf( listOfPrefs[index].origValue!!.value.toBoolean())}
+        val toggle = listOfPrefs[index].showDialog?.value ?: false
+        if (toggle){
+            on.value = !on.value
+            listOfPrefs[index].showDialog?.value = false
+        }
+        Switch(checked = on.value, onCheckedChange = null /*{ on.value = it}*/)
     }
 
     @Composable
@@ -466,11 +472,11 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                     PrefTitle(listOfPrefs[index].title)
                     if (listOfPrefs[index].isDialog)
                         PrefSelValue(
-                        value = listOfPrefs[index].origValue!!.value!!,
-                        list = listOfPrefs[index].list!!,
-                        )
+                            value = listOfPrefs[index].origValue!!.value!!,
+                            list = listOfPrefs[index].list!!,
+                            )
                     else
-                        PrefSwitch(value = listOfPrefs[index].origValue!!.value!!,)
+                        PrefSwitch(index)
                 }
             }
         } else { // Header
