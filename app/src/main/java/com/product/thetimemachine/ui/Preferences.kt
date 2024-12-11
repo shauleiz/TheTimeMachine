@@ -59,11 +59,12 @@ data class PrefData(
     val prefKey: Preferences.Key<String>? = null
 )
 
+// TODO: Replace Strings
 // Menu Items
 val ringDurationList = listOf(
     Pair("15 Seconds", "15Seconds"), Pair("30 Seconds", "30Seconds"),
     Pair("45 Seconds", "45Seconds"), Pair("1 Minute", "60Seconds"),
-    Pair("2 Minute", "120Seconds"), Pair("5 Minute", "300Seconds"),
+    Pair("2 Minutes", "120Seconds"), Pair("5 Minutes", "300Seconds"),
 )
 val ringRepeatList = listOf(
     Pair("Never", "0T"), Pair("1 Time", "1T"),

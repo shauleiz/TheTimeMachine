@@ -1,5 +1,12 @@
 package com.product.thetimemachine;
 
+import static com.product.thetimemachine.ui.SettingsFragKt.getPrefAlarmSound;
+import static com.product.thetimemachine.ui.SettingsFragKt.getPrefGradualVolume;
+import static com.product.thetimemachine.ui.SettingsFragKt.getPrefRingDuration;
+import static com.product.thetimemachine.ui.SettingsFragKt.getPrefRingRepeat;
+import static com.product.thetimemachine.ui.SettingsFragKt.getPrefSnoozeDuration;
+import static com.product.thetimemachine.ui.SettingsFragKt.getPrefVibrationPatern;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -246,12 +253,12 @@ public class AlarmViewModel extends AndroidViewModel {
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
 
-         ringDuration.setValue(preferences.getString(context.getString(R.string.key_ring_duration), ""));
-         ringRepeat.setValue(preferences.getString(context.getString(R.string.key_ring_repeat), ""));
-         snoozeDuration.setValue(preferences.getString(context.getString(R.string.key_snooze_duration), ""));
-         vibrationPattern.setValue(preferences.getString(context.getString(R.string.key_vibration_pattern), ""));
-         alarmSound.setValue(preferences.getString(context.getString(R.string.key_alarm_sound), ""));
-         gradualVolume.setValue(preferences.getString(context.getString(R.string.key_gradual_volume), ""));
+         ringDuration.setValue(getPrefRingDuration(context));
+         ringRepeat.setValue(getPrefRingRepeat(context));
+         snoozeDuration.setValue(getPrefSnoozeDuration(context));
+         vibrationPattern.setValue(getPrefVibrationPatern(context));
+         alarmSound.setValue(getPrefAlarmSound(context));
+         gradualVolume.setValue(getPrefGradualVolume(context));
 
 
          //weekDays.setValue(ONEOFF);

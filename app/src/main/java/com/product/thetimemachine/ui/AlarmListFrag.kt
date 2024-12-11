@@ -578,7 +578,7 @@ class AlarmListFrag : Fragment() {
     @Composable
     private fun sortAlarmList(list: MutableList<AlarmItem>) : List<AlarmItem>{
         // Sorting
-        val comparatorType = SettingsFragment.pref_sort_type()
+        val comparatorType = getPrefSortType(parent)
         val separate = isPrefSortSeparate(parent)
         val sortedList = remember(comparatorType, list) {
             if (separate) {

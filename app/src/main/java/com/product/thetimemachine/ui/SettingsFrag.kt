@@ -128,6 +128,42 @@ fun getPrefFirstDayOfWeek(parent : Context?) : String {
     return  getPrefs(parent).firstDayWeek
 }
 
+fun getPrefSortType(parent : Context?) : String {
+    if (parent==null) return ""
+    return  getPrefs(parent).sortType
+}
+
+fun getPrefRingDuration(parent : Context?) : String {
+    if (parent==null) return ""
+    return  getPrefs(parent).ringDuration
+}
+
+fun getPrefRingRepeat(parent : Context?) : String {
+    if (parent==null) return ""
+    return  getPrefs(parent).ringRepeat
+}
+
+fun getPrefSnoozeDuration(parent : Context?) : String {
+    if (parent==null) return ""
+    return  getPrefs(parent).snoozeDuration
+}
+
+fun getPrefVibrationPatern(parent : Context?) : String {
+    if (parent==null) return ""
+    return  getPrefs(parent).vibrationPattern
+}
+
+fun getPrefAlarmSound(parent : Context?) : String {
+    if (parent==null) return ""
+    return  getPrefs(parent).alarmSound
+}
+
+fun getPrefGradualVolume(parent : Context?) : String {
+    if (parent==null) return ""
+    return  getPrefs(parent).gradualVolume
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 class SettingsFrag : Fragment() {

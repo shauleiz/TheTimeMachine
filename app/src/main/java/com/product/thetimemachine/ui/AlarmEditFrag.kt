@@ -1016,18 +1016,6 @@ class AlarmEditFrag : Fragment() {
             return modifiedDates
         }
 
-        @Composable
-        fun Test1(selectedDates : LocalDate?){
-            Log.d("THE_TIME_MACHINE", "Test1():  selectedDates: $selectedDates")
-        }
-
-        @Composable
-        fun Test2(selectedDates : String){
-            Log.d("THE_TIME_MACHINE", "Test1():  selectedDates: $selectedDates")
-        }
-
-        Test1(selectedDate)
-        Test2(selectedDates)
 
         // Calendar Dialog - Single day selection
         if (showDialog ) {
