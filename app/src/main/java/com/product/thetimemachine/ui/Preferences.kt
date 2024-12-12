@@ -1,5 +1,8 @@
 package com.product.thetimemachine.ui
 
+import android.content.Context
+import android.os.Handler
+import android.os.Vibrator
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,13 +36,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.MutableLiveData
-import com.product.thetimemachine.AlarmViewModel
-import com.product.thetimemachine.R
-import com.product.thetimemachine.ui.SettingsFragment.sortSeparate
-import com.product.thetimemachine.ui.SettingsFragment.sound
-import com.product.thetimemachine.ui.SettingsFragment.vibrate
 import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.MutableLiveData
+import com.product.thetimemachine.AlarmService
+import com.product.thetimemachine.AlarmViewModel
+import com.product.thetimemachine.Application.TheTimeMachineApp
+import com.product.thetimemachine.R
 
 
 /***********************************************************************************************/
@@ -355,7 +356,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                     // Loop on all entries in the list
                     // Every entry is a row with a radio button and text
                     // The row is clickable
-                    entry.list!!.forEachIndexed { index, pair ->
+                    entry.list!!.forEachIndexed { _, pair ->
                         Row(horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -515,5 +516,39 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
     }
 }
 
+fun sound(pattern: String?) {
+    val r = Runnable {
+        Log.d("THE_TIME_MACHINE", "sound(): Cancelling Sound")
+        AlarmService.sound(TheTimeMachineApp.appContext, null)
+    }
 
+    AlarmService.sound(TheTimeMachineApp.appContext, null)
+    AlarmService.sound(TheTimeMachineApp.appContext, pattern)
+    // Call delayed stopping of the sound
+    val handler = Handler()
+    handler.postDelayed(r, 4000)
+}
+
+fun vibrate(pattern: String?) {
+    val vibrator =
+        TheTimeMachineApp.appContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    if (vibrator.hasAmplitudeControl()) Log.d("THE_TIME_MACHINE", "vibrate(): hasAmplitudeControl")
+    else Log.d("THE_TIME_MACHINE", "vibrate(): No AmplitudeControl")
+
+
+    val r = Runnable {
+        Log.d("THE_TIME_MACHINE", "vibrate(): Cancelling Vibrator")
+        vibrator.cancel()
+    }
+
+    // Vibrate
+    AlarmService.VibrateEffect(TheTimeMachineApp.appContext, pattern)
+
+
+
+    Log.d("THE_TIME_MACHINE", "vibrate(): Start Handler")
+    // Call delayed stopping of the vibrator
+    val handler = Handler()
+    handler.postDelayed(r, 5000)
+}
 /***********************************************************************************************/
