@@ -1,11 +1,14 @@
 package com.product.thetimemachine.ui
 
 import android.content.Context
+import android.os.CountDownTimer
 import android.os.Handler
+import android.os.Looper
 import android.os.Vibrator
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,6 +45,7 @@ import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.R
+import kotlin.concurrent.timer
 
 
 /***********************************************************************************************/
@@ -105,6 +109,66 @@ val timeFormatList = listOf(Pair("12h Clock", "h12"), Pair("24h Clock", "h24"))
 val sortTypeList = listOf(
     Pair("By time set", "by_time_set"), Pair("By alarm time", "by_alarm_time"),
     Pair("Alphabetically", "alphabetically"))
+
+/*
+    Sound Object - used to play and kill alarm sound:
+
+    playSound(pattern: String?, duration : Long)
+    - pattern: Identifier of the sound pattern
+    - duration: Duration of sound in milliseconds
+
+    playSound()
+    Defines a countdown timer that start before the beginning of the the playing of the sound
+    When the countdown timer expires it calls onFinish() that kills the sound.
+    The timer calls onTick() every TICK (100 milli) to check that the original pattern is still playing
+
+    playSound()
+    Kills currently playing Sound.
+    Starts timer
+    starts playing sound
+
+ */
+object SoundObj {
+
+    private lateinit var timer : CountDownTimer
+    const val TICK : Long = 100
+    var currentPattern : String?= null
+
+
+    fun playSound(pattern: String?, duration : Long){
+
+        currentPattern = pattern
+
+        Log.d("THE_TIME_MACHINE", "playSound()[1]:  pattern = $pattern ; duration = $duration")
+        // Null or Empty pattern OR non-positive sound duration -> Kill sound
+        if (pattern.isNullOrEmpty() || duration <= 0) killSound()
+
+        // Create a count down timer that stops the sound
+        timer  = object: CountDownTimer(duration, TICK) {
+
+            override fun onTick(p0: Long) {
+                Log.d("THE_TIME_MACHINE", "playSound()::onTick[4]:    currentPattern = $currentPattern ; pattern = $pattern ; duration = $duration ; p0 = $p0")
+                if (!currentPattern.equals(pattern)) cancel()
+            }
+
+            override fun onFinish() {
+                Log.d("THE_TIME_MACHINE", "playSound()::onFinish[2]:  pattern = $pattern ; duration = $duration")
+                killSound() }
+        }
+
+        // Start timer, kill previous sound and play pattern
+        //timer.cancel()
+        killSound()
+        timer.start()
+        killSound()
+        AlarmService.sound(TheTimeMachineApp.appContext, pattern)
+    }
+
+    fun killSound(){
+        Log.d("THE_TIME_MACHINE", "playSound()::Kill[3]")
+        AlarmService.sound(TheTimeMachineApp.appContext, null)}
+}
+
 
 @Composable
 fun getListOfItemPreferences(setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : List<PrefData>{
@@ -317,10 +381,10 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
     // TODO: Write a callback function to give a sample of vibration & Sound pattern
     // Use SettingsFragment::vibrate and SettingsFragment::sound
     // Call from Row/Radio button OnClick
-    fun playVibOrSound(index : Int, pattern : String) {
+    fun playVibOrSound(index : Int, pattern : String?) {
         Log.d("THE_TIME_MACHINE", "playVibOrSound():  index = $index ; pattern = $pattern")
         if (listOfPrefs[index].title == R.string.vibration_pattern) vibrate(pattern)
-        else if (listOfPrefs[index].title == R.string.alarm_sounds) sound(pattern)
+        else if (listOfPrefs[index].title == R.string.alarm_sounds) SoundObj.playSound(pattern, 4000)
     }
 
     // Display Preference Dialog
@@ -329,6 +393,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
 
 
             Dialog(onDismissRequest = {
+                //playVibOrSound(index, null) // Mute
                 entry.showDialog.value = false
                 entry.currentValue!!.value = entry.origValue!!.value }) {
                 Column(
@@ -383,16 +448,18 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                         modifier = Modifier
                             .fillMaxWidth()){
                         TextButton({
+                            //playVibOrSound(index, null) // Mute
                             entry.showDialog.value = false
-                            entry.currentValue!!.value = entry.origValue!!.value}){
-                            Text(
-                                stringResource(id = R.string.cancel_general)
+                            entry.currentValue!!.value = entry.origValue!!.value})
+                        {
+                            Text(stringResource(id = R.string.cancel_general)
                             )
                         }
 
                         TextButton({
-                            onOK(index, entry.currentValue!!.value)
-                        }) {
+                            //playVibOrSound(index, null) // Mute
+                            onOK(index, entry.currentValue!!.value) })
+                        {
                             Text(stringResource(id = R.string.ok_general))
                         }
                     }
@@ -522,11 +589,14 @@ fun sound(pattern: String?) {
         AlarmService.sound(TheTimeMachineApp.appContext, null)
     }
 
+    Handler(Looper.getMainLooper()).removeCallbacksAndMessages("Token")
+
+    //val sound = if (pattern.isNullOrEmpty()) "silent" else pattern
+
     AlarmService.sound(TheTimeMachineApp.appContext, null)
     AlarmService.sound(TheTimeMachineApp.appContext, pattern)
     // Call delayed stopping of the sound
-    val handler = Handler()
-    handler.postDelayed(r, 4000)
+    Handler(Looper.getMainLooper()).postDelayed(r, "Token",4000)
 }
 
 fun vibrate(pattern: String?) {
@@ -541,6 +611,8 @@ fun vibrate(pattern: String?) {
         vibrator.cancel()
     }
 
+    if (pattern.isNullOrEmpty()) return
+
     // Vibrate
     AlarmService.VibrateEffect(TheTimeMachineApp.appContext, pattern)
 
@@ -548,7 +620,6 @@ fun vibrate(pattern: String?) {
 
     Log.d("THE_TIME_MACHINE", "vibrate(): Start Handler")
     // Call delayed stopping of the vibrator
-    val handler = Handler()
-    handler.postDelayed(r, 5000)
+    Handler(Looper.getMainLooper()).postDelayed(r, 5000)
 }
 /***********************************************************************************************/

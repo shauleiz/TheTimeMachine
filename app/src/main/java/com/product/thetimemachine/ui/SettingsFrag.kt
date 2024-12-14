@@ -81,7 +81,7 @@ private const val isDynamicColor = false
 
 fun mapUserPreferences(preferences: Preferences): UserPreferences {
 
-    Log.d("THE_TIME_MACHINE", "mapUserPreferences():  preferences = $preferences")
+    //Log.d("THE_TIME_MACHINE", "mapUserPreferences():  preferences = $preferences")
 
     val ringRepeat = preferences[PreferencesKeys.KEY_RING_REPEAT] ?: "Error"
     val ringDuration =   preferences[PreferencesKeys.KEY_RING_DURATION] ?: "Error"
