@@ -392,7 +392,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
 
 
             Dialog(onDismissRequest = {
-                //playVibOrSound(index, null) // Mute
+                playVibOrSound(index, null) // Mute
                 entry.showDialog.value = false
                 entry.currentValue!!.value = entry.origValue!!.value }) {
                 Column(
