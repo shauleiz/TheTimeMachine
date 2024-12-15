@@ -302,7 +302,7 @@ public class AlarmService  extends Service {
       switch (effect) {
          case "ssb":  // Single Short Beat
             timings = new long[]{50, 50, 50, 50, 50, 100};
-            timingsNoAmp = new long[] {0, 350};
+            timingsNoAmp = new long[] {300, 350, 400};//{0, 350, 400};
             amplitudes = new int[]{33, 51, 75, 113, 170, 255};
             repeatIndex = -1; // Do not repeat
             repeatIndexNoAmp = -1; // Do not repeat

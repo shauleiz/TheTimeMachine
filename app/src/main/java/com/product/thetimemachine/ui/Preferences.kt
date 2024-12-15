@@ -168,6 +168,46 @@ object SoundObj {
         AlarmService.sound(TheTimeMachineApp.appContext, null)}
 }
 
+object VibrateObj {
+
+    private lateinit var timer : CountDownTimer
+    const val TICK : Long = 100
+    private var currentPattern : String?= null
+
+
+    fun playVibrate(pattern: String?, duration : Long){
+
+        currentPattern = pattern
+
+        if (pattern.isNullOrEmpty() || duration <= 0) {
+            killVibrate()
+            return
+        }
+
+        timer = object: CountDownTimer(duration, TICK) {
+            override fun onTick(p0: Long) {
+                if (!currentPattern.equals(pattern)) cancel()
+            }
+
+            override fun onFinish() {
+                killVibrate()
+            }
+
+        }
+
+        killVibrate()
+        timer.start()
+        Log.d("THE_TIME_MACHINE", "playVibrate(): currentPattern = $currentPattern ; pattern = $pattern ; duration = $duration")
+        AlarmService.VibrateEffect(TheTimeMachineApp.appContext, pattern)
+    }
+
+    fun killVibrate(){
+        val vibrator =
+            TheTimeMachineApp.appContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (vibrator.hasAmplitudeControl()) Log.d("THE_TIME_MACHINE", "vibrate(): hasAmplitudeControl")
+        else Log.d("THE_TIME_MACHINE", "vibrate(): No AmplitudeControl")
+        vibrator.cancel()}
+}
 
 @Composable
 fun getListOfItemPreferences(setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : List<PrefData>{
@@ -382,7 +422,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
     // Call from Row/Radio button OnClick
     fun playVibOrSound(index : Int, pattern : String?) {
         Log.d("THE_TIME_MACHINE", "playVibOrSound():  index = $index ; pattern = $pattern")
-        if (listOfPrefs[index].title == R.string.vibration_pattern) vibrate(pattern)
+        if (listOfPrefs[index].title == R.string.vibration_pattern) VibrateObj.playVibrate(pattern, 5000)
         else if (listOfPrefs[index].title == R.string.alarm_sounds) SoundObj.playSound(pattern, 4000)
     }
 
