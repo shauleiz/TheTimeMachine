@@ -157,7 +157,6 @@ object SoundObj {
         }
 
         // Start timer, kill previous sound and play pattern
-        //timer.cancel()
         killSound()
         timer.start()
         killSound()
@@ -448,7 +447,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                         modifier = Modifier
                             .fillMaxWidth()){
                         TextButton({
-                            //playVibOrSound(index, null) // Mute
+                            playVibOrSound(index, null) // Mute
                             entry.showDialog.value = false
                             entry.currentValue!!.value = entry.origValue!!.value})
                         {
@@ -457,7 +456,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                         }
 
                         TextButton({
-                            //playVibOrSound(index, null) // Mute
+                            playVibOrSound(index, null) // Mute
                             onOK(index, entry.currentValue!!.value) })
                         {
                             Text(stringResource(id = R.string.ok_general))
