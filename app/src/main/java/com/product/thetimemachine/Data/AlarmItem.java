@@ -414,7 +414,7 @@ public class AlarmItem {
       Log.d("THE_TIME_MACHINE", "alarmTimeInMillis()[2] calendar = " + calendar);
 
       // If this a future date by given calendar date
-      if (isFutureDate() && getDayOfMonth()>0 && getMonth()>0 && getYear()>0){
+      if (isFutureDate() && getDayOfMonth()>0  && getYear()>0){
          calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
          calendar.set(Calendar.MONTH,month);
          calendar.set(Calendar.YEAR,year);

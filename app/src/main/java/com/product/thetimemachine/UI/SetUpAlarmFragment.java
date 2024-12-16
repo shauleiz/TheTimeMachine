@@ -479,7 +479,7 @@ public boolean isInThePast(long alarmInMillis){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(nowInMillis);
 
-        if (dd>0 && mm>0 && yy>0)
+        if (dd>0 && yy>0)
             calendar.set(yy, mm, dd,h,m,0);
         else{
             calendar.set(Calendar.HOUR_OF_DAY, h);
@@ -713,7 +713,7 @@ public boolean isInThePast(long alarmInMillis){
         y = setUpAlarmValues.getYear().getValue()==null ? 0: setUpAlarmValues.getYear().getValue();
 
         // If date not stored, set today's date
-        if (d == 0 || m == 0 || y == 0) {
+        if (d == 0  || y == 0) {
             calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
             d = calendar.get(Calendar.DAY_OF_MONTH);
@@ -883,7 +883,7 @@ public boolean isInThePast(long alarmInMillis){
            else
               dd= 0;
 
-            if (yy>0 && mm>0 && dd>0) {
+            if (yy>0  && dd>0) {
                 item.setYear(yy);
                 item.setMonth(mm);
                 item.setDayOfMonth(dd);
