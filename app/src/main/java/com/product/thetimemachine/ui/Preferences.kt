@@ -130,25 +130,27 @@ val sortTypeList = listOf(
  */
 object SoundObj {
 
-    private lateinit var timer : CountDownTimer
-    const val TICK : Long = 100
-    var currentPattern : String?= null
+    @Volatile private var timer : CountDownTimer? = null
+    const val TICK : Long = 1000
 
 
     fun playSound(pattern: String?, duration : Long){
 
-        currentPattern = pattern
+        // Start by killing the sound and killing the timer
+        killSound()
 
         Log.d("THE_TIME_MACHINE", "playSound()[1]:  pattern = $pattern ; duration = $duration")
-        // Null or Empty pattern OR non-positive sound duration -> Kill sound
-        if (pattern.isNullOrEmpty() || duration <= 0) killSound()
+        // Null or Empty pattern OR non-positive sound duration -> return
+        if (pattern.isNullOrEmpty() || duration <= 0) {
+            return
+        }
+
 
         // Create a count down timer that stops the sound
         timer  = object: CountDownTimer(duration, TICK) {
 
             override fun onTick(p0: Long) {
-                Log.d("THE_TIME_MACHINE", "playSound()::onTick[4]:    currentPattern = $currentPattern ; pattern = $pattern ; duration = $duration ; p0 = $p0")
-                if (!currentPattern.equals(pattern)) cancel()
+                Log.d("THE_TIME_MACHINE", "playSound()::onTick[4]:     pattern = $pattern ; duration = $duration ; p0 = $p0")
             }
 
             override fun onFinish() {
@@ -156,14 +158,13 @@ object SoundObj {
                 killSound() }
         }
 
-        // Start timer, kill previous sound and play pattern
-        killSound()
-        timer.start()
-        killSound()
+        // Start timer and play pattern
+        timer?.start()
         AlarmService.sound(TheTimeMachineApp.appContext, pattern)
     }
 
     fun killSound(){
+        timer?.cancel()
         Log.d("THE_TIME_MACHINE", "playSound()::Kill[3]")
         AlarmService.sound(TheTimeMachineApp.appContext, null)}
 }
@@ -171,7 +172,6 @@ object SoundObj {
 object VibrateObj {
 
     @Volatile private var timer : CountDownTimer? = null
-    //@Volatile private var currentPattern : String?= null
     const val TICK : Long = 1000
 
 
