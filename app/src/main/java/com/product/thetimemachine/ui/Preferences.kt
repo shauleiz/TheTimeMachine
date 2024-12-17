@@ -170,43 +170,46 @@ object SoundObj {
 
 object VibrateObj {
 
-    private lateinit var timer : CountDownTimer
-    const val TICK : Long = 100
-    private var currentPattern : String?= null
+    @Volatile private var timer : CountDownTimer? = null
+    //@Volatile private var currentPattern : String?= null
+    const val TICK : Long = 1000
 
 
     fun playVibrate(pattern: String?, duration : Long){
 
-        currentPattern = pattern
 
         if (pattern.isNullOrEmpty() || duration <= 0) {
             killVibrate()
             return
         }
 
+        killVibrate()
+
         timer = object: CountDownTimer(duration, TICK) {
+
             override fun onTick(p0: Long) {
-                if (!currentPattern.equals(pattern)) cancel()
+                Log.d("THE_TIME_MACHINE", "onTick(): pattern = $pattern ; duration = $duration")
             }
 
             override fun onFinish() {
                 killVibrate()
             }
-
         }
 
-        killVibrate()
-        timer.start()
-        Log.d("THE_TIME_MACHINE", "playVibrate(): currentPattern = $currentPattern ; pattern = $pattern ; duration = $duration")
+        timer?.start()
+        Log.d("THE_TIME_MACHINE", "playVibrate(): pattern = $pattern ; duration = $duration")
         AlarmService.VibrateEffect(TheTimeMachineApp.appContext, pattern)
     }
 
-    fun killVibrate(){
+    private fun killVibrate(){
+        timer?.cancel()
+
         val vibrator =
             TheTimeMachineApp.appContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (vibrator.hasAmplitudeControl()) Log.d("THE_TIME_MACHINE", "vibrate(): hasAmplitudeControl")
         else Log.d("THE_TIME_MACHINE", "vibrate(): No AmplitudeControl")
-        vibrator.cancel()}
+        vibrator.cancel()
+    }
 }
 
 @Composable
