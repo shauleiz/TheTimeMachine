@@ -114,7 +114,7 @@ class AlarmListFrag : Fragment() {
         val appToolbar = requireActivity().findViewById<Toolbar>(R.id.app_toolbar)
         appToolbar.setTitle(R.string.alarmlist_title)
         (requireActivity() as AppCompatActivity).setSupportActionBar(appToolbar)
-        parent!!.UpdateOptionMenu()
+        //parent!!.UpdateOptionMenu()
 
     }
 

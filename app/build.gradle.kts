@@ -82,6 +82,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.8.1")
     implementation("androidx.databinding:databinding-runtime:8.6.1")
     implementation("androidx.datastore:datastore-android:1.1.1")
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 
 
     testImplementation("junit:junit:4.13.2")
