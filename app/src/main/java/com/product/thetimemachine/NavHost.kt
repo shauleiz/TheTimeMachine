@@ -16,13 +16,13 @@
 
 package com.product.thetimemachine
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.product.thetimemachine.ui.AlarmListFrag
 
 @Composable
 fun AlarmNavHost(
@@ -35,28 +35,30 @@ fun AlarmNavHost(
         modifier = modifier
     ) {
         composable(route = AlarmList.route) {
-            AlarmListFrag.
+            AlarmListScreen()
         }
-        composable(route = Accounts.route) {
-            AccountsScreen(
-                onAccountClick = { accountType ->
-                    navController.navigateToSingleAccount(accountType)
-                }
-            )
+        composable(route = AlarmEdit.route) {
+            AlarmEditScreen()
         }
-        composable(route = Bills.route) {
-            BillsScreen()
-        }
-        composable(
-            route = SingleAccount.routeWithArgs,
-            arguments = SingleAccount.arguments,
-            deepLinks = SingleAccount.deepLinks
-        ) { navBackStackEntry ->
-            val accountType =
-                navBackStackEntry.arguments?.getString(SingleAccount.accountTypeArg)
-            SingleAccountScreen(accountType)
+        composable(route = Settings.route) {
+            SettingsScreen()
         }
     }
+}
+
+@Composable
+fun SettingsScreen() {
+    Text("SettingsScreen")
+}
+
+@Composable
+fun AlarmEditScreen() {
+    Text("AlarmEditScreen")
+}
+
+@Composable
+fun AlarmListScreen() {
+    Text("AlarmListScreen")
 }
 
 fun NavHostController.navigateSingleTopTo(route: String) =
@@ -77,5 +79,5 @@ fun NavHostController.navigateSingleTopTo(route: String) =
     }
 
 private fun NavHostController.navigateToSingleAccount(accountType: String) {
-    this.navigateSingleTopTo("${SingleAccount.route}/$accountType")
+    //this.navigateSingleTopTo("${SingleAccount.route}/$accountType")
 }

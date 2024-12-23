@@ -81,7 +81,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class AlarmListFrag : Fragment() {
+ class AlarmListFrag : Fragment() {
     private var parent: MainActivity? = null
     private var fragmentView: View? = null
     private val isDynamicColor = false
@@ -220,13 +220,13 @@ class AlarmListFrag : Fragment() {
         if (item == null) return
 
         // Copy values from the selected item to be used by the setup fragment
-        parent!!.alarmViewModel.setUpAlarmValues.GetValuesFromList(item, edit)
+        parent!!.alarmViewModel?.setUpAlarmValues?.GetValuesFromList(item, edit)
 
         // Passing parameters to setup fragment
         val b = Bundle()
 
         b.putInt("INIT_POSITION", 0)
-        parent!!.alarmViewModel.alarmList.value ?: return
+        parent!!.alarmViewModel?.alarmList?.value ?: return
         if (edit) {
             b.putLong("INIT_CREATE_TIME", item.getCreateTime())
             b.putBoolean("INIT_NEWALARM", false)
@@ -234,7 +234,7 @@ class AlarmListFrag : Fragment() {
             b.putLong("INIT_CREATE_TIME", 0)
             b.putBoolean("INIT_NEWALARM", true)
         }
-
+/*
         // Replace current fragment with the Setup Alarm fragment
         parent = activity as MainActivity?
         if (parent != null) parent!!.supportFragmentManager
@@ -244,8 +244,10 @@ class AlarmListFrag : Fragment() {
             .addToBackStack("tag2")
             .commit()
 
+ */
+
         // Remove from list of selected alarms
-        parent!!.alarmViewModel.clearSelection(item.createTime)
+        parent!!.alarmViewModel?.clearSelection(item.createTime)
     }
 
 
@@ -258,10 +260,10 @@ class AlarmListFrag : Fragment() {
      */
     private fun alarmItemLongClicked(id: Long) {
         // Update the list of the selected items - simply toggle
-        parent!!.alarmViewModel.toggleSelection(id)
+        parent!!.alarmViewModel?.toggleSelection(id)
 
         // Modify toolbar according to number of selected items
-        parent!!.UpdateOptionMenu()
+        //parent!!.UpdateOptionMenu()
     }
 
 
@@ -280,12 +282,12 @@ class AlarmListFrag : Fragment() {
         }
 
         // Reset the setup alarm values
-        parent!!.alarmViewModel.setUpAlarmValues.ResetValues()
+        parent!!.alarmViewModel?.setUpAlarmValues?.ResetValues()
 
         // Passing parameters to setup fragment
         val b = Bundle()
         b.putBoolean("INIT_NEWALARM", true)
-
+/*
         // Replace current fragment with the Setup Alarm fragment
         parent = activity as MainActivity?
         if (parent != null) parent!!.supportFragmentManager
@@ -295,42 +297,44 @@ class AlarmListFrag : Fragment() {
             .addToBackStack("tag2")
             .commit()
 
+ */
+
         // Clear list of selected alarms
-        parent!!.alarmViewModel.clearSelection()
+        parent!!.alarmViewModel?.clearSelection()
     }
 
     fun deleteSelectedAlarms() {
         //val tempList = ArrayList(selectedItems)
-        val tempList = parent!!.alarmViewModel.liveSelectedItems.value?.let { ArrayList(it) }
+        val tempList = parent!!.alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList != null) {
             for (id in tempList) {
-                val item = parent!!.alarmViewModel.getAlarmItemById(id)
+                val item = parent!!.alarmViewModel?.getAlarmItemById(id)
                 if (item!=null) {
-                    parent!!.alarmViewModel.DeleteAlarm(item)
+                    parent!!.alarmViewModel?.DeleteAlarm(item)
                     // Remove from list of selected alarms
-                    parent!!.alarmViewModel.clearSelection(item.createTime)
+                    parent!!.alarmViewModel?.clearSelection(item.createTime)
                 }
             }
         }
         // Modify toolbar according to number of selected items
-        parent!!.UpdateOptionMenu()
+        //parent!!.UpdateOptionMenu()
 
     }
 
     fun editSelectedAlarm() {
-        val tempList = parent!!.alarmViewModel.liveSelectedItems.value?.let { ArrayList(it) }
+        val tempList = parent!!.alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
         // Edit only is exactly one item selected
         if (tempList==null || tempList.size != 1) return
 
-        alarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), true)
+        alarmItemEdit(parent!!.alarmViewModel?.getAlarmItemById(tempList[0]), true)
     }
 
     fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
-        val tempList = parent!!.alarmViewModel.liveSelectedItems.value?.let { ArrayList(it) }
+        val tempList = parent!!.alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList==null || tempList.size != 1) return
 
-        alarmItemEdit(parent!!.alarmViewModel.getAlarmItemById(tempList[0]), false)
+        alarmItemEdit(parent!!.alarmViewModel?.getAlarmItemById(tempList[0]), false)
     }
 
 
@@ -343,14 +347,14 @@ class AlarmListFrag : Fragment() {
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
-                    AlarmListFragDisplay(parent!!.alarmViewModel)
+                    parent?.alarmViewModel?.let { AlarmListFragDisplay(it) }
                 }
             }
         }
     }
 
     @Composable
-    fun AlarmListFragDisplay(alarmViewModel : AlarmViewModel){
+     fun AlarmListFragDisplay(alarmViewModel : AlarmViewModel){
         // Observes values coming from the VM's LiveData<Plant> field
         val alarmList         by alarmViewModel.alarmList.observeAsState()
 
@@ -391,7 +395,7 @@ class AlarmListFrag : Fragment() {
             // val toggled = if (selectToggle!=null && selectToggle as Boolean) "A" else "B"
 
             // Get list of selected alarms and mark this item as selected(yes/no)
-            val selectedAlarmList by parent!!.alarmViewModel.liveSelectedItems.observeAsState(
+            val selectedAlarmList by parent!!.alarmViewModel!!.liveSelectedItems.observeAsState(
                 ArrayList()
             )
             val filterList = selectedAlarmList?.filter { it.equals(alarmItem.createTime.toInt()) }
@@ -782,7 +786,7 @@ class AlarmListFrag : Fragment() {
                 item.recalculateDate() // If is an explicit date and in the past - change date to the near future
 
             // Update View Model - this also causes recomposition
-            parent!!.alarmViewModel.UpdateAlarm(item)
+            parent!!.alarmViewModel?.UpdateAlarm(item)
 
             // Schedule/Cancel Alarm
             item.Exec()

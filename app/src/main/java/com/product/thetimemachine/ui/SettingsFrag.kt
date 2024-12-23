@@ -197,18 +197,22 @@ class SettingsFrag : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Display the Up arrow
+            /*
         val actionBar = checkNotNull(Objects.requireNonNull<MainActivity>(parent).supportActionBar)
         actionBar.setHomeAsUpIndicator(R.drawable.arrow_back_fill0_wght400_grad0_opsz24)
         actionBar.setHomeActionContentDescription(R.string.description_up_arrow_back)
         actionBar.setDisplayHomeAsUpEnabled(true)
+             */
     }
 
     override fun onDestroy() {
         // Remove the Up arrow
-
+/*
         val actionBar = checkNotNull(parent.supportActionBar)
         actionBar.setDisplayHomeAsUpEnabled(false)
 
+
+ */
         super.onDestroy()
     }
 

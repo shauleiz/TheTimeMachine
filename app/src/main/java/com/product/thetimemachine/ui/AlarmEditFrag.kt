@@ -139,15 +139,15 @@ class AlarmEditFrag : Fragment() {
             requireActivity().findViewById<Toolbar>(R.id.app_toolbar)
         appToolbar.setTitle(R.string.alarmsetup_title)
         (activity as AppCompatActivity?)!!.setSupportActionBar(appToolbar)
-        parent!!.isDeleteAction = false
-        parent!!.isSettingsAction = true
-        parent!!.isEditAction = false
-        parent!!.isDuplicateAction = false
+        parent!!.setDeleteAction(false)
+        parent!!.setSettingsAction(true)
+        parent!!.setEditAction(false)
+        parent!!.setDuplicateAction(false)
         parent!!.setCheckmarkAction(true)
         parent!!.invalidateOptionsMenu()
 
         // Get the initial setup values from the ViewModel
-        setUpAlarmValues = parent!!.alarmViewModel.setUpAlarmValues
+        setUpAlarmValues = parent!!.alarmViewModel!!.setUpAlarmValues
 
         // Is it a new Alarm or Alarm to be edited
         isNewAlarm = initParams!!.getBoolean("INIT_NEWALARM", false)
@@ -1156,21 +1156,24 @@ class AlarmEditFrag : Fragment() {
         // And finally:
         // Add or Update the entry on the list
         if (isNewAlarm)
-            parent!!.alarmViewModel.AddAlarm(item)
+            parent!!.alarmViewModel?.AddAlarm(item)
         else
-            parent!!.alarmViewModel.UpdateAlarm(item)
+            parent!!.alarmViewModel?.UpdateAlarm(item)
 
 
         // Schedule this new/modified alarm
         item.Exec()
 
         // Display the Alarm List Fragment
+        /*
         if (parent != null) parent!!.supportFragmentManager
             .beginTransaction()
             //.replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
             .replace(R.id.fragment_container_view, AlarmListFrag::class.java, null)
             .addToBackStack("tag5")
             .commit()
+
+         */
 
         // Remove from list of selected alarms
         // parent!!.alarmViewModel.clearSelection(item.createTime)
