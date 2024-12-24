@@ -133,12 +133,7 @@ fun TopComposable() {
                          MediumTopAppBar(
                              title = { Text(currentScreen.label) },
                              navigationIcon = {
-                                 IconButton(onClick = { /* do something */ }) {
-                                     Icon(
-                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                         contentDescription = "Localized description" // TODO: Replace
-                                     )
-                                 }
+                                 NavBack(currentDestination, navController)
                              },
                              actions = {
                                  Actions(currentDestination, navController)
@@ -157,10 +152,26 @@ fun TopComposable() {
      }
  }
 
+
+// Display go-back arrow icon on the Top App Bar - and react to click
+@Composable
+private fun NavBack(currentDestination: NavDestination?,navController: NavHostController) {
+    if (currentDestination?.route != AlarmList.route) {
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Localized description" // TODO: Replace
+            )
+        }
+    }
+}
+
 fun actionClicked(navController: NavHostController, clicked : String){
     navController.navigateSingleTopTo(clicked)
 }
 
+
+// Display Action icons on the Top App Bar - and react to click
 @Composable
 private fun Actions(
     currentDestination: NavDestination?,
