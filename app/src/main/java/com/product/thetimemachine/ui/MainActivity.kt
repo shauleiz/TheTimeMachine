@@ -2,19 +2,21 @@ package com.product.thetimemachine.ui
 
 import android.R
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -105,6 +107,7 @@ class MainActivity : ComponentActivity() {
 
 }
 
+ @OptIn(ExperimentalMaterial3Api::class)
  @Composable
 fun TopComposable() {
      AppTheme(dynamicColor = isDynamicColor) {
@@ -116,10 +119,10 @@ fun TopComposable() {
                  val currentScreen =
                      alarmScreens.find { it.route == currentDestination?.route } ?: AlarmList
 
+                 Log.d("THE_TIME_MACHINE", "TopComposable() : label/rout = ${currentScreen.label} / ${currentScreen.route}")
                  Scaffold(
-                     topBar = {}
-                 ) { innerPadding ->
-                     AlarmNavHost(
+                     topBar = {TopAppBar(title = { Text(currentScreen.label) } )}
+                 ) { innerPadding -> AlarmNavHost(
                          navController = navController,
                          modifier = Modifier.padding(innerPadding)
                      )

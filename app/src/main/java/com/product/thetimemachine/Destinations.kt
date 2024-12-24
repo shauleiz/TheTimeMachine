@@ -16,27 +16,34 @@
 
 package com.product.thetimemachine
 
+import com.product.thetimemachine.Application.TheTimeMachineApp
+
 /**
  * Contract for information needed on every Rally navigation destination
  */
 
 sealed interface Destination {
     val route: String
+    val label: String
 }
 
 /**
  * Rally app navigation destinations
  */
 data object AlarmEdit : Destination {
-    override val route = "overview"
+    override val route = "AlarmEdit"
+    override val label = TheTimeMachineApp.appContext.getString(R.string.alarmsetup_title)
 }
 
 data object AlarmList :  Destination {
-    override val route = "accounts"
+    override val route = "AlarmList"
+    override val label = TheTimeMachineApp.appContext.getString(R.string.alarmlist_title)
+
 }
 
 data object Settings : Destination {
-    override val route = "bills"
+    override val route = "Settings"
+    override val label = TheTimeMachineApp.appContext.getString(R.string.settings_title)
 }
 
 
