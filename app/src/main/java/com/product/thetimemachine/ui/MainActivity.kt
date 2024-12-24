@@ -8,8 +8,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,7 +31,10 @@ import androidx.navigation.compose.rememberNavController
 import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmNavHost
 import com.product.thetimemachine.AlarmViewModel
+import com.product.thetimemachine.Settings
+import com.product.thetimemachine.SettingsScreen
 import com.product.thetimemachine.alarmScreens
+import com.product.thetimemachine.navigateSingleTopTo
 import com.product.thetimemachine.ui.theme.AppTheme
 
 
@@ -121,8 +131,35 @@ fun TopComposable() {
 
                  Log.d("THE_TIME_MACHINE", "TopComposable() : label/rout = ${currentScreen.label} / ${currentScreen.route}")
                  Scaffold(
-                     topBar = {TopAppBar(title = { Text(currentScreen.label) } )}
-                 ) { innerPadding -> AlarmNavHost(
+                     topBar = {
+                         MediumTopAppBar(
+                             title = { Text(currentScreen.label) },
+                             navigationIcon = {
+                                 IconButton(onClick = { /* do something */ }) {
+                                     Icon(
+                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                         contentDescription = "Localized description" // TODO: Replace
+                                     )
+                                 }
+                             },
+                             actions = {
+                                 if (currentDestination?.route != Settings.route) {
+                                     IconButton(onClick = {
+                                         navController.navigateSingleTopTo(
+                                             Settings.route
+                                         )
+                                     }) {
+                                         Icon(
+                                             imageVector = Icons.Filled.Settings,
+                                             contentDescription = "Localized description" // TODO: Replace
+                                         )
+                                     }
+                                 }
+                             },
+                         )
+                     }
+                 ) { innerPadding ->
+                     AlarmNavHost(
                          navController = navController,
                          modifier = Modifier.padding(innerPadding)
                      )
