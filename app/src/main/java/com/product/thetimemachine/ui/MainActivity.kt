@@ -2,7 +2,6 @@ package com.product.thetimemachine.ui
 
 import android.R
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,7 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,19 +19,19 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmNavHost
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Settings
-import com.product.thetimemachine.SettingsScreen
 import com.product.thetimemachine.alarmScreens
 import com.product.thetimemachine.navigateSingleTopTo
 import com.product.thetimemachine.ui.theme.AppTheme
@@ -129,7 +128,6 @@ fun TopComposable() {
                  val currentScreen =
                      alarmScreens.find { it.route == currentDestination?.route } ?: AlarmList
 
-                 Log.d("THE_TIME_MACHINE", "TopComposable() : label/rout = ${currentScreen.label} / ${currentScreen.route}")
                  Scaffold(
                      topBar = {
                          MediumTopAppBar(
@@ -143,18 +141,8 @@ fun TopComposable() {
                                  }
                              },
                              actions = {
-                                 if (currentDestination?.route != Settings.route) {
-                                     IconButton(onClick = {
-                                         navController.navigateSingleTopTo(
-                                             Settings.route
-                                         )
-                                     }) {
-                                         Icon(
-                                             imageVector = Icons.Filled.Settings,
-                                             contentDescription = "Localized description" // TODO: Replace
-                                         )
-                                     }
-                                 }
+                                 Actions(currentDestination, navController)
+                                 { nav, clicked -> actionClicked(nav, clicked) }
                              },
                          )
                      }
@@ -168,3 +156,37 @@ fun TopComposable() {
          }
      }
  }
+
+fun actionClicked(navController: NavHostController, clicked : String){
+    navController.navigateSingleTopTo(clicked)
+}
+
+@Composable
+private fun Actions(
+    currentDestination: NavDestination?,
+    navController: NavHostController,
+    onActionClick: (NavHostController, String)-> Unit
+) {
+    // Settings Icon
+    if (currentDestination?.route != Settings.route) {
+        IconButton(onClick = { onActionClick(navController, Settings.route)
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Settings,
+                contentDescription = "Localized description" // TODO: Replace
+            )
+        }
+    }
+
+    if (currentDestination?.route != AlarmList.route){
+        IconButton(onClick = {onActionClick(navController, AlarmList.route)
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Edit,
+                contentDescription = "Localized description" // TODO: Replace
+            )
+        }
+
+    }
+}
+
