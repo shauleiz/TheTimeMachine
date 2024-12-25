@@ -61,10 +61,7 @@ fun AlarmEditScreen() {
 
 @Composable
 fun AlarmListScreen(alarmViewModel: AlarmViewModel?) {
-    Text("AlarmListScreen")
 
-    // Create/acquire the ViewModel object of class AlarmViewModel
-    //val alarmViewModel = ViewModelProvider().get(AlarmViewModel::class.java)
     if (alarmViewModel != null) {
         AlarmListFrag(). AlarmListFragDisplay(alarmViewModel)
     }

@@ -13,10 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -41,7 +38,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,7 +48,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -68,27 +63,24 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
-import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
-import com.product.thetimemachine.ui.theme.AppTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
- class AlarmListFrag : Fragment() {
+ class AlarmListFrag  {
     private var parent: MainActivity? = null
     private var fragmentView: View? = null
     private val isDynamicColor = false
 
     //private var selectedItems: ArrayList<Int>? = null
-
+/*
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -105,7 +97,9 @@ import java.util.Locale
     }
 
 
+ */
 
+/*
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -119,6 +113,8 @@ import java.util.Locale
 
     }
 
+
+ */
 
 
     // Called while initializing the activity.
@@ -148,12 +144,12 @@ import java.util.Locale
                 // Request permission to show notifications
                 popupWindow.setOnDismissListener {
                     Log.i("THE_TIME_MACHINE", "onDismiss called - Requesting permission")
-                    requestPermissionLauncher.launch(POST_NOTIFICATIONS)
+                    //requestPermissionLauncher.launch(POST_NOTIFICATIONS)
                 }
             } else {
                 // Request permission to show notifications (when pop-up window is not shown)
                 Log.i("THE_TIME_MACHINE", "Requesting permission")
-                requestPermissionLauncher.launch(POST_NOTIFICATIONS)
+                    //requestPermissionLauncher.launch(POST_NOTIFICATIONS)
             }
         }
     }
@@ -162,6 +158,7 @@ import java.util.Locale
     // Defines the Request Permission Launcher
     // Launches the permission request dialog box for POST_NOTIFICATIONS
     // Gets the result Granted (true/false) and sets variable  notificationPermission
+/*
     private val requestPermissionLauncher =
         registerForActivityResult<String, Boolean>(ActivityResultContracts.RequestPermission()) {
             isGranted: Boolean ->
@@ -183,6 +180,7 @@ import java.util.Locale
             // decision.
         }
     }
+*/
 
     private fun displayPopUpNotifPemis(): PopupWindow {
         val inflater = parent!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -287,8 +285,7 @@ import java.util.Locale
         }
 
         // Reset the setup alarm values
-        alarmViewModel
-?.setUpAlarmValues?.ResetValues()
+        alarmViewModel?.setUpAlarmValues?.ResetValues()
 
         // Passing parameters to setup fragment
         val b = Bundle()
@@ -356,6 +353,7 @@ import java.util.Locale
 
     /*** Composable Functions ***/
     //
+    /*
     /* Top level Display - Call Portrait/Landscape Content View */
     @Composable
     fun AlarmListFragDisplayTop() {
@@ -368,6 +366,8 @@ import java.util.Locale
             }
         }
     }
+
+     */
 
     @Composable
      fun AlarmListFragDisplay(alarmViewModel : AlarmViewModel){
