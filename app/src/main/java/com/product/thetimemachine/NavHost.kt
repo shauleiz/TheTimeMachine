@@ -19,15 +19,18 @@ package com.product.thetimemachine
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.product.thetimemachine.ui.AlarmListFrag
 
 @Composable
 fun AlarmNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    alarmViewModel: AlarmViewModel?
 ) {
     NavHost(
         navController = navController,
@@ -35,7 +38,7 @@ fun AlarmNavHost(
         modifier = modifier
     ) {
         composable(route = AlarmList.route) {
-            AlarmListScreen()
+            AlarmListScreen(alarmViewModel)
         }
         composable(route = AlarmEdit.route) {
             AlarmEditScreen()
@@ -57,8 +60,14 @@ fun AlarmEditScreen() {
 }
 
 @Composable
-fun AlarmListScreen() {
+fun AlarmListScreen(alarmViewModel: AlarmViewModel?) {
     Text("AlarmListScreen")
+
+    // Create/acquire the ViewModel object of class AlarmViewModel
+    //val alarmViewModel = ViewModelProvider().get(AlarmViewModel::class.java)
+    if (alarmViewModel != null) {
+        AlarmListFrag(). AlarmListFragDisplay(alarmViewModel)
+    }
 }
 
 fun NavHostController.navigateSingleTopTo(route: String) =

@@ -21,6 +21,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -38,11 +41,11 @@ import com.product.thetimemachine.ui.theme.AppTheme
 
 
 private const val isDynamicColor = false
+var alarmViewModel: AlarmViewModel? = null
 
 class MainActivity : ComponentActivity() {
     // ViewModel object of class MyViewModel
     // Holds all UI variables related to this activity
-    var alarmViewModel: AlarmViewModel? = null
     private var deleteAction = false
     private var editAction = false
     private var duplicateAction = false
@@ -86,6 +89,7 @@ class MainActivity : ComponentActivity() {
     }
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
@@ -105,6 +109,7 @@ class MainActivity : ComponentActivity() {
 
         // Create/acquire the ViewModel object of class AlarmViewModel
         alarmViewModel = ViewModelProvider(this).get(AlarmViewModel::class.java)
+
 
 
         setContent {
@@ -144,7 +149,8 @@ fun TopComposable() {
                  ) { innerPadding ->
                      AlarmNavHost(
                          navController = navController,
-                         modifier = Modifier.padding(innerPadding)
+                         modifier = Modifier.padding(innerPadding),
+                         alarmViewModel = alarmViewModel
                      )
                  }
              }

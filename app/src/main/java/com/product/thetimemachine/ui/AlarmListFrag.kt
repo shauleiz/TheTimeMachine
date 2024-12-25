@@ -74,6 +74,7 @@ import androidx.fragment.app.Fragment
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
+import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
@@ -125,7 +126,7 @@ import java.util.Locale
     // If not enabled - launches request for permission that defines the callback to run
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private fun checkPermissions() {
-        val permission = ContextCompat.checkSelfPermission(parent!!, POST_NOTIFICATIONS)
+        val permission = appContext.checkSelfPermission(POST_NOTIFICATIONS)
         if (permission == PermissionChecker.PERMISSION_GRANTED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Granted")
             //AddAlarm_Button.setEnabled(true);;
@@ -220,13 +221,15 @@ import java.util.Locale
         if (item == null) return
 
         // Copy values from the selected item to be used by the setup fragment
-        parent!!.alarmViewModel?.setUpAlarmValues?.GetValuesFromList(item, edit)
+        alarmViewModel
+?.setUpAlarmValues?.GetValuesFromList(item, edit)
 
         // Passing parameters to setup fragment
         val b = Bundle()
 
         b.putInt("INIT_POSITION", 0)
-        parent!!.alarmViewModel?.alarmList?.value ?: return
+        alarmViewModel
+?.alarmList?.value ?: return
         if (edit) {
             b.putLong("INIT_CREATE_TIME", item.getCreateTime())
             b.putBoolean("INIT_NEWALARM", false)
@@ -247,7 +250,8 @@ import java.util.Locale
  */
 
         // Remove from list of selected alarms
-        parent!!.alarmViewModel?.clearSelection(item.createTime)
+        alarmViewModel
+?.clearSelection(item.createTime)
     }
 
 
@@ -260,7 +264,8 @@ import java.util.Locale
      */
     private fun alarmItemLongClicked(id: Long) {
         // Update the list of the selected items - simply toggle
-        parent!!.alarmViewModel?.toggleSelection(id)
+        alarmViewModel
+?.toggleSelection(id)
 
         // Modify toolbar according to number of selected items
         //parent!!.UpdateOptionMenu()
@@ -282,7 +287,8 @@ import java.util.Locale
         }
 
         // Reset the setup alarm values
-        parent!!.alarmViewModel?.setUpAlarmValues?.ResetValues()
+        alarmViewModel
+?.setUpAlarmValues?.ResetValues()
 
         // Passing parameters to setup fragment
         val b = Bundle()
@@ -300,19 +306,24 @@ import java.util.Locale
  */
 
         // Clear list of selected alarms
-        parent!!.alarmViewModel?.clearSelection()
+        alarmViewModel
+?.clearSelection()
     }
 
     fun deleteSelectedAlarms() {
         //val tempList = ArrayList(selectedItems)
-        val tempList = parent!!.alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
+        val tempList = alarmViewModel
+?.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList != null) {
             for (id in tempList) {
-                val item = parent!!.alarmViewModel?.getAlarmItemById(id)
+                val item = alarmViewModel
+?.getAlarmItemById(id)
                 if (item!=null) {
-                    parent!!.alarmViewModel?.DeleteAlarm(item)
+                    alarmViewModel
+?.DeleteAlarm(item)
                     // Remove from list of selected alarms
-                    parent!!.alarmViewModel?.clearSelection(item.createTime)
+                    alarmViewModel
+?.clearSelection(item.createTime)
                 }
             }
         }
@@ -322,19 +333,23 @@ import java.util.Locale
     }
 
     fun editSelectedAlarm() {
-        val tempList = parent!!.alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
+        val tempList = alarmViewModel
+?.liveSelectedItems?.value?.let { ArrayList(it) }
         // Edit only is exactly one item selected
         if (tempList==null || tempList.size != 1) return
 
-        alarmItemEdit(parent!!.alarmViewModel?.getAlarmItemById(tempList[0]), true)
+        alarmItemEdit(alarmViewModel
+?.getAlarmItemById(tempList[0]), true)
     }
 
     fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
-        val tempList = parent!!.alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
+        val tempList = alarmViewModel
+?.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList==null || tempList.size != 1) return
 
-        alarmItemEdit(parent!!.alarmViewModel?.getAlarmItemById(tempList[0]), false)
+        alarmItemEdit(alarmViewModel
+?.getAlarmItemById(tempList[0]), false)
     }
 
 
@@ -344,10 +359,11 @@ import java.util.Locale
     /* Top level Display - Call Portrait/Landscape Content View */
     @Composable
     fun AlarmListFragDisplayTop() {
+        parent = activity as MainActivity?
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
-                    parent?.alarmViewModel?.let { AlarmListFragDisplay(it) }
+                    alarmViewModel?.let { AlarmListFragDisplay(it) }
                 }
             }
         }
@@ -395,7 +411,7 @@ import java.util.Locale
             // val toggled = if (selectToggle!=null && selectToggle as Boolean) "A" else "B"
 
             // Get list of selected alarms and mark this item as selected(yes/no)
-            val selectedAlarmList by parent!!.alarmViewModel!!.liveSelectedItems.observeAsState(
+            val selectedAlarmList by alarmViewModel!!.liveSelectedItems.observeAsState(
                 ArrayList()
             )
             val filterList = selectedAlarmList?.filter { it.equals(alarmItem.createTime.toInt()) }
@@ -619,7 +635,7 @@ import java.util.Locale
             {
                 Icon(
                     painter = painterResource(R.drawable.baseline_alarm_add_48),
-                    contentDescription = requireContext().resources.getString(R.string.alarm_add),
+                    contentDescription = parent?.applicationContext?.getString(R.string.alarm_add),
                     modifier = Modifier.size(24.dp),
                 )
             }
@@ -786,7 +802,7 @@ import java.util.Locale
                 item.recalculateDate() // If is an explicit date and in the past - change date to the near future
 
             // Update View Model - this also causes recomposition
-            parent!!.alarmViewModel?.UpdateAlarm(item)
+            alarmViewModel?.UpdateAlarm(item)
 
             // Schedule/Cancel Alarm
             item.Exec()
@@ -794,7 +810,7 @@ import java.util.Locale
             // Stop ringing if unchecked
             if (!item.active) {
                 b = item.bundle
-                val context = requireContext()
+                val context = appContext
                 val stopIntent = Intent(context, AlarmService::class.java)
                 stopIntent.putExtras(b)
                 AlarmReceiver.stopping(context, stopIntent)

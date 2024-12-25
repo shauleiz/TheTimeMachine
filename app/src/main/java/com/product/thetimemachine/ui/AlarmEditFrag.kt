@@ -147,7 +147,7 @@ class AlarmEditFrag : Fragment() {
         parent!!.invalidateOptionsMenu()
 
         // Get the initial setup values from the ViewModel
-        setUpAlarmValues = parent!!.alarmViewModel!!.setUpAlarmValues
+        setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
 
         // Is it a new Alarm or Alarm to be edited
         isNewAlarm = initParams!!.getBoolean("INIT_NEWALARM", false)
@@ -1156,9 +1156,9 @@ class AlarmEditFrag : Fragment() {
         // And finally:
         // Add or Update the entry on the list
         if (isNewAlarm)
-            parent!!.alarmViewModel?.AddAlarm(item)
+            alarmViewModel?.AddAlarm(item)
         else
-            parent!!.alarmViewModel?.UpdateAlarm(item)
+            alarmViewModel?.UpdateAlarm(item)
 
 
         // Schedule this new/modified alarm
