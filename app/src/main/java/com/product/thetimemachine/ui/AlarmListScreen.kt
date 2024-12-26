@@ -75,7 +75,7 @@ import java.util.Locale
 
 
  class AlarmListFrag  {
-    private var parent: MainActivity? = null
+    private var parent = appContext
     private var fragmentView: View? = null
     private val isDynamicColor = false
 
@@ -130,7 +130,7 @@ import java.util.Locale
         if (permission == PermissionChecker.PERMISSION_DENIED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Denied")
             val shouldShow = ActivityCompat.shouldShowRequestPermissionRationale(
-                    parent!!, POST_NOTIFICATIONS)
+                    parent!! as MainActivity, POST_NOTIFICATIONS)
             Log.i(
                 "THE_TIME_MACHINE",
                 "POST_NOTIFICATIONS Should Show Request Permission - $shouldShow"
