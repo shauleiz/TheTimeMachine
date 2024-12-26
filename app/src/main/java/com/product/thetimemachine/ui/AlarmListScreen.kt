@@ -219,15 +219,13 @@ import java.util.Locale
         if (item == null) return
 
         // Copy values from the selected item to be used by the setup fragment
-        alarmViewModel
-?.setUpAlarmValues?.GetValuesFromList(item, edit)
+        alarmViewModel?.setUpAlarmValues?.GetValuesFromList(item, edit)
 
         // Passing parameters to setup fragment
         val b = Bundle()
 
         b.putInt("INIT_POSITION", 0)
-        alarmViewModel
-?.alarmList?.value ?: return
+        alarmViewModel?.alarmList?.value ?: return
         if (edit) {
             b.putLong("INIT_CREATE_TIME", item.getCreateTime())
             b.putBoolean("INIT_NEWALARM", false)

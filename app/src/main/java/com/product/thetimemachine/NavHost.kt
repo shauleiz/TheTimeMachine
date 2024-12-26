@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.product.thetimemachine.ui.AlarmListFrag
+import com.product.thetimemachine.ui.SettingsFrag
 
 @Composable
 fun AlarmNavHost(
@@ -51,7 +52,7 @@ fun AlarmNavHost(
 
 @Composable
 fun SettingsScreen() {
-    Text("SettingsScreen")
+    SettingsFrag().SettingsFragDisplayTop()
 }
 
 @Composable

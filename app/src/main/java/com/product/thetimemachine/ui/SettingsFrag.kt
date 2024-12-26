@@ -31,14 +31,14 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
-import com.product.thetimemachine.R
+import com.product.thetimemachine.Application.TheTimeMachineApp
+import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.ui.PreferencesKeys.KEY_SORT_SEPARATE
 import com.product.thetimemachine.ui.theme.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-import java.util.Objects
 
 
 const val USER_PREFERENCES_NAME = "the_time_machine_preferences_datastore"
@@ -102,7 +102,7 @@ fun mapUserPreferences(preferences: Preferences): UserPreferences {
 suspend fun fetchInitialPreferences(parent : Context) =
     mapUserPreferences(parent.timeMachinedataStore.data.first().toPreferences())
 
-fun updatePref(parent : Activity, key : Preferences.Key<String>?, value: String?) {
+fun updatePref(parent : Context, key : Preferences.Key<String>?, value: String?) {
     if (key == null || value == null) return
     runBlocking {
         parent.timeMachinedataStore.edit { preferences ->
@@ -168,7 +168,7 @@ fun getPrefGradualVolume(parent : Context?) : String {
 ////////////////////////////////////////////////////////////////////////////////
 class SettingsFrag : Fragment() {
 
-    lateinit var parent: MainActivity
+    lateinit var parent: Context
     lateinit var userPreferencesFlow: Flow<UserPreferences>
     private lateinit var setUpAlarmValues: UserPreferences
 
@@ -227,9 +227,15 @@ class SettingsFrag : Fragment() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun SettingsFragDisplayTop() {
+    fun SettingsFragDisplayTop() {
+
+        parent = appContext
+        userPreferencesFlow  = parent.timeMachinedataStore.data.map { preferences ->
+            mapUserPreferences(preferences)
+        }
 
         // List of all entries
+        setUpAlarmValues = getPrefs(TheTimeMachineApp.appContext)
         val listOfPrefsEx = getListOfGeneralPreferences(setUpAlarmValues)
         val listOfPrefs = remember { mutableStateListOf<PrefData>() }
         listOfPrefs.addAll(listOfPrefsEx)
