@@ -64,6 +64,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
+import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
@@ -129,8 +131,7 @@ import java.util.Locale
         }
         if (permission == PermissionChecker.PERMISSION_DENIED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Denied")
-            val shouldShow = ActivityCompat.shouldShowRequestPermissionRationale(
-                    parent!! as MainActivity, POST_NOTIFICATIONS)
+            val shouldShow = checkSelfPermission(parent, POST_NOTIFICATIONS) != PERMISSION_GRANTED
             Log.i(
                 "THE_TIME_MACHINE",
                 "POST_NOTIFICATIONS Should Show Request Permission - $shouldShow"
