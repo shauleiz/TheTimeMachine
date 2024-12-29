@@ -42,7 +42,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -261,8 +264,7 @@ import java.util.Locale
      */
     private fun alarmItemLongClicked(id: Long) {
         // Update the list of the selected items - simply toggle
-        alarmViewModel
-?.toggleSelection(id)
+        alarmViewModel?.toggleSelection(id)
 
         // Modify toolbar according to number of selected items
         //parent!!.UpdateOptionMenu()
@@ -302,24 +304,19 @@ import java.util.Locale
  */
 
         // Clear list of selected alarms
-        alarmViewModel
-?.clearSelection()
+        alarmViewModel?.clearSelection()
     }
 
     fun deleteSelectedAlarms() {
         //val tempList = ArrayList(selectedItems)
-        val tempList = alarmViewModel
-?.liveSelectedItems?.value?.let { ArrayList(it) }
+        val tempList = alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList != null) {
             for (id in tempList) {
-                val item = alarmViewModel
-?.getAlarmItemById(id)
+                val item = alarmViewModel?.getAlarmItemById(id)
                 if (item!=null) {
-                    alarmViewModel
-?.DeleteAlarm(item)
+                    alarmViewModel?.DeleteAlarm(item)
                     // Remove from list of selected alarms
-                    alarmViewModel
-?.clearSelection(item.createTime)
+                    alarmViewModel?.clearSelection(item.createTime)
                 }
             }
         }
@@ -372,6 +369,8 @@ import java.util.Locale
      fun AlarmListFragDisplay(alarmViewModel : AlarmViewModel){
         // Observes values coming from the VM's LiveData<Plant> field
         val alarmList         by alarmViewModel.alarmList.observeAsState()
+
+        var showPermissionDialog  by rememberSaveable { mutableStateOf(false) }
 
         Scaffold (
             // Display "Add" floating button
