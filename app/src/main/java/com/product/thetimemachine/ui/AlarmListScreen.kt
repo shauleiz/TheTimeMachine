@@ -1,18 +1,11 @@
 package com.product.thetimemachine.ui
 
 import android.Manifest.permission.POST_NOTIFICATIONS
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.PopupWindow
-import android.widget.RelativeLayout
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -23,22 +16,30 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -46,6 +47,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -65,7 +67,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
-import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
@@ -73,8 +74,10 @@ import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
+import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
+import com.product.thetimemachine.ui.theme.AppTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -126,7 +129,7 @@ import java.util.Locale
     // Checks if Notification is enabled
     // If not enabled - launches request for permission that defines the callback to run
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    private fun checkPermissions() {
+    fun checkPermissions( showDialog: (Boolean) -> Unit) {
         val permission = appContext.checkSelfPermission(POST_NOTIFICATIONS)
         if (permission == PermissionChecker.PERMISSION_GRANTED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Granted")
@@ -134,7 +137,7 @@ import java.util.Locale
         }
         if (permission == PermissionChecker.PERMISSION_DENIED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Denied")
-            val shouldShow = checkSelfPermission(parent, POST_NOTIFICATIONS) != PERMISSION_GRANTED
+            val shouldShow = checkSelfPermission(mainActivity, POST_NOTIFICATIONS) != PERMISSION_GRANTED
             Log.i(
                 "THE_TIME_MACHINE",
                 "POST_NOTIFICATIONS Should Show Request Permission - $shouldShow"
@@ -142,50 +145,27 @@ import java.util.Locale
             if (shouldShow) {
                 // Need to show a pop-up window that explains why it is important to grant permissions
                 // Display the pop-up window
-                val popupWindow = displayPopUpNotifPemis()
+                Log.i("THE_TIME_MACHINE", "Going to display a popup")
+                showDialog(true)
+                Log.i("THE_TIME_MACHINE", "Should have displayed a popup")
 
                 // Define action to do when pop-up window is dismissed -
                 // Request permission to show notifications
-                popupWindow.setOnDismissListener {
-                    Log.i("THE_TIME_MACHINE", "onDismiss called - Requesting permission")
-                    //requestPermissionLauncher.launch(POST_NOTIFICATIONS)
-                }
+
+                //requestPermissionLauncher.launch(POST_NOTIFICATIONS)
             } else {
                 // Request permission to show notifications (when pop-up window is not shown)
-                Log.i("THE_TIME_MACHINE", "Requesting permission")
-                    //requestPermissionLauncher.launch(POST_NOTIFICATIONS)
+                Log.i("THE_TIME_MACHINE", "Not going to display a popup")
+                mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)
             }
         }
     }
 
 
-    // Defines the Request Permission Launcher
-    // Launches the permission request dialog box for POST_NOTIFICATIONS
-    // Gets the result Granted (true/false) and sets variable  notificationPermission
+
+
+
 /*
-    private val requestPermissionLauncher =
-        registerForActivityResult<String, Boolean>(ActivityResultContracts.RequestPermission()) {
-            isGranted: Boolean ->
-        if (isGranted) {
-            // Permission is granted - Add Alarm button is enabled
-            Log.i("THE_TIME_MACHINE", "Activity Result - Granted")
-
-            //AddAlarm_Button.setEnabled(true);
-        } else {
-            // Permission was NOT granted - Add Alarm button becomes disabled
-            Log.i("THE_TIME_MACHINE", "Activity Result - NOT Granted")
-
-            //AddAlarm_Button.setEnabled(false);
-
-            // Explain to the user that the feature is unavailable because the
-            // feature requires a permission that the user has denied. At the
-            // same time, respect the user's decision. Don't link to system
-            // settings in an effort to convince the user to change their
-            // decision.
-        }
-    }
-*/
-
     private fun displayPopUpNotifPemis(): PopupWindow {
         val inflater = parent!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView =
@@ -207,7 +187,7 @@ import java.util.Locale
 
         return popupWindow
     }
-
+*/
 
 
     /*
@@ -277,12 +257,12 @@ import java.util.Locale
     * Create a bundle with data to be passed to the setup fragment
     * Replace this fragment by setup fragment
     * */
-    private fun addAlarmClicked() {
+    private fun addAlarmClicked( showDialog: (Boolean)->Unit) {
 
         Log.d("THE_TIME_MACHINE", "AddAlarmClicked()) " )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            checkPermissions()
+            checkPermissions(showDialog)
         }
 
         // Reset the setup alarm values
@@ -307,7 +287,9 @@ import java.util.Locale
         alarmViewModel?.clearSelection()
     }
 
-    fun deleteSelectedAlarms() {
+
+
+fun deleteSelectedAlarms() {
         //val tempList = ArrayList(selectedItems)
         val tempList = alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList != null) {
@@ -374,14 +356,62 @@ import java.util.Locale
 
         Scaffold (
             // Display "Add" floating button
-            floatingActionButton =  {DisplayAddFloatButton()},
+            floatingActionButton =  {DisplayAddFloatButton { showPermissionDialog = it } },
             floatingActionButtonPosition = FabPosition.End,
         ) { DisplayAlarmList(alarmList, it) }
 
+        ShowPopUpPermissionWarning(showPermissionDialog) { showPermissionDialog = it }
     }
 
+     // Show a Pop-up dialog box that warns that Notification Permission is required
+     @OptIn(ExperimentalMaterial3Api::class)
+     @Composable
+     private fun ShowPopUpPermissionWarning(show : Boolean, onClick : (Boolean)->Unit){
+         if (!show) return
+         BasicAlertDialog(
+             //title = R.string.title_error,
+             //text = "LLL",
+             onDismissRequest = { launchRequest4Permission(); onClick(false)}
+             //confirmButton = null
+         )
+         {
 
-    @Composable
+             AppTheme(dynamicColor = isDynamicColor) {
+                 Surface(
+                     modifier = Modifier
+                         .wrapContentWidth()
+                         .wrapContentHeight(),
+                     shape = MaterialTheme.shapes.large,
+                     tonalElevation = AlertDialogDefaults.TonalElevation
+                 )
+                 {
+                     MaterialTheme {
+                         Column(modifier = Modifier.padding(16.dp)) {
+                             Text(
+                                 text = stringResource(R.string.title_warning),
+                                 style = MaterialTheme.typography.titleLarge,
+                                 color = MaterialTheme.colorScheme.error,
+                             )
+                             Spacer(modifier = Modifier.height(16.dp))
+                             Text(text = stringResource(R.string.must_permit))
+                             TextButton(
+                                 onClick = { launchRequest4Permission(); onClick(false) },
+                                 modifier = Modifier.align(Alignment.End)
+                             ) {
+                                 Text(stringResource(R.string.confirm))
+                             }
+                         }
+                     }
+                 }
+             }
+         }
+
+     }
+
+     private fun launchRequest4Permission() =
+         mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)
+
+     @Composable
     fun DisplayAlarmList (list: MutableList<AlarmItem>?, pad : PaddingValues) {
         if (list == null) return
 
@@ -624,9 +654,10 @@ import java.util.Locale
         }
 
         @Composable
-        private fun DisplayAddFloatButton() {
+        private fun DisplayAddFloatButton( showDialog: (Boolean)->Unit) {
+            Log.i("THE_TIME_MACHINE", "DisplayAddFloatButton()")
             FloatingActionButton(
-                onClick = onAddFloatButtonClick,
+                onClick =  { addAlarmClicked(showDialog) },
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.secondary,
             )
@@ -641,7 +672,6 @@ import java.util.Locale
 
         }
 
-        private val onAddFloatButtonClick = { addAlarmClicked() }
 
         private fun getAmPm24h(alarmItem: AlarmItem): Int {
             // Time

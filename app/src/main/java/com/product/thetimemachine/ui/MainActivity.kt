@@ -2,10 +2,13 @@ package com.product.thetimemachine.ui
 
 import android.R
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,9 +24,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -90,6 +90,29 @@ class MainActivity : ComponentActivity() {
         return settingsAction
     }
 
+    // Defines the Request Permission Launcher
+    // Launches the permission request dialog box for POST_NOTIFICATIONS
+    // Gets the result Granted (true/false) and sets variable  notificationPermission
+    val requestPermissionLauncher: ActivityResultLauncher<String> =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Permission is granted - Add Alarm button is enabled
+                Log.i("THE_TIME_MACHINE", "Activity Result - Granted")
+
+                //AddAlarm_Button.setEnabled(true);
+            } else {
+                // Permission was NOT granted - Add Alarm button becomes disabled
+                Log.i("THE_TIME_MACHINE", "Activity Result - NOT Granted")
+
+                //AddAlarm_Button.setEnabled(false);
+
+                // Explain to the user that the feature is unavailable because the
+                // feature requires a permission that the user has denied. At the
+                // same time, respect the user's decision. Don't link to system
+                // settings in an effort to convince the user to change their
+                // decision.
+            }
+        }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
