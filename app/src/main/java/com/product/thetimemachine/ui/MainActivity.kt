@@ -34,6 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmNavHost
 import com.product.thetimemachine.AlarmViewModel
+import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Settings
 import com.product.thetimemachine.alarmScreens
 import com.product.thetimemachine.navigateSingleTopTo
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
     private var duplicateAction = false
     private var checkmarkAction = false
     private var settingsAction = true
+
 
     fun setDeleteAction(d: Boolean) {
         deleteAction = d
@@ -110,7 +112,7 @@ class MainActivity : ComponentActivity() {
         // Create/acquire the ViewModel object of class AlarmViewModel
         alarmViewModel = ViewModelProvider(this).get(AlarmViewModel::class.java)
 
-
+        mainActivity = this
 
         setContent {
             enableEdgeToEdge()
