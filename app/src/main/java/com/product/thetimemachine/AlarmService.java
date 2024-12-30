@@ -11,10 +11,9 @@ import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_duration;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_repeat;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_vibration_pattern;
 import static com.product.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
-import static com.product.thetimemachine.ui.SettingsFragKt.isPref24h;
+import static com.product.thetimemachine.ui.SettingsScreenKt.isPref24h;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -41,7 +40,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.product.thetimemachine.Data.AlarmItem;
-import com.product.thetimemachine.ui.MainActivity;
 import com.product.thetimemachine.ui.StopSnoozeActivity;
 
 import java.io.IOException;

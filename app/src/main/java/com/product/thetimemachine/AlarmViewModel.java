@@ -1,11 +1,11 @@
 package com.product.thetimemachine;
 
-import static com.product.thetimemachine.ui.SettingsFragKt.getPrefAlarmSound;
-import static com.product.thetimemachine.ui.SettingsFragKt.getPrefGradualVolume;
-import static com.product.thetimemachine.ui.SettingsFragKt.getPrefRingDuration;
-import static com.product.thetimemachine.ui.SettingsFragKt.getPrefRingRepeat;
-import static com.product.thetimemachine.ui.SettingsFragKt.getPrefSnoozeDuration;
-import static com.product.thetimemachine.ui.SettingsFragKt.getPrefVibrationPatern;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefAlarmSound;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefGradualVolume;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefRingDuration;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefRingRepeat;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefSnoozeDuration;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefVibrationPatern;
 
 import android.app.Application;
 import android.content.Context;

@@ -1,14 +1,9 @@
 package com.product.thetimemachine.ui
 
 
-import android.app.Activity
 import android.content.Context
-import android.os.Bundle
 import android.preference.PreferenceManager.getDefaultSharedPreferencesName
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
@@ -24,13 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.fragment.app.Fragment
 import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.ui.PreferencesKeys.KEY_SORT_SEPARATE
@@ -166,7 +159,7 @@ fun getPrefGradualVolume(parent : Context?) : String {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-class SettingsFrag : Fragment() {
+class SettingsFrag  {
 
     lateinit var parent: Context
     lateinit var userPreferencesFlow: Flow<UserPreferences>
@@ -174,6 +167,7 @@ class SettingsFrag : Fragment() {
 
 
 
+/*
 
     override fun onCreate(savedInstanceState: Bundle?) {
         parent = activity as MainActivity
@@ -197,24 +191,29 @@ class SettingsFrag : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Display the Up arrow
-            /*
+            */
+/*
         val actionBar = checkNotNull(Objects.requireNonNull<MainActivity>(parent).supportActionBar)
         actionBar.setHomeAsUpIndicator(R.drawable.arrow_back_fill0_wght400_grad0_opsz24)
         actionBar.setHomeActionContentDescription(R.string.description_up_arrow_back)
         actionBar.setDisplayHomeAsUpEnabled(true)
-             */
+             *//*
+
     }
 
     override fun onDestroy() {
         // Remove the Up arrow
+*/
 /*
         val actionBar = checkNotNull(parent.supportActionBar)
         actionBar.setDisplayHomeAsUpEnabled(false)
 
 
- */
+ *//*
+
         super.onDestroy()
     }
+*/
 
 
     private fun updateSortSeparate(sortSeparate: Boolean) {
