@@ -84,6 +84,7 @@ import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.product.thetimemachine.AlarmViewModel
+import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
@@ -225,8 +226,10 @@ class AlarmEditFrag : Fragment() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun AlarmEditFragDisplayTop() {
+    public final fun AlarmEditFragDisplayTop() {
 
+        // Get the initial setup values from the ViewModel
+        setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
 
         // List of all entries
         val listOfPrefsEx = getListOfItemPreferences(setUpAlarmValues)
@@ -707,13 +710,15 @@ class AlarmEditFrag : Fragment() {
 
         // Create an output string
         val format =
-            SimpleDateFormat(getString(R.string.time_format_display), Locale.US)
+            SimpleDateFormat( mainActivity.applicationContext.getString(R.string.time_format_display), Locale.US)
         out = format.format(calendar.timeInMillis)
 
+
+
         // Determine Today/Tomorrow
-        if (isToday(calendar.timeInMillis)) out += getString(R.string.today_in_brackets)
+        if (isToday(calendar.timeInMillis)) out += mainActivity.applicationContext.getString(R.string.today_in_brackets)
         else if (isTomorrow(calendar.timeInMillis)) {
-            out += getString(R.string.tomorrow_in_brackets)
+            out += mainActivity.applicationContext.getString(R.string.tomorrow_in_brackets)
         }
 
         //Log.d("THE_TIME_MACHINE", "displayTargetAlarm(): " + out);

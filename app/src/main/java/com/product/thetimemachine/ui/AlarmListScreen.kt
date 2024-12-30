@@ -70,6 +70,8 @@ import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
+import androidx.navigation.NavHostController
+import com.product.thetimemachine.AlarmEdit
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
@@ -82,10 +84,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
- class AlarmListFrag  {
+ class AlarmListFrag (navController: NavHostController) {
     private var parent = appContext
-    private var fragmentView: View? = null
     private val isDynamicColor = false
+     private val navController = navController
 
     //private var selectedItems: ArrayList<Int>? = null
 /*
@@ -271,6 +273,8 @@ import java.util.Locale
         // Passing parameters to setup fragment
         val b = Bundle()
         b.putBoolean("INIT_NEWALARM", true)
+
+        actionClicked(navController = navController, clicked = AlarmEdit.route)
 /*
         // Replace current fragment with the Setup Alarm fragment
         parent = activity as MainActivity?

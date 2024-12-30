@@ -24,6 +24,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.product.thetimemachine.ui.AlarmEditFrag
 import com.product.thetimemachine.ui.AlarmListFrag
 import com.product.thetimemachine.ui.SettingsFrag
 
@@ -39,7 +40,7 @@ fun AlarmNavHost(
         modifier = modifier
     ) {
         composable(route = AlarmList.route) {
-            AlarmListScreen(alarmViewModel)
+            AlarmListScreen(alarmViewModel, navController)
         }
         composable(route = AlarmEdit.route) {
             AlarmEditScreen()
@@ -57,14 +58,14 @@ fun SettingsScreen() {
 
 @Composable
 fun AlarmEditScreen() {
-    Text("AlarmEditScreen")
+    AlarmEditFrag().AlarmEditFragDisplayTop()
 }
 
 @Composable
-fun AlarmListScreen(alarmViewModel: AlarmViewModel?) {
+fun AlarmListScreen(alarmViewModel: AlarmViewModel?, navController: NavHostController) {
 
     if (alarmViewModel != null) {
-        AlarmListFrag(). AlarmListFragDisplay(alarmViewModel)
+        AlarmListFrag(navController). AlarmListFragDisplay(alarmViewModel)
     }
 }
 
