@@ -31,6 +31,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.product.thetimemachine.AlarmEdit
 import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmNavHost
 import com.product.thetimemachine.AlarmViewModel
@@ -199,6 +200,10 @@ private fun NavBack(currentDestination: NavDestination?,navController: NavHostCo
 
 fun actionClicked(navController: NavHostController, clicked : String){
     navController.navigateSingleTopTo(clicked)
+}
+
+fun navigateToAlarmEdit(navController: NavHostController, item_id: Long) {
+    actionClicked(navController, "${AlarmEdit.route}/$item_id")
 }
 
 

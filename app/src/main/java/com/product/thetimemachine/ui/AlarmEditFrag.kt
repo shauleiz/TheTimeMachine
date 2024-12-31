@@ -123,7 +123,7 @@ class AlarmEditFrag : Fragment() {
         initParams = arguments
     }
 
-
+/*
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -132,6 +132,8 @@ class AlarmEditFrag : Fragment() {
         // Start the compose display
         return ComposeView(requireContext()).apply { setContent { AlarmEditFragDisplayTop() } }
     }
+
+ */
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -200,7 +202,7 @@ class AlarmEditFrag : Fragment() {
 
         // Convert each string to Date
         for (dateStr in dateListStr) {
-            yyyymmdd = yyyymmdd + " " + dateStr
+            yyyymmdd = "$yyyymmdd $dateStr"
         }
 
         return yyyymmdd
@@ -226,7 +228,9 @@ class AlarmEditFrag : Fragment() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    public final fun AlarmEditFragDisplayTop() {
+    fun AlarmEditFragDisplayTop(itemId : Long) {
+
+        Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop(): itemId=$itemId}")
 
         // Get the initial setup values from the ViewModel
         setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
@@ -831,7 +835,7 @@ class AlarmEditFrag : Fragment() {
         ) {
 
             val interactionSource = remember { MutableInteractionSource() }
-            val isSelected = isSelected
+
 
             @Composable
             fun backgroundColor(): Color {
@@ -1012,10 +1016,10 @@ class AlarmEditFrag : Fragment() {
 
             // Search for date in list of exceptions
             // If found - remove it from list
-            if (modifiedDates.contains(dayString))
-                modifiedDates = modifiedDates.replace(dayString, "")
+            modifiedDates = if (modifiedDates.contains(dayString))
+                modifiedDates.replace(dayString, "")
             else
-                modifiedDates = "$modifiedDates $dayString"
+                "$modifiedDates $dayString"
 
 
             return modifiedDates
@@ -1060,11 +1064,11 @@ class AlarmEditFrag : Fragment() {
                                         Day(day = it,
                                             today = today,
                                             isSelected = isDaySelected(it, weekdays, selectedDates, selectedDate)
-                                        ) {
+                                        ) { calendarDay ->
                                             if (selectionType == CalendarSelection.Multiple)
-                                                selectedDates = toggleDaySelection(it, weekdays, selectedDates)
+                                                selectedDates = toggleDaySelection(calendarDay, weekdays, selectedDates)
                                             if (selectionType == CalendarSelection.Single)
-                                                selectedDate = if (selectedDate == it.date) null else it.date
+                                                selectedDate = if (selectedDate == calendarDay.date) null else calendarDay.date
                                         }
                                     }
                                 )

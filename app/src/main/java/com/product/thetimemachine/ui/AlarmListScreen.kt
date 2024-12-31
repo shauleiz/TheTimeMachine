@@ -215,10 +215,14 @@ import java.util.Locale
         if (edit) {
             b.putLong("INIT_CREATE_TIME", item.getCreateTime())
             b.putBoolean("INIT_NEWALARM", false)
+            navigateToAlarmEdit(navController = navController, item_id = item.getCreateTime())
         } else {
             b.putLong("INIT_CREATE_TIME", 0)
             b.putBoolean("INIT_NEWALARM", true)
+            navigateToAlarmEdit(navController = navController, item_id = 0)
         }
+
+
 /*
         // Replace current fragment with the Setup Alarm fragment
         parent = activity as MainActivity?
@@ -270,11 +274,9 @@ import java.util.Locale
         // Reset the setup alarm values
         alarmViewModel?.setUpAlarmValues?.ResetValues()
 
-        // Passing parameters to setup fragment
-        val b = Bundle()
-        b.putBoolean("INIT_NEWALARM", true)
 
-        actionClicked(navController = navController, clicked = AlarmEdit.route)
+        //actionClicked(navController = navController, clicked = AlarmEdit.route)
+        navigateToAlarmEdit(navController = navController, item_id = 0)
 /*
         // Replace current fragment with the Setup Alarm fragment
         parent = activity as MainActivity?

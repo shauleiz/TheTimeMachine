@@ -42,8 +42,13 @@ fun AlarmNavHost(
         composable(route = AlarmList.route) {
             AlarmListScreen(alarmViewModel, navController)
         }
-        composable(route = AlarmEdit.route) {
-            AlarmEditScreen()
+        composable(
+            route = AlarmEdit.routeWithArgs,
+            arguments = AlarmEdit.arguments,
+        ) { navBackStackEntry ->
+            val accountType =
+                navBackStackEntry.arguments?.getLong(AlarmEdit.itemIdArg, 0)
+            AlarmEditScreen(accountType)
         }
         composable(route = Settings.route) {
             SettingsScreen()
@@ -57,8 +62,8 @@ fun SettingsScreen() {
 }
 
 @Composable
-fun AlarmEditScreen() {
-    AlarmEditFrag().AlarmEditFragDisplayTop()
+fun AlarmEditScreen(itemId : Long?) {
+    if (itemId != null) AlarmEditFrag().AlarmEditFragDisplayTop(itemId)
 }
 
 @Composable
@@ -86,6 +91,6 @@ fun NavHostController.navigateSingleTopTo(route: String) =
         restoreState = true
     }
 
-private fun NavHostController.navigateToSingleAccount(accountType: String) {
-    //this.navigateSingleTopTo("${SingleAccount.route}/$accountType")
+private fun NavHostController.navigateToAlarmEdit(accountType: String) {
+    this.navigateSingleTopTo("${AlarmEdit.route}/$accountType")
 }

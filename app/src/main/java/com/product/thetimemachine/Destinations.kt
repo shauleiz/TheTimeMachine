@@ -16,6 +16,8 @@
 
 package com.product.thetimemachine
 
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.product.thetimemachine.Application.TheTimeMachineApp
 
 /**
@@ -33,6 +35,9 @@ sealed interface Destination {
 data object AlarmEdit : Destination {
     override val route = "AlarmEdit"
     override val label = TheTimeMachineApp.appContext.getString(R.string.alarmsetup_title)
+    const val itemIdArg = "item_id"
+    val routeWithArgs = "$route/{$itemIdArg}"
+    val arguments = listOf(navArgument(itemIdArg) { type = NavType.LongType })
 }
 
 data object AlarmList :  Destination {
