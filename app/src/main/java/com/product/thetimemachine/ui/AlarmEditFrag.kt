@@ -103,12 +103,38 @@ import java.util.Locale
 
 class AlarmEditFrag : Fragment() {
     private var parent: MainActivity? = null
-    private lateinit var setUpAlarmValues: AlarmViewModel.SetUpAlarmValues
-    private var initParams: Bundle? = null
+    private lateinit var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
+    private  var itemId : Long = 0L
+    //private var initParams: Bundle? = null
     private var isNewAlarm: Boolean = true
     private var isOneOff = true
     private var weekdays = 0
     private val isDynamicColor = false
+
+    init {
+
+        /*val appToolbar =
+            requireActivity().findViewById<Toolbar>(R.id.app_toolbar)
+        appToolbar.setTitle(R.string.alarmsetup_title)
+        (activity as AppCompatActivity?)!!.setSupportActionBar(appToolbar)
+        mainActivity.setDeleteAction(false)
+        mainActivity.setSettingsAction(true)
+        mainActivity.setEditAction(false)
+        mainActivity.setDuplicateAction(false)
+        mainActivity.setCheckmarkAction(true)
+        mainActivity.invalidateOptionsMenu()*/
+
+        // Get the initial setup values from the ViewModel
+        setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
+
+        // Is it a new Alarm or Alarm to be edited
+        isOneOff = setUpAlarmValues.isOneOff.value!!
+        weekdays = setUpAlarmValues.weekDays.value!!
+
+        Log.d("THE_TIME_MACHINE", "onViewCreated():  weekdays = $weekdays")
+
+    }
+
 
 
 
@@ -119,8 +145,8 @@ class AlarmEditFrag : Fragment() {
         super.onCreate(savedInstanceState)
 
         // Set the MainActivity as Parent
-        parent = activity as MainActivity?
-        initParams = arguments
+        //parent = activity as MainActivity?
+        //initParams = arguments
     }
 
 /*
@@ -135,31 +161,6 @@ class AlarmEditFrag : Fragment() {
 
  */
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val appToolbar =
-            requireActivity().findViewById<Toolbar>(R.id.app_toolbar)
-        appToolbar.setTitle(R.string.alarmsetup_title)
-        (activity as AppCompatActivity?)!!.setSupportActionBar(appToolbar)
-        parent!!.setDeleteAction(false)
-        parent!!.setSettingsAction(true)
-        parent!!.setEditAction(false)
-        parent!!.setDuplicateAction(false)
-        parent!!.setCheckmarkAction(true)
-        parent!!.invalidateOptionsMenu()
-
-        // Get the initial setup values from the ViewModel
-        setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
-
-        // Is it a new Alarm or Alarm to be edited
-        isNewAlarm = initParams!!.getBoolean("INIT_NEWALARM", false)
-        isOneOff = setUpAlarmValues.isOneOff.value!!
-        weekdays = setUpAlarmValues.weekDays.value!!
-
-        Log.d("THE_TIME_MACHINE", "onViewCreated():  weekdays = $weekdays")
-
-    }
 
     private fun getInitialHour(): Int {
         if (!isNewAlarm) {
@@ -230,10 +231,17 @@ class AlarmEditFrag : Fragment() {
     @Composable
     fun AlarmEditFragDisplayTop(itemId : Long) {
 
-        Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop(): itemId=$itemId}")
+        Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop(): itemId=$itemId")
 
+        this.itemId = itemId
         // Get the initial setup values from the ViewModel
         setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
+        isNewAlarm = when (itemId){
+            0L -> true
+            else -> false
+        }
+
+        Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop(): setUpAlarmValues.label=${setUpAlarmValues.label.value}")
 
         // List of all entries
         val listOfPrefsEx = getListOfItemPreferences(setUpAlarmValues)
@@ -1119,7 +1127,7 @@ class AlarmEditFrag : Fragment() {
             setUpAlarmValues.minute.value!!,
             setUpAlarmValues.label.value,
             true,
-            initParams!!.getLong("INIT_CREATE_TIME")
+            itemId
         )
         else AlarmItem(
             setUpAlarmValues.hour.value!!,

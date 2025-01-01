@@ -206,38 +206,16 @@ import java.util.Locale
 
         // Copy values from the selected item to be used by the setup fragment
         alarmViewModel?.setUpAlarmValues?.GetValuesFromList(item, edit)
-
-        // Passing parameters to setup fragment
-        val b = Bundle()
-
-        b.putInt("INIT_POSITION", 0)
         alarmViewModel?.alarmList?.value ?: return
+
         if (edit) {
-            b.putLong("INIT_CREATE_TIME", item.getCreateTime())
-            b.putBoolean("INIT_NEWALARM", false)
             navigateToAlarmEdit(navController = navController, item_id = item.getCreateTime())
         } else {
-            b.putLong("INIT_CREATE_TIME", 0)
-            b.putBoolean("INIT_NEWALARM", true)
             navigateToAlarmEdit(navController = navController, item_id = 0)
         }
 
-
-/*
-        // Replace current fragment with the Setup Alarm fragment
-        parent = activity as MainActivity?
-        if (parent != null) parent!!.supportFragmentManager
-            .beginTransaction()
-            //.replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
-            .replace(R.id.fragment_container_view, AlarmEditFrag::class.java, b)
-            .addToBackStack("tag2")
-            .commit()
-
- */
-
         // Remove from list of selected alarms
-        alarmViewModel
-?.clearSelection(item.createTime)
+        alarmViewModel?.clearSelection(item.createTime)
     }
 
 
