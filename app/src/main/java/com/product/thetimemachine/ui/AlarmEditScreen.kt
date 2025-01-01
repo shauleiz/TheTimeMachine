@@ -2,13 +2,7 @@ package com.product.thetimemachine.ui
 
 import android.content.res.Configuration
 import android.icu.text.SimpleDateFormat
-import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
@@ -65,7 +59,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -75,7 +68,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.fragment.app.Fragment
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -101,9 +93,9 @@ import java.util.Locale
 */
 
 
-class AlarmEditFrag : Fragment() {
+class AlarmEditFrag  {
     private var parent: MainActivity? = null
-    private lateinit var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
+    private  var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
     private  var itemId : Long = 0L
     //private var initParams: Bundle? = null
     private var isNewAlarm: Boolean = true
@@ -133,20 +125,6 @@ class AlarmEditFrag : Fragment() {
 
         Log.d("THE_TIME_MACHINE", "onViewCreated():  weekdays = $weekdays")
 
-    }
-
-
-
-
-
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // Set the MainActivity as Parent
-        //parent = activity as MainActivity?
-        //initParams = arguments
     }
 
 /*
