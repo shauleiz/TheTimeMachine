@@ -18,6 +18,7 @@ package com.product.thetimemachine
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -25,12 +26,14 @@ import androidx.navigation.compose.composable
 import com.product.thetimemachine.ui.AlarmEditScreen
 import com.product.thetimemachine.ui.AlarmListScreen
 import com.product.thetimemachine.ui.SettingsScreen
+import com.product.thetimemachine.ui.alarmViewModel
 
 @Composable
 fun AlarmNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    alarmViewModel: AlarmViewModel?
+    alarmViewModel: AlarmViewModel?,
+    currentBackStack : NavBackStackEntry?,
 ) {
     NavHost(
         navController = navController,
@@ -38,7 +41,7 @@ fun AlarmNavHost(
         modifier = modifier
     ) {
         composable(route = AlarmList.route) {
-            AlarmListScreen(alarmViewModel, navController)
+            AlarmListScreen(alarmViewModel, navController, currentBackStack)
         }
         composable(
             route = AlarmEdit.routeWithArgs,
@@ -65,10 +68,13 @@ fun AlarmEditScreen(itemId : Long?) {
 }
 
 @Composable
-fun AlarmListScreen(alarmViewModel: AlarmViewModel?, navController: NavHostController) {
+fun AlarmListScreen(alarmViewModel: AlarmViewModel?,
+                    navController: NavHostController,
+                    currentBackStack : NavBackStackEntry?, )
+{
 
-    if (alarmViewModel != null) {
-        AlarmListScreen(navController). AlarmListFragDisplay(alarmViewModel)
+    if (alarmViewModel != null && currentBackStack != null) {
+        AlarmListScreen(navController, currentBackStack). AlarmListFragDisplay(alarmViewModel)
     }
 }
 

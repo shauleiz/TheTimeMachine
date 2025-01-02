@@ -3,6 +3,7 @@ package com.product.thetimemachine.ui
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Intent
 import android.os.Build
+import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.RepeatMode
@@ -25,6 +26,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
@@ -33,7 +38,9 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,6 +48,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -68,25 +76,32 @@ import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
+import com.product.thetimemachine.AlarmEdit
+import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
+import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
+import com.product.thetimemachine.Settings
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
- class AlarmListScreen (navController: NavHostController) {
-    private var parent = appContext
-    private val isDynamicColor = false
-     private val navController = navController
+ class AlarmListScreen (private val navController: NavHostController, currentBackStack : NavBackStackEntry) {
+     private var parent = appContext
+     private val isDynamicColor = false
+     private val currentDestination = currentBackStack.destination
+     private val editDesc = appContext.getString(R.string.edit_action_bar)
 
-    //private var selectedItems: ArrayList<Int>? = null
+     //private var selectedItems: ArrayList<Int>? = null
 /*
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -206,9 +221,9 @@ import java.util.Locale
         alarmViewModel?.alarmList?.value ?: return
 
         if (edit) {
-            navigateToAlarmEdit(navController = navController, item_id = item.getCreateTime())
+            navigate2AlarmEdit(navController = navController, itemId = item.getCreateTime())
         } else {
-            navigateToAlarmEdit(navController = navController, item_id = 0)
+            navigate2AlarmEdit(navController = navController, itemId = 0)
         }
 
         // Remove from list of selected alarms
@@ -226,6 +241,8 @@ import java.util.Locale
     private fun alarmItemLongClicked(id: Long) {
         // Update the list of the selected items - simply toggle
         alarmViewModel?.toggleSelection(id)
+
+
 
         // Modify toolbar according to number of selected items
         //parent!!.UpdateOptionMenu()
@@ -251,7 +268,7 @@ import java.util.Locale
 
 
         //actionClicked(navController = navController, clicked = AlarmEdit.route)
-        navigateToAlarmEdit(navController = navController, item_id = 0)
+        navigate2AlarmEdit(navController = navController, itemId = 0)
 /*
         // Replace current fragment with the Setup Alarm fragment
         parent = activity as MainActivity?
@@ -288,24 +305,26 @@ fun deleteSelectedAlarms() {
 
     }
 
+     private fun actionClicked(action : String){
+         when (action) {
+             editDesc -> editSelectedAlarm()
+         }
+     }
+
     fun editSelectedAlarm() {
-        val tempList = alarmViewModel
-?.liveSelectedItems?.value?.let { ArrayList(it) }
+        val tempList = alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
         // Edit only is exactly one item selected
         if (tempList==null || tempList.size != 1) return
 
-        alarmItemEdit(alarmViewModel
-?.getAlarmItemById(tempList[0]), true)
+        alarmItemEdit(alarmViewModel?.getAlarmItemById(tempList[0]), true)
     }
 
     fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
-        val tempList = alarmViewModel
-?.liveSelectedItems?.value?.let { ArrayList(it) }
+        val tempList = alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList==null || tempList.size != 1) return
 
-        alarmItemEdit(alarmViewModel
-?.getAlarmItemById(tempList[0]), false)
+        alarmItemEdit(alarmViewModel?.getAlarmItemById(tempList[0]), false)
     }
 
 
@@ -328,21 +347,47 @@ fun deleteSelectedAlarms() {
 
      */
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
      fun AlarmListFragDisplay(alarmViewModel : AlarmViewModel){
         // Observes values coming from the VM's LiveData<Plant> field
         val alarmList         by alarmViewModel.alarmList.observeAsState()
-
         var showPermissionDialog  by rememberSaveable { mutableStateOf(false) }
+        var nSelectedItems   by rememberSaveable { mutableIntStateOf(0) }
 
         Scaffold (
-            // Display "Add" floating button
+            topBar = @Composable { MediumTopAppBar(
+                    title = { Text(AlarmList.label) },
+                    navigationIcon = { NavBack(currentDestination, navController) },
+                    actions = {AlarmListActions { route -> actionClicked(route)} },
+                )
+            },
             floatingActionButton =  {DisplayAddFloatButton { showPermissionDialog = it } },
             floatingActionButtonPosition = FabPosition.End,
         ) { DisplayAlarmList(alarmList, it) }
 
         ShowPopUpPermissionWarning(showPermissionDialog) { showPermissionDialog = it }
     }
+
+     // Display Action icons on the Top App Bar - and react to click
+     @Composable
+     private fun AlarmListActions(onActionClick: (String)-> Unit) {
+
+             IconButton(onClick = {
+                 onActionClick(editDesc)
+             }) {
+                 Icon(
+                     imageVector = Icons.Filled.Edit,
+                     contentDescription = editDesc // TODO: Replace
+                 )
+             }
+
+
+
+
+     }
+
+
 
      // Show a Pop-up dialog box that warns that Notification Permission is required
      @OptIn(ExperimentalMaterial3Api::class)
@@ -400,7 +445,9 @@ fun deleteSelectedAlarms() {
         val sortedList = sortAlarmList(list)
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(pad),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(pad),
             contentPadding = PaddingValues(16.dp),
         ) {
             items(

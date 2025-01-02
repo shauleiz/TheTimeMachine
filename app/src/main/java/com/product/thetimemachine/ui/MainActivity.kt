@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -55,42 +54,6 @@ class MainActivity : ComponentActivity() {
     private var checkmarkAction = false
     private var settingsAction = true
 
-
-    fun setDeleteAction(d: Boolean) {
-        deleteAction = d
-    }
-
-    fun setEditAction(editAction: Boolean) {
-        this.editAction = editAction
-    }
-
-    fun setDuplicateAction(duplicateAction: Boolean) {
-        this.duplicateAction = duplicateAction
-    }
-
-    fun setCheckmarkAction(checkmarkAction: Boolean) {
-        this.checkmarkAction = checkmarkAction
-    }
-
-    fun setSettingsAction(settingsAction: Boolean) {
-        this.settingsAction = settingsAction
-    }
-
-    fun isDeleteAction(): Boolean {
-        return deleteAction
-    }
-
-    fun isEditAction(): Boolean {
-        return editAction
-    }
-
-    fun isDuplicateAction(): Boolean {
-        return duplicateAction
-    }
-
-    fun isSettingsAction(): Boolean {
-        return settingsAction
-    }
 
     // Defines the Request Permission Launcher
     // Launches the permission request dialog box for POST_NOTIFICATIONS
@@ -169,7 +132,7 @@ fun TopComposable() {
                              },
                              actions = {
                                  Actions(currentDestination, navController)
-                                 { nav, route -> actionClicked(nav, route) }
+                                 { nav, route -> navigate2Target(nav, route) }
                              },
                          )
                      }
@@ -177,7 +140,8 @@ fun TopComposable() {
                      AlarmNavHost(
                          navController = navController,
                          modifier = Modifier.padding(innerPadding),
-                         alarmViewModel = alarmViewModel
+                         alarmViewModel = alarmViewModel,
+                         currentBackStack = currentBackStack,
                      )
                  }
              }
@@ -188,7 +152,7 @@ fun TopComposable() {
 
 // Display go-back arrow icon on the Top App Bar - and react to click
 @Composable
-private fun NavBack(currentDestination: NavDestination?,navController: NavHostController) {
+fun NavBack(currentDestination: NavDestination?, navController: NavHostController) {
     if (currentDestination?.route != AlarmList.route) {
         IconButton(onClick = { navController.popBackStack() }) {
             Icon(
@@ -199,12 +163,20 @@ private fun NavBack(currentDestination: NavDestination?,navController: NavHostCo
     }
 }
 
-fun actionClicked(navController: NavHostController, route : String){
+private fun navigate2Target(navController: NavHostController, route : String){
     navController.navigateSingleTopTo(route)
 }
 
-fun navigateToAlarmEdit(navController: NavHostController, item_id: Long) {
-    actionClicked(navController, "${AlarmEdit.route}/$item_id")
+fun navigate2AlarmEdit(navController: NavHostController, itemId: Long) {
+    navigate2Target(navController, "${AlarmEdit.route}/$itemId")
+}
+
+fun navigate2AlarmList(navController: NavHostController, itemId: Long) {
+    navigate2Target(navController, AlarmList.route)
+}
+
+fun navigate2Settings(navController: NavHostController, itemId: Long) {
+    navigate2Target(navController, Settings.route)
 }
 
 
