@@ -93,7 +93,7 @@ import java.util.Locale
 */
 
 
-class AlarmEditFrag  {
+class AlarmEditScreen  {
     private var parent: MainActivity? = null
     private  var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
     private  var itemId : Long = 0L
@@ -1164,7 +1164,7 @@ class AlarmEditFrag  {
         if (parent != null) parent!!.supportFragmentManager
             .beginTransaction()
             //.replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
-            .replace(R.id.fragment_container_view, AlarmListFrag::class.java, null)
+            .replace(R.id.fragment_container_view, AlarmListScreen::class.java, null)
             .addToBackStack("tag5")
             .commit()
 

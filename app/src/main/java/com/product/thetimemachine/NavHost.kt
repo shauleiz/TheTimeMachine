@@ -16,17 +16,15 @@
 
 package com.product.thetimemachine
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.product.thetimemachine.ui.AlarmEditFrag
-import com.product.thetimemachine.ui.AlarmListFrag
-import com.product.thetimemachine.ui.SettingsFrag
+import com.product.thetimemachine.ui.AlarmEditScreen
+import com.product.thetimemachine.ui.AlarmListScreen
+import com.product.thetimemachine.ui.SettingsScreen
 
 @Composable
 fun AlarmNavHost(
@@ -58,19 +56,19 @@ fun AlarmNavHost(
 
 @Composable
 fun SettingsScreen() {
-    SettingsFrag().SettingsFragDisplayTop()
+    SettingsScreen().SettingsFragDisplayTop()
 }
 
 @Composable
 fun AlarmEditScreen(itemId : Long?) {
-    if (itemId != null) AlarmEditFrag().AlarmEditFragDisplayTop(itemId)
+    if (itemId != null) AlarmEditScreen().AlarmEditFragDisplayTop(itemId)
 }
 
 @Composable
 fun AlarmListScreen(alarmViewModel: AlarmViewModel?, navController: NavHostController) {
 
     if (alarmViewModel != null) {
-        AlarmListFrag(navController). AlarmListFragDisplay(alarmViewModel)
+        AlarmListScreen(navController). AlarmListFragDisplay(alarmViewModel)
     }
 }
 

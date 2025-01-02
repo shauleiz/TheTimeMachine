@@ -159,7 +159,7 @@ fun getPrefGradualVolume(parent : Context?) : String {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-class SettingsFrag  {
+class SettingsScreen  {
 
     lateinit var parent: Context
     lateinit var userPreferencesFlow: Flow<UserPreferences>
