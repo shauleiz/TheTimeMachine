@@ -359,20 +359,22 @@ fun deleteSelectedAlarms() {
             topBar = @Composable { MediumTopAppBar(
                     title = { Text(AlarmList.label) },
                     navigationIcon = { NavBack(currentDestination, navController) },
-                    actions = {AlarmListActions { route -> actionClicked(route)} },
+                    actions = {AlarmListActions(nSelectedItems) { route -> actionClicked(route)} },
                 )
             },
             floatingActionButton =  {DisplayAddFloatButton { showPermissionDialog = it } },
             floatingActionButtonPosition = FabPosition.End,
-        ) { DisplayAlarmList(alarmList, it) }
+        ) { DisplayAlarmList(alarmList, it) {n -> nSelectedItems=n } }
 
         ShowPopUpPermissionWarning(showPermissionDialog) { showPermissionDialog = it }
     }
 
      // Display Action icons on the Top App Bar - and react to click
      @Composable
-     private fun AlarmListActions(onActionClick: (String)-> Unit) {
+     private fun AlarmListActions(nSelected: Int, onActionClick: (String)-> Unit) {
 
+         // Edit Action: Display only if one items selected
+         if (nSelected ==1 ) {
              IconButton(onClick = {
                  onActionClick(editDesc)
              }) {
@@ -381,10 +383,7 @@ fun deleteSelectedAlarms() {
                      contentDescription = editDesc // TODO: Replace
                  )
              }
-
-
-
-
+         }
      }
 
 
@@ -438,7 +437,7 @@ fun deleteSelectedAlarms() {
          mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)
 
      @Composable
-    fun DisplayAlarmList (list: MutableList<AlarmItem>?, pad : PaddingValues) {
+    fun DisplayAlarmList (list: MutableList<AlarmItem>?, pad : PaddingValues, nSel : (Int)->Unit) {
         if (list == null) return
 
         // Sorting
@@ -453,14 +452,14 @@ fun deleteSelectedAlarms() {
             items(
                 count = sortedList.size,
                 key = { sortedList[it].createTime }
-            ) { DisplayAlarmItem(sortedList[it]) }
+            ) { DisplayAlarmItem(sortedList[it]){n -> nSel(n)} }
         }
     }
 
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    private fun DisplayAlarmItem(alarmItem: AlarmItem) {
+    private fun DisplayAlarmItem(alarmItem: AlarmItem, nSel : (Int) -> Unit) {
 
             // Force this function to be called when list of selected changes
             // val selectToggle by parent!!.alarmViewModel.selectToggleObserve.observeAsState( )
@@ -489,6 +488,8 @@ fun deleteSelectedAlarms() {
                 label = "scale"
             )
 
+        // Hoist number of selected items
+        nSel(alarmViewModel!!.nofSelectedItems)
 
 
             Card(
