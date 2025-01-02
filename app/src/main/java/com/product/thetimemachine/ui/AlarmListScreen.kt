@@ -3,9 +3,7 @@ package com.product.thetimemachine.ui
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -71,7 +69,6 @@ import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.navigation.NavHostController
-import com.product.thetimemachine.AlarmEdit
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel

@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -168,7 +169,7 @@ fun TopComposable() {
                              },
                              actions = {
                                  Actions(currentDestination, navController)
-                                 { nav, clicked -> actionClicked(nav, clicked) }
+                                 { nav, route -> actionClicked(nav, route) }
                              },
                          )
                      }
@@ -198,8 +199,8 @@ private fun NavBack(currentDestination: NavDestination?,navController: NavHostCo
     }
 }
 
-fun actionClicked(navController: NavHostController, clicked : String){
-    navController.navigateSingleTopTo(clicked)
+fun actionClicked(navController: NavHostController, route : String){
+    navController.navigateSingleTopTo(route)
 }
 
 fun navigateToAlarmEdit(navController: NavHostController, item_id: Long) {
@@ -214,6 +215,19 @@ private fun Actions(
     navController: NavHostController,
     onActionClick: (NavHostController, String)-> Unit
 ) {
+
+    if (currentDestination?.route == AlarmEdit.routeWithArgs) {
+
+        IconButton(onClick = {
+            onActionClick(navController, AlarmList.route)
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = "Localized description" // TODO: Replace
+            )
+        }
+    }
+
     // Settings Icon
     if (currentDestination?.route != Settings.route) {
         IconButton(onClick = { onActionClick(navController, Settings.route)
@@ -225,15 +239,6 @@ private fun Actions(
         }
     }
 
-    if (currentDestination?.route != AlarmList.route){
-        IconButton(onClick = {onActionClick(navController, AlarmList.route)
-        }) {
-            Icon(
-                imageVector = Icons.Filled.Edit,
-                contentDescription = "Localized description" // TODO: Replace
-            )
-        }
 
-    }
 }
 
