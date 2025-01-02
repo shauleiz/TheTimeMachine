@@ -22,9 +22,13 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDestination
@@ -119,24 +123,8 @@ fun TopComposable() {
              MaterialTheme {
                  val navController = rememberNavController()
                  val currentBackStack by navController.currentBackStackEntryAsState()
-                 val currentDestination = currentBackStack?.destination
-                 val currentScreen =
-                     alarmScreens.find { it.route == currentDestination?.route } ?: AlarmList
 
-                 Scaffold(
-                     topBar = {
-                         MediumTopAppBar(
-                             title = { Text(currentScreen.label) },
-                             navigationIcon = {
-                                 NavBack(currentDestination, navController)
-                             },
-                             actions = {
-                                 Actions(currentDestination, navController)
-                                 { nav, route -> navigate2Target(nav, route) }
-                             },
-                         )
-                     }
-                 ) { innerPadding ->
+                 Scaffold { innerPadding ->
                      AlarmNavHost(
                          navController = navController,
                          modifier = Modifier.padding(innerPadding),

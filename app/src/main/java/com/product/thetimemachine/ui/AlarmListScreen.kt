@@ -46,6 +46,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -58,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -358,22 +361,47 @@ fun deleteSelectedAlarms() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-     fun AlarmListFragDisplay(alarmViewModel : AlarmViewModel){
+    fun AlarmListFragDisplay(alarmViewModel: AlarmViewModel) {
         // Observes values coming from the VM's LiveData<Plant> field
-        val alarmList         by alarmViewModel.alarmList.observeAsState()
-        var showPermissionDialog  by rememberSaveable { mutableStateOf(false) }
-        var nSelectedItems   by rememberSaveable { mutableIntStateOf(0) }
+        val alarmList by alarmViewModel.alarmList.observeAsState()
+        var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
+        var nSelectedItems by rememberSaveable { mutableIntStateOf(0) }
 
-        Scaffold (
-            topBar = @Composable { MediumTopAppBar(
-                    title = { Text(AlarmList.label) },
-                    navigationIcon = { NavBack(currentDestination, navController) },
-                    actions = {AlarmListActions(nSelectedItems) { route -> actionClicked(route)} },
-                )
-            },
-            floatingActionButton =  {DisplayAddFloatButton { showPermissionDialog = it } },
-            floatingActionButtonPosition = FabPosition.End,
-        ) { DisplayAlarmList(alarmList, it) {n -> nSelectedItems=n } }
+        AppTheme(dynamicColor = isDynamicColor) {
+            Surface {
+                MaterialTheme {
+                    Scaffold(
+                        topBar = @Composable {
+                            TopAppBar(
+                                title = {
+                                    Text(
+                                        AlarmList.label,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                //navigationIcon = { NavBack(currentDestination, navController) },
+                                actions = {
+                                    AlarmListActions(nSelectedItems) { route ->
+                                        actionClicked(
+                                            route
+                                        )
+                                    }
+                                },
+                                //colors = TopAppBarDefaults.topAppBarColors(containerColor = Yellow),
+                            )
+                        },
+                        floatingActionButton = {
+                            DisplayAddFloatButton {
+                                showPermissionDialog = it
+                            }
+                        },
+                        floatingActionButtonPosition = FabPosition.End,
+                    ) { DisplayAlarmList(alarmList, it) { n -> nSelectedItems = n } }
+
+                }
+            }
+        }
 
         ShowPopUpPermissionWarning(showPermissionDialog) { showPermissionDialog = it }
     }
