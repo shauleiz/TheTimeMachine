@@ -175,7 +175,7 @@ fun navigate2AlarmList(navController: NavHostController, itemId: Long) {
     navigate2Target(navController, AlarmList.route)
 }
 
-fun navigate2Settings(navController: NavHostController, itemId: Long) {
+fun navigate2Settings(navController: NavHostController) {
     navigate2Target(navController, Settings.route)
 }
 

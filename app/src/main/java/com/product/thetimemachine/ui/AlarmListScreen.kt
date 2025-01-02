@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialogDefaults
@@ -59,9 +60,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -100,6 +103,9 @@ import java.util.Locale
      private val isDynamicColor = false
      private val currentDestination = currentBackStack.destination
      private val editDesc = appContext.getString(R.string.edit_action_bar)
+     private val duplicateDesc = appContext.getString(R.string.duplicate_action_bar)
+     private val deleteDesc = appContext.getString(R.string.delete_action_bar)
+     private val settingsDesc = appContext.getString(R.string.settings_action_bar)
 
      //private var selectedItems: ArrayList<Int>? = null
 /*
@@ -220,11 +226,11 @@ import java.util.Locale
         alarmViewModel?.setUpAlarmValues?.GetValuesFromList(item, edit)
         alarmViewModel?.alarmList?.value ?: return
 
-        if (edit) {
+        //if (edit) {
             navigate2AlarmEdit(navController = navController, itemId = item.getCreateTime())
-        } else {
-            navigate2AlarmEdit(navController = navController, itemId = 0)
-        }
+        //} else {
+        //    navigate2AlarmEdit(navController = navController, itemId = 0)
+        //}
 
         // Remove from list of selected alarms
         alarmViewModel?.clearSelection(item.createTime)
@@ -308,10 +314,13 @@ fun deleteSelectedAlarms() {
      private fun actionClicked(action : String){
          when (action) {
              editDesc -> editSelectedAlarm()
+             duplicateDesc -> duplicateSelectedAlarm()
+             deleteDesc -> deleteSelectedAlarms()
+             settingsDesc -> navigate2Settings(navController = navController)
          }
      }
 
-    fun editSelectedAlarm() {
+    private fun editSelectedAlarm() {
         val tempList = alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
         // Edit only is exactly one item selected
         if (tempList==null || tempList.size != 1) return
@@ -319,7 +328,7 @@ fun deleteSelectedAlarms() {
         alarmItemEdit(alarmViewModel?.getAlarmItemById(tempList[0]), true)
     }
 
-    fun duplicateSelectedAlarm() {
+    private fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
         val tempList = alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList==null || tempList.size != 1) return
@@ -374,15 +383,47 @@ fun deleteSelectedAlarms() {
      private fun AlarmListActions(nSelected: Int, onActionClick: (String)-> Unit) {
 
          // Edit Action: Display only if one items selected
-         if (nSelected ==1 ) {
+         if (nSelected == 1) {
              IconButton(onClick = {
                  onActionClick(editDesc)
              }) {
                  Icon(
                      imageVector = Icons.Filled.Edit,
-                     contentDescription = editDesc // TODO: Replace
+                     contentDescription = editDesc
                  )
              }
+
+
+             // Duplicate Action: Display only if one items selected
+             IconButton(onClick = {
+                 onActionClick(duplicateDesc)
+             }) {
+                 Icon(
+                     imageVector = ImageVector.vectorResource(R.drawable.octicon__duplicate_24),
+                     contentDescription = duplicateDesc
+                 )
+             }
+         }
+
+         // Delete item: Only if at least one item selected
+         if (nSelected>0){
+             IconButton(onClick = {
+                 onActionClick(deleteDesc)
+             }) {
+                 Icon(
+                     imageVector = Icons.Filled.Delete,
+                     contentDescription = deleteDesc
+                 )
+             }
+         }
+
+         IconButton(onClick = {
+             onActionClick(settingsDesc)
+         }) {
+             Icon(
+                 imageVector = Icons.Filled.Settings,
+                 contentDescription = settingsDesc
+             )
          }
      }
 

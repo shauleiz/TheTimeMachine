@@ -100,6 +100,7 @@
     <string name="weekly_repeat">Weekly</string>
     <string name="edit_action_bar">edit</string>
     <string name="duplicate_action_bar">Duplicate</string>
+    <string name="delete_action_bar">Delete</string>
     <string name="settings_action_bar">Settings</string>
     <string name="call">Call</string>
     <string name="sms">SMS</string>

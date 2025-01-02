@@ -52,15 +52,12 @@ fun AlarmNavHost(
             AlarmEditScreen(accountType)
         }
         composable(route = Settings.route) {
-            SettingsScreen()
+            SettingsScreen().SettingsFragDisplayTop()
         }
     }
 }
 
-@Composable
-fun SettingsScreen() {
-    SettingsScreen().SettingsFragDisplayTop()
-}
+
 
 @Composable
 fun AlarmEditScreen(itemId : Long?) {

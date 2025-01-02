@@ -195,6 +195,9 @@ public class AlarmViewModel extends AndroidViewModel {
       final MutableLiveData<String> alarmSound;
       final MutableLiveData<String> gradualVolume;
 
+      // Admin
+      final MutableLiveData<Boolean> duplicate;
+
 
       // Default constructor
       public SetUpAlarmValues() {
@@ -219,6 +222,9 @@ public class AlarmViewModel extends AndroidViewModel {
          vibrationPattern = new MutableLiveData<>();
          alarmSound = new MutableLiveData<>();
          gradualVolume = new MutableLiveData<>();
+
+         // Admin
+         duplicate = new MutableLiveData<>();
 
          ResetValues();
       }
@@ -259,6 +265,8 @@ public class AlarmViewModel extends AndroidViewModel {
          vibrationPattern.setValue(getPrefVibrationPatern(context));
          alarmSound.setValue(getPrefAlarmSound(context));
          gradualVolume.setValue(getPrefGradualVolume(context));
+
+         duplicate.setValue(false);
 
 
          //weekDays.setValue(ONEOFF);
@@ -301,6 +309,7 @@ public class AlarmViewModel extends AndroidViewModel {
          label.setValue(item.getLabel());
          active.setValue(item.isActive());
 
+         duplicate.setValue(!edit);
 
          long c;
          if (edit)
