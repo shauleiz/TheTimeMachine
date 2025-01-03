@@ -117,7 +117,7 @@ import java.util.Locale
 class AlarmEditScreen(private val navController: NavHostController,
                       private val currentDestination: NavDestination?,
     )  {
-    private var parent: MainActivity? = null
+    private var parent: MainActivity? = mainActivity
     private  var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
     private  var itemId : Long = 0L
     //private var initParams: Bundle? = null
@@ -237,12 +237,12 @@ class AlarmEditScreen(private val navController: NavHostController,
         val timePickerState = rememberTimePickerState(
             initialHour = getInitialHour(),
             initialMinute = getInitialMinute(),
-            is24Hour = isPref24h(parent),
+            is24Hour = isPref24h(mainActivity),
         )
 
         // Event Handlers
         val setSelectedDays = { index: Int ->
-            val i = if (getPrefFirstDayOfWeek(parent) == "Mo") {
+            val i = if (getPrefFirstDayOfWeek(mainActivity) == "Mo") {
                 if (index == 6) 0 else index + 1
             } else index
             weekDays.intValue = weekDays.intValue xor (1 shl i)
