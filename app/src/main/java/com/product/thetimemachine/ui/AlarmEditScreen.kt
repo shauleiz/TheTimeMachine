@@ -317,6 +317,12 @@ class AlarmEditScreen(private val navController: NavHostController,
             listOfPrefs[index].origValue?.value = value
         }
 
+        // Updates calendar trigger and type when Calendar button is clicked
+        val onCalendarButtonClicked = {type: CalendarSelection ->
+            showCalendarDialog = true
+            calendarSelType = type
+        }
+
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
@@ -340,12 +346,13 @@ class AlarmEditScreen(private val navController: NavHostController,
                     ) { AlarmEditBody(
                         it,
                         timePickerState,
-                        showCalendarDialog,
-                        calendarSelType,
+                        //showCalendarDialog,
+                        //calendarSelType,
                         oneOff,
                         weekDays,
                         setSelectedDays,
                         listOfPrefs,
+                        onCalendarButtonClicked,
                         onPrefDialogOK
                     )}
 
@@ -370,16 +377,15 @@ class AlarmEditScreen(private val navController: NavHostController,
     private fun AlarmEditBody(
         pad: PaddingValues,
         timePickerState: TimePickerState,
-        showCalendarDialog: Boolean,
-        calendarSelType: CalendarSelection,
         oneOff: MutableState<Boolean>,
         weekDays: MutableIntState,
         setSelectedDays: (Int) -> Unit,
         listOfPrefs: SnapshotStateList<PrefData>,
+        onCalendarButtonClick : (CalendarSelection) -> Unit,
         onPrefDialogOK: (Int, String?) -> Unit
     ) {
-        var showCalendarDialog1 = showCalendarDialog
-        var calendarSelType1 = calendarSelType
+        var showCalendarDialog1 = false
+        var calendarSelType1 = CalendarSelection.Single
      //   MaterialTheme {
             Column(
                 horizontalAlignment = CenterHorizontally, //of children
@@ -399,9 +405,7 @@ class AlarmEditScreen(private val navController: NavHostController,
                     /* Single/Weekly button */
                     AlarmTypeBox(
                         {
-                            showCalendarDialog1 = true
-                            calendarSelType1 =
-                                if (it) CalendarSelection.Single else CalendarSelection.Multiple
+                            onCalendarButtonClick(if (it) CalendarSelection.Single else CalendarSelection.Multiple)
                             Log.d(
                                 "THE_TIME_MACHINE",
                                 "AlarmTypeBox(): showCalendarDialog=$showCalendarDialog1 ; calendarSelType=$calendarSelType1"
