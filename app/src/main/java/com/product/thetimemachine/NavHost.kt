@@ -19,6 +19,7 @@ package com.product.thetimemachine
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -48,7 +49,7 @@ fun AlarmNavHost(
         ) { navBackStackEntry ->
             val accountType =
                 navBackStackEntry.arguments?.getLong(AlarmEdit.itemIdArg, 0)
-            ShowAlarmEditScreen(accountType)
+            ShowAlarmEditScreen(navController, accountType, currentBackStack?.destination)
         }
         composable(route = Settings.route) {
             ShowSettingsScreen()
@@ -63,8 +64,11 @@ fun ShowSettingsScreen(){
 }
 
 @Composable
-fun ShowAlarmEditScreen(itemId : Long?) {
-    if (itemId != null) AlarmEditScreen().AlarmEditFragDisplayTop(itemId)
+fun ShowAlarmEditScreen(navController: NavHostController,
+                        itemId : Long?,
+                        currentDestination: NavDestination?,)
+{
+    if (itemId != null) AlarmEditScreen(navController, currentDestination).AlarmEditFragDisplayTop(itemId)
 }
 
 @Composable
@@ -74,7 +78,7 @@ fun ShowAlarmListScreen(alarmViewModel: AlarmViewModel?,
 {
 
     if (alarmViewModel != null && currentBackStack != null) {
-        AlarmListScreen(navController, currentBackStack). AlarmListFragDisplay(alarmViewModel)
+        AlarmListScreen(navController). AlarmListFragDisplay(alarmViewModel)
     }
 }
 

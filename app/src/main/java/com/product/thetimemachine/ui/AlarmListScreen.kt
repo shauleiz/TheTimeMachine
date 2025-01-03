@@ -101,14 +101,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
- class AlarmListScreen (private val navController: NavHostController, currentBackStack : NavBackStackEntry) {
+ class AlarmListScreen (private val navController: NavHostController) {
      private var parent = appContext
      private val isDynamicColor = false
-     private val currentDestination = currentBackStack.destination
-     private val editDesc = appContext.getString(R.string.edit_action_bar)
-     private val duplicateDesc = appContext.getString(R.string.duplicate_action_bar)
-     private val deleteDesc = appContext.getString(R.string.delete_action_bar)
-     private val settingsDesc = appContext.getString(R.string.settings_action_bar)
+     //private val currentDestination = currentBackStack.destination
 
      //private var selectedItems: ArrayList<Int>? = null
 /*
@@ -229,11 +225,7 @@ import java.util.Locale
         alarmViewModel?.setUpAlarmValues?.GetValuesFromList(item, edit)
         alarmViewModel?.alarmList?.value ?: return
 
-        //if (edit) {
-            navigate2AlarmEdit(navController = navController, itemId = item.getCreateTime())
-        //} else {
-        //    navigate2AlarmEdit(navController = navController, itemId = 0)
-        //}
+        navigate2AlarmEdit(navController = navController, itemId = item.getCreateTime())
 
         // Remove from list of selected alarms
         alarmViewModel?.clearSelection(item.createTime)

@@ -1,5 +1,6 @@
 package com.product.thetimemachine.ui
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.icu.text.SimpleDateFormat
 import android.util.Log
@@ -24,13 +25,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -40,9 +49,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -51,6 +62,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -59,15 +71,21 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination
+import androidx.navigation.NavHostController
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -75,6 +93,8 @@ import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
+import com.product.thetimemachine.AlarmEdit
+import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
@@ -93,7 +113,9 @@ import java.util.Locale
 */
 
 
-class AlarmEditScreen  {
+class AlarmEditScreen(private val navController: NavHostController,
+                      private val currentDestination: NavDestination?,
+    )  {
     private var parent: MainActivity? = null
     private  var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
     private  var itemId : Long = 0L
@@ -104,17 +126,6 @@ class AlarmEditScreen  {
     private val isDynamicColor = false
 
     init {
-
-        /*val appToolbar =
-            requireActivity().findViewById<Toolbar>(R.id.app_toolbar)
-        appToolbar.setTitle(R.string.alarmsetup_title)
-        (activity as AppCompatActivity?)!!.setSupportActionBar(appToolbar)
-        mainActivity.setDeleteAction(false)
-        mainActivity.setSettingsAction(true)
-        mainActivity.setEditAction(false)
-        mainActivity.setDuplicateAction(false)
-        mainActivity.setCheckmarkAction(true)
-        mainActivity.invalidateOptionsMenu()*/
 
         // Get the initial setup values from the ViewModel
         setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
@@ -127,17 +138,7 @@ class AlarmEditScreen  {
 
     }
 
-/*
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
 
-        // Start the compose display
-        return ComposeView(requireContext()).apply { setContent { AlarmEditFragDisplayTop() } }
-    }
-
- */
 
 
     private fun getInitialHour(): Int {
@@ -205,6 +206,7 @@ class AlarmEditScreen  {
     }
 
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun AlarmEditFragDisplayTop(itemId : Long) {
@@ -316,34 +318,123 @@ class AlarmEditScreen  {
             listOfPrefs[index].origValue?.value = value
         }
 
+        /////////////////////////////////////
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
-                    Column(
-                        horizontalAlignment = CenterHorizontally, //of children
+                    Scaffold(
+                        topBar = @Composable {
+                            TopAppBar(
+                                title = {
+                                    Text(
+                                        AlarmEdit.label,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                navigationIcon = { NavBack(currentDestination, navController) },
+                                actions = {
+                                    AlarmEditActions() { actionClicked(it)}
+                                    },
+
+                                //colors = TopAppBarDefaults.topAppBarColors(containerColor = Yellow),
+                            )
+                        }
+
+                    ) { AlarmEditBody(
+                        timePickerState,
+                        showCalendarDialog,
+                        calendarSelType,
+                        oneOff,
+                        weekDays,
+                        setSelectedDays,
+                        listOfPrefs,
+                        onPrefDialogOK
+                    )}
+
+                }
+            }
+        }
+
+        //////////////////////////////////////
+
+
+    }
+
+
+    private fun actionClicked(route : String){}
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun AlarmEditBody(
+        timePickerState: TimePickerState,
+        showCalendarDialog: Boolean,
+        calendarSelType: CalendarSelection,
+        oneOff: MutableState<Boolean>,
+        weekDays: MutableIntState,
+        setSelectedDays: (Int) -> Unit,
+        listOfPrefs: SnapshotStateList<PrefData>,
+        onPrefDialogOK: (Int, String?) -> Unit
+    ) {
+        var showCalendarDialog1 = showCalendarDialog
+        var calendarSelType1 = calendarSelType
+     //   MaterialTheme {
+            Column(
+                horizontalAlignment = CenterHorizontally, //of children
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                /* Alarm Label */
+                LabelField()
+
+                if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    // Portrait
+                    /* Time Picker */
+                    TimePickerField(timePickerState)
+
+                    /* Single/Weekly button */
+                    AlarmTypeBox(
+                        {
+                            showCalendarDialog1 = true
+                            calendarSelType1 =
+                                if (it) CalendarSelection.Single else CalendarSelection.Multiple
+                            Log.d(
+                                "THE_TIME_MACHINE",
+                                "AlarmTypeBox(): showCalendarDialog=$showCalendarDialog1 ; calendarSelType=$calendarSelType1"
+                            )
+
+                        },
+                        oneOff,
+                        { oneOff.value = it },
+                        weekDays,
+                        setSelectedDays,
+                        timePickerState,
+                    )
+
+                    /* Preferences */
+                    ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
+
+                } else {
+                    // Landscape
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        horizontalArrangement = Arrangement.Start,
                         modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
+                            .fillMaxWidth()
                     ) {
-                        /* Alarm Label */
-                        LabelField()
+                        /* Time Picker */
+                        TimePickerField(timePickerState)
 
-                        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                            // Portrait
-                            /* Time Picker */
-                            TimePickerField(timePickerState)
+                        VerticalDivider(thickness = 4.dp)
 
+                        Column {
                             /* Single/Weekly button */
                             AlarmTypeBox(
                                 {
-                                    showCalendarDialog = true
-                                    calendarSelType =
+                                    calendarSelType1 =
                                         if (it) CalendarSelection.Single else CalendarSelection.Multiple
-                                    Log.d(
-                                        "THE_TIME_MACHINE",
-                                        "AlarmTypeBox(): showCalendarDialog=$showCalendarDialog ; calendarSelType=$calendarSelType"
-                                    )
-
+                                    showCalendarDialog1 = true
                                 },
                                 oneOff,
                                 { oneOff.value = it },
@@ -354,44 +445,39 @@ class AlarmEditScreen  {
 
                             /* Preferences */
                             ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
-
-                        } else {
-                            // Landscape
-                            Row(verticalAlignment = Alignment.Top,
-                                horizontalArrangement = Arrangement.Start,
-                                modifier = Modifier
-                                .fillMaxWidth()
-                            ){
-                                /* Time Picker */
-                                TimePickerField(timePickerState)
-
-                                VerticalDivider(thickness = 4.dp)
-
-                                Column {
-                                    /* Single/Weekly button */
-                                    AlarmTypeBox(
-                                        {
-                                            calendarSelType =
-                                                if (it) CalendarSelection.Single else CalendarSelection.Multiple
-                                            showCalendarDialog = true
-                                        },
-                                        oneOff,
-                                        { oneOff.value = it },
-                                        weekDays,
-                                        setSelectedDays,
-                                        timePickerState,
-                                    )
-
-                                    /* Preferences */
-                                    ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
-                                }
-                            }
                         }
                     }
                 }
             }
+  //      }
+    }
+
+    // Display Action icons on the Top App Bar - and react to click
+    @Composable
+    private fun AlarmEditActions(onActionClick: (String)-> Unit) {
+
+        // Check (OK) Action
+            IconButton(onClick = {
+                onActionClick(checkDesc)
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = checkDesc
+                )
+            }
+
+
+        // Setting action
+        IconButton(onClick = {
+            onActionClick(settingsDesc)
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Settings,
+                contentDescription = settingsDesc
+            )
         }
     }
+
 
     @Composable
     private fun LabelField() {

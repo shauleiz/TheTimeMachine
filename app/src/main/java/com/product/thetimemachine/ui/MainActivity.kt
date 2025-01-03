@@ -39,6 +39,7 @@ import com.product.thetimemachine.AlarmEdit
 import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmNavHost
 import com.product.thetimemachine.AlarmViewModel
+import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Settings
 import com.product.thetimemachine.alarmScreens
@@ -48,6 +49,13 @@ import com.product.thetimemachine.ui.theme.AppTheme
 
 private const val isDynamicColor = false
 var alarmViewModel: AlarmViewModel? = null
+
+val editDesc = appContext.getString(com.product.thetimemachine.R.string.edit_action_bar)
+val duplicateDesc = appContext.getString(com.product.thetimemachine.R.string.duplicate_action_bar)
+val deleteDesc = appContext.getString(com.product.thetimemachine.R.string.delete_action_bar)
+val settingsDesc = appContext.getString(com.product.thetimemachine.R.string.settings_action_bar)
+val checkDesc = appContext.getString(com.product.thetimemachine.R.string.checkmark_action_bar)
+
 
 class MainActivity : ComponentActivity() {
     // ViewModel object of class MyViewModel
@@ -115,23 +123,21 @@ class MainActivity : ComponentActivity() {
 
 }
 
- @OptIn(ExperimentalMaterial3Api::class)
  @Composable
-fun TopComposable() {
+ fun TopComposable() {
      AppTheme(dynamicColor = isDynamicColor) {
          Surface {
              MaterialTheme {
+
                  val navController = rememberNavController()
                  val currentBackStack by navController.currentBackStackEntryAsState()
 
-                 Scaffold { innerPadding ->
-                     AlarmNavHost(
-                         navController = navController,
-                         modifier = Modifier.padding(innerPadding),
-                         alarmViewModel = alarmViewModel,
-                         currentBackStack = currentBackStack,
-                     )
-                 }
+                 AlarmNavHost(
+                     navController = navController,
+                     //modifier = Modifier.padding(innerPadding),
+                     alarmViewModel = alarmViewModel,
+                     currentBackStack = currentBackStack,
+                 )
              }
          }
      }
