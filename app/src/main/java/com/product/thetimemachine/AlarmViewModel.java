@@ -406,6 +406,9 @@ public class AlarmViewModel extends AndroidViewModel {
       public MutableLiveData<String> getAlarmSound() {return alarmSound;}
       public MutableLiveData<String> getGradualVolume() {return gradualVolume;}
 
+      public MutableLiveData<Boolean> isDuplicate() {return duplicate;}
+
+
       public void setLabel(String label) {
          String t = this.label.getValue();
          assert t != null;

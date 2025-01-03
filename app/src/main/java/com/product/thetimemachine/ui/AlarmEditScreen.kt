@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -216,10 +217,8 @@ class AlarmEditScreen(private val navController: NavHostController,
         this.itemId = itemId
         // Get the initial setup values from the ViewModel
         setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
-        isNewAlarm = when (itemId){
-            0L -> true
-            else -> false
-        }
+        isNewAlarm = (itemId == 0L || setUpAlarmValues.isDuplicate.value == true)
+
 
         Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop(): setUpAlarmValues.label=${setUpAlarmValues.label.value}")
 
@@ -318,7 +317,6 @@ class AlarmEditScreen(private val navController: NavHostController,
             listOfPrefs[index].origValue?.value = value
         }
 
-        /////////////////////////////////////
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
@@ -336,12 +334,11 @@ class AlarmEditScreen(private val navController: NavHostController,
                                 actions = {
                                     AlarmEditActions() { actionClicked(it)}
                                     },
-
-                                //colors = TopAppBarDefaults.topAppBarColors(containerColor = Yellow),
                             )
                         }
 
                     ) { AlarmEditBody(
+                        it,
                         timePickerState,
                         showCalendarDialog,
                         calendarSelType,
@@ -356,17 +353,22 @@ class AlarmEditScreen(private val navController: NavHostController,
             }
         }
 
-        //////////////////////////////////////
 
 
     }
 
 
-    private fun actionClicked(route : String){}
+    private fun actionClicked(action : String){
+        when (action) {
+            checkDesc -> checkmarkClicked()
+            settingsDesc -> navigate2Settings(navController = navController)
+        }
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun AlarmEditBody(
+        pad: PaddingValues,
         timePickerState: TimePickerState,
         showCalendarDialog: Boolean,
         calendarSelType: CalendarSelection,
@@ -382,6 +384,7 @@ class AlarmEditScreen(private val navController: NavHostController,
             Column(
                 horizontalAlignment = CenterHorizontally, //of children
                 modifier = Modifier
+                    .padding(pad)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
@@ -1174,7 +1177,7 @@ class AlarmEditScreen(private val navController: NavHostController,
 
     }
 
-    fun checkmarkClicked() {
+    private fun checkmarkClicked() {
 
         // Null checks
         if (setUpAlarmValues.hour == null || setUpAlarmValues.hour.value == null) return
@@ -1246,6 +1249,8 @@ class AlarmEditScreen(private val navController: NavHostController,
         item.Exec()
 
         // Display the Alarm List Fragment
+        navigate2AlarmList(navController = navController, itemId = 0)
+
         /*
         if (parent != null) parent!!.supportFragmentManager
             .beginTransaction()
