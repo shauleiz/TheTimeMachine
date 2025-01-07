@@ -225,6 +225,8 @@ import java.util.Locale
         alarmViewModel?.setUpAlarmValues?.GetValuesFromList(item, edit)
         alarmViewModel?.alarmList?.value ?: return
 
+        Log.d("THE_TIME_MACHINE", "+++ alarmItemEdit(): itemId=${item.getCreateTime()}")
+
         navigate2AlarmEdit(navController = navController, itemId = item.getCreateTime())
 
         // Remove from list of selected alarms

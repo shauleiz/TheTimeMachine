@@ -16,6 +16,7 @@
 
 package com.product.thetimemachine
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
@@ -47,9 +48,10 @@ fun AlarmNavHost(
             route = AlarmEdit.routeWithArgs,
             arguments = AlarmEdit.arguments,
         ) { navBackStackEntry ->
-            val accountType =
+            val itemId =
                 navBackStackEntry.arguments?.getLong(AlarmEdit.itemIdArg, 0)
-            ShowAlarmEditScreen(navController, accountType, currentBackStack?.destination)
+            ShowAlarmEditScreen(navController, itemId, currentBackStack?.destination)
+            Log.d("THE_TIME_MACHINE", "--- AlarmNavHost(): itemId=$itemId")
         }
         composable(route = Settings.route) {
             ShowSettingsScreen()
@@ -87,6 +89,8 @@ fun NavHostController.navigateSingleTopTo(route: String) =
         // Pop up to the start destination of the graph to
         // avoid building up a large stack of destinations
         // on the back stack as users select items
+        Log.d("THE_TIME_MACHINE", "+++ navigateSingleTopTo(): route=${route}")
+
         popUpTo(
             this@navigateSingleTopTo.graph.findStartDestination().id
         ) {

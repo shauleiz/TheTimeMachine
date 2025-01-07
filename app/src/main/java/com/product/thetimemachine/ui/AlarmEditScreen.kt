@@ -207,7 +207,7 @@ class AlarmEditScreen(private val navController: NavHostController,
     }
 
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+   // @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun AlarmEditFragDisplayTop(itemId : Long) {
@@ -406,11 +406,6 @@ class AlarmEditScreen(private val navController: NavHostController,
                     AlarmTypeBox(
                         {
                             onCalendarButtonClick(if (it) CalendarSelection.Single else CalendarSelection.Multiple)
-                            Log.d(
-                                "THE_TIME_MACHINE",
-                                "AlarmTypeBox(): showCalendarDialog=$showCalendarDialog1 ; calendarSelType=$calendarSelType1"
-                            )
-
                         },
                         oneOff,
                         { oneOff.value = it },
@@ -439,9 +434,7 @@ class AlarmEditScreen(private val navController: NavHostController,
                             /* Single/Weekly button */
                             AlarmTypeBox(
                                 {
-                                    calendarSelType1 =
-                                        if (it) CalendarSelection.Single else CalendarSelection.Multiple
-                                    showCalendarDialog1 = true
+                                    onCalendarButtonClick(if (it) CalendarSelection.Single else CalendarSelection.Multiple)
                                 },
                                 oneOff,
                                 { oneOff.value = it },

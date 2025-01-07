@@ -162,6 +162,7 @@ private fun navigate2Target(navController: NavHostController, route : String){
 }
 
 fun navigate2AlarmEdit(navController: NavHostController, itemId: Long) {
+    Log.d("THE_TIME_MACHINE", "+++ navigate2AlarmEdit(): itemId=${itemId}")
     navigate2Target(navController, "${AlarmEdit.route}/$itemId")
 }
 
