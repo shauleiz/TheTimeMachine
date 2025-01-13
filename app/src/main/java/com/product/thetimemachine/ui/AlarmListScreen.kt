@@ -3,7 +3,6 @@ package com.product.thetimemachine.ui
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Intent
 import android.os.Build
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.RepeatMode
@@ -12,7 +11,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
@@ -27,7 +25,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
@@ -39,15 +36,14 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -60,7 +56,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -82,26 +77,24 @@ import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavDestination
-import androidx.navigation.NavHostController
-import com.product.thetimemachine.AlarmEdit
 import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
-import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
-import com.product.thetimemachine.Settings
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
- class AlarmListScreen (private val navController: NavHostController) {
+class AlarmListScreen (
+     val alarmViewModel : AlarmViewModel,
+     val navToAlarmEdit: (Long)->Unit,
+     val navToSettings: ()->Unit,
+ ) {
      private var parent = appContext
      private val isDynamicColor = false
      //private val currentDestination = currentBackStack.destination
@@ -150,7 +143,7 @@ import java.util.Locale
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     fun checkPermissions( showDialog: (Boolean) -> Unit) {
         val permission = appContext.checkSelfPermission(POST_NOTIFICATIONS)
-        if (permission == PermissionChecker.PERMISSION_GRANTED) {
+        if (permission == PERMISSION_GRANTED) {
             Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Granted")
             //AddAlarm_Button.setEnabled(true);;
         }
@@ -222,15 +215,15 @@ import java.util.Locale
         if (item == null) return
 
         // Copy values from the selected item to be used by the setup fragment
-        alarmViewModel?.setUpAlarmValues?.GetValuesFromList(item, edit)
-        alarmViewModel?.alarmList?.value ?: return
+        alarmViewModel.setUpAlarmValues?.GetValuesFromList(item, edit)
+        alarmViewModel.alarmList.value ?: return
 
         Log.d("THE_TIME_MACHINE", "+++ alarmItemEdit(): itemId=${item.getCreateTime()}")
 
-        navigate2AlarmEdit(navController = navController, itemId = item.getCreateTime())
+        navToAlarmEdit(item.getCreateTime())
 
         // Remove from list of selected alarms
-        alarmViewModel?.clearSelection(item.createTime)
+        alarmViewModel.clearSelection(item.createTime)
     }
 
 
@@ -243,7 +236,7 @@ import java.util.Locale
      */
     private fun alarmItemLongClicked(id: Long) {
         // Update the list of the selected items - simply toggle
-        alarmViewModel?.toggleSelection(id)
+        alarmViewModel.toggleSelection(id)
 
 
 
@@ -267,11 +260,10 @@ import java.util.Locale
         }
 
         // Reset the setup alarm values
-        alarmViewModel?.setUpAlarmValues?.ResetValues()
+        alarmViewModel.setUpAlarmValues?.ResetValues()
 
 
-        //actionClicked(navController = navController, clicked = AlarmEdit.route)
-        navigate2AlarmEdit(navController = navController, itemId = 0)
+        navToAlarmEdit(0)
 /*
         // Replace current fragment with the Setup Alarm fragment
         parent = activity as MainActivity?
@@ -285,21 +277,21 @@ import java.util.Locale
  */
 
         // Clear list of selected alarms
-        alarmViewModel?.clearSelection()
+        alarmViewModel.clearSelection()
     }
 
 
 
-fun deleteSelectedAlarms() {
+private fun deleteSelectedAlarms() {
         //val tempList = ArrayList(selectedItems)
-        val tempList = alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
+        val tempList = alarmViewModel.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList != null) {
             for (id in tempList) {
-                val item = alarmViewModel?.getAlarmItemById(id)
+                val item = alarmViewModel.getAlarmItemById(id)
                 if (item!=null) {
-                    alarmViewModel?.DeleteAlarm(item)
+                    alarmViewModel.DeleteAlarm(item)
                     // Remove from list of selected alarms
-                    alarmViewModel?.clearSelection(item.createTime)
+                    alarmViewModel.clearSelection(item.createTime)
                 }
             }
         }
@@ -313,24 +305,24 @@ fun deleteSelectedAlarms() {
              editDesc -> editSelectedAlarm()
              duplicateDesc -> duplicateSelectedAlarm()
              deleteDesc -> deleteSelectedAlarms()
-             settingsDesc -> navigate2Settings(navController = navController)
+             settingsDesc -> navToSettings()
          }
      }
 
     private fun editSelectedAlarm() {
-        val tempList = alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
+        val tempList = alarmViewModel.liveSelectedItems?.value?.let { ArrayList(it) }
         // Edit only is exactly one item selected
         if (tempList==null || tempList.size != 1) return
 
-        alarmItemEdit(alarmViewModel?.getAlarmItemById(tempList[0]), true)
+        alarmItemEdit(alarmViewModel.getAlarmItemById(tempList[0]), true)
     }
 
     private fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
-        val tempList = alarmViewModel?.liveSelectedItems?.value?.let { ArrayList(it) }
+        val tempList = alarmViewModel.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList==null || tempList.size != 1) return
 
-        alarmItemEdit(alarmViewModel?.getAlarmItemById(tempList[0]), false)
+        alarmItemEdit(alarmViewModel.getAlarmItemById(tempList[0]), false)
     }
 
 
@@ -355,7 +347,7 @@ fun deleteSelectedAlarms() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun AlarmListFragDisplay(alarmViewModel: AlarmViewModel) {
+    fun AlarmListFragDisplay() {
         // Observes values coming from the VM's LiveData<Plant> field
         val alarmList by alarmViewModel.alarmList.observeAsState()
         var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
@@ -374,7 +366,6 @@ fun deleteSelectedAlarms() {
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 },
-                                //navigationIcon = { NavBack(currentDestination, navController) },
                                 actions = {
                                     AlarmListActions(nSelectedItems) { route ->
                                         actionClicked(
@@ -529,7 +520,7 @@ fun deleteSelectedAlarms() {
             // val toggled = if (selectToggle!=null && selectToggle as Boolean) "A" else "B"
 
             // Get list of selected alarms and mark this item as selected(yes/no)
-            val selectedAlarmList by alarmViewModel!!.liveSelectedItems.observeAsState(
+            val selectedAlarmList by alarmViewModel.liveSelectedItems.observeAsState(
                 ArrayList()
             )
             val filterList = selectedAlarmList?.filter { it.equals(alarmItem.createTime.toInt()) }
@@ -552,7 +543,7 @@ fun deleteSelectedAlarms() {
             )
 
         // Hoist number of selected items
-        nSel(alarmViewModel!!.nofSelectedItems)
+        nSel(alarmViewModel.nofSelectedItems)
 
 
             Card(
@@ -922,7 +913,7 @@ fun deleteSelectedAlarms() {
                 item.recalculateDate() // If is an explicit date and in the past - change date to the near future
 
             // Update View Model - this also causes recomposition
-            alarmViewModel?.UpdateAlarm(item)
+            alarmViewModel.UpdateAlarm(item)
 
             // Schedule/Cancel Alarm
             item.Exec()

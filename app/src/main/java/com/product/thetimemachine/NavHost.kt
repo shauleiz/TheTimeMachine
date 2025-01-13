@@ -18,6 +18,7 @@ package com.product.thetimemachine
 
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
@@ -25,24 +26,26 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.product.thetimemachine.ui.AlarmEditScreen
 import com.product.thetimemachine.ui.AlarmListScreen
 import com.product.thetimemachine.ui.SettingsScreen
 
 @Composable
 fun AlarmNavHost(
-    navController: NavHostController,
-    modifier: Modifier = Modifier,
     alarmViewModel: AlarmViewModel?,
-    currentBackStack : NavBackStackEntry?,
 ) {
+
+    val navController = rememberNavController()
+    val currentBackStack by navController.currentBackStackEntryAsState()
+
     NavHost(
         navController = navController,
         startDestination = AlarmList.route,
-        //modifier = modifier
     ) {
         composable(route = AlarmList.route) {
-            ShowAlarmListScreen(alarmViewModel, navController, currentBackStack)
+            ShowAlarmListScreen(alarmViewModel, navController)
         }
         composable(
             route = AlarmEdit.routeWithArgs,
@@ -76,15 +79,19 @@ fun ShowAlarmEditScreen(navController: NavHostController,
 @Composable
 fun ShowAlarmListScreen(alarmViewModel: AlarmViewModel?,
                         navController: NavHostController,
-                        currentBackStack : NavBackStackEntry?, )
+                        )
 {
 
-    if (alarmViewModel != null && currentBackStack != null) {
-        AlarmListScreen(navController). AlarmListFragDisplay(alarmViewModel)
+    if (alarmViewModel != null) {
+        AlarmListScreen(
+            alarmViewModel = alarmViewModel,
+            navToSettings = { navigate2Settings(navController) },
+            navToAlarmEdit = {navigate2AlarmEdit(navController,it)}
+        ).AlarmListFragDisplay()
     }
 }
 
-fun NavHostController.navigateSingleTopTo(route: String) =
+private fun NavHostController.navigateSingleTopTo(route: String) =
     this.navigate(route) {
         // Pop up to the start destination of the graph to
         // avoid building up a large stack of destinations
@@ -103,6 +110,22 @@ fun NavHostController.navigateSingleTopTo(route: String) =
         restoreState = false
     }
 
-private fun NavHostController.navigateToAlarmEdit(accountType: String) {
-    this.navigateSingleTopTo("${AlarmEdit.route}/$accountType")
+
+private fun navigate2Target(navController: NavHostController, route : String){
+    navController.navigateSingleTopTo(route)
 }
+
+fun navigate2AlarmEdit(navController: NavHostController, itemId: Long) {
+    Log.d("THE_TIME_MACHINE", "+++ navigate2AlarmEdit(): itemId=${itemId}")
+    navigate2Target(navController, "${AlarmEdit.route}/$itemId")
+}
+
+fun navigate2AlarmList(navController: NavHostController, itemId: Long) {
+    navigate2Target(navController, AlarmList.route)
+}
+
+fun navigate2Settings(navController: NavHostController) {
+    navigate2Target(navController, Settings.route)
+}
+
+

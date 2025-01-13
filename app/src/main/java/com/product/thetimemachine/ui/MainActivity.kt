@@ -43,7 +43,6 @@ import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Settings
 import com.product.thetimemachine.alarmScreens
-import com.product.thetimemachine.navigateSingleTopTo
 import com.product.thetimemachine.ui.theme.AppTheme
 
 
@@ -128,15 +127,8 @@ class MainActivity : ComponentActivity() {
      AppTheme(dynamicColor = isDynamicColor) {
          Surface {
              MaterialTheme {
-
-                 val navController = rememberNavController()
-                 val currentBackStack by navController.currentBackStackEntryAsState()
-
                  AlarmNavHost(
-                     navController = navController,
-                     //modifier = Modifier.padding(innerPadding),
                      alarmViewModel = alarmViewModel,
-                     currentBackStack = currentBackStack,
                  )
              }
          }
@@ -155,23 +147,6 @@ fun NavBack(currentDestination: NavDestination?, navController: NavHostControlle
             )
         }
     }
-}
-
-private fun navigate2Target(navController: NavHostController, route : String){
-    navController.navigateSingleTopTo(route)
-}
-
-fun navigate2AlarmEdit(navController: NavHostController, itemId: Long) {
-    Log.d("THE_TIME_MACHINE", "+++ navigate2AlarmEdit(): itemId=${itemId}")
-    navigate2Target(navController, "${AlarmEdit.route}/$itemId")
-}
-
-fun navigate2AlarmList(navController: NavHostController, itemId: Long) {
-    navigate2Target(navController, AlarmList.route)
-}
-
-fun navigate2Settings(navController: NavHostController) {
-    navigate2Target(navController, Settings.route)
 }
 
 

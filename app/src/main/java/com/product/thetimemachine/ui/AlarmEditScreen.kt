@@ -100,6 +100,8 @@ import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
+import com.product.thetimemachine.navigate2AlarmList
+import com.product.thetimemachine.navigate2Settings
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -122,6 +124,7 @@ class AlarmEditScreen(private val navController: NavHostController,
     private  var itemId : Long = 0L
     //private var initParams: Bundle? = null
     private var isNewAlarm: Boolean = true
+    private var isDuplicate : Boolean = false
     private var isOneOff = true
     private var weekdays = 0
     private val isDynamicColor = false
@@ -217,7 +220,8 @@ class AlarmEditScreen(private val navController: NavHostController,
         this.itemId = itemId
         // Get the initial setup values from the ViewModel
         setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
-        isNewAlarm = (itemId == 0L || setUpAlarmValues.isDuplicate.value == true)
+        isNewAlarm = (itemId == 0L )
+       isDuplicate = setUpAlarmValues.isDuplicate!!.value == true
 
 
         Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop(): setUpAlarmValues.label=${setUpAlarmValues.label.value}")
@@ -483,7 +487,7 @@ class AlarmEditScreen(private val navController: NavHostController,
     private fun LabelField() {
         // If editing alarm then get the label
         val label =
-            if (!isNewAlarm && !setUpAlarmValues.label.value.isNullOrEmpty()) setUpAlarmValues.label.value
+            if (!setUpAlarmValues.label.value.isNullOrEmpty()) setUpAlarmValues.label.value
             else ""
 
         var value by rememberSaveable { mutableStateOf(label!!) }
@@ -1186,18 +1190,18 @@ class AlarmEditScreen(private val navController: NavHostController,
 
         // If modified alarm then use its old Create Time (id)
         // If new alarm then create it using a new Create Time (id)
-        val item = if (!isNewAlarm) AlarmItem(
+        val item = if (isNewAlarm ||  isDuplicate) AlarmItem(
             setUpAlarmValues.hour.value!!,
             setUpAlarmValues.minute.value!!,
             setUpAlarmValues.label.value,
             true,
-            itemId
         )
         else AlarmItem(
             setUpAlarmValues.hour.value!!,
             setUpAlarmValues.minute.value!!,
             setUpAlarmValues.label.value,
-            true
+            true,
+            itemId
         )
 
         // Update OneOff Value in ViewModel
@@ -1236,7 +1240,7 @@ class AlarmEditScreen(private val navController: NavHostController,
 
         // And finally:
         // Add or Update the entry on the list
-        if (isNewAlarm)
+        if (isNewAlarm ||  isDuplicate)
             alarmViewModel?.AddAlarm(item)
         else
             alarmViewModel?.UpdateAlarm(item)
