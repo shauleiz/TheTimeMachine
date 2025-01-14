@@ -19,8 +19,6 @@ package com.product.thetimemachine
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -73,7 +71,12 @@ fun ShowAlarmEditScreen(navController: NavHostController,
                         itemId : Long?,
                         currentDestination: NavDestination?,)
 {
-    if (itemId != null) AlarmEditScreen(navController, currentDestination).AlarmEditFragDisplayTop(itemId)
+    if (itemId != null) AlarmEditScreen(
+        navController = navController,
+        currentDestination = currentDestination,
+        navToSettings = { navigate2Settings(navController) },
+        navToAllarmList = {navigate2AlarmList(navController)},
+    ).AlarmEditFragDisplayTop(itemId)
 }
 
 @Composable
@@ -120,7 +123,7 @@ fun navigate2AlarmEdit(navController: NavHostController, itemId: Long) {
     navigate2Target(navController, "${AlarmEdit.route}/$itemId")
 }
 
-fun navigate2AlarmList(navController: NavHostController, itemId: Long) {
+fun navigate2AlarmList(navController: NavHostController) {
     navigate2Target(navController, AlarmList.route)
 }
 

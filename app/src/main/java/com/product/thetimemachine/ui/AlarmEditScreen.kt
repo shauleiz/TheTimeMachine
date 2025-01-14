@@ -1,6 +1,5 @@
 package com.product.thetimemachine.ui
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.icu.text.SimpleDateFormat
 import android.util.Log
@@ -28,14 +27,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -72,11 +68,9 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -84,7 +78,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
@@ -95,13 +88,11 @@ import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.product.thetimemachine.AlarmEdit
-import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.navigate2AlarmList
-import com.product.thetimemachine.navigate2Settings
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -116,8 +107,11 @@ import java.util.Locale
 */
 
 
-class AlarmEditScreen(private val navController: NavHostController,
-                      private val currentDestination: NavDestination?,
+class AlarmEditScreen(
+    private val navController: NavHostController,
+    private val currentDestination: NavDestination?,
+    private val navToSettings: () -> Unit,
+    private val navToAllarmList: () -> Unit,
     )  {
     private var parent: MainActivity? = mainActivity
     private  var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
@@ -372,7 +366,7 @@ class AlarmEditScreen(private val navController: NavHostController,
     private fun actionClicked(action : String){
         when (action) {
             checkDesc -> checkmarkClicked()
-            settingsDesc -> navigate2Settings(navController = navController)
+            settingsDesc -> navToSettings()//navigate2Settings(navController = navController)
         }
     }
 
@@ -1250,7 +1244,7 @@ class AlarmEditScreen(private val navController: NavHostController,
         item.Exec()
 
         // Display the Alarm List Fragment
-        navigate2AlarmList(navController = navController, itemId = 0)
+        navToAllarmList()
 
         /*
         if (parent != null) parent!!.supportFragmentManager
