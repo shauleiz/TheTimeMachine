@@ -138,15 +138,15 @@ class MainActivity : ComponentActivity() {
 
 // Display go-back arrow icon on the Top App Bar - and react to click
 @Composable
-fun NavBack(currentDestination: NavDestination?, navController: NavHostController) {
-    if (currentDestination?.route != AlarmList.route) {
+fun NavBack(navController: NavHostController) {
+    //if (currentDestination?.route != AlarmList.route) {
         IconButton(onClick = { navController.popBackStack() }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Localized description" // TODO: Replace
             )
         }
-    }
+   // }
 }
 
 

@@ -108,10 +108,9 @@ import java.util.Locale
 
 
 class AlarmEditScreen(
-    private val navController: NavHostController,
-    private val currentDestination: NavDestination?,
     private val navToSettings: () -> Unit,
     private val navToAllarmList: () -> Unit,
+    private val navBack: @Composable () -> Unit,
     )  {
     private var parent: MainActivity? = mainActivity
     private  var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
@@ -334,7 +333,7 @@ class AlarmEditScreen(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 },
-                                navigationIcon = { NavBack(currentDestination, navController) },
+                                navigationIcon = { navBack() },
                                 actions = {
                                     AlarmEditActions() { actionClicked(it)}
                                     },

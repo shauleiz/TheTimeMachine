@@ -28,6 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.product.thetimemachine.ui.AlarmEditScreen
 import com.product.thetimemachine.ui.AlarmListScreen
+import com.product.thetimemachine.ui.NavBack
 import com.product.thetimemachine.ui.SettingsScreen
 
 @Composable
@@ -72,10 +73,9 @@ fun ShowAlarmEditScreen(navController: NavHostController,
                         currentDestination: NavDestination?,)
 {
     if (itemId != null) AlarmEditScreen(
-        navController = navController,
-        currentDestination = currentDestination,
         navToSettings = { navigate2Settings(navController) },
         navToAllarmList = {navigate2AlarmList(navController)},
+        navBack = {NavBack(currentDestination = currentDestination, navController = navController)},
     ).AlarmEditFragDisplayTop(itemId)
 }
 
