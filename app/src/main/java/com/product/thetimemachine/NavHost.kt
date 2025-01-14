@@ -28,7 +28,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.product.thetimemachine.ui.AlarmEditScreen
 import com.product.thetimemachine.ui.AlarmListScreen
-import com.product.thetimemachine.ui.NavBack
 import com.product.thetimemachine.ui.SettingsScreen
 
 @Composable
@@ -52,7 +51,7 @@ fun AlarmNavHost(
         ) { navBackStackEntry ->
             val itemId =
                 navBackStackEntry.arguments?.getLong(AlarmEdit.itemIdArg, 0)
-            ShowAlarmEditScreen(navController, itemId, currentBackStack?.destination)
+            ShowAlarmEditScreen(navController, itemId)
             Log.d("THE_TIME_MACHINE", "--- AlarmNavHost(): itemId=$itemId")
         }
         composable(route = Settings.route) {
@@ -69,13 +68,12 @@ fun ShowSettingsScreen(){
 
 @Composable
 fun ShowAlarmEditScreen(navController: NavHostController,
-                        itemId : Long?,
-                        currentDestination: NavDestination?,)
+                        itemId : Long?, )
 {
     if (itemId != null) AlarmEditScreen(
         navToSettings = { navigate2Settings(navController) },
-        navToAllarmList = {navigate2AlarmList(navController)},
-        navBack = {NavBack(currentDestination = currentDestination, navController = navController)},
+        navyToAlarmList = {navigate2AlarmList(navController)},
+        navBack = {navController.popBackStack()},
     ).AlarmEditFragDisplayTop(itemId)
 }
 

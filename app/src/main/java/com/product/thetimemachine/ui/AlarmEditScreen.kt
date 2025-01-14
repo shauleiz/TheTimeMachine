@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialogDefaults
@@ -78,8 +79,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavDestination
-import androidx.navigation.NavHostController
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -92,7 +91,6 @@ import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
-import com.product.thetimemachine.navigate2AlarmList
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -109,9 +107,11 @@ import java.util.Locale
 
 class AlarmEditScreen(
     private val navToSettings: () -> Unit,
-    private val navToAllarmList: () -> Unit,
-    private val navBack: @Composable () -> Unit,
+    private val navyToAlarmList: () -> Unit,
+    private val navBack: () -> Unit,
     )  {
+
+
     private var parent: MainActivity? = mainActivity
     private  var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
     private  var itemId : Long = 0L
@@ -333,14 +333,22 @@ class AlarmEditScreen(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 },
-                                navigationIcon = { navBack() },
+                                navigationIcon = {
+                                    IconButton(onClick = {navBack()}) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "Localized description" // TODO: Replace
+                                        )
+                                    }
+                                },
                                 actions = {
-                                    AlarmEditActions() { actionClicked(it)}
-                                    },
+                                    AlarmEditActions() { actionClicked(it) }
+                                },
                             )
                         }
 
-                    ) { AlarmEditBody(
+                    ) {
+                        AlarmEditBody(
                         it,
                         timePickerState,
                         //showCalendarDialog,
@@ -1243,7 +1251,7 @@ class AlarmEditScreen(
         item.Exec()
 
         // Display the Alarm List Fragment
-        navToAllarmList()
+        navyToAlarmList()
 
         /*
         if (parent != null) parent!!.supportFragmentManager
