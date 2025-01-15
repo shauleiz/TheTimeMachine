@@ -206,9 +206,9 @@ class AlarmEditScreen(
    // @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun AlarmEditFragDisplayTop(itemId : Long) {
+    fun AlarmEditDisplayTop(itemId : Long) {
 
-        Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop(): itemId=$itemId")
+        Log.d("THE_TIME_MACHINE", "AlarmEditDisplayTop(): itemId=$itemId")
 
         this.itemId = itemId
         // Get the initial setup values from the ViewModel
@@ -217,7 +217,7 @@ class AlarmEditScreen(
        isDuplicate = setUpAlarmValues.isDuplicate!!.value == true
 
 
-        Log.d("THE_TIME_MACHINE", "AlarmEditFragDisplayTop(): setUpAlarmValues.label=${setUpAlarmValues.label.value}")
+        Log.d("THE_TIME_MACHINE", "AlarmEditDisplayTop(): setUpAlarmValues.label=${setUpAlarmValues.label.value}")
 
         // List of all entries
         val listOfPrefsEx = getListOfItemPreferences(setUpAlarmValues)

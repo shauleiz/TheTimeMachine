@@ -347,7 +347,7 @@ private fun deleteSelectedAlarms() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun AlarmListFragDisplay() {
+    fun AlarmListDisplay() {
         // Observes values coming from the VM's LiveData<Plant> field
         val alarmList by alarmViewModel.alarmList.observeAsState()
         var showPermissionDialog by rememberSaveable { mutableStateOf(false) }

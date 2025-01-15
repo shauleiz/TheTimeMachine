@@ -19,7 +19,6 @@ package com.product.thetimemachine
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -63,7 +62,7 @@ fun AlarmNavHost(
 
 @Composable
 fun ShowSettingsScreen(navController: NavHostController){
-    SettingsScreen(navBack = {navController.popBackStack()},).SettingsFragDisplayTop()
+    SettingsScreen(navBack = {navController.popBackStack()},).SettingsDisplayTop()
 }
 
 @Composable
@@ -74,7 +73,7 @@ fun ShowAlarmEditScreen(navController: NavHostController,
         navToSettings = { navigate2Settings(navController) },
         navyToAlarmList = {navigate2AlarmList(navController)},
         navBack = {navController.popBackStack()},
-    ).AlarmEditFragDisplayTop(itemId)
+    ).AlarmEditDisplayTop(itemId)
 }
 
 @Composable
@@ -88,7 +87,7 @@ fun ShowAlarmListScreen(alarmViewModel: AlarmViewModel?,
             alarmViewModel = alarmViewModel,
             navToSettings = { navigate2Settings(navController) },
             navToAlarmEdit = {navigate2AlarmEdit(navController,it)}
-        ).AlarmListFragDisplay()
+        ).AlarmListDisplay()
     }
 }
 

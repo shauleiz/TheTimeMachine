@@ -36,6 +36,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.product.thetimemachine.AlarmEdit
 import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
+import com.product.thetimemachine.Settings
 import com.product.thetimemachine.ui.PreferencesKeys.KEY_SORT_SEPARATE
 import com.product.thetimemachine.ui.theme.AppTheme
 import kotlinx.coroutines.flow.Flow
@@ -239,7 +240,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun SettingsFragDisplayTop() {
+    fun SettingsDisplayTop() {
 
         parent = appContext
         userPreferencesFlow = parent.timeMachinedataStore.data.map { preferences ->
@@ -274,7 +275,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
                             TopAppBar(
                                 title = {
                                     Text(
-                                        AlarmEdit.label,
+                                        Settings.label,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
