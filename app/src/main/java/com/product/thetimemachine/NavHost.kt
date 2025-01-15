@@ -55,15 +55,15 @@ fun AlarmNavHost(
             Log.d("THE_TIME_MACHINE", "--- AlarmNavHost(): itemId=$itemId")
         }
         composable(route = Settings.route) {
-            ShowSettingsScreen()
+            ShowSettingsScreen(navController)
         }
     }
 }
 
 
 @Composable
-fun ShowSettingsScreen(){
-    SettingsScreen().SettingsFragDisplayTop()
+fun ShowSettingsScreen(navController: NavHostController){
+    SettingsScreen(navBack = {navController.popBackStack()},).SettingsFragDisplayTop()
 }
 
 @Composable
