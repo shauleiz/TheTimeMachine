@@ -99,16 +99,22 @@ private fun NavHostController.navigateSingleTopTo(route: String) =
         // on the back stack as users select items
         Log.d("THE_TIME_MACHINE", "+++ navigateSingleTopTo(): route=${route}")
 
-        popUpTo(
-            this@navigateSingleTopTo.graph.findStartDestination().id
-        ) {
-            saveState = true
+        // popUp from AlarmList is outside the app
+        if (route == AlarmList.route) {
+            popUpTo(
+                this@navigateSingleTopTo.graph.findStartDestination().id
+            ) {
+                saveState = true
+            }
         }
+
         // Avoid multiple copies of the same destination when
         // reselecting the same item
         launchSingleTop = true
         // Restore state when reselecting a previously selected item
         restoreState = false
+
+
     }
 
 
