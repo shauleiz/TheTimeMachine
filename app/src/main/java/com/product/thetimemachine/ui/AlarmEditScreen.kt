@@ -222,6 +222,7 @@ class AlarmEditScreen(
         // List of all entries
         val listOfPrefsEx = getListOfItemPreferences(setUpAlarmValues)
         val listOfPrefs = remember { mutableStateListOf<PrefData>()}
+       listOfPrefs.clear()
         listOfPrefs.addAll(listOfPrefsEx)
 
         // State Variables

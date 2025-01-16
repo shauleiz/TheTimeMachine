@@ -4,6 +4,7 @@ package com.product.thetimemachine.ui
 import android.content.Context
 import android.preference.PreferenceManager.getDefaultSharedPreferencesName
 import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -251,6 +252,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
         setUpAlarmValues = getPrefs(TheTimeMachineApp.appContext)
         val listOfPrefsEx = getListOfGeneralPreferences(setUpAlarmValues)
         val listOfPrefs = remember { mutableStateListOf<PrefData>() }
+        listOfPrefs.clear()
         listOfPrefs.addAll(listOfPrefsEx)
 
 
@@ -295,14 +297,15 @@ class SettingsScreen(private val navBack: () -> Unit) {
                         }
                     )
                     {
-                        Column(
-                            horizontalAlignment = CenterHorizontally, //of children
+                        Box(
+                            //horizontalAlignment = CenterHorizontally, //of children
                             modifier = Modifier
                                 .padding(it)
                                 .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
                         ) {
                             /* Preferences */
+                            Log.d("THE_TIME_MACHINE", "Box: list size: ${listOfPrefs.size}")
                             ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
                         }
                     }
