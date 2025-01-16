@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -29,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Yellow
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDestination
@@ -108,6 +110,8 @@ class MainActivity : ComponentActivity() {
         }
 
 
+
+
         // Create/acquire the ViewModel object of class AlarmViewModel
         alarmViewModel = ViewModelProvider(this).get(AlarmViewModel::class.java)
 
@@ -120,13 +124,24 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    @Composable
+    fun NavigationBarBgColor() {
+        val window = this.window
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.navigationBarColor = colorScheme.surfaceContainer.toArgb()
+    }
+
 }
+
+
 
  @Composable
  fun TopComposable() {
      AppTheme(dynamicColor = isDynamicColor) {
          Surface {
              MaterialTheme {
+                 mainActivity.NavigationBarBgColor()
                  AlarmNavHost(
                      alarmViewModel = alarmViewModel,
                  )
