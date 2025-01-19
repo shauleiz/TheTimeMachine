@@ -38,6 +38,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.product.thetimemachine.AlarmEdit
 import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
+import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
+import com.product.thetimemachine.R
 import com.product.thetimemachine.Settings
 import com.product.thetimemachine.ui.PreferencesKeys.KEY_SORT_SEPARATE
 import com.product.thetimemachine.ui.theme.AppTheme
@@ -126,7 +128,7 @@ fun getPrefs(parent: Context): UserPreferences {
 
 fun isPref24h(parent: Context?): Boolean {
     if (parent == null) return false
-    return getPrefs(parent).hour12Or24.equals("h24") // TODO: Change to R.string
+    return getPrefs(parent).hour12Or24 == mainActivity.getString(R.string.h24_clock)
 }
 
 fun isPrefSortSeparate(parent: Context?): Boolean {

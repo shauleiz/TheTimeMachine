@@ -1,6 +1,7 @@
 package com.product.thetimemachine.ui
 
 import android.R
+import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
@@ -130,6 +131,12 @@ class MainActivity : ComponentActivity() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.navigationBarColor = colorScheme.surfaceContainer.toArgb()
+    }
+
+    override fun onResume() {
+        // Set the default volume control as ALARM volume control
+        volumeControlStream = AudioManager.STREAM_ALARM
+        super.onResume()
     }
 
 }

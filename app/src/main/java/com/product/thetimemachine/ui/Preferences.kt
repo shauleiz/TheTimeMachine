@@ -105,7 +105,11 @@ val gradualVolumeList = listOf(
     Pair("3 Minute", "180Seconds"),
 )
 val firstDayList = listOf(Pair("Sunday", "Su"), Pair("Monday", "Mo"))
-val timeFormatList = listOf(Pair("12h Clock", "h12"), Pair("24h Clock", "h24"))
+
+val timeFormatList = listOf(
+    Pair("12h Clock", "h12"),
+    Pair("24h Clock", "h24")
+)
 val sortTypeList = listOf(
     Pair("By time set", "by_time_set"), Pair("By alarm time", "by_alarm_time"),
     Pair("Alphabetically", "alphabetically"))
@@ -628,45 +632,5 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
         Log.d("THE_TIME_MACHINE", "size of list: ${listOfPrefs.size}")
         listOfPrefs.forEachIndexed{ index, _ ->  key(index){PrefRow(index, onOK)}  }
     }
-}
-
-fun sound(pattern: String?) {
-    val r = Runnable {
-        Log.d("THE_TIME_MACHINE", "sound(): Cancelling Sound")
-        AlarmService.sound(TheTimeMachineApp.appContext, null)
-    }
-
-    Handler(Looper.getMainLooper()).removeCallbacksAndMessages("Token")
-
-    //val sound = if (pattern.isNullOrEmpty()) "silent" else pattern
-
-    AlarmService.sound(TheTimeMachineApp.appContext, null)
-    AlarmService.sound(TheTimeMachineApp.appContext, pattern)
-    // Call delayed stopping of the sound
-    Handler(Looper.getMainLooper()).postDelayed(r, "Token",4000)
-}
-
-fun vibrate(pattern: String?) {
-    val vibrator =
-        TheTimeMachineApp.appContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-    if (vibrator.hasAmplitudeControl()) Log.d("THE_TIME_MACHINE", "vibrate(): hasAmplitudeControl")
-    else Log.d("THE_TIME_MACHINE", "vibrate(): No AmplitudeControl")
-
-
-    val r = Runnable {
-        Log.d("THE_TIME_MACHINE", "vibrate(): Cancelling Vibrator")
-        vibrator.cancel()
-    }
-
-    if (pattern.isNullOrEmpty()) return
-
-    // Vibrate
-    AlarmService.VibrateEffect(TheTimeMachineApp.appContext, pattern)
-
-
-
-    Log.d("THE_TIME_MACHINE", "vibrate(): Start Handler")
-    // Call delayed stopping of the vibrator
-    Handler(Looper.getMainLooper()).postDelayed(r, 5000)
 }
 /***********************************************************************************************/
