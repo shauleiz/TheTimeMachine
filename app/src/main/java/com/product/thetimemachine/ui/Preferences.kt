@@ -582,8 +582,6 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
     @Composable
     fun PrefRow(index: Int, onOK : (index: Int, value : String?)->Unit){
 
-        Log.d("THE_TIME_MACHINE", "PrefRow(): index = $index title = ${stringResource(id = listOfPrefs[index].title)}")
-
         if (listOfPrefs[index].list != null) { // Normal row
             Row(
                 horizontalArrangement = Arrangement.Start,

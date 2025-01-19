@@ -3,9 +3,9 @@ package com.product.thetimemachine.ui
 
 import android.content.Context
 import android.preference.PreferenceManager.getDefaultSharedPreferencesName
+import android.text.format.DateFormat.is24HourFormat
 import android.util.Log
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -27,7 +27,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.datastore.preferences.SharedPreferencesMigration
@@ -35,7 +34,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.product.thetimemachine.AlarmEdit
 import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
@@ -47,6 +45,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import java.util.Calendar
 
 
 const val USER_PREFERENCES_NAME = "the_time_machine_preferences_datastore"
@@ -93,9 +92,9 @@ fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferen
     val t = parent.getString(R.string.alarm_sound_def)
 
     val ringRepeat      = preferences[PreferencesKeys.KEY_RING_REPEAT] ?: parent.getString(R.string.ring_repeat_def)
-     val ringDuration    = preferences[PreferencesKeys.KEY_RING_DURATION] ?: parent.getString(R.string.ring_duration_def)
+    val ringDuration    = preferences[PreferencesKeys.KEY_RING_DURATION] ?: parent.getString(R.string.ring_duration_def)
     val snoozeDuration  = preferences[PreferencesKeys.KEY_SNOOZE_DURATION] ?: parent.getString(R.string.snooze_duration_def)
-    val hour12Or24      = preferences[PreferencesKeys.KEY_H12_24] ?: parent.getString(R.string.clock_format_def)
+    val hour12Or24      = preferences[PreferencesKeys.KEY_H12_24] ?: getSystemTimeFormat(parent)
     val firstDayWeek    = preferences[PreferencesKeys.KEY_FIRST_DAY] ?: parent.getString(R.string.first_day_week_def)
     val vibratePattern  = preferences[PreferencesKeys.KEY_VIBRATION_PATTERN] ?: parent.getString(R.string.vibration_pattern_def)
     val alarmSound      = preferences[PreferencesKeys.KEY_ALARM_SOUND] ?: parent.getString(R.string.alarm_sound_def)
@@ -177,6 +176,26 @@ fun getPrefGradualVolume(parent: Context?): String {
     return getPrefs(parent).gradualVolume
 }
 
+// Return "h24"/"h12"
+fun getSystemTimeFormat(context: Context) : String{
+    return if (is24HourFormat(context)) "h24" else "h12"
+}
+
+// Return "Su"/"Mo"/"Error"
+fun getSystemFirstDayOfWeek() : String {
+
+    // Creating calendar object
+    val calendar = Calendar.getInstance()
+    val i = calendar.firstDayOfWeek
+
+    Log.d("THE_TIME_MACHINE", "getSystemFirstDayOfWeek(): Day=$i ")
+
+    return when (i){
+        1-> "Su"
+        2-> "Mo"
+        else -> "Error"
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 class SettingsScreen(private val navBack: () -> Unit) {
