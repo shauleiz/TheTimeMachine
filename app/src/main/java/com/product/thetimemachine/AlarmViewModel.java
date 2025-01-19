@@ -253,10 +253,10 @@ public class AlarmViewModel extends AndroidViewModel {
          Context context = TheTimeMachineApp.appContext;
 
          // Read the preferences from the XML file to set the default values
-         PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
+         //PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
 
          // Copy default preferences to this item's preferences
-         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+         //SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
 
          ringDuration.setValue(getPrefRingDuration(context));

@@ -132,7 +132,11 @@
     <string name="snooze_duration_def">300Seconds</string>
     <string name="vibration_pattern_def">rsb</string>
     <string name="alarm_sound_def">rooster</string>
+    <string name="sort_type_def">by_time_set</string>
+    <string name="sort_separate_def">true</string>
     <string name="gradual_volume_def">30Seconds</string>
+
+
     <string name="inactive_alarms_at_the_bottom">Inactive alarms at the bottom</string>
     <string name="h24_clock">h24</string>
 

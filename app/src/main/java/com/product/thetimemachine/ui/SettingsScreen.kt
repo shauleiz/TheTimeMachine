@@ -53,16 +53,16 @@ const val USER_PREFERENCES_NAME = "the_time_machine_preferences_datastore"
 
 // TODO: Use R.string instead of hardcoded strings
 object PreferencesKeys {
-    val KEY_H12_24 = stringPreferencesKey("KEY_H12_24")
-    val KEY_RING_DURATION = stringPreferencesKey("KEY_RING_DURATION")
-    val KEY_FIRST_DAY = stringPreferencesKey("KEY_FIRST_DAY")
-    val KEY_RING_REPEAT = stringPreferencesKey("KEY_RING_REPEAT")
+    val KEY_H12_24            = stringPreferencesKey("KEY_H12_24")
+    val KEY_RING_DURATION     = stringPreferencesKey("KEY_RING_DURATION")
+    val KEY_FIRST_DAY         = stringPreferencesKey("KEY_FIRST_DAY")
+    val KEY_RING_REPEAT       = stringPreferencesKey("KEY_RING_REPEAT")
     val KEY_VIBRATION_PATTERN = stringPreferencesKey("KEY_VIBRATION_PATTERN")
-    val KEY_ALARM_SOUND = stringPreferencesKey("KEY_ALARM_SOUND")
-    val KEY_SORT_TYPE = stringPreferencesKey("KEY_SORT_TYPE")
-    val KEY_GRADUAL_VOLUME = stringPreferencesKey("KEY_GRADUAL_VOLUME")
-    val KEY_SNOOZE_DURATION = stringPreferencesKey("KEY_SNOOZE_DURATION")
-    val KEY_SORT_SEPARATE = stringPreferencesKey("KEY_SORT_SEPARATE")
+    val KEY_ALARM_SOUND       = stringPreferencesKey("KEY_ALARM_SOUND")
+    val KEY_SORT_TYPE         = stringPreferencesKey("KEY_SORT_TYPE")
+    val KEY_GRADUAL_VOLUME    = stringPreferencesKey("KEY_GRADUAL_VOLUME")
+    val KEY_SNOOZE_DURATION   = stringPreferencesKey("KEY_SNOOZE_DURATION")
+    val KEY_SORT_SEPARATE     = stringPreferencesKey("KEY_SORT_SEPARATE")
 }
 
 
@@ -88,20 +88,21 @@ val Context.timeMachinedataStore by preferencesDataStore(
 
 private const val isDynamicColor = false
 
-fun mapUserPreferences(preferences: Preferences): UserPreferences {
+fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferences {
 
-    //Log.d("THE_TIME_MACHINE", "mapUserPreferences():  preferences = $preferences")
+    val t = parent.getString(R.string.alarm_sound_def)
 
-    val ringRepeat = preferences[PreferencesKeys.KEY_RING_REPEAT] ?: "Error"
-    val ringDuration = preferences[PreferencesKeys.KEY_RING_DURATION] ?: "Error"
-    val snoozeDuration = preferences[PreferencesKeys.KEY_SNOOZE_DURATION] ?: "Error"
-    val hour12Or24 = preferences[PreferencesKeys.KEY_H12_24] ?: "Error"
-    val firstDayWeek = preferences[PreferencesKeys.KEY_FIRST_DAY] ?: "Error"
-    val vibratePattern = preferences[PreferencesKeys.KEY_VIBRATION_PATTERN] ?: "Error"
-    val alarmSound = preferences[PreferencesKeys.KEY_ALARM_SOUND] ?: "Error"
-    val sortType = preferences[PreferencesKeys.KEY_SORT_TYPE] ?: "Error"
-    val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE].toString() ?: "Error"
-    val gradualVolume = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: "Error"
+    val ringRepeat      = preferences[PreferencesKeys.KEY_RING_REPEAT] ?: parent.getString(R.string.ring_repeat_def)
+     val ringDuration    = preferences[PreferencesKeys.KEY_RING_DURATION] ?: parent.getString(R.string.ring_duration_def)
+    val snoozeDuration  = preferences[PreferencesKeys.KEY_SNOOZE_DURATION] ?: parent.getString(R.string.snooze_duration_def)
+    val hour12Or24      = preferences[PreferencesKeys.KEY_H12_24] ?: parent.getString(R.string.clock_format_def)
+    val firstDayWeek    = preferences[PreferencesKeys.KEY_FIRST_DAY] ?: parent.getString(R.string.first_day_week_def)
+    val vibratePattern  = preferences[PreferencesKeys.KEY_VIBRATION_PATTERN] ?: parent.getString(R.string.vibration_pattern_def)
+    val alarmSound      = preferences[PreferencesKeys.KEY_ALARM_SOUND] ?: parent.getString(R.string.alarm_sound_def)
+    val sortType        = preferences[PreferencesKeys.KEY_SORT_TYPE] ?: parent.getString(R.string.sort_type_def)
+    val sortSeparate    = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: parent.getString(R.string.sort_separate_def)
+    val gradualVolume   = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: parent.getString(R.string.gradual_volume_def)
+
 
     return UserPreferences(
         ringRepeat, ringDuration, snoozeDuration,
@@ -111,7 +112,7 @@ fun mapUserPreferences(preferences: Preferences): UserPreferences {
 }
 
 suspend fun fetchInitialPreferences(parent: Context) =
-    mapUserPreferences(parent.timeMachinedataStore.data.first().toPreferences())
+    mapUserPreferences(parent, parent.timeMachinedataStore.data.first().toPreferences())
 
 fun updatePref(parent: Context, key: Preferences.Key<String>?, value: String?) {
     if (key == null || value == null) return
@@ -248,7 +249,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
 
         parent = appContext
         userPreferencesFlow = parent.timeMachinedataStore.data.map { preferences ->
-            mapUserPreferences(preferences)
+            mapUserPreferences(parent, preferences)
         }
 
         // List of all entries

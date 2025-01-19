@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
@@ -47,6 +48,7 @@ import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Settings
 import com.product.thetimemachine.alarmScreens
 import com.product.thetimemachine.ui.theme.AppTheme
+import kotlinx.coroutines.runBlocking
 
 
 private const val isDynamicColor = false
@@ -95,7 +97,17 @@ class MainActivity : ComponentActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
+/*
+        /// Debugging Code
+        /// Clear Properties database (datastore)
+        runBlocking {
+            appContext.timeMachinedataStore.edit { preferences ->
+                preferences.clear()
+            }
+        }
+        */
+
+        super.onCreate(savedInstanceState)
 
 /**/
 
