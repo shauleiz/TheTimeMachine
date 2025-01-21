@@ -28,10 +28,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.sharp.Check
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -45,6 +46,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
@@ -52,7 +54,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberTimePickerState
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
@@ -70,11 +71,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -84,6 +84,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.graphics.drawable.IconCompat.IconType
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -114,15 +115,16 @@ class AlarmEditScreen(
     private val navToSettings: () -> Unit,
     private val navyToAlarmList: () -> Unit,
     private val navBack: () -> Unit,
-    )  {
+) {
 
 
     private var parent: MainActivity? = mainActivity
-    private  var  setUpAlarmValues : AlarmViewModel.SetUpAlarmValues
-    private  var itemId : Long = 0L
+    private var setUpAlarmValues: AlarmViewModel.SetUpAlarmValues
+    private var itemId: Long = 0L
+
     //private var initParams: Bundle? = null
     private var isNewAlarm: Boolean = true
-    private var isDuplicate : Boolean = false
+    private var isDuplicate: Boolean = false
     private var isOneOff = true
     private var weekdays = 0
     private val isDynamicColor = false
@@ -139,8 +141,6 @@ class AlarmEditScreen(
         Log.d("THE_TIME_MACHINE", "onViewCreated():  weekdays = $weekdays")
 
     }
-
-
 
 
     private fun getInitialHour(): Int {
@@ -162,7 +162,6 @@ class AlarmEditScreen(
             return currentTime.get(Calendar.MINUTE)
         }
     }
-
 
 
     // Converts selected Dates in JSON string format to List<Date>
@@ -208,32 +207,39 @@ class AlarmEditScreen(
     }
 
 
-   // @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    // @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun AlarmEditDisplayTop(itemId : Long) {
+    fun AlarmEditDisplayTop(itemId: Long) {
 
         Log.d("THE_TIME_MACHINE", "AlarmEditDisplayTop(): itemId=$itemId")
 
         this.itemId = itemId
         // Get the initial setup values from the ViewModel
         setUpAlarmValues = alarmViewModel!!.setUpAlarmValues
-        isNewAlarm = (itemId == 0L )
-       isDuplicate = setUpAlarmValues.isDuplicate!!.value == true
+        isNewAlarm = (itemId == 0L)
+        isDuplicate = setUpAlarmValues.isDuplicate!!.value == true
 
 
-        Log.d("THE_TIME_MACHINE", "AlarmEditDisplayTop(): setUpAlarmValues.label=${setUpAlarmValues.label.value}")
+        Log.d(
+            "THE_TIME_MACHINE",
+            "AlarmEditDisplayTop(): setUpAlarmValues.label=${setUpAlarmValues.label.value}"
+        )
 
         // List of all entries
         val listOfPrefsEx = getListOfItemPreferences(setUpAlarmValues)
-        val listOfPrefs = remember { mutableStateListOf<PrefData>()}
-       listOfPrefs.clear()
+        val listOfPrefs = remember { mutableStateListOf<PrefData>() }
+        listOfPrefs.clear()
         listOfPrefs.addAll(listOfPrefsEx)
 
         // State Variables
-        var showCalendarDialog  by rememberSaveable { mutableStateOf(false) }
+        var showCalendarDialog by rememberSaveable { mutableStateOf(false) }
         var showErrorDialog by rememberSaveable { mutableStateOf(false) }
-        var calendarSelType : CalendarSelection by rememberSaveable { mutableStateOf(CalendarSelection.Single) }
+        var calendarSelType: CalendarSelection by rememberSaveable {
+            mutableStateOf(
+                CalendarSelection.Single
+            )
+        }
         val weekDays = rememberSaveable { mutableIntStateOf(weekdays) }
         val oneOff = rememberSaveable { mutableStateOf(isOneOff) }
         // Set initial time
@@ -251,33 +257,34 @@ class AlarmEditScreen(
             weekDays.intValue = weekDays.intValue xor (1 shl i)
         }
 
-            // Get date from alarm
-            val yy = setUpAlarmValues.year.value!!
-            val mm = setUpAlarmValues.month.value!!
-            val dd = setUpAlarmValues.dayOfMonth.value!!
-            val ld = if (yy != 0  && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
+        // Get date from alarm
+        val yy = setUpAlarmValues.year.value!!
+        val mm = setUpAlarmValues.month.value!!
+        val dd = setUpAlarmValues.dayOfMonth.value!!
+        val ld = if (yy != 0 && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
 
         // Create a string of dates that are exception to the rule (weekdays)
         val exceptions = exceptionDates2String(setUpAlarmValues.exceptionDates.getValue())
 
         // Exit DisplayCalendar (Single selection) with OK pressed
-        val singleSelectionCalOkPressed = {value : LocalDate? ->
-            Log.d("THE_TIME_MACHINE", "DisplayCalendar()[SINGLE]: value=$value ; now=${LocalDate.now()}")
+        val singleSelectionCalOkPressed = { value: LocalDate? ->
+            Log.d(
+                "THE_TIME_MACHINE",
+                "DisplayCalendar()[SINGLE]: value=$value ; now=${LocalDate.now()}"
+            )
 
-            if (value==null) {
+            if (value == null) {
                 setUpAlarmValues.year.value = 0
                 setUpAlarmValues.month.value = 0
                 setUpAlarmValues.dayOfMonth.value = 0
                 showCalendarDialog = false
-            }
-            else if (value.isBefore(LocalDate.now())) {
+            } else if (value.isBefore(LocalDate.now())) {
                 // Error
                 Log.d("THE_TIME_MACHINE", "DisplayCalendar(): ERROR")
                 showErrorDialog = true
-            }
-            else {
+            } else {
                 setUpAlarmValues.year.value = value.year
-                setUpAlarmValues.month.value = value.monthValue-1
+                setUpAlarmValues.month.value = value.monthValue - 1
                 setUpAlarmValues.dayOfMonth.value = value.dayOfMonth
                 setUpAlarmValues.setFutureDate(true)
                 setUpAlarmValues.setOneOff(true)
@@ -287,21 +294,28 @@ class AlarmEditScreen(
 
         // Exit DisplayCalendar (Single selection) with OK pressed
         val multiSelectionCalOkPressed = { value: String ->
-            Log.d("THE_TIME_MACHINE", "DisplayCalendar()[MULTI]: value=$value ; now=${LocalDate.now()}")
+            Log.d(
+                "THE_TIME_MACHINE",
+                "DisplayCalendar()[MULTI]: value=$value ; now=${LocalDate.now()}"
+            )
             setUpAlarmValues.exceptionDates.value = string2ExceptionDates(value)
             showCalendarDialog = false
-            Log.d("THE_TIME_MACHINE", "DisplayCalendar()[MULTI]: setUpAlarmValues.exceptionDates.value=${setUpAlarmValues.exceptionDates.value} ")
+            Log.d(
+                "THE_TIME_MACHINE",
+                "DisplayCalendar()[MULTI]: setUpAlarmValues.exceptionDates.value=${setUpAlarmValues.exceptionDates.value} "
+            )
         }
 
 
         // Display Calendar Dialog
         DisplayCalendar(
-            showDialog =  showCalendarDialog,
-            onDismiss = {showCalendarDialog=false },
+            showDialog = showCalendarDialog,
+            onDismiss = { showCalendarDialog = false },
             selectionType = calendarSelType,
             weekdays = weekDays.intValue,
             origSelectedDate = ld,
-            originalExceptions =  exceptions)
+            originalExceptions = exceptions
+        )
         {
             when (calendarSelType) {
                 CalendarSelection.Single -> singleSelectionCalOkPressed(it as LocalDate?)
@@ -310,18 +324,18 @@ class AlarmEditScreen(
         }
 
         // Display error dialog - user selected a date in the past
-        DisplayWrongDateDialog(showErrorDialog){showErrorDialog = false}
+        DisplayWrongDateDialog(showErrorDialog) { showErrorDialog = false }
 
         // Execute when preferences dialog OK button pressed
-        val onPrefDialogOK = {index : Int, value : String? ->
+        val onPrefDialogOK = { index: Int, value: String? ->
             Log.d("THE_TIME_MACHINE", "onPrefDialogOK(): index=$index ; value=$value ")
             getListOfPrefLiveData(setUpAlarmValues)[index]?.value = value
-            listOfPrefs[index].showDialog?.value =  false
+            listOfPrefs[index].showDialog?.value = false
             listOfPrefs[index].origValue?.value = value
         }
 
         // Updates calendar trigger and type when Calendar button is clicked
-        val onCalendarButtonClicked = {type: CalendarSelection ->
+        val onCalendarButtonClicked = { type: CalendarSelection ->
             showCalendarDialog = true
             calendarSelType = type
         }
@@ -340,7 +354,7 @@ class AlarmEditScreen(
                                     )
                                 },
                                 navigationIcon = {
-                                    IconButton(onClick = {navBack()}) {
+                                    IconButton(onClick = { navBack() }) {
                                         Icon(
                                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                             contentDescription = "Localized description" // TODO: Replace
@@ -359,32 +373,32 @@ class AlarmEditScreen(
                         },
 
                         //bottomBar = @Composable {
-                           // BottomAppBar(containerColor = MaterialTheme.colorScheme.surfaceContainer, ) {} },
+                        // BottomAppBar(containerColor = MaterialTheme.colorScheme.surfaceContainer, ) {} },
 
                     ) {
                         AlarmEditBody(
-                        it,
-                        timePickerState,
-                        //showCalendarDialog,
-                        //calendarSelType,
-                        oneOff,
-                        weekDays,
-                        setSelectedDays,
-                        listOfPrefs,
-                        onCalendarButtonClicked,
-                        onPrefDialogOK
-                    )}
+                            it,
+                            timePickerState,
+                            //showCalendarDialog,
+                            //calendarSelType,
+                            oneOff,
+                            weekDays,
+                            setSelectedDays,
+                            listOfPrefs,
+                            onCalendarButtonClicked,
+                            onPrefDialogOK
+                        )
+                    }
 
                 }
             }
         }
 
 
-
     }
 
 
-    private fun actionClicked(action : String){
+    private fun actionClicked(action: String) {
         when (action) {
             checkDesc -> checkmarkClicked()
             settingsDesc -> navToSettings()//navigate2Settings(navController = navController)
@@ -400,90 +414,100 @@ class AlarmEditScreen(
         weekDays: MutableIntState,
         setSelectedDays: (Int) -> Unit,
         listOfPrefs: SnapshotStateList<PrefData>,
-        onCalendarButtonClick : (CalendarSelection) -> Unit,
+        onCalendarButtonClick: (CalendarSelection) -> Unit,
         onPrefDialogOK: (Int, String?) -> Unit
     ) {
-        var showCalendarDialog1 = false
-        var calendarSelType1 = CalendarSelection.Single
-     //   MaterialTheme {
-            Column(
-                horizontalAlignment = CenterHorizontally, //of children
-                modifier = Modifier
-                    .padding(pad)
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                /* Alarm Label */
-                LabelField()
+        // Picker type: Digital (TimeInput) or Analog (TimePicker)
+        var showDial by rememberSaveable{ mutableStateOf(true) }
 
-                if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    // Portrait
+        // Toggle Icon to display
+        val toggleIcon =
+            if (showDial) painterResource(id = R.drawable.clock_24dp)
+            else painterResource(id = R.drawable.keyboard_24dp)
+
+        @Composable
+        fun toggleButton() = IconButton(onClick = {showDial = !showDial}){
+            Icon (toggleIcon, "Toggle Icon") // TODO: Replace text
+        }
+
+        Column(
+            horizontalAlignment = CenterHorizontally, //of children
+            modifier = Modifier
+                .padding(pad)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            /* Alarm Label */
+            LabelField()
+
+            if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                // Portrait
+                /* Time Picker */
+                TimePickerField(timePickerState,  showDial) {toggleButton()}
+
+                /* Single/Weekly button */
+                AlarmTypeBox(
+                    {
+                        onCalendarButtonClick(if (it) CalendarSelection.Single else CalendarSelection.Multiple)
+                    },
+                    oneOff,
+                    { oneOff.value = it },
+                    weekDays,
+                    setSelectedDays,
+                    timePickerState,
+                )
+
+                /* Preferences */
+                ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
+
+            } else {
+                // Landscape
+                Row(
+                    verticalAlignment = Alignment.Top,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
                     /* Time Picker */
-                    TimePickerField(timePickerState)
+                    TimePickerField(timePickerState,  showDial) {toggleButton()}
 
-                    /* Single/Weekly button */
-                    AlarmTypeBox(
-                        {
-                            onCalendarButtonClick(if (it) CalendarSelection.Single else CalendarSelection.Multiple)
-                        },
-                        oneOff,
-                        { oneOff.value = it },
-                        weekDays,
-                        setSelectedDays,
-                        timePickerState,
-                    )
+                    VerticalDivider(thickness = 4.dp)
 
-                    /* Preferences */
-                    ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
+                    Column {
+                        /* Single/Weekly button */
+                        AlarmTypeBox(
+                            {
+                                onCalendarButtonClick(if (it) CalendarSelection.Single else CalendarSelection.Multiple)
+                            },
+                            oneOff,
+                            { oneOff.value = it },
+                            weekDays,
+                            setSelectedDays,
+                            timePickerState,
+                        )
 
-                } else {
-                    // Landscape
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        /* Time Picker */
-                        TimePickerField(timePickerState)
-
-                        VerticalDivider(thickness = 4.dp)
-
-                        Column {
-                            /* Single/Weekly button */
-                            AlarmTypeBox(
-                                {
-                                    onCalendarButtonClick(if (it) CalendarSelection.Single else CalendarSelection.Multiple)
-                                },
-                                oneOff,
-                                { oneOff.value = it },
-                                weekDays,
-                                setSelectedDays,
-                                timePickerState,
-                            )
-
-                            /* Preferences */
-                            ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
-                        }
+                        /* Preferences */
+                        ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
                     }
                 }
             }
-  //      }
+        }
+        //      }
     }
 
     // Display Action icons on the Top App Bar - and react to click
     @Composable
-    private fun AlarmEditActions(onActionClick: (String)-> Unit) {
+    private fun AlarmEditActions(onActionClick: (String) -> Unit) {
 
         // Check (OK) Action
-            IconButton(onClick = {
-                onActionClick(checkDesc)
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = checkDesc
-                )
-            }
+        IconButton(onClick = {
+            onActionClick(checkDesc)
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = checkDesc
+            )
+        }
 
 
         // Setting action
@@ -537,18 +561,33 @@ class AlarmEditScreen(
     // TODO: Add icon button to toggle between Dial and InputTimePicker
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun TimePickerField(timePickerState: TimePickerState) {
+    private fun TimePickerField(
+        timePickerState: TimePickerState,
+        showDial: Boolean,
+        content: @Composable () ->Any,
+    ) {
 
         // Update mode
         timePickerState.is24hour = isPref24h(parent)
 
-        // Display Time Picker
-        TimePicker(
-            state = timePickerState,
-            layoutType = TimePickerLayoutType.Vertical,
-            modifier = Modifier.padding(16.dp)
-        )
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Display Time Picker
+            if (showDial) TimePicker(
+                state = timePickerState,
+                layoutType = TimePickerLayoutType.Vertical,
+                //modifier = Modifier.padding(16.dp),
+            )
+            else
+                TimeInput(
+                    state = timePickerState,
+                    //modifier = Modifier.padding(16.dp),
+                )
 
+            content()
+            //IconButton(onClick = { }) {
+            // Icon(painter = iconButton, contentDescription = )
+            // }
+        }
         // Update H:M Values
         setUpAlarmValues.hour.value = timePickerState.hour
         setUpAlarmValues.minute.value = timePickerState.minute
@@ -590,7 +629,11 @@ class AlarmEditScreen(
     }
 
     @Composable
-    private fun CalendarButton(onCalendarClicked: (Boolean) -> Unit , selectedDays: Int, oneOff: Boolean) {
+    private fun CalendarButton(
+        onCalendarClicked: (Boolean) -> Unit,
+        selectedDays: Int,
+        oneOff: Boolean
+    ) {
 
         // Type of button: 0=One Off ; 1=Weekly
         val buttonType = if (oneOff) 0 else 1
@@ -697,16 +740,17 @@ class AlarmEditScreen(
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun AlarmTypeBox(
-        onCalendarClicked: (Boolean)->Unit,
+        onCalendarClicked: (Boolean) -> Unit,
         oneOff: MutableState<Boolean>,
-        setOneOff: (Boolean)->Unit,
+        setOneOff: (Boolean) -> Unit,
         selectedDays: MutableState<Int>,
-        setSelectedDays: (Int)->Unit,
+        setSelectedDays: (Int) -> Unit,
         timePickerState: TimePickerState,
     ) {
 
-        Column(modifier = Modifier
-            .padding(8.dp)
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
         ) {
             WeeklyOrOneOff(oneOff.value, setOneOff)
             CalendarButton(onCalendarClicked, selectedDays.value, oneOff.value)
@@ -719,7 +763,7 @@ class AlarmEditScreen(
 
     @Composable
     private fun displayTargetAlarm(hour: Int, minute: Int): String {
-        var out : String
+        var out: String
 
         /// Helper Functions
         fun isInThePast(alarmInMillis: Long): Boolean {
@@ -777,37 +821,40 @@ class AlarmEditScreen(
         calendar.timeInMillis = nowInMillis
 
         Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[1]: dd=$dd ; mm=$mm ; yy=$yy")
-        if (dd > 0  && yy > 0) calendar[yy, mm, dd, hour, minute] = 0
+        if (dd > 0 && yy > 0) calendar[yy, mm, dd, hour, minute] = 0
         else {
             calendar[Calendar.HOUR_OF_DAY] = hour
             calendar[Calendar.MINUTE] = minute
         }
 
-        Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[2]:" +
-                "Year=${calendar.get(Calendar.YEAR)}  " +
-                "Month=${calendar.get(Calendar.MONTH)}  " +
-                "Day=${calendar.get(Calendar.DAY_OF_MONTH)}  " +
-                "Hour=${calendar.get(Calendar.HOUR)}  " +
-                "Minute=${calendar.get(Calendar.MINUTE)}  " +
-                "")
+        Log.d(
+            "THE_TIME_MACHINE", "displayTargetAlarm()[2]:" +
+                    "Year=${calendar.get(Calendar.YEAR)}  " +
+                    "Month=${calendar.get(Calendar.MONTH)}  " +
+                    "Day=${calendar.get(Calendar.DAY_OF_MONTH)}  " +
+                    "Hour=${calendar.get(Calendar.HOUR)}  " +
+                    "Minute=${calendar.get(Calendar.MINUTE)}  " +
+                    ""
+        )
 
-            if (isInThePast(calendar.timeInMillis)) {
-                Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[3]: Is in the Past")
-                calendar.timeInMillis = nowInMillis
-                calendar[Calendar.HOUR_OF_DAY] = hour
-                calendar[Calendar.MINUTE] = minute
-                if (isInThePast(calendar.timeInMillis))
-                    calendar.timeInMillis += 24 * 60 * 60 * 1000
-            }
-            //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
-
+        if (isInThePast(calendar.timeInMillis)) {
+            Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[3]: Is in the Past")
+            calendar.timeInMillis = nowInMillis
+            calendar[Calendar.HOUR_OF_DAY] = hour
+            calendar[Calendar.MINUTE] = minute
+            if (isInThePast(calendar.timeInMillis))
+                calendar.timeInMillis += 24 * 60 * 60 * 1000
+        }
+        //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
 
 
         // Create an output string
         val format =
-            SimpleDateFormat( mainActivity.applicationContext.getString(R.string.time_format_display), Locale.US)
+            SimpleDateFormat(
+                mainActivity.applicationContext.getString(R.string.time_format_display),
+                Locale.US
+            )
         out = format.format(calendar.timeInMillis)
-
 
 
         // Determine Today/Tomorrow
@@ -821,9 +868,7 @@ class AlarmEditScreen(
     }
 
 
-
-
-    enum class CalendarSelection{
+    enum class CalendarSelection {
         Single,
         Multiple,
         //Range,
@@ -831,7 +876,7 @@ class AlarmEditScreen(
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun DisplayWrongDateDialog( showDialog : Boolean, onDismiss : ()->Unit) {
+    private fun DisplayWrongDateDialog(showDialog: Boolean, onDismiss: () -> Unit) {
         if (!showDialog) return
         BasicAlertDialog(
             //title = R.string.title_error,
@@ -873,15 +918,14 @@ class AlarmEditScreen(
     }
 
 
-
     @Composable
     private fun DisplayCalendar(
-        showDialog : Boolean,
-        onDismiss : ()->Unit,
-        selectionType : CalendarSelection = CalendarSelection.Single,
-        weekdays : Int = 0,
-        origSelectedDate : LocalDate? = null,
-        originalExceptions : String = "",
+        showDialog: Boolean,
+        onDismiss: () -> Unit,
+        selectionType: CalendarSelection = CalendarSelection.Single,
+        weekdays: Int = 0,
+        origSelectedDate: LocalDate? = null,
+        originalExceptions: String = "",
         onOkClicked: (Any?) -> Unit,
     ) {
 
@@ -907,7 +951,7 @@ class AlarmEditScreen(
             else DayOfWeek.MONDAY
 
         // Get the dates that are an exception
-        var selectedDates by rememberSaveable  {mutableStateOf(originalExceptions)}
+        var selectedDates by rememberSaveable { mutableStateOf(originalExceptions) }
 
         val state = rememberCalendarState(
             startMonth = startMonth,
@@ -936,7 +980,7 @@ class AlarmEditScreen(
                     selectionType == CalendarSelection.Single -> 1.0f
                     else -> 0.5f
                 }
-                val  bgColor = MaterialTheme.colorScheme.secondary.copy(alpha = bgAlpha)
+                val bgColor = MaterialTheme.colorScheme.secondary.copy(alpha = bgAlpha)
 
                 // Selected dates (that are visible) are marked with solid color background
                 // Other date do not have a background color
@@ -947,7 +991,7 @@ class AlarmEditScreen(
             }
 
             @Composable
-            fun backgroundShape() : Shape {
+            fun backgroundShape(): Shape {
                 return when {
                     selectionType == CalendarSelection.Single -> CircleShape
                     else -> RectangleShape
@@ -1037,12 +1081,14 @@ class AlarmEditScreen(
         fun HeaderText(date: LocalDate?): String {
 
             if (selectionType == CalendarSelection.Single) {
-                if (date == null) return  stringResource(R.string.select_date)
+                if (date == null) return stringResource(R.string.select_date)
 
                 val dom = date.dayOfMonth
                 val year = date.year
-                val month = date.month.name.lowercase().replaceFirstChar{  it.titlecase(Locale.getDefault()) }
-                val dow = date.dayOfWeek.name.lowercase().replaceFirstChar{  it.titlecase(Locale.getDefault()) }
+                val month = date.month.name.lowercase()
+                    .replaceFirstChar { it.titlecase(Locale.getDefault()) }
+                val dow = date.dayOfWeek.name.lowercase()
+                    .replaceFirstChar { it.titlecase(Locale.getDefault()) }
 
                 return String.format(Locale.ROOT, "%.3s, %d %.3s %d", dow, dom, month, year)
             }
@@ -1055,15 +1101,16 @@ class AlarmEditScreen(
         }
 
 
-
         // Multi-selection calendar: Is day selected?
         // It is if day is one of the weekDays (Days selected for repeating alarms) AND
         // it is not mentioned in the list of exception days
         @Composable
-        fun isDaySelected (day: CalendarDay,
-                           weekDays: Int=0,
-                           selectedDates : String="",
-                           selectedDate: LocalDate? = null) : Boolean {
+        fun isDaySelected(
+            day: CalendarDay,
+            weekDays: Int = 0,
+            selectedDates: String = "",
+            selectedDate: LocalDate? = null
+        ): Boolean {
 
             if (selectionType == CalendarSelection.Multiple) {
                 // Convert the calendarDay to String of type yyyymmdd
@@ -1078,7 +1125,7 @@ class AlarmEditScreen(
                 return (mask and weekDays) > 0
             }
 
-            if (selectionType == CalendarSelection.Single){
+            if (selectionType == CalendarSelection.Single) {
                 return selectedDate == day.date
             }
 
@@ -1086,17 +1133,17 @@ class AlarmEditScreen(
         }
 
 
-        fun toggleDaySelection(day: CalendarDay, weekDays: Int, selectedDates : String) : String {
+        fun toggleDaySelection(day: CalendarDay, weekDays: Int, selectedDates: String): String {
 
             Log.d("THE_TIME_MACHINE", "toggleDaySelection():  day: $day")
-           var modifiedDates = selectedDates
+            var modifiedDates = selectedDates
 
             // If in the past - ignore
             if (day.date.isBefore(LocalDate.now()))
                 return selectedDates
 
             // If not a preselected weekday - ignore
-            val mask = 1 shl day.date.dayOfWeek.value%7
+            val mask = 1 shl day.date.dayOfWeek.value % 7
             if ((mask and weekDays) == 0)
                 return selectedDates
 
@@ -1118,7 +1165,7 @@ class AlarmEditScreen(
 
 
         // Calendar Dialog - Single day selection
-        if (showDialog ) {
+        if (showDialog) {
             state.firstDayOfWeek =
                 if (getPrefFirstDayOfWeek(parent) == "Su") DayOfWeek.SUNDAY
                 else DayOfWeek.MONDAY
@@ -1136,7 +1183,7 @@ class AlarmEditScreen(
                             Column(
                                 horizontalAlignment = Alignment.Start,
                                 verticalArrangement = Arrangement.Top,
-                                ) {/**/
+                            ) {/**/
                                 Text(
                                     HeaderText(selectedDate),
                                     fontSize = 24.sp,
@@ -1152,14 +1199,25 @@ class AlarmEditScreen(
                                     state = state,
                                     monthHeader = { MonthTitle(it) },
                                     dayContent = {
-                                        Day(day = it,
+                                        Day(
+                                            day = it,
                                             today = today,
-                                            isSelected = isDaySelected(it, weekdays, selectedDates, selectedDate)
+                                            isSelected = isDaySelected(
+                                                it,
+                                                weekdays,
+                                                selectedDates,
+                                                selectedDate
+                                            )
                                         ) { calendarDay ->
                                             if (selectionType == CalendarSelection.Multiple)
-                                                selectedDates = toggleDaySelection(calendarDay, weekdays, selectedDates)
+                                                selectedDates = toggleDaySelection(
+                                                    calendarDay,
+                                                    weekdays,
+                                                    selectedDates
+                                                )
                                             if (selectionType == CalendarSelection.Single)
-                                                selectedDate = if (selectedDate == calendarDay.date) null else calendarDay.date
+                                                selectedDate =
+                                                    if (selectedDate == calendarDay.date) null else calendarDay.date
                                         }
                                     }
                                 )
@@ -1205,7 +1263,7 @@ class AlarmEditScreen(
 
         // If modified alarm then use its old Create Time (id)
         // If new alarm then create it using a new Create Time (id)
-        val item = if (isNewAlarm ||  isDuplicate) AlarmItem(
+        val item = if (isNewAlarm || isDuplicate) AlarmItem(
             setUpAlarmValues.hour.value!!,
             setUpAlarmValues.minute.value!!,
             setUpAlarmValues.label.value,
@@ -1229,14 +1287,16 @@ class AlarmEditScreen(
             item.dayOfMonth = setUpAlarmValues.dayOfMonth.value!!
             item.month = setUpAlarmValues.month.value!!
             item.year = setUpAlarmValues.year.value!!
-        }
-        else {
+        } else {
             item.dayOfMonth = 0
             item.month = 0
             item.year = 0
         }
 
-        Log.d("THE_TIME_MACHINE", "checkmarkClicked():  item.isOneOff = ${item.isOneOff} ; item.futureDate=${item.futureDate}")
+        Log.d(
+            "THE_TIME_MACHINE",
+            "checkmarkClicked():  item.isOneOff = ${item.isOneOff} ; item.futureDate=${item.futureDate}"
+        )
 
         item.recalculateDate() // If is an explicit date and in the past - change date to the near future
 
@@ -1255,7 +1315,7 @@ class AlarmEditScreen(
 
         // And finally:
         // Add or Update the entry on the list
-        if (isNewAlarm ||  isDuplicate)
+        if (isNewAlarm || isDuplicate)
             alarmViewModel?.AddAlarm(item)
         else
             alarmViewModel?.UpdateAlarm(item)
