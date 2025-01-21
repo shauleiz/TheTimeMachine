@@ -105,8 +105,8 @@ class MainActivity : ComponentActivity() {
                 preferences.clear()
             }
         }
-        */
 
+        */
         super.onCreate(savedInstanceState)
 
 /**/

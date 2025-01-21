@@ -53,6 +53,7 @@ const val USER_PREFERENCES_NAME = "the_time_machine_preferences_datastore"
 // TODO: Use R.string instead of hardcoded strings
 object PreferencesKeys {
     val KEY_H12_24            = stringPreferencesKey("KEY_H12_24")
+    val KEY_CLOCK_TYPE        = stringPreferencesKey("KEY_CLOCK_TYPE")
     val KEY_RING_DURATION     = stringPreferencesKey("KEY_RING_DURATION")
     val KEY_FIRST_DAY         = stringPreferencesKey("KEY_FIRST_DAY")
     val KEY_RING_REPEAT       = stringPreferencesKey("KEY_RING_REPEAT")
@@ -70,6 +71,7 @@ data class UserPreferences(
     val ringDuration: String,
     val snoozeDuration: String,
     val hour12Or24: String,
+    val clockType: String,
     val firstDayWeek: String,
     val vibrationPattern: String,
     val alarmSound: String,
@@ -89,12 +91,11 @@ private const val isDynamicColor = false
 
 fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferences {
 
-    val t = parent.getString(R.string.alarm_sound_def)
-
     val ringRepeat      = preferences[PreferencesKeys.KEY_RING_REPEAT] ?: parent.getString(R.string.ring_repeat_def)
     val ringDuration    = preferences[PreferencesKeys.KEY_RING_DURATION] ?: parent.getString(R.string.ring_duration_def)
     val snoozeDuration  = preferences[PreferencesKeys.KEY_SNOOZE_DURATION] ?: parent.getString(R.string.snooze_duration_def)
     val hour12Or24      = preferences[PreferencesKeys.KEY_H12_24] ?: getSystemTimeFormat(parent)
+    val clockType       = preferences[PreferencesKeys.KEY_CLOCK_TYPE] ?: parent.getString(R.string.clock_type_def)
     val firstDayWeek    = preferences[PreferencesKeys.KEY_FIRST_DAY] ?: parent.getString(R.string.first_day_week_def)
     val vibratePattern  = preferences[PreferencesKeys.KEY_VIBRATION_PATTERN] ?: parent.getString(R.string.vibration_pattern_def)
     val alarmSound      = preferences[PreferencesKeys.KEY_ALARM_SOUND] ?: parent.getString(R.string.alarm_sound_def)
@@ -105,7 +106,8 @@ fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferen
 
     return UserPreferences(
         ringRepeat, ringDuration, snoozeDuration,
-        hour12Or24, firstDayWeek, vibratePattern, alarmSound, sortType,
+        hour12Or24, clockType, firstDayWeek,
+        vibratePattern, alarmSound, sortType,
         sortSeparate, gradualVolume
     )
 }
@@ -125,6 +127,12 @@ fun updatePref(parent: Context, key: Preferences.Key<String>?, value: String?) {
 fun getPrefs(parent: Context): UserPreferences {
     return runBlocking { fetchInitialPreferences(parent) }
 }
+
+fun isClockTypeAnalog(parent: Context?): Boolean {
+    if (parent == null) return false
+    return getPrefs(parent).clockType == mainActivity.getString(R.string.analog_clock)
+}
+
 
 fun isPref24h(parent: Context?): Boolean {
     if (parent == null) return false

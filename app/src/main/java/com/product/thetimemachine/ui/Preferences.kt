@@ -114,24 +114,7 @@ val sortTypeList = listOf(
     Pair("By time set", "by_time_set"), Pair("By alarm time", "by_alarm_time"),
     Pair("Alphabetically", "alphabetically"))
 
-/*
-    Sound Object - used to play and kill alarm sound:
 
-    playSound(pattern: String?, duration : Long)
-    - pattern: Identifier of the sound pattern
-    - duration: Duration of sound in milliseconds
-
-    playSound()
-    Defines a countdown timer that start before the beginning of the the playing of the sound
-    When the countdown timer expires it calls onFinish() that kills the sound.
-    The timer calls onTick() every TICK (100 milli) to check that the original pattern is still playing
-
-    playSound()
-    Kills currently playing Sound.
-    Starts timer
-    starts playing sound
-
- */
 object SoundObj {
 
     @Volatile private var timer : CountDownTimer? = null

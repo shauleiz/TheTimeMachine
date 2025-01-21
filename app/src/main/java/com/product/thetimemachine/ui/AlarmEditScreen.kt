@@ -28,9 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.sharp.Check
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -73,7 +71,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -84,7 +81,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.core.graphics.drawable.IconCompat.IconType
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -418,15 +414,17 @@ class AlarmEditScreen(
         onPrefDialogOK: (Int, String?) -> Unit
     ) {
         // Picker type: Digital (TimeInput) or Analog (TimePicker)
-        var showDial by rememberSaveable{ mutableStateOf(true) }
+        var showDial by rememberSaveable{ mutableStateOf(isClockTypeAnalog(mainActivity)) }
 
         // Toggle Icon to display
         val toggleIcon =
-            if (showDial) painterResource(id = R.drawable.clock_24dp)
+            if (!showDial) painterResource(id = R.drawable.clock_24dp)
             else painterResource(id = R.drawable.keyboard_24dp)
 
+
         @Composable
-        fun toggleButton() = IconButton(onClick = {showDial = !showDial}){
+        fun toggleButton() =
+            IconButton(onClick = {showDial = !showDial }){
             Icon (toggleIcon, "Toggle Icon") // TODO: Replace text
         }
 
@@ -443,7 +441,7 @@ class AlarmEditScreen(
             if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
                 // Portrait
                 /* Time Picker */
-                TimePickerField(timePickerState,  showDial) {toggleButton()}
+                TimePickerField(timePickerState,  showDial) {toggleButton()  }
 
                 /* Single/Weekly button */
                 AlarmTypeBox(
@@ -564,8 +562,17 @@ class AlarmEditScreen(
     private fun TimePickerField(
         timePickerState: TimePickerState,
         showDial: Boolean,
-        content: @Composable () ->Any,
+        toggleButton: @Composable () ->Any,
     ) {
+
+        // Store the clock type in the Preferences
+        fun setClockTypePref() {
+            val value =
+                if (showDial) mainActivity.getString(R.string.analog_clock)
+                else mainActivity.getString(R.string.digital_clock)
+            val key = PreferencesKeys.KEY_CLOCK_TYPE
+            parent?.let { updatePref(it, key, value) }
+        }
 
         // Update mode
         timePickerState.is24hour = isPref24h(parent)
@@ -575,22 +582,21 @@ class AlarmEditScreen(
             if (showDial) TimePicker(
                 state = timePickerState,
                 layoutType = TimePickerLayoutType.Vertical,
-                //modifier = Modifier.padding(16.dp),
             )
             else
                 TimeInput(
                     state = timePickerState,
-                    //modifier = Modifier.padding(16.dp),
                 )
 
-            content()
-            //IconButton(onClick = { }) {
-            // Icon(painter = iconButton, contentDescription = )
-            // }
+            // Display the Clock Type button
+            toggleButton()
         }
         // Update H:M Values
         setUpAlarmValues.hour.value = timePickerState.hour
         setUpAlarmValues.minute.value = timePickerState.minute
+
+        // Store the clock type in the Preferences
+        setClockTypePref()
 
 
     }

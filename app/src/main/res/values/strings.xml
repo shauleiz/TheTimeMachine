@@ -135,10 +135,14 @@
     <string name="sort_type_def">by_time_set</string>
     <string name="sort_separate_def">true</string>
     <string name="gradual_volume_def">30Seconds</string>
+    <string name="clock_type_def">analog</string>
 
 
     <string name="inactive_alarms_at_the_bottom">Inactive alarms at the bottom</string>
     <string name="h24_clock">h24</string>
+    <string name="analog_clock">analog</string>
+    <string name="digital_clock">digital</string>
+
 
     <!-- Preferences: Menu -->
     <array name="clock_12_24_entries">
