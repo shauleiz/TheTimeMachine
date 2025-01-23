@@ -79,7 +79,7 @@ public class AlarmService  extends Service {
       // Create notification: With Title, Icon and Stop button
       // Text will be added externally
       builder = CreateNotification(intent);
-      if (builder == null || builder.build() == null) return START_NOT_STICKY;
+      if (builder == null ) return START_NOT_STICKY;
 
       // Set The time format
       if (isPref24h(appContext))
@@ -139,7 +139,7 @@ public class AlarmService  extends Service {
 
       // Get Alarm Data
       Bundle b = intent.getExtras();
-
+      if (b == null) return START_NOT_STICKY;
 
 
       // Get preferences (Menu String Values)
@@ -170,35 +170,26 @@ public class AlarmService  extends Service {
       int delayMillis = Str2Int_ring_duration(StrRingDuration);
       assert StrRingRepeat != null;
       int nRepeat = Str2Int_ring_repeat(StrRingRepeat);
-      autoSnooze = new Runnable() {
-         @Override
-         public void run() {
+      autoSnooze = () -> {
+         AlarmItem alarm = new AlarmItem(b);
+         alarm.incSnoozeCounter();
 
-
-            if (b==null) return;
-            AlarmItem alarm = new AlarmItem(b);
-            alarm.incSnoozeCounter();
-
-            // Check if the alarm has exceeded the number of times it should go off
-            if (nRepeat<100 && (alarm.getSnoozeCounter()) > nRepeat)
-            {
-               alarm.resetSnoozeCounter();
-               alarm.setActive(false);
-               Context context = getApplicationContext();
-               Intent stopIntent = new Intent(context, AlarmService.class);
-               stopIntent.putExtras(b);
-               AlarmReceiver.stopping(context, stopIntent );
-            }
-
-            alarm.Exec();
-            // Force update of UI
-            insertAlarm(alarm,  getApplicationContext());
-            /*AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(getApplicationContext());
-            AlarmDao alarmDao = db.alarmDao();
-            AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));*/
-            selfKill = true;
-            stopSelf();
+         // Check if the alarm has exceeded the number of times it should go off
+         if (nRepeat<100 && (alarm.getSnoozeCounter()) > nRepeat)
+         {
+            alarm.resetSnoozeCounter();
+            alarm.setActive(false);
+            Context context = getApplicationContext();
+            Intent stopIntent = new Intent(context, AlarmService.class);
+            stopIntent.putExtras(b);
+            AlarmReceiver.stopping(context, stopIntent );
          }
+
+         alarm.Exec();
+         // Force update of UI
+         insertAlarm(alarm,  getApplicationContext());
+         selfKill = true;
+         stopSelf();
       };
       // auto-snooze starts running after delayMillis milliseconds
       Log.i("THE_TIME_MACHINE", "autoSnooze(): Ring for "+ delayMillis/1000 + " Seconds");
@@ -270,9 +261,6 @@ public class AlarmService  extends Service {
    static public void VibrateEffect(Context context, String effect){
 
       Vibrator vibrator;
-      long[] timings;
-      int[] amplitudes;
-      int repeatIndex;
 
       VibrationEffect vibrationEffect;
 
@@ -384,34 +372,6 @@ public class AlarmService  extends Service {
 
    }
 
-   private VibrationEffect getCoarseVibrationEffect(String effect) {
-      long[] timings;
-      int[] amplitudes;
-      int repeatIndex;
-
-      if (effect.equals("ssb")) { // Single Short Beat
-         timings = new long[]  { 50, 50, 50, 50,  50,  100 };
-         amplitudes = new int[]{ 33, 51, 75, 113, 170, 255 };
-         repeatIndex = -1; // Stay at max
-      }
-      else if (effect.equals("cont")) { // Single Short Beat
-         timings = new long[]{0, 200};
-         repeatIndex = 1;
-      }
-      else { // None
-         timings = new long[]{0};
-         repeatIndex = 1;
-      }
-
-      return VibrationEffect.createWaveform(timings, repeatIndex);
-   }
-
-   private VibrationEffect getFineVibrationEffect(String effect) {
-      long[] timings = new long[] {50, 50, 50, 50,  50,  100};
-      int[] amplitudes = new int[]{33, 51, 75, 113, 170, 255};
-      int repeatIndex = -1; // Stay at max
-      return VibrationEffect.createWaveform(timings, amplitudes, repeatIndex);
-   }
 
    public static void sound(Context context, String pattern){
       sound(context, pattern, 0);
@@ -457,8 +417,9 @@ public class AlarmService  extends Service {
                         .setInterpolatorType(VolumeShaper.Configuration.INTERPOLATOR_TYPE_LINEAR)
                         .build();
 
-            VolumeShaper volumeShaper = mediaPlayer.createVolumeShaper(config);
-            volumeShaper.apply(VolumeShaper.Operation.PLAY);
+
+               VolumeShaper volumeShaper = mediaPlayer.createVolumeShaper(config);
+               volumeShaper.apply(VolumeShaper.Operation.PLAY);
          }
 
       }
@@ -466,12 +427,14 @@ public class AlarmService  extends Service {
    }
 
 
-   private  Uri getUriForMusicFilename(int id){
+ /*  private  Uri getUriForMusicFilename(int id){
 
       // Get Package Name
       String packageName  = getPackageName();
       return Uri.parse("android.resource://" + packageName + "/" + id);
    }
+*/
+
    static private  Uri getUriForMusicFilename(String filename){
 
       // Get Package Name
@@ -530,7 +493,8 @@ public class AlarmService  extends Service {
             R.drawable.snooze_fill0_wght400_grad0_opsz24, snoozeButtonText(strSnoozeDuration), snoozeIntent).build();
 
       // Notification
-      NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+      NotificationCompat.Builder builder;
+      builder = new NotificationCompat.Builder(this, CHANNEL_ID)
             /* Title */                .setContentTitle(getResources().getString(R.string.notification_title))
             /* Content */              //.setContentText(alarmText)
             /* Status bar Icon */      .setSmallIcon(R.drawable.baseline_alarm_24)
@@ -544,7 +508,7 @@ public class AlarmService  extends Service {
             /* Stop Button */          .addAction(snoozeAction)
             /* Not canceled by system*/.setTimeoutAfter(-1);
 
-            return builder;
+      return builder;
    }
 
 

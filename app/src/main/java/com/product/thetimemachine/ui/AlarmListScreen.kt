@@ -120,22 +120,6 @@ class AlarmListScreen (
 
  */
 
-/*
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-
-        // Toolbar: Title + Menu
-        val appToolbar = requireActivity().findViewById<Toolbar>(R.id.app_toolbar)
-        appToolbar.setTitle(R.string.alarmlist_title)
-        (requireActivity() as AppCompatActivity).setSupportActionBar(appToolbar)
-        //parent!!.UpdateOptionMenu()
-
-    }
-
-
- */
 
 
     // Called while initializing the activity.
@@ -178,29 +162,7 @@ class AlarmListScreen (
 
 
 
-/*
-    private fun displayPopUpNotifPemis(): PopupWindow {
-        val inflater = parent!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val popupView =
-            inflater.inflate(R.layout.popup_notification_permission, fragmentView as ViewGroup?)
 
-        // Create the PopupWindow object and set its content view to the inflated layout
-        val popupWindow = PopupWindow(
-            popupView, RelativeLayout.LayoutParams.WRAP_CONTENT,
-            RelativeLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        (fragmentView!!.parent as ViewGroup).removeView(popupView)
-        popupWindow.isFocusable = true
-
-        popupWindow.showAtLocation(fragmentView, Gravity.CENTER, 0, 0)
-
-        val btnClose = popupView.findViewById<Button>(R.id.button_ok_notif)
-        btnClose.setOnClickListener { popupWindow.dismiss() }
-
-        return popupWindow
-    }
-*/
 
 
     /*
@@ -492,9 +454,13 @@ private fun deleteSelectedAlarms() {
      }
 
      private fun launchRequest4Permission() =
-         mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+             mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)
+         } else {
+             null
+         }
 
-     @Composable
+    @Composable
     fun DisplayAlarmList (list: MutableList<AlarmItem>?, pad : PaddingValues, nSel : (Int)->Unit) {
         if (list == null) return
 

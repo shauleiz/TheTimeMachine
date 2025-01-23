@@ -5,19 +5,17 @@ import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefGradualVolum
 import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefRingDuration;
 import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefRingRepeat;
 import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefSnoozeDuration;
-import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefVibrationPatern;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefVibrationPattern;
 
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.preference.PreferenceManager;
 
 import com.product.thetimemachine.Application.TheTimeMachineApp;
 import com.product.thetimemachine.Data.AlarmItem;
@@ -155,6 +153,7 @@ public class AlarmViewModel extends AndroidViewModel {
       liveSelectedItems.setValue(currentList);
    }
 
+/*
    public boolean isDuplicate(int hour, int minute, long createTime) {
       // Get List
       AlarmList = LiveAlarmList.getValue();
@@ -167,14 +166,15 @@ public class AlarmViewModel extends AndroidViewModel {
       }
       return false;
    }
+*/
    public int getNofSelectedItems(){
-      return liveSelectedItems.getValue().size();
+      return Objects.requireNonNull(liveSelectedItems.getValue()).size();
    }
 
 
 
    // This Class holds the values of the alarm that is being added/modified
-   public class SetUpAlarmValues {
+   public static class SetUpAlarmValues {
       final MutableLiveData<Integer> hour, minute;
       final MutableLiveData<String> label;
       final MutableLiveData<Boolean> active;
@@ -215,7 +215,7 @@ public class AlarmViewModel extends AndroidViewModel {
          this.exceptionDates = new MutableLiveData<>();
 
          // Preferences
-         snoozeDuration = new MutableLiveData<>();
+         //snoozeDuration = new MutableLiveData<>();
          ringDuration = new MutableLiveData<>();
          ringRepeat = new MutableLiveData<>();
          snoozeDuration = new MutableLiveData<>();
@@ -262,7 +262,7 @@ public class AlarmViewModel extends AndroidViewModel {
          ringDuration.setValue(getPrefRingDuration(context));
          ringRepeat.setValue(getPrefRingRepeat(context));
          snoozeDuration.setValue(getPrefSnoozeDuration(context));
-         vibrationPattern.setValue(getPrefVibrationPatern(context));
+         vibrationPattern.setValue(getPrefVibrationPattern(context));
          alarmSound.setValue(getPrefAlarmSound(context));
          gradualVolume.setValue(getPrefGradualVolume(context));
 
@@ -272,6 +272,7 @@ public class AlarmViewModel extends AndroidViewModel {
          //weekDays.setValue(ONEOFF);
       }
 
+/*
       public void GetValuesFromList(int position){
          // Sanity check
          if (position<0)
@@ -298,6 +299,7 @@ public class AlarmViewModel extends AndroidViewModel {
 
          // Preferences ???
       }
+*/
 
       public void GetValuesFromList(AlarmItem item, boolean edit){
          // Sanity check
@@ -336,9 +338,11 @@ public class AlarmViewModel extends AndroidViewModel {
          alarmSound.setValue(item.getAlarmSound());
          gradualVolume.setValue(item.getGradualVolume());
       }
+/*
       public void GetValuesFromList(AlarmItem item){
          GetValuesFromList( item, true);
       }
+*/
 
 
       /* Getter Methods */
@@ -359,35 +363,33 @@ public class AlarmViewModel extends AndroidViewModel {
       public MutableLiveData<Integer> getWeekDays(){return  weekDays;}
 
 
-      public void setMinute(int minute) {
-         this.minute.setValue(minute);
-      }
+      // public void setMinute(int minute) {this.minute.setValue(minute);}
 
       public void setWeekDays(int weekDays){this.weekDays.setValue(weekDays);}
 
       public void setOneOff(boolean oneOff){this.oneOff.setValue(oneOff);}
 
-      public void setDayOfMonth(int dayOfMonth) {this.dayOfMonth.setValue(dayOfMonth) ;}
+      //public void setDayOfMonth(int dayOfMonth) {this.dayOfMonth.setValue(dayOfMonth) ;}
 
-      public void setMonth(int month) {this.month.setValue(month);}
+      //public void setMonth(int month) {this.month.setValue(month);}
 
-      public void setYear(int year) {this.year.setValue(year);}
+      //public void setYear(int year) {this.year.setValue(year);}
 
       public void setFutureDate(boolean futureDate) {this.futureDate.setValue(futureDate) ;}
-      public void  setExceptionDates(String dates){this.exceptionDates.setValue(dates);}
+     // public void  setExceptionDates(String dates){this.exceptionDates.setValue(dates);}
 
-      public void setRingduration(String val) {this.ringDuration.setValue(val);}
-      public void setRingRepeat(String val) {this.ringRepeat.setValue(val);}
-      public void setSnoozeDuration(String val) {this.snoozeDuration.setValue(val);}
-      public void setVibrationPattern(String val) {this.vibrationPattern.setValue(val);}
-      public void setAlarmSound(String val) {this.alarmSound.setValue(val);}
-      public void setGradualVolume(String val) {this.gradualVolume.setValue(val);}
+      //public void setRingduration(String val) {this.ringDuration.setValue(val);}
+     // public void setRingRepeat(String val) {this.ringRepeat.setValue(val);}
+      //public void setSnoozeDuration(String val) {this.snoozeDuration.setValue(val);}
+      //public void setVibrationPattern(String val) {this.vibrationPattern.setValue(val);}
+      //public void setAlarmSound(String val) {this.alarmSound.setValue(val);}
+      //public void setGradualVolume(String val) {this.gradualVolume.setValue(val);}
 
       public MutableLiveData<String> getLabel() {
          return label;
       }
 
-      public MutableLiveData<Boolean> isActive() {return active;}
+      //public MutableLiveData<Boolean> isActive() {return active;}
       public MutableLiveData<Boolean> isOneOff() {return oneOff;}
 
       public MutableLiveData<Integer> getDayOfMonth() {return dayOfMonth;}

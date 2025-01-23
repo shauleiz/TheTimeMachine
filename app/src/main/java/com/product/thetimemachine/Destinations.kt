@@ -35,9 +35,9 @@ sealed interface Destination {
 data object AlarmEdit : Destination {
     override val route = "AlarmEdit"
     override val label = TheTimeMachineApp.appContext.getString(R.string.alarmsetup_title)
-    const val itemIdArg = "item_id"
-    val routeWithArgs = "$route/{$itemIdArg}"
-    val arguments = listOf(navArgument(itemIdArg) { type = NavType.LongType })
+    const val ITEM_ID_ARG = "item_id"
+    val routeWithArgs = "$route/{$ITEM_ID_ARG}"
+    val arguments = listOf(navArgument(ITEM_ID_ARG) { type = NavType.LongType })
 }
 
 data object AlarmList :  Destination {
@@ -53,4 +53,4 @@ data object Settings : Destination {
 
 
 // Screens to be displayed
-val alarmScreens = listOf(AlarmEdit, AlarmList, Settings)
+//val alarmScreens = listOf(AlarmEdit, AlarmList, Settings)

@@ -22,11 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.datastore.preferences.SharedPreferencesMigration
@@ -34,18 +31,15 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.R
 import com.product.thetimemachine.Settings
-import com.product.thetimemachine.ui.PreferencesKeys.KEY_SORT_SEPARATE
 import com.product.thetimemachine.ui.theme.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-import java.util.Calendar
 
 
 const val USER_PREFERENCES_NAME = "the_time_machine_preferences_datastore"
@@ -80,7 +74,7 @@ data class UserPreferences(
     val gradualVolume: String,
 )
 
-val Context.timeMachinedataStore by preferencesDataStore(
+val Context.timeMachineDataStore by preferencesDataStore(
     name = USER_PREFERENCES_NAME,
     produceMigrations = { context ->
         listOf(SharedPreferencesMigration(context, getDefaultSharedPreferencesName(context)))
@@ -113,12 +107,12 @@ fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferen
 }
 
 suspend fun fetchInitialPreferences(parent: Context) =
-    mapUserPreferences(parent, parent.timeMachinedataStore.data.first().toPreferences())
+    mapUserPreferences(parent, parent.timeMachineDataStore.data.first().toPreferences())
 
 fun updatePref(parent: Context, key: Preferences.Key<String>?, value: String?) {
     if (key == null || value == null) return
     runBlocking {
-        parent.timeMachinedataStore.edit { preferences ->
+        parent.timeMachineDataStore.edit { preferences ->
             preferences[key] = value
         }
     }
@@ -169,7 +163,7 @@ fun getPrefSnoozeDuration(parent: Context?): String {
     return getPrefs(parent).snoozeDuration
 }
 
-fun getPrefVibrationPatern(parent: Context?): String {
+fun getPrefVibrationPattern(parent: Context?): String {
     if (parent == null) return ""
     return getPrefs(parent).vibrationPattern
 }
@@ -189,27 +183,12 @@ fun getSystemTimeFormat(context: Context) : String{
     return if (is24HourFormat(context)) "h24" else "h12"
 }
 
-// Return "Su"/"Mo"/"Error"
-fun getSystemFirstDayOfWeek() : String {
-
-    // Creating calendar object
-    val calendar = Calendar.getInstance()
-    val i = calendar.firstDayOfWeek
-
-    Log.d("THE_TIME_MACHINE", "getSystemFirstDayOfWeek(): Day=$i ")
-
-    return when (i){
-        1-> "Su"
-        2-> "Mo"
-        else -> "Error"
-    }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 class SettingsScreen(private val navBack: () -> Unit) {
 
     lateinit var parent: Context
-    lateinit var userPreferencesFlow: Flow<UserPreferences>
+    private lateinit var userPreferencesFlow: Flow<UserPreferences>
     private lateinit var setUpAlarmValues: UserPreferences
 
 
@@ -261,7 +240,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
     }
 */
 
-
+/*
     private fun updateSortSeparate(sortSeparate: Boolean) {
         runBlocking {
             parent.timeMachinedataStore.edit { preferences ->
@@ -270,25 +249,27 @@ class SettingsScreen(private val navBack: () -> Unit) {
         }
     }
 
+ */
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SettingsDisplayTop() {
 
         parent = appContext
-        userPreferencesFlow = parent.timeMachinedataStore.data.map { preferences ->
+        userPreferencesFlow = parent.timeMachineDataStore.data.map { preferences ->
             mapUserPreferences(parent, preferences)
         }
 
         // List of all entries
-        setUpAlarmValues = getPrefs(TheTimeMachineApp.appContext)
+        setUpAlarmValues = getPrefs(appContext)
         val listOfPrefsEx = getListOfGeneralPreferences(setUpAlarmValues)
         val listOfPrefs = remember { mutableStateListOf<PrefData>() }
         listOfPrefs.clear()
         listOfPrefs.addAll(listOfPrefsEx)
 
 
-        val prefs = getPrefs(parent)
-        var sortSeparate by remember { mutableStateOf(prefs.sortSeparate) }
+       // val prefs = getPrefs(parent)
+        //var sortSeparate by remember { mutableStateOf(prefs.sortSeparate) }
 
 
         // Execute when preferences dialog OK button pressed

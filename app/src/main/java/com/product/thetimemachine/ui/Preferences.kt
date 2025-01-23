@@ -1,14 +1,14 @@
 package com.product.thetimemachine.ui
 
 import android.content.Context
+import android.content.Context.VIBRATOR_SERVICE
+import android.os.Build
 import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,7 +45,6 @@ import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.R
-import kotlin.concurrent.timer
 
 
 /***********************************************************************************************/
@@ -191,8 +190,16 @@ object VibrateObj {
     private fun killVibrate(){
         timer?.cancel()
 
-        val vibrator =
-            TheTimeMachineApp.appContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                TheTimeMachineApp.appContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            TheTimeMachineApp.appContext.getSystemService(VIBRATOR_SERVICE) as Vibrator
+        }
+
+
         if (vibrator.hasAmplitudeControl()) Log.d("THE_TIME_MACHINE", "vibrate(): hasAmplitudeControl")
         else Log.d("THE_TIME_MACHINE", "vibrate(): No AmplitudeControl")
         vibrator.cancel()

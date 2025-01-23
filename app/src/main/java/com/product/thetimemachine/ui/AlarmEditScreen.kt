@@ -363,7 +363,7 @@ class AlarmEditScreen(
                                 ),
                                 //scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState()),
                                 actions = {
-                                    AlarmEditActions() { actionClicked(it) }
+                                    AlarmEditActions { actionClicked(it) }
                                 },
                             )
                         },
@@ -1007,10 +1007,10 @@ class AlarmEditScreen(
             @Composable
             fun textColor(): Color {
 
-                var alph = 1.0f
-                if (day.date.isBefore(today)) alph = 0.3f
-                val txtSel = MaterialTheme.colorScheme.onSecondary.copy(alpha = alph)
-                val txtNorm = MaterialTheme.colorScheme.onSurface.copy(alpha = alph)
+                var alpha = 1.0f
+                if (day.date.isBefore(today)) alpha = 0.3f
+                val txtSel = MaterialTheme.colorScheme.onSecondary.copy(alpha = alpha)
+                val txtNorm = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha)
 
 
                 return when {

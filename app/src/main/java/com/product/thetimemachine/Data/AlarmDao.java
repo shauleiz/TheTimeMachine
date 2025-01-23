@@ -21,9 +21,6 @@ public interface AlarmDao {
    @Query("SELECT * from raw_alarm_table ORDER By createTime Asc")
    LiveData<List<AlarmItem>> getAlarms();
 
-   @Query("DELETE from raw_alarm_table")
-   void deleteAll();
-
    @Delete
    void delete(AlarmItem alarm);
 }

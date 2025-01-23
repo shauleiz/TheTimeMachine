@@ -48,7 +48,6 @@ import java.util.Random;
 @Entity(tableName = "raw_alarm_table")
 public class AlarmItem {
    @PrimaryKey
-   @NonNull
    public long createTime;
    public int hour, minute, snoozeCounter;
    public String label;
@@ -75,11 +74,11 @@ public class AlarmItem {
    public static final String K_CSNOOZE = "COUNTER_SNOOZE";
 
    public static final String K_WEEKDAYS = "WEEKDAYS";
-   public static final String K_ONEOFF = "ONE_OFF";
-   public static final String K_DAYOFMONTH = "DAY_OF_MONTH";
+   public static final String K_ONE_OFF = "ONE_OFF";
+   public static final String K_DAY_OF_MONTH = "DAY_OF_MONTH";
    public static final String K_MONTH = "MONTH";
    public static final String K_YEAR = "YEAR";
-   public static final String K_FDATE = "FUTURE_DATE";
+   public static final String K_F_DATE = "FUTURE_DATE";
 
    public static final String K_EXCEPTION = "EXCEPTION";
 
@@ -87,8 +86,8 @@ public class AlarmItem {
 
 
    // Masks for days of the week.
-   // If ONEOFF is set, the rest of the fields are to be ignored
-   // public static final int ONEOFF = 0x80;
+   // If ONE_OFF is set, the rest of the fields are to be ignored
+   // public static final int ONE_OFF = 0x80;
    public static final int SUNDAY = 0x01;
    public static final int MONDAY = 0x02;
    public static final int TUESDAY = 0x04;
@@ -128,13 +127,13 @@ public class AlarmItem {
       label = inBundle.getString(K_LABEL);
       active = inBundle.getBoolean(K_ACTIVE);
       createTime = inBundle.getLong(K_CTIME, -1);
-      oneOff = inBundle.getBoolean(K_ONEOFF, true);
+      oneOff = inBundle.getBoolean(K_ONE_OFF, true);
       weekDays = inBundle.getInt(K_WEEKDAYS, 0);
       snoozeCounter = inBundle.getInt(K_CSNOOZE,0);
-      dayOfMonth = inBundle.getInt(K_DAYOFMONTH,0);
+      dayOfMonth = inBundle.getInt(K_DAY_OF_MONTH, 0);
       month = inBundle.getInt(K_MONTH,0);
       year = inBundle.getInt(K_YEAR,0);
-      futureDate = inBundle.getBoolean(K_FDATE, false);
+      futureDate = inBundle.getBoolean(K_F_DATE, false);
       exceptionDatesStr = inBundle.getString(K_EXCEPTION);
 
       // Sanity check
@@ -187,7 +186,7 @@ public class AlarmItem {
       createTime = calendar.getTimeInMillis();
 
       // Get preferences from app-defaults
-      resetsetPreferences();
+      getPreferences();
    }
 
    // Constructor of Alarm Item - create time pushed from outside
@@ -218,7 +217,7 @@ public class AlarmItem {
       futureDate = false;
 
       // Get preferences from app-defaults
-      resetsetPreferences();
+      getPreferences();
    }
 
    public AlarmItem() {}
@@ -301,9 +300,6 @@ public class AlarmItem {
 
    public void setLabel(String label) {this.label = label;}
 
-   public void setMinute(int minute) {this.minute = minute;}
-
-   public void setCreateTime(long createTime) {this.createTime = createTime;}
 
    public void setSnoozeCounter(int snoozeCounter){ this.snoozeCounter = snoozeCounter;}
 
@@ -316,7 +312,7 @@ public class AlarmItem {
    public void setOneOff(boolean set){ oneOff = set;}
 
    // Copy the days mask without affecting the one-off bit
-   public void setWeekDays(int mask){ weekDays = mask;}
+   // public void setWeekDays(int mask){ weekDays = mask;}
 
    public void setDayOfMonth(int dayOfMonth) {this.dayOfMonth = dayOfMonth;}
 
@@ -324,7 +320,7 @@ public class AlarmItem {
 
    public void setYear(int year) {this.year = year;}
 
-   public void setFutureDate(boolean futureDate) {this.futureDate = futureDate;}
+   //public void setFutureDate(boolean futureDate) {this.futureDate = futureDate;}
 
    // Setters (Preferences)
 
@@ -352,7 +348,7 @@ public class AlarmItem {
 
    public void setGenStatus(int genStatus) {this.genStatus = genStatus;}
 
-   public void setExceptionDatesStr(String exceptionDatesStr) {this.exceptionDatesStr = exceptionDatesStr;}
+   // public void setExceptionDatesStr(String exceptionDatesStr) {this.exceptionDatesStr = exceptionDatesStr;}
 
    public void setRinging(boolean ringing){
       int stat = getGenStatus();
@@ -377,13 +373,13 @@ public class AlarmItem {
       b.putString(K_LABEL,label);
       b.putBoolean(K_ACTIVE, active);
       b.putLong(K_CTIME,createTime);
-      b.putBoolean(K_ONEOFF, oneOff);
+      b.putBoolean(K_ONE_OFF, oneOff);
       b.putInt(K_WEEKDAYS,weekDays);
       b.putInt(K_CSNOOZE,snoozeCounter);
-      b.putInt(K_DAYOFMONTH,dayOfMonth);
+      b.putInt(K_DAY_OF_MONTH, dayOfMonth);
       b.putInt(K_MONTH,month);
       b.putInt(K_YEAR,year);
-      b.putBoolean(K_FDATE,futureDate);
+      b.putBoolean(K_F_DATE, futureDate);
       b.putString(K_EXCEPTION,exceptionDatesStr);
 
       // Preferences
@@ -414,12 +410,7 @@ public class AlarmItem {
          calendar.set(Calendar.MONTH,month);
          calendar.set(Calendar.YEAR,year);
       }
-      // If this is a repeating alarm then the base date is now.
-      /*else if (!isOneOff()){
-         calendar.set(Calendar.DAY_OF_MONTH,0);
-         calendar.set(Calendar.MONTH,0);
-         calendar.set(Calendar.YEAR,0);
-      }*/
+
 
       // Calculate the snooze delay (if needed)
       int snoozeDelay;
@@ -500,10 +491,8 @@ public class AlarmItem {
 
       // Search the exceptionDatesStr for this string
       int index = exceptionDatesStr.indexOf(dateStr);
-      if (index == -1) // Not found
-         return false;
-
-      return true;
+      // Not found
+      return index != -1;
    }
 
    /* True if the alarm is set for today */
@@ -589,7 +578,7 @@ public class AlarmItem {
    }
 
    // Copy Global preferences to Item preferences
-   public void resetsetPreferences() {
+   public void getPreferences() {
       // Get context and Default Shared Preferences
       Context context = TheTimeMachineApp.appContext;
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -608,14 +597,7 @@ public class AlarmItem {
    // Preference: Duration of ringing until it stops
    // Returns:
    // Duration in milliseconds (Default is 30000)
-   public int Str2Int_ring_duration(){
-         // String is of type 15000Seconds
-         if (ringDuration.length() < 4){
-            return 30000;
-      }
-      String intValue = ringDuration.replaceAll("[^0-9]", "");
-      return Integer.parseInt(intValue)*1000;
-   }
+
 
    public static int Str2Int_ring_duration(String ringDuration){
       // String is of type 15000Seconds
@@ -624,15 +606,6 @@ public class AlarmItem {
       }
       String intValue = ringDuration.replaceAll("[^0-9]", "");
       return Integer.parseInt(intValue)*1000;
-   }
-   public int Str2Int_ring_repeat(){
-      // String is of type 15000Seconds
-      if (ringRepeat.length()<2)
-         return 5;
-
-      // Extract the numeral part
-      String intValue = ringRepeat.replaceAll("[^0-9]", "");
-      return Integer.parseInt(intValue);
    }
 
    public int Str2Int_SnoozeDuration(){
@@ -665,19 +638,6 @@ public class AlarmItem {
       return Integer.parseInt(intValue);
    }
 
-   public String Str2Int_vibration_pattern(){
-      if (vibrationPattern.isEmpty())
-         return "none";
-      else
-         return vibrationPattern;
-   }
-
-   public   String Str2Int_alarm_sound(){
-      if ( alarmSound.isEmpty())
-         return "oversimplified_alarm_clock_113180";
-      else
-         return alarmSound;
-   }
 
    public static   String Str2Int_vibration_pattern(String pattern){
       if (pattern == null || pattern.isEmpty())
@@ -685,15 +645,7 @@ public class AlarmItem {
       else
          return pattern;
    }
-   public int Str2Int_gradual_volume(){
-      // String is of type 15000Seconds
-      if (gradualVolume.length()<2)
-         return 30000;
 
-      // Extract the numeral part
-      String intValue = gradualVolume.replaceAll("[^0-9]", "");
-      return Integer.parseInt(intValue) * 1000;
-   }
 
    public  static String Str2Int_alarm_sound(String alarmSound){
 
@@ -737,7 +689,7 @@ public class AlarmItem {
 
       // Create the print string.
 
-      // When Alarm is scheduled for more than 2 days from now, prind the date and time
+      // When Alarm is scheduled for more than 2 days from now, print the date and time
       if (days > 2) {
          SimpleDateFormat format = new SimpleDateFormat(context.getString(R.string.date_format), Locale.US);
          Date date = new Date(alarmTime);
@@ -821,13 +773,13 @@ public class AlarmItem {
    *  The counter is reset to 0 when the user activates an alarm.
     *<p>
     *  In Snooze the alarm time is calculated as an offset from the
-    *  time 'Snooze' was pressed. The offset is delay*snoozecounter.
+    *  time 'Snooze' was pressed. The offset is delay*snooze_counter.
     *  In the case of auto-snooze, when the snooze counter reaches the limit -
     *  the alarm is deactivated
     *
     *<p>
     *  In auto-snooze the alarm time is calculated as an offset from the
-    *  time the ringing stopped. The offset is delay*snoozecounter.
+    *  time the ringing stopped. The offset is delay*snooze_counter.
     *  When the snooze counter reaches the limit -
     *  the alarm is deactivated
     *

@@ -18,12 +18,10 @@ package com.product.thetimemachine
 
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.product.thetimemachine.ui.AlarmEditScreen
 import com.product.thetimemachine.ui.AlarmListScreen
@@ -35,7 +33,7 @@ fun AlarmNavHost(
 ) {
 
     val navController = rememberNavController()
-    val currentBackStack by navController.currentBackStackEntryAsState()
+    //val currentBackStack by navController.currentBackStackEntryAsState()
 
     NavHost(
         navController = navController,
@@ -49,7 +47,7 @@ fun AlarmNavHost(
             arguments = AlarmEdit.arguments,
         ) { navBackStackEntry ->
             val itemId =
-                navBackStackEntry.arguments?.getLong(AlarmEdit.itemIdArg, 0)
+                navBackStackEntry.arguments?.getLong(AlarmEdit.ITEM_ID_ARG, 0)
             ShowAlarmEditScreen(navController, itemId)
             Log.d("THE_TIME_MACHINE", "--- AlarmNavHost(): itemId=$itemId")
         }
@@ -62,7 +60,7 @@ fun AlarmNavHost(
 
 @Composable
 fun ShowSettingsScreen(navController: NavHostController){
-    SettingsScreen(navBack = {navController.popBackStack()},).SettingsDisplayTop()
+    SettingsScreen(navBack = {navController.popBackStack()}).SettingsDisplayTop()
 }
 
 @Composable
@@ -108,9 +106,9 @@ private fun NavHostController.navigateSingleTopTo(route: String) =
         }
 
         // Avoid multiple copies of the same destination when
-        // reselecting the same item
+        // re-selecting the same item
         launchSingleTop = true
-        // Restore state when reselecting a previously selected item
+        // Restore state when re-selecting a previously selected item
         restoreState = false
 
 

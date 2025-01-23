@@ -8,7 +8,7 @@ import static com.product.thetimemachine.Data.AlarmItem.K_CSNOOZE;
 import static com.product.thetimemachine.Data.AlarmItem.K_HOUR;
 import static com.product.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.product.thetimemachine.Data.AlarmItem.K_MINUTE;
-import static com.product.thetimemachine.Data.AlarmItem.K_ONEOFF;
+import static com.product.thetimemachine.Data.AlarmItem.K_ONE_OFF;
 import static com.product.thetimemachine.Data.AlarmItem.K_WEEKDAYS;
 import static com.product.thetimemachine.Data.AlarmItem.MONDAY;
 import static com.product.thetimemachine.Data.AlarmItem.SATURDAY;
@@ -54,9 +54,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
       // Force update of UI
       insertAlarm(alarm,  context);
-      //AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
-      //AlarmDao alarmDao = db.alarmDao();
-      //AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
 
    }
 
@@ -134,7 +131,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             "android.intent.action.LOCKED_BOOT_COMPLETED".equals(action) ||
             Intent.ACTION_PACKAGE_REPLACED.equals(action) ||
             Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
-         String toastText = "Alarm Reboot";
+         //String toastText = "Alarm Reboot";
          booting(context);
          Log.i("THE_TIME_MACHINE", "Alarm Reboot");
 
@@ -170,7 +167,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
    private boolean isToday(Bundle bundle){
       // If this is a one-off alarm then it is for today
-      boolean oneOff = bundle.getBoolean(K_ONEOFF);
+      boolean oneOff = bundle.getBoolean(K_ONE_OFF);
       if (oneOff)
          return true;
 

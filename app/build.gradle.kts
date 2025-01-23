@@ -90,7 +90,7 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.6.1")
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
     androidTestImplementation ("androidx.room:room-testing:2.6.1")
-    implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation("androidx.preference:preference:1.2.1")
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.0")
 
     //implementation ("android.arch.persistence.room:compiler:2.6.0")
@@ -109,5 +109,5 @@ dependencies {
     implementation("com.kizitonwose.calendar:compose:2.6.0")
 
     // The Compose Datastore Preferences
-    implementation ("androidx.datastore:datastore-preferences:1.1.1")
+    implementation ("androidx.datastore:datastore-preferences:1.1.2")
 }

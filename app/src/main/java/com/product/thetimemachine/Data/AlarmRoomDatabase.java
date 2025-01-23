@@ -28,13 +28,6 @@ public abstract class AlarmRoomDatabase extends RoomDatabase {
    public static final ExecutorService databaseWriteExecutor =
          Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-   static void removeDB(Context context){
-      Context context1 = context.createDeviceProtectedStorageContext();
-      boolean deleted;
-      // Brute Force removal of Room database
-      String[] list =  context1.databaseList ();
-      for (String s : list) deleted = context1.deleteDatabase(s);
-   }
    public static AlarmRoomDatabase getDatabase(final Context context) {
       if (alarmRoomDatabase == null) {
          synchronized (AlarmRoomDatabase.class) {

@@ -28,22 +28,19 @@ public class BootService extends LifecycleService{
       // Create repository observer.Will be twice called on BOOT
       // On machine boot (LOCKED_BOOT_COMPLETED) and after the user enters the
       // credentials (LOCKED_BOOT_COMPLETED)
-      repo.getAlarmList().observe(this, new Observer<List<AlarmItem>>() {
-         @Override
-         public void onChanged(List<AlarmItem> alarms) {
-            if (alarms == null)
-               Log.d("THE_TIME_MACHINE", "onStartCommand(): alarms  is null");
-            else Log.d("THE_TIME_MACHINE", "onStartCommand(): alarms size=" + alarms.size());
-            if (alarms != null) {
-               for ( AlarmItem item : alarms) {
-                  if (item.isActive()) {
-                     item.Exec();
-                     Log.d("THE_TIME_MACHINE", "Schedule Alarm: " + item.getLabel());
-                  }
+      repo.getAlarmList().observe(this, alarms -> {
+         if (alarms == null)
+            Log.d("THE_TIME_MACHINE", "onStartCommand(): alarms  is null");
+         else Log.d("THE_TIME_MACHINE", "onStartCommand(): alarms size=" + alarms.size());
+         if (alarms != null) {
+            for ( AlarmItem item : alarms) {
+               if (item.isActive()) {
+                  item.Exec();
+                  Log.d("THE_TIME_MACHINE", "Schedule Alarm: " + item.getLabel());
                }
             }
-            stopSelf();
          }
+         stopSelf();
       });
 
       return START_STICKY;
