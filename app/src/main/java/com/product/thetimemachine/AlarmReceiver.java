@@ -79,12 +79,6 @@ public class AlarmReceiver extends BroadcastReceiver {
       alarm.setRinging(false);
 
       insertAlarm(alarm,  context);
-/*
-         AlarmRoomDatabase db = AlarmRoomDatabase.getDatabase(context);
-         AlarmDao alarmDao = db.alarmDao();
-         AlarmRoomDatabase.databaseWriteExecutor.execute(() ->alarmDao.insert(alarm));
-*/
-
 
       /* DEBUG */
       Bundle ab = alarm.getBundle();

@@ -65,6 +65,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.Application.TheTimeMachineApp
+import com.product.thetimemachine.Application.TheTimeMachineApp.KILL_STOP_SNOOZE
 import com.product.thetimemachine.R
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -75,9 +76,11 @@ class StopSnoozeActivity : AppCompatActivity() {
     private var extras: Bundle? = null
     private var strCurrentTime = "99:99 am"
     private var broadcastReceiver: BroadcastReceiver? = null
+    private var killActivityReceiver: BroadcastReceiver? = null
     private var dateFormat: SimpleDateFormat? = null
 
     val triggerTimeDisplay = mutableStateOf(false)
+
 
 
 
@@ -163,6 +166,15 @@ class StopSnoozeActivity : AppCompatActivity() {
        enableEdgeToEdge()
        super.onCreate(savedInstanceState)
 
+
+       // Define and register the Kill Activity Receiver (KILL_STOP_SNOOZE)
+       killActivityReceiver = object : BroadcastReceiver() {
+           override fun onReceive(context: Context, intent: Intent) {
+               finish()
+           }
+       }
+       registerReceiver(killActivityReceiver,  IntentFilter(KILL_STOP_SNOOZE))
+
        // Allow this activity on a locked screen
        allowOnLockScreen()
 
@@ -233,6 +245,7 @@ class StopSnoozeActivity : AppCompatActivity() {
        super.onDestroy()
        setShowWhenLocked(false)
        setTurnScreenOn(false)
+       unregisterReceiver(killActivityReceiver)
    }
 
 
@@ -435,9 +448,12 @@ class StopSnoozeActivity : AppCompatActivity() {
                    .align(alignment = Alignment.Center)
                    .requiredSize((LocalConfiguration.current.smallestScreenWidthDp * 0.5f).dp)
                    .clickable(
-                       onClick = { onClickStop()},
+                       onClick = { onClickStop() },
                        interactionSource = remember { MutableInteractionSource() },
-                       indication = ripple(bounded = true, radius = (LocalConfiguration.current.smallestScreenWidthDp * 0.25f).dp ),
+                       indication = ripple(
+                           bounded = true,
+                           radius = (LocalConfiguration.current.smallestScreenWidthDp * 0.25f).dp
+                       ),
                    )
            )
            Text(

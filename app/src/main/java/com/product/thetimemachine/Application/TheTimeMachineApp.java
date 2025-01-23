@@ -9,6 +9,7 @@ import com.product.thetimemachine.ui.MainActivity;
 
 public class TheTimeMachineApp extends Application {
    public static final String CHANNEL_ID = "ALARM_SERVICE_CHANNEL";
+   public static final String KILL_STOP_SNOOZE = "com.product.thetimemachine.kill.stopsnoozeactivity";
    public static Context appContext;
    public static MainActivity mainActivity;
 

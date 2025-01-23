@@ -2,6 +2,7 @@ package com.product.thetimemachine;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
 import static com.product.thetimemachine.Application.TheTimeMachineApp.CHANNEL_ID;
+import static com.product.thetimemachine.Application.TheTimeMachineApp.KILL_STOP_SNOOZE;
 import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
 import static com.product.thetimemachine.Data.AlarmItem.K_LABEL;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_SnoozeDuration;
@@ -130,8 +131,9 @@ public class AlarmService  extends Service {
          }
       };
 
-      // Register the receiver
+      // Register the ACTION_TIME_TICK receiver
       registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+
 
       Log.i("THE_TIME_MACHINE", "Service Started.2");
 
@@ -230,8 +232,11 @@ public class AlarmService  extends Service {
 
       // If the service was killed by user (NOT by auto-snooze)
       // then kill the auto-snooze callback
+      // If auto-snooze then kill StopSnoozeActivity
       if (!selfKill)
          handler.removeCallbacks(autoSnooze);
+      else
+         sendBroadcast(new Intent(KILL_STOP_SNOOZE));
 
       unregisterReceiver(broadcastReceiver);
    }
