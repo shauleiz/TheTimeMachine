@@ -70,7 +70,7 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-buildtools:3.0.2")
     implementation("androidx.compose.ui:ui-android:1.7.0")
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.compose.material3:material3-android:1.3.0")
+    implementation("androidx.compose.material3:material3-android:1.3.1")
     implementation("androidx.compose.ui:ui-tooling-preview-android:1.7.0")
     implementation("androidx.compose.ui:ui-tooling-preview-desktop:1.7.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
@@ -90,7 +90,7 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.6.1")
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
     androidTestImplementation ("androidx.room:room-testing:2.6.1")
-    implementation("androidx.preference:preference:1.2.1")
+    implementation("androidx.preference:preference-ktx:1.2.1")
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.0")
 
     //implementation ("android.arch.persistence.room:compiler:2.6.0")
