@@ -87,8 +87,7 @@ import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
-import java.text.SimpleDateFormat
-import java.util.Locale
+import java.time.format.DateTimeFormatter
 
 
 class AlarmListScreen (
@@ -686,13 +685,13 @@ private fun deleteSelectedAlarms() {
             if (separate) {
                 when (comparatorType) {
                     "alphabetically" -> list.sortedWith(compareBy<AlarmItem> { !it.isActive }.thenBy { it.label })
-                    "by_alarm_time" -> list.sortedWith(compareBy<AlarmItem> { !it.isActive }.thenBy { it.alarmTimeInMillis() })
+                    "by_alarm_time" -> list.sortedWith(compareBy<AlarmItem> { !it.isActive }.thenBy { it.alarmTimeInLocalDateTime() })
                     else -> list.sortedWith(compareBy<AlarmItem> { !it.isActive }.thenBy { it.createTime })
                 }
             } else {
                 when (comparatorType) {
                     "alphabetically" -> list.sortedWith(compareBy { it.label })
-                    "by_alarm_time" -> list.sortedWith(compareBy{ it.alarmTimeInMillis() })
+                    "by_alarm_time" -> list.sortedWith(compareBy{ it.alarmTimeInLocalDateTime() })
                     else -> list.sortedWith(compareBy { it.createTime })
                 }
             }
@@ -790,9 +789,9 @@ private fun deleteSelectedAlarms() {
 
                     // Future Date
                 } /**/ else {
-                    val format = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale("US"))
-                    val alarmTime = alarmItem.alarmTimeInMillis()
-                    val word = format.format(alarmTime)
+                    val format = DateTimeFormatter.ofPattern(("EEEE, MMMM d, yyyy")) // TODO: Replace with string
+                    val alarmTime = alarmItem.alarmTimeInLocalDateTime()
+                    val word = alarmTime.format(format)
                     //if (alarmItem.isActive)
                         return ((buildAnnotatedString {
                             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {

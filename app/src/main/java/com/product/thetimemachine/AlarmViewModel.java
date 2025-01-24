@@ -21,8 +21,8 @@ import com.product.thetimemachine.Application.TheTimeMachineApp;
 import com.product.thetimemachine.Data.AlarmItem;
 import com.product.thetimemachine.Data.AlarmRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -233,11 +233,10 @@ public class AlarmViewModel extends AndroidViewModel {
 
       // Reset Setup Values: Time is the current time. Label is empty
       public void ResetValues(){
-         Calendar calendar = Calendar.getInstance();
-         calendar.setTimeInMillis(System.currentTimeMillis());
+         LocalDateTime now = LocalDateTime.now();
+         hour.setValue(now.getHour());
+         minute.setValue(now.getMinute());
 
-         hour.setValue(calendar.get(Calendar.HOUR_OF_DAY));
-         minute.setValue(calendar.get(Calendar.MINUTE));
          label.setValue("");
 
          weekDays.setValue(0);

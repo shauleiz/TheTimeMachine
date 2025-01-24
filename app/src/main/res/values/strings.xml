@@ -84,6 +84,7 @@
     <string name="time_format_display">EEEE, MMMM d, yyyy \'at\' HH:mm</string>
     <string name="today_in_brackets">" [TODAY]"</string>
     <string name="tomorrow_in_brackets">" [TOMORROW]"</string>
+    <string name="error_in_brackets">"Error: Alarm time already passed"</string>
     <string name="cancel_as_negative">Cancel</string>
     <string name="weekly">Weekly</string>
     <string name="single">Single</string>

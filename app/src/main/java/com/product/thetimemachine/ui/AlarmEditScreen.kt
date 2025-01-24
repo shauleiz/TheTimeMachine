@@ -96,9 +96,9 @@ import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 import java.util.Locale
 
 
@@ -144,8 +144,7 @@ class AlarmEditScreen(
             return setUpAlarmValues.hour.value!!
         } else {
             // Get Current time
-            val currentTime = Calendar.getInstance()
-            return currentTime.get(Calendar.HOUR_OF_DAY)
+            return LocalDateTime.now().hour;
         }
     }
 
@@ -154,8 +153,7 @@ class AlarmEditScreen(
             return setUpAlarmValues.minute.value!!
         } else {
             // Get Current time
-            val currentTime = Calendar.getInstance()
-            return currentTime.get(Calendar.MINUTE)
+            return LocalDateTime.now().minute
         }
     }
 
@@ -768,52 +766,9 @@ class AlarmEditScreen(
     }
 
     @Composable
-    private fun displayTargetAlarm(hour: Int, minute: Int): String {
-        var out: String
+    private fun displayTargetAlarm(hour: Int, minute: Int): String{
 
-        /// Helper Functions
-        fun isInThePast(alarmInMillis: Long): Boolean {
-            val now = System.currentTimeMillis()
-            return (alarmInMillis < now)
-        }
-
-        fun isToday(alarmInMillis: Long): Boolean {
-            val now = System.currentTimeMillis()
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = now
-
-            // Get time of today's midnight (minus a second)
-            calendar[Calendar.HOUR_OF_DAY] = 23
-            calendar[Calendar.MINUTE] = 59
-            calendar[Calendar.SECOND] = 59
-            val lastSecondOfDay = calendar.timeInMillis
-
-
-            return (alarmInMillis in now..lastSecondOfDay)
-        }
-
-        fun isTomorrow(alarmInMillis: Long): Boolean {
-            val now = System.currentTimeMillis()
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = now + 24 * 60 * 60 * 1000
-
-            // Get time of tomorrow's midnight (minus a second)
-            calendar[Calendar.HOUR_OF_DAY] = 23
-            calendar[Calendar.MINUTE] = 59
-            calendar[Calendar.SECOND] = 59
-            val lastSecondOfDay = calendar.timeInMillis
-
-            // Get time of tomorrow's first second
-            calendar[Calendar.HOUR_OF_DAY] = 0
-            calendar[Calendar.MINUTE] = 0
-            calendar[Calendar.SECOND] = 0
-            val firstSecondOfDay = calendar.timeInMillis
-
-            return (alarmInMillis in firstSecondOfDay..lastSecondOfDay)
-        }
-
-
-        // Get date values
+        // Get the date from the setUpAlarmValues - if does not exist set to 0
         val dd = if (setUpAlarmValues.dayOfMonth.value != null) setUpAlarmValues.dayOfMonth.value!!
         else 0
         val mm = if (setUpAlarmValues.month.value != null) setUpAlarmValues.month.value!!
@@ -821,56 +776,48 @@ class AlarmEditScreen(
         val yy = if (setUpAlarmValues.year.value != null) setUpAlarmValues.year.value!!
         else 0
 
-        // Create a calendar object and modify it
-        val nowInMillis = System.currentTimeMillis()
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = nowInMillis
+        // Determine if the date is explicit (taken from the calendar)
+        val isExplicit = yy != 0
 
-        Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[1]: dd=$dd ; mm=$mm ; yy=$yy")
-        if (dd > 0 && yy > 0) calendar[yy, mm, dd, hour, minute] = 0
-        else {
-            calendar[Calendar.HOUR_OF_DAY] = hour
-            calendar[Calendar.MINUTE] = minute
-        }
+        // Calculate alarm as LocalDateTime
+        var alarmTime =
+            if (isExplicit)
+                LocalDateTime.of(yy, mm+1, dd, hour, minute)
+            else
+                LocalDateTime.now()
+                    .withHour(hour).withMinute(minute)
+                    .withSecond(0).withNano(0)
 
-        Log.d(
-            "THE_TIME_MACHINE", "displayTargetAlarm()[2]:" +
-                    "Year=${calendar.get(Calendar.YEAR)}  " +
-                    "Month=${calendar.get(Calendar.MONTH)}  " +
-                    "Day=${calendar.get(Calendar.DAY_OF_MONTH)}  " +
-                    "Hour=${calendar.get(Calendar.HOUR)}  " +
-                    "Minute=${calendar.get(Calendar.MINUTE)}  " +
-                    ""
-        )
-
-        if (isInThePast(calendar.timeInMillis)) {
-            Log.d("THE_TIME_MACHINE", "displayTargetAlarm()[3]: Is in the Past")
-            calendar.timeInMillis = nowInMillis
-            calendar[Calendar.HOUR_OF_DAY] = hour
-            calendar[Calendar.MINUTE] = minute
-            if (isInThePast(calendar.timeInMillis))
-                calendar.timeInMillis += 24 * 60 * 60 * 1000
-        }
-        //calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),h,m,0);
+        // Case of alarm in the past (consider also very near future):
+        //  If explicitly set in the past - leave it so but raise 'in the past' flag
+        //  If Implicitly set in the past - add one day to the alarm time
+        val isPast = LocalDateTime.now().plusSeconds(15).isAfter(alarmTime)
+        val isError = isPast && isExplicit
+        if (isPast && !isExplicit) alarmTime = alarmTime.plusDays(1)
 
 
-        // Create an output string
-        val format =
-            SimpleDateFormat(
-                mainActivity.applicationContext.getString(R.string.time_format_display),
-                Locale.US
-            )
-        out = format.format(calendar.timeInMillis)
+        // Convert the alarm time  to String
+        val formatters = DateTimeFormatter.ofPattern(mainActivity.applicationContext.getString(R.string.time_format_display))
+        val alarmTimeStr : String = alarmTime.format(formatters)
 
+        // If the alarm time is in the past - return [Alarm already passed]
+        // If the alarm time is today- Append [TODAY] to alarmTimeStr and return it
+        // If the alarm time is tomorrow- Append [TOMORROW] to alarmTimeStr and return it
+        // If none of the above - return the alarmTimeStr
+        val now = LocalDateTime.now()
+        val todayLastMinute = now.withHour(23).withMinute(59).withSecond(59)
+        val tomorrowLastMinute = todayLastMinute.plusDays(1)
 
-        // Determine Today/Tomorrow
-        if (isToday(calendar.timeInMillis)) out += mainActivity.applicationContext.getString(R.string.today_in_brackets)
-        else if (isTomorrow(calendar.timeInMillis)) {
-            out += mainActivity.applicationContext.getString(R.string.tomorrow_in_brackets)
-        }
+        if (LocalDateTime.now().plusSeconds(15).isAfter(alarmTime))
+            return mainActivity.applicationContext.getString(R.string.error_in_brackets)
 
-        //Log.d("THE_TIME_MACHINE", "displayTargetAlarm(): " + out);
-        return out
+        if ( alarmTime in now .. todayLastMinute)
+            return "$alarmTimeStr${mainActivity.applicationContext.getString(R.string.today_in_brackets)}"
+
+        if ( alarmTime in todayLastMinute .. tomorrowLastMinute)
+            return "$alarmTimeStr${mainActivity.applicationContext.getString(R.string.tomorrow_in_brackets)}"
+
+        return alarmTimeStr
     }
 
 

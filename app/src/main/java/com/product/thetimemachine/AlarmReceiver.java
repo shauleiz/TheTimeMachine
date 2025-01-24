@@ -26,7 +26,8 @@ import android.util.Log;
 
 import com.product.thetimemachine.Data.AlarmItem;
 
-import java.util.Calendar;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -175,33 +176,29 @@ public class AlarmReceiver extends BroadcastReceiver {
       int weekdays = bundle.getInt(K_WEEKDAYS);
 
       // Get today's weekday
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTimeInMillis(System.currentTimeMillis());
-      int today = calendar.get(Calendar.DAY_OF_WEEK);
-
-      Log.i("THE_TIME_MACHINE", String.format("isToday(): Today = %d :: Weekdays = %d", today, weekdays));
+      DayOfWeek today = LocalDateTime.now().getDayOfWeek();
 
       // Compare
       switch (today){
-         case Calendar.SUNDAY:
+         case SUNDAY:
             if ((weekdays & SUNDAY) != 0)
                return true;
-         case Calendar.MONDAY:
+         case MONDAY:
             if ((weekdays & MONDAY) != 0)
                return true;
-         case Calendar.TUESDAY:
+         case TUESDAY:
             if ((weekdays & TUESDAY) != 0)
                return true;
-         case Calendar.WEDNESDAY:
+         case WEDNESDAY:
             if ((weekdays & WEDNESDAY) != 0)
                return true;
-         case Calendar.THURSDAY:
+         case THURSDAY:
             if ((weekdays & THURSDAY) != 0)
                return true;
-         case Calendar.FRIDAY:
+         case FRIDAY:
             if ((weekdays & FRIDAY) != 0)
                return true;
-         case Calendar.SATURDAY:
+         case SATURDAY:
             if ((weekdays & SATURDAY) != 0)
                return true;
 

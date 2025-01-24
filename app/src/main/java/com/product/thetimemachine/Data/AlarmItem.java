@@ -3,6 +3,8 @@ package com.product.thetimemachine.Data;
 import static com.product.thetimemachine.AlarmService.ALARM;
 import static com.product.thetimemachine.AlarmService.K_TYPE;
 
+import static java.time.ZoneId.systemDefault;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,10 +27,14 @@ import com.product.thetimemachine.R;
 import com.product.thetimemachine.ui.MainActivity;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.ChronoField;
 import java.util.Locale;
 import java.util.Random;
+import java.time.LocalDateTime;
 
 
 /*
@@ -141,10 +147,9 @@ public class AlarmItem {
          active = false;
 
       // Create Time
-      if (createTime<0){
-         Calendar calendar = Calendar.getInstance();
-         createTime = calendar.getTimeInMillis();
-      }
+      if (createTime<0)
+         createTime =  Instant.now().toEpochMilli();
+
 
       // Preferences
       Context context = TheTimeMachineApp.appContext;
@@ -182,8 +187,8 @@ public class AlarmItem {
       futureDate = false;
 
       // Add time of creation in milliseconds
-      Calendar calendar = Calendar.getInstance();
-      createTime = calendar.getTimeInMillis();
+      createTime =  Instant.now().toEpochMilli();
+
 
       // Get preferences from app-defaults
       getPreferences();
@@ -394,22 +399,27 @@ public class AlarmItem {
       return b;
    }
 
-   /*  Convert alarm time to milliseconds    */
-   public long alarmTimeInMillis() {
-      // Get the time for the next Alarm, in Milliseconds
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTimeInMillis(System.currentTimeMillis());
-      calendar.set(Calendar.HOUR_OF_DAY, hour);
-      calendar.set(Calendar.MINUTE, minute);
-      calendar.set(Calendar.SECOND, 0);
-      calendar.set(Calendar.MILLISECOND, 0);
+   /*  Convert alarm time to LocalDateTime    */
+   public LocalDateTime alarmTimeInLocalDateTime() {
+
+      // Get the time for the next Alarm
+      LocalDateTime dateTime = LocalDateTime.now();/**/
+      dateTime = dateTime
+            .with(ChronoField.HOUR_OF_DAY,hour)
+            .with(ChronoField.MINUTE_OF_HOUR, minute)
+            .with(ChronoField.SECOND_OF_MINUTE, 0)
+            .with(ChronoField.MILLI_OF_SECOND, 0);
 
       // If this a future date by given calendar date
       if (isFutureDate() && getDayOfMonth()>0  && getYear()>0){
-         calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-         calendar.set(Calendar.MONTH,month);
-         calendar.set(Calendar.YEAR,year);
-      }
+         dateTime =  dateTime
+               .with(ChronoField.MONTH_OF_YEAR,month+1)
+               .with(ChronoField.YEAR,year)
+               .with(ChronoField.DAY_OF_MONTH,dayOfMonth);
+
+
+      } /*  */
+
 
 
       // Calculate the snooze delay (if needed)
@@ -423,70 +433,106 @@ public class AlarmItem {
       // The alarm should then scheduled to snoozeAdd
       // The next time it will go off will be after the next delay
       if (snoozeDelay >0)
-         calendar.setTimeInMillis(System.currentTimeMillis() + snoozeDelay);
+         dateTime = LocalDateTime.now().plusSeconds(snoozeDelay / 1000);
+
+
 
       // if alarm time has already passed, increment day by 1
-      if (calendar.getTimeInMillis() <= System.currentTimeMillis() && !isFutureDate() ) {
-         calendar.setTimeInMillis(calendar.getTimeInMillis()+ DAY_IN_MILLIS);
+      if (dateTime.isBefore(LocalDateTime.now()) && !isFutureDate())
+         dateTime = dateTime.plusDays(1);
+
+
+      return dateTime;
+   }
+
+   /*  Convert alarm time to LocalDateTime    */
+   public LocalDateTime getAlarmTime() {
+
+      LocalDateTime dateTime = LocalDateTime.now();
+      dateTime = dateTime.withHour(hour).withMinute(minute).withSecond(0).with(ChronoField.MILLI_OF_SECOND, 0);
+      if (isFutureDate() && getDayOfMonth()>0  && getYear()>0){
+         dateTime = dateTime.withMonth(month + 1).withYear(year).withDayOfMonth(dayOfMonth);
       }
 
-      return calendar.getTimeInMillis();
+
+
+      // Calculate the snooze delay (if needed)
+      int snoozeDelay;
+      if (snoozeCounter >0)
+         snoozeDelay = Str2Int_SnoozeDuration(); // Preference
+      else
+         snoozeDelay = 0;
+
+      // Everytime this alarm goes off - snoozeCounter is incremented
+      // The alarm should then scheduled to snoozeAdd
+      // The next time it will go off will be after the next delay
+      if (snoozeDelay >0)
+         dateTime = LocalDateTime.now().plusSeconds(snoozeDelay / 1000);
+
+
+      // if alarm time has already passed, increment day by 1
+      if (dateTime.isBefore(LocalDateTime.now()) && !isFutureDate()) {
+         dateTime = dateTime.plusDays(1);
+      }
+
+      return dateTime;
    }
+
 
 
    /* Get the weekday of the currently assigned alarm time
-    Convert it to Zero/Sunday based number: Sun=0 --> Sat=6 */
+ Convert it to Zero/Sunday based number: Sun=0 --> Sat=6 */
    public int getWeekdayOfNextAlarm(){
-      long alarmTime = nextAlarmTimeInMillis();
-      Calendar cal = Calendar.getInstance();
-      cal.setTimeInMillis(alarmTime);
-      return cal.get(Calendar.DAY_OF_WEEK) - 1;
+      LocalDateTime alarmTime = nextAlarmTimeInLocalDateTime();
+      return alarmTime.getDayOfWeek().getValue() - 1;
    }
 
-   /*   Get the time of the next alarm in milliseconds    */
-   public long nextAlarmTimeInMillis(){
 
-      long alarmTime = alarmTimeInMillis();
-         Calendar cal = Calendar.getInstance();
-         cal.setTimeInMillis(alarmTime);
 
-         // Get the weekday of the currently assigned alarm time
-         // Convert it to Zero/Sunday based number: Sun=0 --> Sat=6
-         int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
 
-         // For each Day in weekDays (Only the ones that are ON):
-         // - Convert it to a number nDay ( One/Sunday based number: Sun=1 --> Sat=7)
-         // - Calculate nDay as the diff between this number and datOfWeek
-         // - If nDay is smaller than dayOfWeek add 7 to it
-         // - Multiple nDay by the number of milliseconds in a day and add it to calendar time
-         // - Set the alarm manager with this calender time
-         int[] days = {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY};
-         for (int i = 0; i < 100; i++) { // 100 is just a large number
-            int nDay = (dayOfWeek +i)%7;
-            if ((weekDays & days[nDay]) == 0) continue;
-            long out = i * (long)DAY_IN_MILLIS + alarmTime;
 
-            // Check if this time falls in one of the dates in the list of exceptions
-            if (!isDateException(out))
-               return out;
-         }
+   /*   Get the time of the next alarm in LocalDateTime    */
+   public LocalDateTime nextAlarmTimeInLocalDateTime(){
+
+      LocalDateTime alarmTime = alarmTimeInLocalDateTime();
+
+      // Get the weekday of the currently assigned alarm time
+      // Convert it to Zero/Sunday based number: Sun=0 --> Sat=6
+      int dayOfWeek = alarmTime.getDayOfWeek().getValue();
+
+      // For each Day in weekDays (Only the ones that are ON):
+      // - Convert it to a number nDay ( One/Sunday based number: Sun=1 --> Sat=7)
+      // - Calculate nDay as the diff between this number and datOfWeek
+      // - If nDay is smaller than dayOfWeek add 7 to it
+      // - Multiple nDay by the number of milliseconds in a day and add it to calendar time
+      // - Set the alarm manager with this calender time
+      int[] days = {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY};
+      for (int i = 0; i < 100; i++) { // 100 is just a large number
+         int nDay = (dayOfWeek +i)%7;
+         if ((weekDays & days[nDay]) == 0) continue;
+         LocalDateTime out = alarmTime.plusDays(i);
+
+         // Check if this time falls in one of the dates in the list of exceptions
+         if (!isDateException(out))
+            return out;
+      }
       return alarmTime;
    }
 
+
+
    // Compare given time (in millis) with the dates in the list of exceptions
    // If given time falls in one of the dates in the list - return true
-   private boolean isDateException(long timeInMillis){
+   private boolean isDateException(LocalDateTime alarmTime){
       // Is there a valid exception list?
       if (exceptionDatesStr==null || exceptionDatesStr.isEmpty())
          return false;
 
       // Convert timeInMillis to date in YYYYMMDD format
       int y, m, d;
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTimeInMillis(timeInMillis);
-      y = calendar.get(Calendar.YEAR);
-      m = calendar.get(Calendar.MONTH)+1;
-      d = calendar.get(Calendar.DAY_OF_MONTH);
+      y = alarmTime.getYear();
+      m = alarmTime.getMonthValue();
+      d = alarmTime.getDayOfMonth();
       String dateStr = Integer.toString(d+100*m+10000*y);
 
       // Search the exceptionDatesStr for this string
@@ -501,33 +547,24 @@ public class AlarmItem {
       if (isRinging()) return true;
 
       // Get time of today's midnight (minus a second)
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTimeInMillis(System.currentTimeMillis());
-      calendar.set(Calendar.HOUR_OF_DAY, 23);
-      calendar.set(Calendar.MINUTE, 59);
-      calendar.set(Calendar.SECOND, 59);
+      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime midnight = now.withHour(23).withMinute(59).withSecond(59);
 
-      return  (calendar.getTimeInMillis() >= alarmTimeInMillis());
-
+      return  ( !getAlarmTime().isAfter(midnight) );
    }
 
    /* True if the alarm is set for tomorrow */
    public boolean isTomorrow(){
-      long today_midnight, tomorrow_midnight, tomorrow_last_sec, alarm_time;
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTimeInMillis(System.currentTimeMillis());
 
+      LocalDateTime now = LocalDateTime.now();
       // Get today's time in millis at 0:00:00.
       // Then add 24h to get the time of the beginning of tomorrow.
       // Then add additional 24h-1sec to get the time of the end of tomorrow.
-      calendar.set(Calendar.HOUR_OF_DAY, 0);
-      calendar.set(Calendar.MINUTE, 0);
-      calendar.set(Calendar.SECOND, 0);
-      today_midnight = calendar.getTimeInMillis();
-      tomorrow_midnight = today_midnight+24*60*60*1000;
-      tomorrow_last_sec = tomorrow_midnight+24*60*60*1000-1000;
-      alarm_time = alarmTimeInMillis();
-      return alarm_time >= tomorrow_midnight && alarm_time <= tomorrow_last_sec;
+      LocalDateTime today_midnight = now.withHour(0).withMinute(0).withSecond(0).withNano(0);
+      LocalDateTime tomorrow_midnight = today_midnight.plusDays(1);
+      LocalDateTime tomorrow_last_sec = tomorrow_midnight.plusDays(1).minusSeconds(1);
+      LocalDateTime alarm_time = getAlarmTime();
+      return !alarm_time.isBefore(tomorrow_midnight)  && !alarm_time.isAfter(tomorrow_last_sec);
    }
 
    /* True if the alarm is explicitly set to the past */
@@ -538,20 +575,12 @@ public class AlarmItem {
          return true;
 
       // Get time current time
-      Calendar nowCal = Calendar.getInstance();
-      nowCal.setTimeInMillis(System.currentTimeMillis());
+      LocalDateTime now = LocalDateTime.now();
 
       // Convert alarm time to to Calendar
-      Calendar alarmCal = Calendar.getInstance();
-      alarmCal.setTimeInMillis(System.currentTimeMillis());
-      alarmCal.set(Calendar.YEAR, getYear());
-      alarmCal.set(Calendar.MONTH, getMonth());
-      alarmCal.set(Calendar.DAY_OF_MONTH, getDayOfMonth());
-      alarmCal.set(Calendar.HOUR_OF_DAY, getHour());
-      alarmCal.set(Calendar.MINUTE, getMinute());
-      alarmCal.set(Calendar.SECOND, 30);
-
-      return alarmCal.getTimeInMillis() >= nowCal.getTimeInMillis();
+      LocalDateTime alarmTime = LocalDateTime.of( getYear(), getMonth(),getDayOfMonth(),getHour(),getMinute(),30);
+      Log.d("THE_TIME_MACHINE", "isNotInThePast() return  " + (!alarmTime.isBefore(now)));
+      return !alarmTime.isBefore(now);
    }
 
    /*If alarm is explicitly set to the past then change the explicit date to Today or tomorrow */
@@ -561,23 +590,18 @@ public class AlarmItem {
       Log.d("THE_TIME_MACHINE", "recalculateDate()[2]");
 
       // Get time current time
-      Calendar nowCal = Calendar.getInstance();
-      nowCal.setTimeInMillis(System.currentTimeMillis());
-
+      LocalDateTime now = LocalDateTime.now();
       Log.d("THE_TIME_MACHINE", "recalculateDate()[3] getHour="+getHour()+" ; getMinute="+getMinute()+" ; getDayOfMonth "+ getDayOfMonth());
 
       // Check if the alarm can still ring today
-      if (
-            (nowCal.get(Calendar.MINUTE) + nowCal.get(Calendar.HOUR_OF_DAY)*24) >
-                  (getMinute() + getHour()*24)){
-         nowCal.setTimeInMillis(System.currentTimeMillis()+24*60*60*1000);
-      }
+      if ( (now.getMinute() + now.getHour()*24) >  (getMinute() + getHour()*24))
+         now.plusDays(1);
 
-      setDayOfMonth(nowCal.get(Calendar.DAY_OF_MONTH));
-      setMonth(nowCal.get(Calendar.MONTH));
-      setYear(nowCal.get(Calendar.YEAR));
+      setDayOfMonth(now.getDayOfMonth());
+      setMonth(now.getMonth().getValue());
+      setYear(now.getYear());
+
       Log.d("THE_TIME_MACHINE", "recalculateDate()[4] getHour="+getHour()+" ; getMinute="+getMinute()+" ; getDayOfMonth "+ getDayOfMonth());
-
    }
 
    // Copy Global preferences to Item preferences
@@ -677,7 +701,7 @@ public class AlarmItem {
 
 
       // Get Current Time in Millis
-      long tNow= (new Date()).getTime();
+      long tNow=  Instant.now().toEpochMilli();
 
       // Calculate duration in millis
       long duration = alarmTime + 60000 - tNow;
@@ -694,9 +718,66 @@ public class AlarmItem {
 
       // When Alarm is scheduled for more than 2 days from now, print the date and time
       if (days > 2) {
-         SimpleDateFormat format = new SimpleDateFormat(context.getString(R.string.date_format), Locale.US);
-         Date date = new Date(alarmTime);
-         return context.getString(R.string.alarm_scheduled_for) + format.format(date);
+         LocalDateTime date = Instant.ofEpochMilli(alarmTime).atZone(systemDefault()).toLocalDateTime();
+         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(context.getString(R.string.date_format));
+         return context.getString(R.string.alarm_scheduled_for) + date.format(formatter);
+      }
+
+      // Alarm time is set for 10 days, 11 hours and 5 Minutes.
+      // Values are rounded down to the minute (no seconds and millis)
+      // Value 0 is ignored.
+      // Value 1 is without the plural
+
+      if (days>1)
+         strD = days +context.getString(R.string.day_plural);
+      else if (days==1)
+         strD = context.getString(R.string.day_singular);
+      else
+         strD = "";
+
+      if (hours>1)
+         strH = hours +context.getString(R.string.hour_plural);
+      else if (hours==1)
+         strH = context.getString(R.string.hour_singular);
+      else
+         strH = "";
+
+      if (minutes>1)
+         strM = minutes +context.getString(R.string.minute_plural);
+      else if (minutes==1)
+         strM = context.getString(R.string.minute_singular);
+      else
+         strM = "";
+
+
+      return context.getString(R.string.alarm_scheduled_for) + strD  + strH + strM + context.getString(R.string.from_now);
+   }
+
+   public static String strGetDurationToAlarm(LocalDateTime alarmTime) {
+      String strH, strD, strM;
+      final Context context = TheTimeMachineApp.appContext;
+      final LocalDateTime now = LocalDateTime.now();
+      final long DaysInMillis = 24*60*60*1000;
+      final long HoursInMillis = 60*60*1000;
+      final long MinutesInMillis = 60*1000;
+
+
+      // Calculate duration in millis
+      long duration = now.until(alarmTime, ChronoUnit.MILLIS);
+      if (duration < 120000)
+         return "Alarm scheduled for now";
+
+      // Calculate D, H, M
+      long days = duration / DaysInMillis;
+      long hours = (duration - days*DaysInMillis)/ HoursInMillis;
+      long minutes = (duration - days*DaysInMillis - hours*HoursInMillis)/ MinutesInMillis;
+
+      // Create the print string.
+
+      // When Alarm is scheduled for more than 2 days from now, print the date and time
+      if (days > 2) {
+         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(context.getString(R.string.date_format));
+         return context.getString(R.string.alarm_scheduled_for) + alarmTime.format(formatter);
       }
 
       // Alarm time is set for 10 days, 11 hours and 5 Minutes.
@@ -788,7 +869,7 @@ public class AlarmItem {
     *
    */
    public void Exec(){
-      long alarmTime;
+      LocalDateTime alarmTime;
       // Things that are common to all/most tasks
 
       // Get context
@@ -825,10 +906,10 @@ public class AlarmItem {
 
          // If recurring alarm - find the nearest one
          if (!isOneOff() && (weekDays!=0))
-            alarmTime = nextAlarmTimeInMillis();
+            alarmTime = nextAlarmTimeInLocalDateTime();
          else
             // Time of coming alarm (One-Off, possibly snoozing, possibly a future date)
-            alarmTime = alarmTimeInMillis();
+            alarmTime = alarmTimeInLocalDateTime();
 
 
 
@@ -857,19 +938,16 @@ public class AlarmItem {
                context, requestCode, targetIntent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
 
 
-         // Set Alarm Clock
-         AlarmManager.AlarmClockInfo ac= new AlarmManager.AlarmClockInfo(alarmTime,  targetPending);
+         // Set Alarm Clock (Convert alarm LocalDateTime to millis since Epoch)
+         long milli = alarmTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+         AlarmManager.AlarmClockInfo ac= new AlarmManager.AlarmClockInfo(milli,  targetPending);
          alarmManager.setAlarmClock(ac, alarmIntent);
 
 
          // Toast & Log
-         Calendar calendar = Calendar.getInstance();
-         calendar.setTimeInMillis(alarmTime);
          SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a", Locale.US);
          String toastText = String.format(context.getResources().getString(R.string.msg_alarm_set), hour, minute);
          Toast.makeText(context,  strGetDurationToAlarm(alarmTime), Toast.LENGTH_LONG).show();
-         Log.d("THE_TIME_MACHINE", "Exec(): " + toastText + " " + format.format(calendar.getTime()) );
-
       }
       else{
          ///// Cancel Alarm
@@ -891,6 +969,5 @@ public class AlarmItem {
          Log.d("THE_TIME_MACHINE", "Exec(): " + toastText);
       }
    }
-
 
 }
