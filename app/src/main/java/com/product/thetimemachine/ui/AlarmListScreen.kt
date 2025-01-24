@@ -503,6 +503,7 @@ private fun deleteSelectedAlarms() {
                 if (alarmItem.isVibrationActive) Color.Unspecified else Color.Transparent
             val muteIconColor = if (alarmItem.isAlarmMute) Color.Unspecified else Color.Transparent
 
+            // Flashing of alarm time display
             // Animation (From: https://developer.android.com/develop/ui/compose/animation/quick-guide#animate-text-scale)
             val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
             val scale by infiniteTransition.animateFloat(

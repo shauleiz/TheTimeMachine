@@ -497,6 +497,9 @@ public class AlarmItem {
 
    /* True if the alarm is set for today */
    public boolean isToday(){
+      // If alarm is ringing then it must be today
+      if (isRinging()) return true;
+
       // Get time of today's midnight (minus a second)
       Calendar calendar = Calendar.getInstance();
       calendar.setTimeInMillis(System.currentTimeMillis());
