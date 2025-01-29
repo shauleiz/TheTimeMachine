@@ -275,6 +275,7 @@ class AlarmEditScreen(
                 setUpAlarmValues.month.value = 0
                 setUpAlarmValues.dayOfMonth.value = 0
                 showCalendarDialog = false
+                setUpAlarmValues.setFutureDate(false)
             } else if (value.isBefore(LocalDate.now())) {
                 // Error
                 Log.d("THE_TIME_MACHINE", "DisplayCalendar(): ERROR")
@@ -1207,7 +1208,7 @@ class AlarmEditScreen(
 
     }
 
-    private fun checkmarkClicked(showErrorDialog: () -> Unit) {
+    private fun checkmarkClicked(isErrorDate: () -> Unit) {
 
         // Null checks
         if (setUpAlarmValues.hour == null || setUpAlarmValues.hour.value == null) return
@@ -1256,11 +1257,17 @@ class AlarmEditScreen(
 
         item.recalculateDate() // If is an explicit date and in the past - change date to the near future
 
-        // If in the past, show dialog box and return
-        if (item.dayOfMonth == 100) {
-            showErrorDialog()
-            return
+
+        // If in the past, show dialog box and return (Use only for explicit date)
+        if (item.year>0) {
+            val alarmTime = LocalDateTime.of(item.year, item.month+1,item.dayOfMonth, item.hour, item.minute).minusSeconds(15)
+            Log.d("THE_TIME_MACHINE", "checkmarkClicked():  item.year>0 is TRUE")
+            if (alarmTime <= LocalDateTime.now()) {
+                isErrorDate()
+                return
+            }
         }
+
 
 
         // Selected weekdays and dates that are exceptions
