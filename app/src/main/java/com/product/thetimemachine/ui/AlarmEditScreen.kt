@@ -1,7 +1,6 @@
 package com.product.thetimemachine.ui
 
 import android.content.res.Configuration
-import android.icu.text.SimpleDateFormat
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -94,6 +93,7 @@ import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
+import java.lang.Error
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -255,7 +255,10 @@ class AlarmEditScreen(
         val yy = setUpAlarmValues.year.value!!
         val mm = setUpAlarmValues.month.value!!
         val dd = setUpAlarmValues.dayOfMonth.value!!
-        val ld = if (yy != 0 && dd != 0) LocalDate.of(yy, mm + 1, dd) else null
+        val ld =
+            if (yy != 0 && dd != 0)
+                LocalDate.of(yy, mm + 1, dd)
+            else null
 
         // Create a string of dates that are exception to the rule (weekdays)
         val exceptions = exceptionDates2String(setUpAlarmValues.exceptionDates.getValue())
@@ -361,7 +364,7 @@ class AlarmEditScreen(
                                 ),
                                 //scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState()),
                                 actions = {
-                                    AlarmEditActions { actionClicked(it) }
+                                    AlarmEditActions { actionClicked(it){showErrorDialog=true} }
                                 },
                             )
                         },
@@ -392,9 +395,9 @@ class AlarmEditScreen(
     }
 
 
-    private fun actionClicked(action: String) {
+    private fun actionClicked(action: String, clickResult: ()->Unit) {
         when (action) {
-            checkDesc -> checkmarkClicked()
+            checkDesc -> checkmarkClicked{clickResult()}
             settingsDesc -> navToSettings()//navigate2Settings(navController = navController)
         }
     }
@@ -1204,7 +1207,7 @@ class AlarmEditScreen(
 
     }
 
-    private fun checkmarkClicked() {
+    private fun checkmarkClicked(showErrorDialog: () -> Unit) {
 
         // Null checks
         if (setUpAlarmValues.hour == null || setUpAlarmValues.hour.value == null) return
@@ -1252,6 +1255,13 @@ class AlarmEditScreen(
         )
 
         item.recalculateDate() // If is an explicit date and in the past - change date to the near future
+
+        // If in the past, show dialog box and return
+        if (item.dayOfMonth == 100) {
+            showErrorDialog()
+            return
+        }
+
 
         // Selected weekdays and dates that are exceptions
         item.weekDays = setUpAlarmValues.weekDays.value!!
