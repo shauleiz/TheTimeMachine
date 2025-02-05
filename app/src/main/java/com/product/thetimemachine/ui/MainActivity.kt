@@ -1,5 +1,8 @@
 package com.product.thetimemachine.ui
 
+import android.content.Context
+import android.content.res.Configuration
+import android.icu.util.ULocale.getLanguage
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +22,9 @@ import com.product.thetimemachine.AlarmNavHost
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
+import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
+import java.util.Locale
 
 
 private const val isDynamicColor = false
@@ -61,25 +66,23 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    private fun setLocale(context: Context, language: String): Context {
+        val locale = Locale(language)
+        Locale.setDefault(locale)
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(locale)
+        return context.createConfigurationContext(config)
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val language = "he" //getLanguage(newBase)
+        val context = setLocale(newBase, language)
+        super.attachBaseContext(context)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-/*
-
-
-        @Composable
-         fun statusBarBgColor() {
-            val window = this.window
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.statusBarColor =
-                ContextCompat.getColor(this, R.color.transparent) // here is your color
-            //window.statusBarColor = colorScheme.background.toArgb() // here is your color
-        }
-        */
-
-
 
         // Create/acquire the ViewModel object of class AlarmViewModel
         alarmViewModel = ViewModelProvider(this)[AlarmViewModel::class.java]
@@ -126,41 +129,3 @@ class MainActivity : ComponentActivity() {
  }
 
 
-
-/*
-// Display Action icons on the Top App Bar - and react to click
-@Composable
-private fun Actions(
-    currentDestination: NavDestination?,
-    navController: NavHostController,
-    onActionClick: (NavHostController, String)-> Unit
-) {
-
-    if (currentDestination?.route == AlarmEdit.routeWithArgs) {
-
-        IconButton(onClick = {
-            onActionClick(navController, AlarmList.route)
-        }) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Localized description" // TODO: Replace
-            )
-        }
-    }
-
-    // Settings Icon
-    if (currentDestination?.route != Settings.route) {
-        IconButton(onClick = { onActionClick(navController, Settings.route)
-        }) {
-            Icon(
-                imageVector = Icons.Filled.Settings,
-                contentDescription = "Localized description" // TODO: Replace
-            )
-        }
-    }
-
-
-}
-
-
- */

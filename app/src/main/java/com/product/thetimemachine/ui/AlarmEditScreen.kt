@@ -816,10 +816,10 @@ class AlarmEditScreen(
             return mainActivity.applicationContext.getString(R.string.error_in_brackets)
 
         if ( alarmTime in now .. todayLastMinute)
-            return "$alarmTimeStr${mainActivity.applicationContext.getString(R.string.today_in_brackets)}"
+            return "$alarmTimeStr${parent?.getString(R.string.today_in_brackets)}"
 
         if ( alarmTime in todayLastMinute .. tomorrowLastMinute)
-            return "$alarmTimeStr${mainActivity.applicationContext.getString(R.string.tomorrow_in_brackets)}"
+            return "$alarmTimeStr${mainActivity.getString(R.string.tomorrow_in_brackets)}"
 
         return alarmTimeStr
     }
