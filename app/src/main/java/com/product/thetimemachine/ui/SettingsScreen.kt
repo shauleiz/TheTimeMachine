@@ -98,7 +98,7 @@ fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferen
     val sortType        = preferences[PreferencesKeys.KEY_SORT_TYPE] ?: parent.getString(R.string.sort_type_def)
     val sortSeparate    = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: parent.getString(R.string.sort_separate_def)
     val gradualVolume   = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: parent.getString(R.string.gradual_volume_def)
-    val language        = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: "" //TODO: Replace with default
+    val language        = preferences[PreferencesKeys.KEY_LANGUAGE] ?: "" //TODO: Replace with default
 
 
     return UserPreferences(
@@ -130,7 +130,6 @@ fun isClockTypeAnalog(parent: Context?): Boolean {
     return getPrefs(parent).clockType == mainActivity.getString(R.string.analog_clock)
 }
 
-
 fun isPref24h(parent: Context?): Boolean {
     if (parent == null) return false
     return getPrefs(parent).hour12Or24 == mainActivity.getString(R.string.h24_clock)
@@ -144,6 +143,11 @@ fun isPrefSortSeparate(parent: Context?): Boolean {
 fun getPrefFirstDayOfWeek(parent: Context?): String {
     if (parent == null) return ""
     return getPrefs(parent).firstDayWeek
+}
+
+fun getPrefLanguage(parent: Context?): String {
+    if (parent == null) return ""
+    return getPrefs(parent).language
 }
 
 fun getPrefSortType(parent: Context?): String {
@@ -195,64 +199,6 @@ class SettingsScreen(private val navBack: () -> Unit) {
     private lateinit var setUpAlarmValues: UserPreferences
 
 
-    /*
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            parent = activity as MainActivity
-            userPreferencesFlow  = parent.timeMachinedataStore.data.map { preferences ->
-                mapUserPreferences(preferences)
-            }
-
-            super.onCreate(savedInstanceState)
-        }
-
-        override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ): View {
-            setUpAlarmValues = getPrefs(parent)
-            // Start the compose display
-            return ComposeView(requireContext()).apply { setContent { SettingsFragDisplayTop() } }
-        }
-
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-            // Display the Up arrow
-                */
-    /*
-            val actionBar = checkNotNull(Objects.requireNonNull<MainActivity>(parent).supportActionBar)
-            actionBar.setHomeAsUpIndicator(R.drawable.arrow_back_fill0_wght400_grad0_opsz24)
-            actionBar.setHomeActionContentDescription(R.string.description_up_arrow_back)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-                 *//*
-
-    }
-
-    override fun onDestroy() {
-        // Remove the Up arrow
-*/
-    /*
-            val actionBar = checkNotNull(parent.supportActionBar)
-            actionBar.setDisplayHomeAsUpEnabled(false)
-
-
-     *//*
-
-        super.onDestroy()
-    }
-*/
-
-/*
-    private fun updateSortSeparate(sortSeparate: Boolean) {
-        runBlocking {
-            parent.timeMachinedataStore.edit { preferences ->
-                preferences[KEY_SORT_SEPARATE] = sortSeparate.toString()
-            }
-        }
-    }
-
- */
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -278,8 +224,14 @@ class SettingsScreen(private val navBack: () -> Unit) {
         // Execute when preferences dialog OK button pressed
         val onPrefDialogOK = { index: Int, value: String? ->
             Log.d("THE_TIME_MACHINE", "onPrefDialogOK(): index=$index ; value=$value ")
+
+            // Stop displaying the dialog box
             listOfPrefs[index].showDialog?.value = false
+
+            // Changes the origValue to the currently selected Preference value
             listOfPrefs[index].origValue?.value = value
+
+            // Update the Preferences db for this Preference
             updatePref(parent, listOfPrefs[index].prefKey, value)
         }
 
@@ -317,6 +269,8 @@ class SettingsScreen(private val navBack: () -> Unit) {
                         }
                     )
                     {
+                        // This Box contains the Settings main screen
+                        // The box contains only ShowPreferences()
                         Box(
                             //horizontalAlignment = CenterHorizontally, //of children
                             modifier = Modifier
@@ -324,8 +278,9 @@ class SettingsScreen(private val navBack: () -> Unit) {
                                 .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            /* Preferences */
-                            Log.d("THE_TIME_MACHINE", "Box: list size: ${listOfPrefs.size}")
+                            /* Preferences - listOfPrefs is the list of top entries */
+                            /* The trailing lambda: Called when user clicks OK after
+                            *  changing a property value                            */
                             ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
                         }
                     }

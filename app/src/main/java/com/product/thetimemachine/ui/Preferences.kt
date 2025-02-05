@@ -417,16 +417,21 @@ fun getListOfPrefLiveData (setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : 
         )
 }
 
+/*
+        Show the list of preferences
+        listOfPrefs: List of all preferences
+        onOK:   Called when user changes a value of a preference and clicks OK
+                index: The index of the preference
+                value: The new value of the preference
+
+       The visual structure is of a single column of PrefRow's
+       Each PrefRow is a structure representing a Preference
+ */
 @Composable
 fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : String?)->Unit) {
-    // Preference related constants
     val typography = MaterialTheme.typography
-    //val styledText = typography.titleMedium
-    //val styledSecondaryText = typography.bodyMedium // Alpha=0.5f
     val styledOverLineText = typography.labelSmall
     val styledTrailing = typography.bodySmall
-
-
 
     // TODO: Write a callback function to give a sample of vibration & Sound pattern
     // Use SettingsFragment::vibrate and SettingsFragment::sound
@@ -437,15 +442,19 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
         else if (listOfPrefs[index].title == R.string.alarm_sounds) SoundObj.playSound(pattern, 4000)
     }
 
-    // Display Preference Dialog
+    // Loop on all Preferences to find the one that needs to display its dialog:
+    // 1. Variable showDialog of this Preference is TRUE
+    // 2. AND this row corresponds with a dialog (as opposed to switch)
     listOfPrefs.forEachIndexed { index, entry ->
         if (entry.showDialog != null && entry.showDialog.value && entry.isDialog) {
 
-
+            // Display Preference Dialog when a Preference row is clicked (index of Preference)
             Dialog(onDismissRequest = {
                 playVibOrSound(index, null) // Mute
                 entry.showDialog.value = false
                 entry.currentValue!!.value = entry.origValue!!.value }) {
+
+                // Column: Text (Dialog title) then all radio buttons then OK/Cancel buttons
                 Column(
                     modifier = Modifier
                         .background(
@@ -456,10 +465,10 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start,
                 ) {
-                    // Title
+                    // Dialog Title: e.g. "Clock Format"
                     Text(
                         text = stringResource(id = entry.title),
-                        style = styledTrailing,//MaterialTheme.typography.bodySmall,
+                        style = styledTrailing,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         textAlign = TextAlign.Left,
@@ -468,7 +477,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                             .fillMaxWidth()
                     )
 
-                    // Loop on all entries in the list
+                    // Loop on all entries in the list of possible values of Preference
                     // Every entry is a row with a radio button and text
                     // The row is clickable
                     entry.list!!.forEachIndexed { _, pair ->
@@ -478,15 +487,17 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                                 .padding(bottom = 16.dp, start = 16.dp)
                                 .fillMaxWidth()
                                 .clickable {
+                                    // The radio button was selected - currentValue changes
                                     entry.currentValue!!.value = pair.second
                                     playVibOrSound(index, pair.second)
                                 }
                         ) {
+                            // Radio button: Selected if equal to currentValue
                             RadioButton(
                                 selected = entry.currentValue!!.value == pair.second,
                                 onClick = null
                             )
-
+                            // Text associated with the radio button
                             Text(pair.first)
                         }
                     }
@@ -497,6 +508,8 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()){
+
+                        // Cancel: Stops sound/vibration and resets CurrentValue to origValue
                         TextButton({
                             playVibOrSound(index, null) // Mute
                             entry.showDialog.value = false
@@ -506,6 +519,10 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                             )
                         }
 
+                        // OK: Stops sound/vibration and calls onOK callback:
+                        //      onOK:
+                        //          index: index of Preference in Preference List
+                        //          currentValue: Value of selected preference
                         TextButton({
                             playVibOrSound(index, null) // Mute
                             onOK(index, entry.currentValue!!.value) })
@@ -553,11 +570,15 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
         )
     }
 
+    // Get the string that corresponds with the display-value of a selected value of a Preference
     fun getEntryValueStr(value: String, list: List<Pair<String, String>>): String {
         list.forEach { if (it.second == value) return it.first }
         return ""
     }
 
+    //  Display the current value (e.g. 24h Clock) under the title
+    //  Pass the current selected preference value and the list of possible values
+    //  Get the text by entering the current selected value and the list of values
     @Composable
     fun PrefSelValue(value: String, list: List<Pair<String, String>>) {
             Text(
@@ -583,15 +604,22 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
         Switch(checked = on.value, onCheckedChange = null /*{ on.value = it}*/)
     }
 
+
+    /*
+        PrefRow: Display one Preference in a single row
+            index: The index of the preference in the list of preferences
+            onOK: Called when user clicks OK in the preference dialog
+    */
     @Composable
     fun PrefRow(index: Int, onOK : (index: Int, value : String?)->Unit){
 
-        if (listOfPrefs[index].list != null) { // Normal row
+        if (listOfPrefs[index].list != null) { // Normal row (Not group label)
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier
                     .fillMaxWidth()
+                    // The row is clickable. A click sets showDialog=true which causes the dialog box to pop
                     .clickable(onClickLabel = stringResource(id = listOfPrefs[index].title)) {
                         listOfPrefs[index].showDialog!!.value = true
                     }
@@ -603,13 +631,19 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.Start
                 ) {
+                    // Title of the row (e.g. "Clock Format")
                     PrefTitle(listOfPrefs[index].title)
+
+                    // Type of row: Dialog or Switch?
                     if (listOfPrefs[index].isDialog)
+                        // Dialog:  Pass the current selected preference value
+                        //          and the list of possible values
                         PrefSelValue(
                             value = listOfPrefs[index].origValue!!.value!!,
                             list = listOfPrefs[index].list!!,
                             )
                     else
+                        // Switch: Pass the index of the preference an the onOK callback
                         PrefSwitch(index, onOK)
                 }
             }
@@ -626,12 +660,14 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
 
 
     // List of all preferences and section titles
+    // The visual structure is of a single column of PrefRow's
+    // Each PrefRow is a structure representing a Preference
     Column(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(start = 8.dp)
     ) {
-
-        Log.d("THE_TIME_MACHINE", "size of list: ${listOfPrefs.size}")
+        // Loop on all Preferences. For each, display a PrefRow
+        // index: Index of Preference in listOfPrefs
         listOfPrefs.forEachIndexed{ index, _ ->  key(index){PrefRow(index, onOK)}  }
     }
 }
