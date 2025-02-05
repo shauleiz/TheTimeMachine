@@ -113,6 +113,8 @@ val sortTypeList = listOf(
     Pair("By time set", "by_time_set"), Pair("By alarm time", "by_alarm_time"),
     Pair("Alphabetically", "alphabetically"))
 
+val languageList = listOf (
+    Pair("English","en"), Pair("Hebrew", "he"))
 
 object SoundObj {
 
@@ -278,7 +280,7 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
 
     val timeFormatList = listOf(
         PrefData(
-            title = R.string.time_format
+            title = R.string.general
         ),
 
         PrefData(
@@ -298,6 +300,16 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
             list = firstDayList,
             iconId = R.drawable.today_fill0_wght400_grad0_opsz24,
             showDialog = rememberSaveable { mutableStateOf(false) }),
+
+        PrefData(
+            title = R.string.language_list,
+            prefKey = PreferencesKeys.KEY_LANGUAGE,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.language) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.language) }),
+            list = languageList,
+            iconId = R.drawable.language_opsz24,
+            showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
 
         PrefData(
             title = R.string.ring_and_snooze
@@ -389,7 +401,9 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
             showDialog = rememberSaveable { mutableStateOf(false) },
             isDialog = false
         ),
-    )
+
+
+        )
 
     return timeFormatList
 }

@@ -47,6 +47,7 @@
     <string name="alarm_sounds">Alarm Sounds</string>
     <string name="gradual_volume_increase">Gradual Volume Increase</string>
     <string name="sort_alarms_list">Sort Alarms List</string>
+    <string name="language_list">Language</string>
     <string name="description_up_arrow_back">Back</string>
     <string name="key_h12_24">KEY_H12_24</string>
     <string name="key_ring_duration">KEY_RING_DURATION</string>
@@ -89,6 +90,7 @@
     <string name="weekly">Weekly</string>
     <string name="single">Single</string>
     <string name="time_format">Time Format</string>
+    <string name="general">General</string>
     <string name="ring_and_snooze">Ring and Snooze</string>
     <string name="key_alarm_list">KEY_ALARM_LIST</string>
     <string name="ITEM_PREF_FILENAME">item_pref_filename</string>

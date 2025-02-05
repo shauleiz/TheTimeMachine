@@ -1,12 +1,9 @@
 package com.product.thetimemachine.ui
 
-import android.content.Context
-import android.content.res.Configuration
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -24,7 +21,6 @@ import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.BaseActivity
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
-import java.util.Locale
 
 
 private const val isDynamicColor = false

@@ -57,6 +57,7 @@ object PreferencesKeys {
     val KEY_GRADUAL_VOLUME    = stringPreferencesKey("KEY_GRADUAL_VOLUME")
     val KEY_SNOOZE_DURATION   = stringPreferencesKey("KEY_SNOOZE_DURATION")
     val KEY_SORT_SEPARATE     = stringPreferencesKey("KEY_SORT_SEPARATE")
+    val KEY_LANGUAGE          = stringPreferencesKey("KEY_LANGUAGE")
 }
 
 
@@ -72,6 +73,7 @@ data class UserPreferences(
     val sortType: String,
     val sortSeparate: String,
     val gradualVolume: String,
+    val language: String,
 )
 
 val Context.timeMachineDataStore by preferencesDataStore(
@@ -96,13 +98,14 @@ fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferen
     val sortType        = preferences[PreferencesKeys.KEY_SORT_TYPE] ?: parent.getString(R.string.sort_type_def)
     val sortSeparate    = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: parent.getString(R.string.sort_separate_def)
     val gradualVolume   = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: parent.getString(R.string.gradual_volume_def)
+    val language        = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: "" //TODO: Replace with default
 
 
     return UserPreferences(
         ringRepeat, ringDuration, snoozeDuration,
         hour12Or24, clockType, firstDayWeek,
         vibratePattern, alarmSound, sortType,
-        sortSeparate, gradualVolume
+        sortSeparate, gradualVolume, language
     )
 }
 
