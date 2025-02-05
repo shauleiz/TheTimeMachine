@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">The Time Machine</string>
+    <string name="edit">עריכה</string>
+    <string name="today_in_brackets">[היום]</string>
+    <string name="tomorrow_in_brackets">[מחר]</string>
+</resources>
