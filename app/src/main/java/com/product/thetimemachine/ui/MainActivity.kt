@@ -2,7 +2,6 @@ package com.product.thetimemachine.ui
 
 import android.content.Context
 import android.content.res.Configuration
-import android.icu.util.ULocale.getLanguage
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
@@ -22,6 +21,7 @@ import com.product.thetimemachine.AlarmNavHost
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
+import com.product.thetimemachine.BaseActivity
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.util.Locale
@@ -30,14 +30,14 @@ import java.util.Locale
 private const val isDynamicColor = false
 var alarmViewModel: AlarmViewModel? = null
 
-val editDesc = appContext.getString(com.product.thetimemachine.R.string.edit_action_bar)
-val duplicateDesc = appContext.getString(com.product.thetimemachine.R.string.duplicate_action_bar)
-val deleteDesc = appContext.getString(com.product.thetimemachine.R.string.delete_action_bar)
-val settingsDesc = appContext.getString(com.product.thetimemachine.R.string.settings_action_bar)
-val checkDesc = appContext.getString(com.product.thetimemachine.R.string.checkmark_action_bar)
+val editDesc = appContext.getString(R.string.edit_action_bar)
+val duplicateDesc = appContext.getString(R.string.duplicate_action_bar)
+val deleteDesc = appContext.getString(R.string.delete_action_bar)
+val settingsDesc = appContext.getString(R.string.settings_action_bar)
+val checkDesc = appContext.getString(R.string.checkmark_action_bar)
 
 
-class MainActivity : ComponentActivity() {
+class MainActivity : BaseActivity() {
     // ViewModel object of class MyViewModel
     // Holds all UI variables related to this activity
 
@@ -66,19 +66,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    private fun setLocale(context: Context, language: String): Context {
-        val locale = Locale(language)
-        Locale.setDefault(locale)
-        val config = Configuration(context.resources.configuration)
-        config.setLocale(locale)
-        return context.createConfigurationContext(config)
-    }
 
-    override fun attachBaseContext(newBase: Context) {
-        val language = "he" //getLanguage(newBase)
-        val context = setLocale(newBase, language)
-        super.attachBaseContext(context)
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

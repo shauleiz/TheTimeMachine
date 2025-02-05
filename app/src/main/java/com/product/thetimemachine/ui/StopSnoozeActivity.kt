@@ -66,13 +66,14 @@ import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.KILL_STOP_SNOOZE
+import com.product.thetimemachine.BaseActivity
 import com.product.thetimemachine.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 
-class StopSnoozeActivity : AppCompatActivity() {
+class StopSnoozeActivity : BaseActivity() {
     private var extras: Bundle? = null
     private var strCurrentTime = "99:99 am"
     private var broadcastReceiver: BroadcastReceiver? = null

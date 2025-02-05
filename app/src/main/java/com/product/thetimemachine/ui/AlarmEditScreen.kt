@@ -93,7 +93,6 @@ import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
-import java.lang.Error
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -144,7 +143,7 @@ class AlarmEditScreen(
             return setUpAlarmValues.hour.value!!
         } else {
             // Get Current time
-            return LocalDateTime.now().hour;
+            return LocalDateTime.now().hour
         }
     }
 
