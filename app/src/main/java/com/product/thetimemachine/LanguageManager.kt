@@ -3,6 +3,7 @@ package com.product.thetimemachine
 import android.content.Context
 import android.content.res.Configuration
 import android.util.Log
+import com.product.thetimemachine.ui.getPrefLanguage
 import java.util.Locale
 
 object LanguageManager {
@@ -15,12 +16,8 @@ object LanguageManager {
     }
 
     fun getLanguage(context: Context): String {
-        val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val language = sharedPreferences.getString(LANGUAGE_KEY, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
-        Log.i("MULTI_LANG", "getLanguage(): language = $language")
-
-        //return language
-        return "fr"
+        val language = getPrefLanguage(context)
+        return language
     }
 
     fun setLocale(context: Context, language: String): Context {
