@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">The Time Machine</string>
+    <string name="alarm_add">הוסף השכמה</string>
+    <string name="label_hint">תיאור ההשכמה</string>
+    <string name="delete_alarm">מחק</string>
+    <string name="stop">הפסק</string>
+    <string name="snooze">צלצול חוזר</string>
+    <string name="stop_button">הפסק</string>
+    <string name="snooze_button">צלצול חוזר</string>
+    <string name="snooze_duration_label">שינוי ההמתנה לצלצול חוזר</string>
+    <string name="msg_alarm_canceled">השקמה לשעה %02d:%02d - בוטלה</string>
+    <string name="list_of_weekdays_SU">א ב ג ד ה ו ש</string>
+    <string name="list_of_weekdays_Mo">" ב ג ד ה ו ש א"</string>
+    <string name="got_it">הבנתי</string>
+    <string name="this_app_needs">האפליקציה זקוקה לרשות כדי להודיע לך שהשעון המעורר מצלצל.\\n\\nאם לא תאפשר זאת, לא תוכל לכבות את הצלצול</string>
     <string name="edit">עריכה</string>
     <string name="today_in_brackets">[היום]</string>
     <string name="tomorrow_in_brackets">[מחר]</string>

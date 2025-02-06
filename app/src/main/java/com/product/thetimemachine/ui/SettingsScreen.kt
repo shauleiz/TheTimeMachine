@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import java.util.Locale
 
 
 const val USER_PREFERENCES_NAME = "the_time_machine_preferences_datastore"
@@ -99,7 +100,7 @@ fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferen
     val sortType        = preferences[PreferencesKeys.KEY_SORT_TYPE] ?: parent.getString(R.string.sort_type_def)
     val sortSeparate    = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: parent.getString(R.string.sort_separate_def)
     val gradualVolume   = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: parent.getString(R.string.gradual_volume_def)
-    val language        = preferences[PreferencesKeys.KEY_LANGUAGE] ?: "" //TODO: Replace with default
+    val language        = preferences[PreferencesKeys.KEY_LANGUAGE] ?: Locale.getDefault().language
 
 
     return UserPreferences(
@@ -206,6 +207,16 @@ class SettingsScreen(private val navBack: () -> Unit) {
     fun SettingsDisplayTop() {
 
         parent = appContext
+/*
+        // Remove all preferences - for Debug use only
+        // Testing reset values
+        runBlocking {
+            parent.timeMachineDataStore.edit { preferences ->
+                preferences.clear()
+            }
+        }
+ */
+
         userPreferencesFlow = parent.timeMachineDataStore.data.map { preferences ->
             mapUserPreferences(parent, preferences)
         }
