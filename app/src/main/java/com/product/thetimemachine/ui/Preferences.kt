@@ -114,7 +114,7 @@ val sortTypeList = listOf(
     Pair("Alphabetically", "alphabetically"))
 
 val languageList = listOf (
-    Pair("English","en"), Pair("Hebrew", "he"))
+    Pair("English","en"), Pair("Hebrew", "iw"))
 
 object SoundObj {
 
