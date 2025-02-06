@@ -1,8 +1,11 @@
 package com.product.thetimemachine
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.util.Log
+import com.product.thetimemachine.ui.MainActivity
 import com.product.thetimemachine.ui.PreferencesKeys
 import com.product.thetimemachine.ui.getPrefLanguage
 import com.product.thetimemachine.ui.updatePref
@@ -16,6 +19,16 @@ object LanguageManager {
         val language = getPrefLanguage(context)
         return language
     }
+
+    fun restartApp(context: Context) {
+        val intent = Intent(context, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        context.startActivity(intent)
+        if (context is Activity) {
+            context.finish() // Finish the current activity
+        }
+    }
+
 
     // Set the language in Properties
     private fun setLanguage(context: Context, language: String){

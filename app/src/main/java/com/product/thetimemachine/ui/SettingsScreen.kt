@@ -33,6 +33,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
+import com.product.thetimemachine.LanguageManager.restartApp
 import com.product.thetimemachine.R
 import com.product.thetimemachine.Settings
 import com.product.thetimemachine.ui.theme.AppTheme
@@ -229,10 +230,15 @@ class SettingsScreen(private val navBack: () -> Unit) {
             listOfPrefs[index].showDialog?.value = false
 
             // Changes the origValue to the currently selected Preference value
+            val hasChanged = listOfPrefs[index].origValue?.value != value
             listOfPrefs[index].origValue?.value = value
 
             // Update the Preferences db for this Preference
             updatePref(parent, listOfPrefs[index].prefKey, value)
+
+            // Special case: If language changed - restart app
+            if (listOfPrefs[index].prefKey == PreferencesKeys.KEY_LANGUAGE && hasChanged)
+                restartApp(mainActivity)
         }
 
 
