@@ -97,27 +97,6 @@ class AlarmListScreen (
  ) {
      private var parent = appContext
      private val isDynamicColor = false
-     //private val currentDestination = currentBackStack.destination
-
-     //private var selectedItems: ArrayList<Int>? = null
-/*
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        parent = activity as MainActivity?
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        // Start the compose display
-        return ComposeView(requireContext()).apply { setContent { AlarmListFragDisplayTop() } }
-    }
-
-
- */
 
 
 
@@ -141,9 +120,7 @@ class AlarmListScreen (
             if (shouldShow) {
                 // Need to show a pop-up window that explains why it is important to grant permissions
                 // Display the pop-up window
-                Log.i("THE_TIME_MACHINE", "Going to display a popup")
                 showDialog(true)
-                Log.i("THE_TIME_MACHINE", "Should have displayed a popup")
 
                 // Define action to do when pop-up window is dismissed -
                 // Request permission to show notifications
@@ -224,22 +201,11 @@ class AlarmListScreen (
         // Reset the setup alarm values
         alarmViewModel.setUpAlarmValues?.ResetValues()
 
-
-        navToAlarmEdit(0)
-/*
-        // Replace current fragment with the Setup Alarm fragment
-        parent = activity as MainActivity?
-        if (parent != null) parent!!.supportFragmentManager
-            .beginTransaction()
-            //.replace(R.id.fragment_container_view, SetUpAlarmFragment::class.java, b)
-            .replace(R.id.fragment_container_view, AlarmEditScreen::class.java, b)
-            .addToBackStack("tag2")
-            .commit()
-
- */
-
         // Clear list of selected alarms
         alarmViewModel.clearSelection()
+
+        // Navigate to Alarm Edit Display
+        navToAlarmEdit(0)
     }
 
 

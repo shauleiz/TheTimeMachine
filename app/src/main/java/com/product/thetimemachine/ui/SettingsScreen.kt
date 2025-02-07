@@ -208,6 +208,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
 
         parent = appContext
 /*
+        //          --- DEBUG Section ---                //
         // Remove all preferences - for Debug use only
         // Testing reset values
         runBlocking {
