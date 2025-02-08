@@ -144,6 +144,7 @@
     <string name="h24_clock" translatable="false">h24</string>
     <string name="analog_clock" translatable="false">analog</string>
     <string name="digital_clock" translatable="false">digital</string>
+    <string name="alarm_scheduled_for_now">Alarm scheduled for now</string>
 
 
     <!-- Preferences: Menu -->
