@@ -91,8 +91,8 @@
     <string name="time_format">Time Format</string>
     <string name="general">General</string>
     <string name="ring_and_snooze">Ring and Snooze</string>
-    <string name="key_alarm_list">KEY_ALARM_LIST</string>
-    <string name="ITEM_PREF_FILENAME">item_pref_filename</string>
+    <string name="key_alarm_list" translatable="false">KEY_ALARM_LIST</string>
+    <string name="ITEM_PREF_FILENAME" translatable="false">item_pref_filename</string>
     <string name="per_item_zoom_icon">Per-item Zoom Icon</string>
     <string name="per_item_vibrate_icon">Per-Item Vibrate Icon</string>
     <string name="per_item_mute_icon">Per-Item Mute Icon</string>
@@ -127,23 +127,23 @@
 
 
     <!--     Preferences:  Default Values -->
-    <string name="ring_duration_def">30Seconds</string>
-    <string name="clock_format_def">h24</string>
-    <string name="first_day_week_def">Su</string>
-    <string name="ring_repeat_def">5T</string>
-    <string name="snooze_duration_def">300Seconds</string>
-    <string name="vibration_pattern_def">rsb</string>
-    <string name="alarm_sound_def">rooster</string>
-    <string name="sort_type_def">by_time_set</string>
-    <string name="sort_separate_def">true</string>
-    <string name="gradual_volume_def">30Seconds</string>
-    <string name="clock_type_def">analog</string>
+    <string name="ring_duration_def" translatable="false">30Seconds</string>
+    <string name="clock_format_def" translatable="false">h24</string>
+    <string name="first_day_week_def" translatable="false">Su</string>
+    <string name="ring_repeat_def" translatable="false">5T</string>
+    <string name="snooze_duration_def" translatable="false">300Seconds</string>
+    <string name="vibration_pattern_def" translatable="false">rsb</string>
+    <string name="alarm_sound_def" translatable="false">rooster</string>
+    <string name="sort_type_def" translatable="false">by_time_set</string>
+    <string name="sort_separate_def" translatable="false">true</string>
+    <string name="gradual_volume_def" translatable="false">30Seconds</string>
+    <string name="clock_type_def" translatable="false">analog</string>
 
 
     <string name="inactive_alarms_at_the_bottom">Inactive alarms at the bottom</string>
-    <string name="h24_clock">h24</string>
-    <string name="analog_clock">analog</string>
-    <string name="digital_clock">digital</string>
+    <string name="h24_clock" translatable="false">h24</string>
+    <string name="analog_clock" translatable="false">analog</string>
+    <string name="digital_clock" translatable="false">digital</string>
 
 
     <!-- Preferences: Menu -->
