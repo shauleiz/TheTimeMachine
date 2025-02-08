@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
@@ -104,34 +105,41 @@ class AlarmListScreen (
     // Checks if Notification is enabled
     // If not enabled - launches request for permission that defines the callback to run
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    fun checkPermissions( showDialog: (Boolean) -> Unit) {
+    fun checkPermissions( showDialog: (Boolean) -> Unit) : Boolean
+
+    {
         val permission = appContext.checkSelfPermission(POST_NOTIFICATIONS)
         if (permission == PERMISSION_GRANTED) {
-            Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Granted")
-            //AddAlarm_Button.setEnabled(true);;
+            Log.i("THE_TIME_MACHINE", "checkPermissions(): POST_NOTIFICATIONS Permission Granted")
         }
         if (permission == PermissionChecker.PERMISSION_DENIED) {
-            Log.i("THE_TIME_MACHINE", "POST_NOTIFICATIONS Permission Denied")
-            val shouldShow = checkSelfPermission(mainActivity, POST_NOTIFICATIONS) != PERMISSION_GRANTED
+            Log.i("THE_TIME_MACHINE", "checkPermissions(): POST_NOTIFICATIONS Permission Denied")
+            //val currentPermission = checkSelfPermission(mainActivity, POST_NOTIFICATIONS)
+            val shouldShow = shouldShowRequestPermissionRationale(mainActivity, POST_NOTIFICATIONS)
+
             Log.i(
                 "THE_TIME_MACHINE",
-                "POST_NOTIFICATIONS Should Show Request Permission - $shouldShow"
+                "checkPermissions(): POST_NOTIFICATIONS Should Show Request Permission - $shouldShow"
             )
             if (shouldShow) {
                 // Need to show a pop-up window that explains why it is important to grant permissions
                 // Display the pop-up window
-                showDialog(true)
+                Log.i("THE_TIME_MACHINE", "checkPermissions(): Going to display a popup")
+
 
                 // Define action to do when pop-up window is dismissed -
                 // Request permission to show notifications
 
-                //requestPermissionLauncher.launch(POST_NOTIFICATIONS)
-            } else {
+            }
+            else {
                 // Request permission to show notifications (when pop-up window is not shown)
-                Log.i("THE_TIME_MACHINE", "Not going to display a popup")
+                Log.i("THE_TIME_MACHINE", "checkPermissions(): Going to call launch")
                 mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)
             }
+            showDialog(shouldShow)
+            return shouldShow
         }
+        return false
     }
 
 
@@ -192,10 +200,11 @@ class AlarmListScreen (
     * */
     private fun addAlarmClicked( showDialog: (Boolean)->Unit) {
 
+        var navigate = true
         Log.d("THE_TIME_MACHINE", "AddAlarmClicked()) " )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            checkPermissions(showDialog)
+            navigate = !checkPermissions(showDialog)
         }
 
         // Reset the setup alarm values
@@ -205,7 +214,7 @@ class AlarmListScreen (
         alarmViewModel.clearSelection()
 
         // Navigate to Alarm Edit Display
-        navToAlarmEdit(0)
+        if (navigate) navToAlarmEdit(0)
     }
 
 
@@ -319,7 +328,7 @@ private fun deleteSelectedAlarms() {
             }
         }
 
-        ShowPopUpPermissionWarning(showPermissionDialog) { showPermissionDialog = it }
+        ShowPopUpPermissionWarning(showPermissionDialog) { showPermissionDialog = it ; mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)}
     }
 
      // Display Action icons on the Top App Bar - and react to click
