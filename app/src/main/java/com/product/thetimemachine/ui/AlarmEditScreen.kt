@@ -345,7 +345,7 @@ class AlarmEditScreen(
                             TopAppBar(
                                 title = {
                                     Text(
-                                        AlarmEdit.label,
+                                        mainActivity.getString(AlarmEdit.label),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )

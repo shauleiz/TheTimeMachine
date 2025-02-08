@@ -73,6 +73,8 @@ class MainActivity : BaseActivity() {
 
         mainActivity = this
 
+
+
         setContent {
             enableEdgeToEdge()
             //statusBarBgColor()

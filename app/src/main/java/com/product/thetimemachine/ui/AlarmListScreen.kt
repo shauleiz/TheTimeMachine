@@ -285,6 +285,9 @@ private fun deleteSelectedAlarms() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun AlarmListDisplay() {
+
+        Log.d("THE_TIME_MACHINE", "AlarmListDisplay():  mainActivity.getString(R.string.alarmlist_title) = ${mainActivity.getString(R.string.alarmlist_title)}")
+
         // Observes values coming from the VM's LiveData<Plant> field
         val alarmList by alarmViewModel.alarmList.observeAsState()
         var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
@@ -298,7 +301,7 @@ private fun deleteSelectedAlarms() {
                             TopAppBar(
                                 title = {
                                     Text(
-                                        AlarmList.label,
+                                        mainActivity.getString(AlarmList.label),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )

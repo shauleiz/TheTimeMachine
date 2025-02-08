@@ -262,7 +262,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
                             TopAppBar(
                                 title = {
                                     Text(
-                                        Settings.label,
+                                        mainActivity.getString(Settings.label),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )

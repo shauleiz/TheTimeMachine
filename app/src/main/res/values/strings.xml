@@ -3,12 +3,12 @@
     <string name="alarm_add">Add Alarm</string>
     <string name="label_hint">Alarm Label</string>
     <string name="delete_alarm">Delete</string>
-    <string name="temp_icon">Temporary Icon</string>
-    <string name="alarm_format">%d:%02d</string>
+    <string name="temp_icon" translatable="false">Temporary Icon</string>
+    <string name="alarm_format" translatable="false">%d:%02d</string>
     <string name="stop">Stop</string>
     <string name="snooze">Snooze</string>
     <string name="notification_title">Alarm</string>
-    <string name="title_activity_stop_snooze">StopSnoozeActivity</string>
+    <string name="title_activity_stop_snooze" translatable="false">StopSnoozeActivity</string>
     <string name="stop_button">Stop</string>
     <string name="snooze_button">Snooze</string>
     <string name="snooze_duration_label">"Modify Snooze Duration"</string>
@@ -31,15 +31,15 @@
     <string name="alarmsetup_title">Alarm Set-up</string>
     <string name="settings_title">Settings</string>
     <string name="alarmlist_title">Alarms</string>
-    <string name="action_delete">ACTION_DELETE</string>
+    <string name="action_delete" translatable="false">ACTION_DELETE</string>
     <string name="day_today">Today</string>
     <string name="day_tomorrow">Tomorrow</string>
     <string name="su_mo_tu_we_th_fr_sa">Su Mo Tu We Th Fr Sa</string>
     <string name="mo_tu_we_th_fr_sa_su">Mo Tu We Th Fr Sa Su</string>
     <string name="clock_format">Clock Format</string>
     <string name="format_24h"></string>
-    <string name="format_am">AM</string>
-    <string name="format_pm">PM</string>
+    <string name="format_am" translatable="false">AM</string>
+    <string name="format_pm" translatable="false">PM</string>
     <string name="sound_and_vibration">Sound and Vibration</string>
     <string name="alarm_list_conf">Alarm List</string>
     <string name="vibration_pattern">Vibration Pattern</string>
@@ -48,28 +48,28 @@
     <string name="sort_alarms_list">Sort Alarms List</string>
     <string name="language_list">Language</string>
     <string name="description_up_arrow_back">Back</string>
-    <string name="key_h12_24">KEY_H12_24</string>
-    <string name="key_ring_duration">KEY_RING_DURATION</string>
-    <string name="key_first_day">KEY_FIRST_DAY</string>
-    <string name="key_ring_repeat">KEY_RING_REPEAT</string>
-    <string name="key_snooze_duration">KEY_SNOOZE_DURATION</string>
-    <string name="key_vibration_pattern">KEY_VIBRATION_PATTERN</string>
-    <string name="key_alarm_sound">KEY_ALARM_SOUND</string>
-    <string name="key_sort_type">KEY_SORT_TYPE</string>
-    <string name="key_sort_separate">KEY_SORT_SEPARATE</string>
-    <string name="key_gradual_volume">KEY_GRADUAL_VOLUME</string>
-    <string name="key_time_format">KEY_TIME_FORMAT</string>
+    <string name="key_h12_24" translatable="false">KEY_H12_24</string>
+    <string name="key_ring_duration" translatable="false">KEY_RING_DURATION</string>
+    <string name="key_first_day" translatable="false">KEY_FIRST_DAY</string>
+    <string name="key_ring_repeat" translatable="false">KEY_RING_REPEAT</string>
+    <string name="key_snooze_duration" translatable="false">KEY_SNOOZE_DURATION</string>
+    <string name="key_vibration_pattern" translatable="false">KEY_VIBRATION_PATTERN</string>
+    <string name="key_alarm_sound" translatable="false">KEY_ALARM_SOUND</string>
+    <string name="key_sort_type" translatable="false">KEY_SORT_TYPE</string>
+    <string name="key_sort_separate" translatable="false">KEY_SORT_SEPARATE</string>
+    <string name="key_gradual_volume" translatable="false">KEY_GRADUAL_VOLUME</string>
+    <string name="key_time_format" translatable="false">KEY_TIME_FORMAT</string>
     <string name="ring_duration">Ring for:</string>
     <string name="first_day_of_week">First Day of Week</string>
-    <string name="times_to_keep_on_ringing">If not stopped, number of times to keep on ringing</string>
+    <string name="times_to_keep_on_ringing">If not stopped, number of times to keep on ringing:</string>
     <string name="snooze_for">Snooze for:</string>
-    <string name="times_5t">5T</string>
-    <string name="one_minute">60Seconds</string>
-    <string name="none_vibration">none</string>
-    <string name="by_time_set">by_time_set</string>
+    <string name="times_5t" translatable="false">5T</string>
+    <string name="one_minute" translatable="false">60Seconds</string>
+    <string name="none_vibration" translatable="false">none</string>
+    <string name="by_time_set" translatable="false">by_time_set</string>
     <string name="duplicate_alarm_title">"Duplicate Alarm"</string>
     <string name="duplicate_alarm_message">"Only one alarm can be scheduled to a specified time"</string>
-    <string name="check">check</string>
+    <string name="check" translatable="false">check</string>
     <string name="duplicate">Duplicate</string>
     <string name="edit">edit</string>
     <string name="edit_alarm">Edit Alarm</string>

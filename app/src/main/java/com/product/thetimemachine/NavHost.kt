@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.ui.AlarmEditScreen
 import com.product.thetimemachine.ui.AlarmListScreen
 import com.product.thetimemachine.ui.SettingsScreen
@@ -31,6 +32,7 @@ import com.product.thetimemachine.ui.SettingsScreen
 fun AlarmNavHost(
     alarmViewModel: AlarmViewModel?,
 ) {
+
 
     val navController = rememberNavController()
     //val currentBackStack by navController.currentBackStackEntryAsState()

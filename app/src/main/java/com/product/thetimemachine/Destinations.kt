@@ -19,6 +19,8 @@ package com.product.thetimemachine
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.product.thetimemachine.Application.TheTimeMachineApp
+import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
+import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 
 /**
  * Contract for information needed on every Rally navigation destination
@@ -26,7 +28,7 @@ import com.product.thetimemachine.Application.TheTimeMachineApp
 
 sealed interface Destination {
     val route: String
-    val label: String
+    val label: Int
 }
 
 /**
@@ -34,7 +36,7 @@ sealed interface Destination {
  */
 data object AlarmEdit : Destination {
     override val route = "AlarmEdit"
-    override val label = TheTimeMachineApp.appContext.getString(R.string.alarmsetup_title)
+    override val label = R.string.alarmsetup_title
     const val ITEM_ID_ARG = "item_id"
     val routeWithArgs = "$route/{$ITEM_ID_ARG}"
     val arguments = listOf(navArgument(ITEM_ID_ARG) { type = NavType.LongType })
@@ -42,13 +44,12 @@ data object AlarmEdit : Destination {
 
 data object AlarmList :  Destination {
     override val route = "AlarmList"
-    override val label = TheTimeMachineApp.appContext.getString(R.string.alarmlist_title)
-
+    override val label = R.string.alarmlist_title
 }
 
 data object Settings : Destination {
     override val route = "Settings"
-    override val label = TheTimeMachineApp.appContext.getString(R.string.settings_title)
+    override val label = R.string.settings_title
 }
 
 
