@@ -56,65 +56,66 @@ data class PrefData(
     val title: Int = 0,
     val currentValue: MutableState<String?>? = null,
     val origValue: MutableState<String?>? = null,
-    val list: List<Pair<String, String>>? = null,
+    val list: List<Pair<Int, String>>? = null,
     val iconId: Int = 0,
     val showDialog: MutableState<Boolean>? = null,
     val isDialog: Boolean = true,
     val prefKey: Preferences.Key<String>? = null
 )
 
+
 // TODO: Replace Strings
 // Menu Items
 val ringDurationList = listOf(
-    Pair("15 Seconds", "15Seconds"), Pair("30 Seconds", "30Seconds"),
-    Pair("45 Seconds", "45Seconds"), Pair("1 Minute", "60Seconds"),
-    Pair("2 Minutes", "120Seconds"), Pair("5 Minutes", "300Seconds"),
+    Pair(R.string.seconds_15, "15Seconds"), Pair(R.string.seconds_30, "30Seconds"),
+    Pair(R.string.seconds_45, "45Seconds"), Pair(R.string.minutes_1, "60Seconds"),
+    Pair(R.string.minutes_2, "120Seconds"), Pair(R.string.minutes_5, "300Seconds"),
 )
 val ringRepeatList = listOf(
-    Pair("Never", "0T"), Pair("1 Time", "1T"),
-    Pair("2 Times", "2T"), Pair("5 Times", "5T"),
-    Pair("10 Times", "10T"), Pair("Forever", "100T"),
+    Pair(R.string.never, "0T"), Pair(R.string.t1, "1T"),
+    Pair(R.string.t2, "2T"), Pair(R.string.t5, "5T"),
+    Pair(R.string.t10, "10T"), Pair(R.string.forever, "100T"),
 )
 val snoozeDurationList = listOf(
-    Pair("30 Seconds", "30Seconds"), Pair("1 Minute", "60Seconds"),
-    Pair("2 Minute", "120Seconds"), Pair("3 Minute", "180Seconds"),
-    Pair("5 Minutes", "300Seconds"), Pair("6 Minutes", "360Seconds"),
-    Pair("7 Minutes", "420Seconds"), Pair("10 Minutes", "600Seconds"),
+    Pair(R.string.seconds_30, "30Seconds"), Pair(R.string.minutes_1, "60Seconds"),
+    Pair(R.string.minutes_2, "120Seconds"), Pair(R.string.minutes_3, "180Seconds"),
+    Pair(R.string.minutes_5, "300Seconds"), Pair(R.string.minutes_6, "360Seconds"),
+    Pair(R.string.minutes_7, "420Seconds"), Pair(R.string.minutes_10, "600Seconds"),
 )
 val vibrationPatternList = listOf(
-    Pair("None", "none"), Pair("Single short beat", "ssb"),
-    Pair("Three short beats", "tsb"), Pair("Single long beat", "slb"),
-    Pair("Repeating short beats", "rsb"), Pair("Repeating long beats", "rlb"),
-    Pair("Continuous", "cont"),
+    Pair(R.string.none, "none"), Pair(R.string.single_short_beat, "ssb"),
+    Pair(R.string.three_short_beats, "tsb"), Pair(R.string.single_long_beat, "slb"),
+    Pair(R.string.rep_short_beats, "rsb"), Pair(R.string.rep_long_beats, "rlb"),
+    Pair(R.string.cont, "cont"),
 )
 val alarmSoundList = listOf(
-    Pair("No Sound (mute)", "silent"),
-    Pair("Standard Digital", "a30_seconds_alarm_72117"),
-    Pair("Clock Alarm", "clock_alarm_8761"),
-    Pair("Digital Alarm", "digital_alarm_2_151919"),
-    Pair("Digital Beep-Beep", "digital_alarm_clock_151920"),
-    Pair("Electronic Alarm Clock", "electronic_alarm_clock_151927"),
-    Pair("Old Mechanic Alarm Clock", "old_mechanic_alarm_clock_140410"),
-    Pair("Oversimplified Alarm Clock", "oversimplified_alarm_clock_113180"),
-    Pair("Rooster", "rooster"),
+    Pair(R.string.mute, "silent"),
+    Pair(R.string.std_digital, "a30_seconds_alarm_72117"),
+    Pair(R.string.clock_alarm, "clock_alarm_8761"),
+    Pair(R.string.digital_alarm, "digital_alarm_2_151919"),
+    Pair(R.string.digital_beep_beep, "digital_alarm_clock_151920"),
+    Pair(R.string.elect_alarm_clock, "electronic_alarm_clock_151927"),
+    Pair(R.string.old_mech_alarm_clock, "old_mechanic_alarm_clock_140410"),
+    Pair(R.string.os_alarm_clock, "oversimplified_alarm_clock_113180"),
+    Pair(R.string.rooster, "rooster"),
 )
 val gradualVolumeList = listOf(
-    Pair("None", "00Seconds"), Pair("30 Seconds", "30Seconds"),
-    Pair("1 Minute", "60Seconds"), Pair("2 Minute", "120Seconds"),
-    Pair("3 Minute", "180Seconds"),
+    Pair(R.string.none, "00Seconds"), Pair(R.string.seconds_30, "30Seconds"),
+    Pair(R.string.minutes_1, "60Seconds"), Pair(R.string.minutes_2, "120Seconds"),
+    Pair(R.string.minutes_3, "180Seconds"),
 )
-val firstDayList = listOf(Pair("Sunday", "Su"), Pair("Monday", "Mo"))
+val firstDayList = listOf(Pair(R.string.sunday, "Su"), Pair(R.string.monday, "Mo"))
 
 val timeFormatList = listOf(
-    Pair("12h Clock", "h12"),
-    Pair("24h Clock", "h24")
+    Pair(R.string.clock_12h, "h12"),
+    Pair(R.string.clock_24h, "h24")
 )
 val sortTypeList = listOf(
-    Pair("By time set", "by_time_set"), Pair("By alarm time", "by_alarm_time"),
-    Pair("Alphabetically", "alphabetically"))
+    Pair(R.string.sort_by_time_set, "by_time_set"), Pair(R.string.sort_by_alarm_time, "by_alarm_time"),
+    Pair(R.string.sort_alphabet, "alphabetically"))
 
 val languageList = listOf (
-    Pair("English","en"), Pair("Hebrew", "iw"))
+    Pair(R.string.lang_en,"en"), Pair(R.string.lang_he, "iw"))
 
 object SoundObj {
 
@@ -498,7 +499,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                                 onClick = null
                             )
                             // Text associated with the radio button
-                            Text(pair.first)
+                            Text( stringResource(pair.first))
                         }
                     }
 
@@ -571,18 +572,18 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
     }
 
     // Get the string that corresponds with the display-value of a selected value of a Preference
-    fun getEntryValueStr(value: String, list: List<Pair<String, String>>): String {
+    fun getEntryValueStr(value: String, list: List<Pair<Int, String>>): Int {
         list.forEach { if (it.second == value) return it.first }
-        return ""
+        return 0
     }
 
     //  Display the current value (e.g. 24h Clock) under the title
     //  Pass the current selected preference value and the list of possible values
     //  Get the text by entering the current selected value and the list of values
     @Composable
-    fun PrefSelValue(value: String, list: List<Pair<String, String>>) {
+    fun PrefSelValue(value: String, list: List<Pair<Int, String>>) {
             Text(
-                text = getEntryValueStr(value, list),
+                text = stringResource(getEntryValueStr(value, list)),
                 style = styledTrailing,
                 fontSize = 16.sp,
                 modifier = Modifier

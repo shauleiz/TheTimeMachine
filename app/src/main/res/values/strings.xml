@@ -147,6 +147,50 @@
     <string name="alarm_scheduled_for_now">Alarm scheduled for now</string>
 
 
+    <string name="clock_12h">12h Clock</string>
+    <string name="clock_24h">24h Clock</string>
+    <string name="sunday">Sunday</string>
+    <string name="monday">Monday</string>
+    <string name="seconds_15">15 Seconds</string>
+    <string name="seconds_30">30 Seconds</string>
+    <string name="seconds_45">45 Seconds</string>
+    <string name="minutes_1">1 Minute</string>
+    <string name="minutes_2">2 Minute</string>
+    <string name="minutes_3">3 Minute</string>
+    <string name="minutes_5">5 Minute</string>
+    <string name="minutes_6">6 Minutes</string>
+    <string name="minutes_7">7 Minutes</string>
+    <string name="minutes_10">10 Minutes</string>
+    <string name="none">None</string>
+    <string name="never">Never</string>
+    <string name="t1">1 Time</string>
+    <string name="t2">2 Times</string>
+    <string name="t5">5 Times</string>
+    <string name="t10">10 Times</string>
+    <string name="forever">Forever</string>
+    <string name="single_short_beat">Single short beat</string>
+    <string name="three_short_beats">Three short beats</string>
+    <string name="single_long_beat">Single long beat</string>
+    <string name="rep_short_beats">Repeating short beats</string>
+    <string name="rep_long_beats">Repeating long beats</string>
+    <string name="cont">Continuous</string>
+    <string name="mute">No Sound (mute)</string>
+    <string name="std_digital">Standard Digital</string>
+    <string name="clock_alarm">Clock Alarm</string>
+    <string name="digital_alarm">Digital Alarm</string>
+    <string name="digital_beep_beep">Digital Beep-Beep</string>
+    <string name="elect_alarm_clock">Electronic Alarm Clock</string>
+    <string name="old_mech_alarm_clock">Old Mechanic Alarm Clock</string>
+    <string name="os_alarm_clock">Oversimplified Alarm Clock</string>
+    <string name="rooster">Rooster</string>
+    <string name="sort_by_time_set">By time set</string>
+    <string name="sort_by_alarm_time">By alarm time</string>
+    <string name="sort_alphabet">Alphabetically</string>
+    <string name="lang_en">English</string>
+    <string name="lang_he">Hebrew</string>
+
+
+
     <!-- Preferences: Menu -->
     <array name="clock_12_24_entries">
         <item>12h Clock</item>
