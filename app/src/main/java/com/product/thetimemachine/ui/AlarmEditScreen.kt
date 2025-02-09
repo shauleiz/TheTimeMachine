@@ -52,8 +52,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -71,15 +73,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.text.layoutDirection
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -1001,54 +1006,66 @@ class AlarmEditScreen(
             // List of labels on the weekdays buttons
             val daysOfWeek =
                 if (getPrefFirstDayOfWeek(parent) == "Su")
-                    listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
+                    listOf(R.string.su, R.string.mo, R.string.tu, R.string.we, R.string.th, R.string.fr, R.string.sa)
                 else
-                    listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
+                    listOf(R.string.mo, R.string.tu, R.string.we, R.string.th, R.string.fr, R.string.sa, R.string.su)
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 for (dayOfWeek in daysOfWeek) {
                     Text(
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center,
-                        text = dayOfWeek,
+                        text = stringResource(dayOfWeek),
                     )
                 }
             }
         }
 
+        // Given CalendarMonth:
+        // 1. Display Month & Year (e.g. February 2025)
+        // 2. Under that, display the row of weekdays names (Su Mo ....)
         @Composable
         fun MonthTitle(calendarMonth: CalendarMonth) {
+
+            // Prepare Month/Year text for the Month Title
+            val formatter = DateTimeFormatter.ofPattern("MMMM yyy")
+            val prt = calendarMonth.yearMonth.format(formatter)
+
             Column {
+                // Month/Year text
                 Text(
-                    text = calendarMonth.yearMonth.month.name.lowercase()
-                        .replaceFirstChar { it.uppercaseChar() }
-                            + "  " + calendarMonth.yearMonth.year,
+                    text = prt,
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp,
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth(),
                 )
+
+                // Weekdays (e.g. Su Mo Tu ...)
                 DaysOfWeekTitle()
             }
         }
 
+        // Calendar Dialog Header
+        // If multiple selection OR nothing selected: Returns static string
+        // If single selection AND date is NOT null: Returns selected date as string
         @Composable
         fun HeaderText(date: LocalDate?): String {
 
+            // Single selection
             if (selectionType == CalendarSelection.Single) {
+
+                // No date selected: Return "Select Date"
                 if (date == null) return stringResource(R.string.select_date)
 
-                val dom = date.dayOfMonth
-                val year = date.year
-                val month = date.month.name.lowercase()
-                    .replaceFirstChar { it.titlecase(Locale.getDefault()) }
-                val dow = date.dayOfWeek.name.lowercase()
-                    .replaceFirstChar { it.titlecase(Locale.getDefault()) }
-
-                return String.format(Locale.ROOT, "%.3s, %d %.3s %d", dow, dom, month, year)
+                // Single selection: Return selected date as string
+                val formatters = DateTimeFormatter.ofPattern(mainActivity.getString(R.string.time_format_cal))
+                return date.format(formatters)
             }
 
+
+            // Multiple selection: Return "Dates to Exclude"
             if (selectionType == CalendarSelection.Multiple) {
                 return stringResource(R.string.dates_to_exclude)
             }
@@ -1140,6 +1157,9 @@ class AlarmEditScreen(
                                 horizontalAlignment = Alignment.Start,
                                 verticalArrangement = Arrangement.Top,
                             ) {/**/
+
+                                // Calendar Dialog Header
+                                // Displays static text or selected date
                                 Text(
                                     HeaderText(selectedDate),
                                     fontSize = 24.sp,
@@ -1151,9 +1171,18 @@ class AlarmEditScreen(
                                         .padding(16.dp)
                                 )
 
+                                // Embed Calendar in dialog
+                                // The HorizontalCalendar is wrapped in CompositionLocalProvider
+                                // to set its LTR/RTL direction
+                                CompositionLocalProvider(direction()){
                                 HorizontalCalendar(
                                     state = state,
+
+                                    // Calendar Header:
+                                    // e.g. February 2025 - calculated from it
+                                    // underneath , weekdays
                                     monthHeader = { MonthTitle(it) },
+
                                     dayContent = {
                                         Day(
                                             day = it,
@@ -1177,6 +1206,7 @@ class AlarmEditScreen(
                                         }
                                     }
                                 )
+                                }
                                 // Cancel/OK Buttons
                                 Row(
                                     horizontalArrangement = Arrangement.End,
@@ -1205,6 +1235,15 @@ class AlarmEditScreen(
             }
         }
 
+    }
+
+    @Composable
+    fun direction() : ProvidedValue<LayoutDirection>
+    {
+        return if (LocalConfiguration.current.locales[0].layoutDirection == 1)
+            LocalLayoutDirection provides LayoutDirection.Rtl
+        else
+            LocalLayoutDirection provides LayoutDirection.Ltr
     }
 
     private fun checkmarkClicked(isErrorDate: () -> Unit) {

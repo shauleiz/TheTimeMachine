@@ -82,6 +82,7 @@
     <string name="must_permit">Failing to give the app permission to post notifications\nwill make stopping the alarm clock impossible</string>
     <string name="dummy_alarm_date_time">Alarm Set to XXX at 00:00</string>
     <string name="time_format_display">EEEE, MMMM d, yyyy \'at\' HH:mm</string>
+    <string name="time_format_cal" translatable="false">E, d MMMM, yyyy</string>
     <string name="today_in_brackets">" [TODAY]"</string>
     <string name="tomorrow_in_brackets">" [TOMORROW]"</string>
     <string name="error_in_brackets">"Error: Alarm time already passed"</string>
