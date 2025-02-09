@@ -83,7 +83,7 @@ val snoozeDurationList = listOf(
     Pair(R.string.minutes_7, "420Seconds"), Pair(R.string.minutes_10, "600Seconds"),
 )
 val vibrationPatternList = listOf(
-    Pair(R.string.none, "none"), Pair(R.string.single_short_beat, "ssb"),
+    Pair(R.string.no_vibrate, "none"), Pair(R.string.single_short_beat, "ssb"),
     Pair(R.string.three_short_beats, "tsb"), Pair(R.string.single_long_beat, "slb"),
     Pair(R.string.rep_short_beats, "rsb"), Pair(R.string.rep_long_beats, "rlb"),
     Pair(R.string.cont, "cont"),
@@ -100,7 +100,7 @@ val alarmSoundList = listOf(
     Pair(R.string.rooster, "rooster"),
 )
 val gradualVolumeList = listOf(
-    Pair(R.string.none, "00Seconds"), Pair(R.string.seconds_30, "30Seconds"),
+    Pair(R.string.no_inc, "00Seconds"), Pair(R.string.seconds_30, "30Seconds"),
     Pair(R.string.minutes_1, "60Seconds"), Pair(R.string.minutes_2, "120Seconds"),
     Pair(R.string.minutes_3, "180Seconds"),
 )
@@ -472,7 +472,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                         style = styledTrailing,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
-                        textAlign = TextAlign.Left,
+                        textAlign = TextAlign.Start,
                         modifier = Modifier
                             .padding(top = 32.dp, bottom = 16.dp, start = 16.dp)
                             .fillMaxWidth()

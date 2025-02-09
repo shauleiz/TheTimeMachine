@@ -155,13 +155,13 @@
     <string name="seconds_30">30 Seconds</string>
     <string name="seconds_45">45 Seconds</string>
     <string name="minutes_1">1 Minute</string>
-    <string name="minutes_2">2 Minute</string>
-    <string name="minutes_3">3 Minute</string>
-    <string name="minutes_5">5 Minute</string>
+    <string name="minutes_2">2 Minutes</string>
+    <string name="minutes_3">3 Minutes</string>
+    <string name="minutes_5">5 Minutes</string>
     <string name="minutes_6">6 Minutes</string>
     <string name="minutes_7">7 Minutes</string>
     <string name="minutes_10">10 Minutes</string>
-    <string name="none">None</string>
+    <string name="no_vibrate">None</string>
     <string name="never">Never</string>
     <string name="t1">1 Time</string>
     <string name="t2">2 Times</string>
@@ -186,8 +186,8 @@
     <string name="sort_by_time_set">By time set</string>
     <string name="sort_by_alarm_time">By alarm time</string>
     <string name="sort_alphabet">Alphabetically</string>
-    <string name="lang_en">English</string>
-    <string name="lang_he">Hebrew</string>
+    <string name="lang_en">English (en)</string>
+    <string name="lang_he">עברית (he)</string>
 
 
 
@@ -339,5 +339,6 @@
         <item>120Seconds</item>
         <item>180Seconds</item>
     </array>
+    <string name="no_inc">No Increase</string>
 
 </resources>
