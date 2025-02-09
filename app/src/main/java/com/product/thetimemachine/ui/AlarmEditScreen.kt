@@ -688,9 +688,9 @@ class AlarmEditScreen(
         // List of labels on the weekdays buttons
         val weekdays =
             if (firstDayInWeek == 0)
-                listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
+                listOf(R.string.su, R.string.mo, R.string.tu, R.string.we, R.string.th, R.string.fr, R.string.sa)
             else
-                listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
+                listOf(R.string.mo, R.string.tu, R.string.we, R.string.th, R.string.fr, R.string.sa, R.string.su)
 
         // Shift selected days to suit a Monday-week
         var selectedDays = selectedDaysExt
@@ -709,7 +709,7 @@ class AlarmEditScreen(
         ) {
             weekdays.forEachIndexed { index, s ->
                 Text(
-                    text = s,
+                    text = stringResource(id = s),
                     textAlign = TextAlign.Center,
                     color = if ((selectedDays and (1 shl index)) > 0) {
                         MaterialTheme.colorScheme.background
