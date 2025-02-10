@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.core.text.layoutDirection
 import com.product.thetimemachine.ui.MainActivity
 import com.product.thetimemachine.ui.PreferencesKeys
 import com.product.thetimemachine.ui.getPrefLanguage
@@ -13,6 +16,13 @@ import java.util.IllformedLocaleException
 import java.util.Locale
 
 object LanguageManager {
+
+    // Get the current locale direction
+    @Composable
+    fun isRtl() : Boolean {
+        return LocalConfiguration.current.locales[0].layoutDirection == 1
+    }
+
 
     // Get the language from Properties: en OR iw
     fun getLanguage(context: Context): String {

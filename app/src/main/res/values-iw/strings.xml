@@ -31,8 +31,8 @@
     <string name="alarmlist_title">רשימת צלצולים</string>
     <string name="day_today">היום</string>
     <string name="day_tomorrow">מחר</string>
-    <string name="su_mo_tu_we_th_fr_sa"> א ב ג ד ה ו ש</string>
-    <string name="mo_tu_we_th_fr_sa_su">" ב  ג  ד  ה  ו  ש  א"</string>
+    <string name="su_mo_tu_we_th_fr_sa">א\' ב\' ג\' ד\' ה\' ו\' ש\'</string>
+    <string name="mo_tu_we_th_fr_sa_su">ב\' ג\' ד\' ה\' ו\' ש\' א\'</string>
     <string name="clock_format">פורמט שעון</string>
     <string name="sound_and_vibration">צלילים ורטט</string>
     <string name="alarm_list_conf">רשימת צלצולים</string>

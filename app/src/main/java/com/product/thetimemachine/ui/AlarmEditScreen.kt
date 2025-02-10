@@ -96,6 +96,7 @@ import com.product.thetimemachine.AlarmEdit
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
+import com.product.thetimemachine.LanguageManager.isRtl
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.DayOfWeek
@@ -1240,7 +1241,7 @@ class AlarmEditScreen(
     @Composable
     fun direction() : ProvidedValue<LayoutDirection>
     {
-        return if (LocalConfiguration.current.locales[0].layoutDirection == 1)
+        return if (isRtl())
             LocalLayoutDirection provides LayoutDirection.Rtl
         else
             LocalLayoutDirection provides LayoutDirection.Ltr

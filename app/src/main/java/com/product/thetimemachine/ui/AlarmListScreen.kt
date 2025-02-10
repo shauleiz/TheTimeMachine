@@ -86,6 +86,7 @@ import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
+import com.product.thetimemachine.LanguageManager.isRtl
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.format.DateTimeFormatter
@@ -791,29 +792,32 @@ private fun deleteSelectedAlarms() {
         @Composable
         private fun getAnnotatedWeekdays(alarmItem: AlarmItem): AnnotatedString {
 
-            val suArray = intArrayOf(0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20)
-            val moArray = intArrayOf(18, 20, 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20)
+            // Indeces of the weekdays in the weekdays strings
+            val suArray = intArrayOf(0,  3,  6,  9,  12, 15, 18)
+            val moArray = intArrayOf(18, 0,  3,  6,  9,  12, 15)
+
             val genArray: IntArray
             val weekdaysString: String
 
-            // Get the array os 'skips' and the correct weekdays string
-            when (getPrefFirstDayOfWeek(parent)) {
-                "Su" -> {
-                    weekdaysString = stringResource(R.string.su_mo_tu_we_th_fr_sa)
-                    genArray = suArray
+            // Get the array oכ 'skips' and the correct weekdays string
+                when (getPrefFirstDayOfWeek(parent)) {
+                    "Su" -> {
+                        weekdaysString = stringResource(R.string.su_mo_tu_we_th_fr_sa)
+                        genArray = suArray
+                    }
+
+                    else -> {
+                        weekdaysString = stringResource(R.string.mo_tu_we_th_fr_sa_su)
+                        genArray = moArray
+                    }
                 }
 
-                else -> {
-                    weekdaysString = stringResource(R.string.mo_tu_we_th_fr_sa_su)
-                    genArray = moArray
-                }
-            }
 
             val defaultColor =
                 MaterialTheme.colorScheme.onSurface
             val fadedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
 
-            // If inactive - just print string in default color
+            // If alarm inactive - just print string in default color
             if (!alarmItem.isActive)
                 return buildAnnotatedString {
                     withStyle(style = SpanStyle(color = defaultColor)) {
@@ -827,10 +831,15 @@ private fun deleteSelectedAlarms() {
             var currentColor: Color
             var underlined: TextDecoration
 
-            Log.d("THE_TIME_MACHINE", "${alarmItem.label}:  weekdaysString = $weekdaysString ; indexOfNextDay = $indexOfNextDay" )
             return buildAnnotatedString {
                 append(weekdaysString)
                 for (day in 0..6) {
+
+                    Log.i("THE_TIME_MACHINE", "getAnnotatedWeekdays(): day=$day ; " +
+                            "weekdaysString=$weekdaysString ; " +
+                            "selected=${(weekdays and (1 shl day)) > 0} ; " +
+                            "start=${genArray[day]}")
+
                     currentColor = if ((weekdays and (1 shl day)) > 0) defaultColor else fadedColor
                     underlined =
                         if (day == indexOfNextDay) TextDecoration.Underline else TextDecoration.None
@@ -839,8 +848,8 @@ private fun deleteSelectedAlarms() {
                             color = currentColor,
                             textDecoration = underlined
                         ),
-                        start = genArray[day * 2],
-                        end = genArray[day * 2 + 1]
+                        start = genArray[day],
+                        end = genArray[day] +2
                     )
                 }
             }
