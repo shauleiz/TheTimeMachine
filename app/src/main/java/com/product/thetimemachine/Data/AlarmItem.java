@@ -712,7 +712,7 @@ public class AlarmItem {
  Convert it to Zero/Sunday based number: Sun=0 --> Sat=6 */
    public int getWeekdayOfNextAlarm() {
       LocalDateTime alarmTime = nextAlarmTimeInLocalDateTime();
-      return alarmTime.getDayOfWeek().getValue() - 1;
+      return alarmTime.getDayOfWeek().getValue();
    }
 
    /*   Get the time of the next alarm in LocalDateTime    */

@@ -548,7 +548,7 @@ private fun deleteSelectedAlarms() {
 
 
 
-                    // Weekdays / Today / Tomorrow
+                    // Weekdays / Today / Tomorrow / Date in the future
                     Text(
                         text = getDisplayWeekdays(alarmItem),
                         textAlign = TextAlign.End,
@@ -784,6 +784,10 @@ private fun deleteSelectedAlarms() {
 
         }
 
+        // Returns the annotated string that displays the weekdays
+        // called by getDisplayWeekdays()
+        // Selected weekdays are bold
+        // The next weekday in which the alarm will sound is underscored
         @Composable
         private fun getAnnotatedWeekdays(alarmItem: AlarmItem): AnnotatedString {
 
@@ -823,7 +827,7 @@ private fun deleteSelectedAlarms() {
             var currentColor: Color
             var underlined: TextDecoration
 
-            Log.d("THE_TIME_MACHINE", "weekdaysString = $weekdaysString" )
+            Log.d("THE_TIME_MACHINE", "${alarmItem.label}:  weekdaysString = $weekdaysString ; indexOfNextDay = $indexOfNextDay" )
             return buildAnnotatedString {
                 append(weekdaysString)
                 for (day in 0..6) {
