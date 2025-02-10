@@ -768,7 +768,7 @@ private fun deleteSelectedAlarms() {
 
                     // Future Date
                 } /**/ else {
-                    val format = DateTimeFormatter.ofPattern(("EEEE, MMMM d, yyyy")) // TODO: Replace with string
+                    val format = DateTimeFormatter.ofPattern(mainActivity.getString(R.string.date_format_wd))
                     val alarmTime = alarmItem.alarmTimeInLocalDateTime()
                     val word = alarmTime.format(format)
                     //if (alarmItem.isActive)

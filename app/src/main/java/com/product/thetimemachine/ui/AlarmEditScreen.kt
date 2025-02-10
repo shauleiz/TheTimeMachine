@@ -806,7 +806,7 @@ class AlarmEditScreen(
 
 
         // Convert the alarm time  to String
-        val formatters = DateTimeFormatter.ofPattern(mainActivity.applicationContext.getString(R.string.time_format_display))
+        val formatters = DateTimeFormatter.ofPattern(mainActivity.getString(R.string.time_format_display))
         val alarmTimeStr : String = alarmTime.format(formatters)
 
         // If the alarm time is in the past - return [Alarm already passed]

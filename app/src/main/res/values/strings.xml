@@ -114,6 +114,7 @@
     <string name="dates_to_exclude_calendar_title">Dates to Exclude</string>
     <string name="alarm_scheduled_for">"Alarm scheduled for "</string>
     <string name="date_format">EEEE, MMMM d, yyyy \'at\' h:mm a</string>
+    <string name="date_format_wd">EEEE, MMMM d, yyyy</string>
     <string name="day_plural">" days "</string>
     <string name="day_singular">"1 day "</string>
     <string name="hour_plural">" hours "</string>
