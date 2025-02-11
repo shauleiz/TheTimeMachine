@@ -563,7 +563,6 @@ class AlarmEditScreen(
         )
     }
 
-    // TODO: Add icon button to toggle between Dial and InputTimePicker
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun TimePickerField(
@@ -584,20 +583,24 @@ class AlarmEditScreen(
         // Update mode
         timePickerState.is24hour = isPref24h(parent)
 
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Display Time Picker
-            if (showDial) TimePicker(
-                state = timePickerState,
-                layoutType = TimePickerLayoutType.Vertical,
-            )
-            else
-                TimeInput(
+        // Always LTR so that the AM/PM will be at the right
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                // Display Time Picker
+                if (showDial) TimePicker(
                     state = timePickerState,
+                    layoutType = TimePickerLayoutType.Vertical,
                 )
+                else
+                    TimeInput(
+                        state = timePickerState,
+                    )
 
-            // Display the Clock Type button
-            toggleButton()
+                // Display the Clock Type button
+                toggleButton()
+            }
         }
+
         // Update H:M Values
         setUpAlarmValues.hour.value = timePickerState.hour
         setUpAlarmValues.minute.value = timePickerState.minute
