@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -523,6 +524,8 @@ private fun deleteSelectedAlarms() {
                     val refSnoozeIcon = createRef()
                     val refVibrateIcon = createRef()
                     val refMuteIcon = createRef()
+                    val refAlarmTimeBox = createRef()
+
 
                     // Alarm Label
                     Text(
@@ -539,7 +542,7 @@ private fun deleteSelectedAlarms() {
                                 centerVerticallyTo(refAlarmActive, bias = 0.7f)
                                 linkTo(
                                     start = refAlarmActive.end,
-                                    end = refAlarmTime.start,
+                                    end = refAlarmTimeBox.start,
                                     startMargin = 8.dp,
                                     endMargin = 8.dp,
                                     bias = 0.0f,
@@ -560,8 +563,8 @@ private fun deleteSelectedAlarms() {
                             //.padding(bottom = 8.dp)
                             .alpha(currentAlpha)
                             .constrainAs(refWeekdays) {
-                                end.linkTo(refAlarmTime.end)
-                                bottom.linkTo(refAlarmTime.top) //
+                                end.linkTo(refAlarmTimeBox.end)
+                                bottom.linkTo(refAlarmTimeBox.top) //
                             },
                     )
 
@@ -622,34 +625,44 @@ private fun deleteSelectedAlarms() {
                             },
                     )
 
-                    // Am/Pm/24h annotation
-                    Text(
-                        stringResource(id = getAmPm24h(alarmItem)),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .constrainAs(refAmPm24h) {
-                                bottom.linkTo(parent.bottom, margin = 2.dp)
-                                end.linkTo(parent.end, margin = 8.dp)
-                            }
-                    )
+                    ConstraintLayout (modifier = Modifier
+                        .wrapContentSize()
+                        .constrainAs(refAlarmTimeBox){
+                            bottom.linkTo(parent.bottom, margin = 2.dp)
+                            end.linkTo(parent.end, margin = 8.dp)
+                        }
+                    ) {
 
-                    // Alarm Time
-                    Text(
-                        getDisplayAlarmTime(alarmItem),
-                        fontSize = 34.sp,
-                        color = getPrimaryTextColor(alarmItem),
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                                transformOrigin = TransformOrigin.Center
-                            }
-                            .constrainAs(refAlarmTime) {
-                                bottom.linkTo(parent.bottom)
-                                end.linkTo(refAmPm24h.start)
-                            }
-                    )
+
+                        // Am/Pm/24h annotation
+                        Text(
+                            stringResource(id = getAmPm24h(alarmItem)),
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .constrainAs(refAmPm24h) {
+                                    bottom.linkTo(parent.bottom, margin = 2.dp)
+                                    absoluteLeft.linkTo(refAlarmTime.absoluteRight, margin = 2.dp)
+                                }
+                        )
+
+                        // Alarm Time
+                        Text(
+                            getDisplayAlarmTime(alarmItem),
+                            fontSize = 34.sp,
+                            color = getPrimaryTextColor(alarmItem),
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                    transformOrigin = TransformOrigin.Center
+                                }
+                                .constrainAs(refAlarmTime) {
+                                    bottom.linkTo(parent.bottom)
+                                    absoluteLeft.linkTo(parent.absoluteLeft)
+                                }
+                        )
+                    }
                 }
             }
         }
