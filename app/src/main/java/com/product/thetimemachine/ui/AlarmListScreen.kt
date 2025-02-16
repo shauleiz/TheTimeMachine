@@ -847,12 +847,6 @@ private fun deleteSelectedAlarms() {
             return buildAnnotatedString {
                 append(weekdaysString)
                 for (day in 0..6) {
-
-                    Log.i("THE_TIME_MACHINE", "getAnnotatedWeekdays(): day=$day ; " +
-                            "weekdaysString=$weekdaysString ; " +
-                            "selected=${(weekdays and (1 shl day)) > 0} ; " +
-                            "start=${genArray[day]}")
-
                     currentColor = if ((weekdays and (1 shl day)) > 0) defaultColor else fadedColor
                     underlined =
                         if (day == indexOfNextDay) TextDecoration.Underline else TextDecoration.None
