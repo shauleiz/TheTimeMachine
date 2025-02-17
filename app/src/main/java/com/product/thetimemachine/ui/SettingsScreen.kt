@@ -31,6 +31,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.LanguageManager.restartApp
@@ -129,12 +130,12 @@ fun getPrefs(parent: Context): UserPreferences {
 
 fun isClockTypeAnalog(parent: Context?): Boolean {
     if (parent == null) return false
-    return getPrefs(parent).clockType == mainActivity.getString(R.string.analog_clock)
+    return getPrefs(parent).clockType == appContext.getString(R.string.analog_clock)
 }
 
 fun isPref24h(parent: Context?): Boolean {
     if (parent == null) return false
-    return getPrefs(parent).hour12Or24 == mainActivity.getString(R.string.h24_clock)
+    return getPrefs(parent).hour12Or24 == appContext.getString(R.string.h24_clock)
 }
 
 fun isPrefSortSeparate(parent: Context?): Boolean {

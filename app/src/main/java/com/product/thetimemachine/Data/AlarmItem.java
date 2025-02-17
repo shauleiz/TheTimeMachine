@@ -144,12 +144,12 @@ public class AlarmItem {
 
       // Preferences
       Context context = TheTimeMachineApp.appContext;
-      ringDuration = inBundle.getString(mainActivity.getString(R.string.key_ring_duration), "");
-      ringRepeat = inBundle.getString(mainActivity.getString(R.string.key_ring_repeat), "");
-      snoozeDuration = inBundle.getString(mainActivity.getString(R.string.key_snooze_duration), "");
-      vibrationPattern = inBundle.getString(mainActivity.getString(R.string.key_vibration_pattern), "");
-      alarmSound = inBundle.getString(mainActivity.getString(R.string.key_alarm_sound), "");
-      gradualVolume = inBundle.getString(mainActivity.getString(R.string.key_gradual_volume), "");
+      ringDuration = inBundle.getString(context.getString(R.string.key_ring_duration), "");
+      ringRepeat = inBundle.getString(context.getString(R.string.key_ring_repeat), "");
+      snoozeDuration = inBundle.getString(context.getString(R.string.key_snooze_duration), "");
+      vibrationPattern = inBundle.getString(context.getString(R.string.key_vibration_pattern), "");
+      alarmSound = inBundle.getString(context.getString(R.string.key_alarm_sound), "");
+      gradualVolume = inBundle.getString(context.getString(R.string.key_gradual_volume), "");
 
    }
 
@@ -288,7 +288,7 @@ public class AlarmItem {
       long duration = alarmTime + 60000 - tNow;
 
       if (duration < 12000)
-         return mainActivity.getString(R.string.alarm_scheduled_for_now);
+         return context.getString(R.string.alarm_scheduled_for_now);
 
       // Calculate D, H, M
       long days = duration / DaysInMillis;
@@ -300,8 +300,8 @@ public class AlarmItem {
       // When Alarm is scheduled for more than 2 days from now, print the date and time
       if (days > 2) {
          LocalDateTime date = Instant.ofEpochMilli(alarmTime).atZone(systemDefault()).toLocalDateTime();
-         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mainActivity.getString(R.string.date_format));
-         return mainActivity.getString(R.string.alarm_scheduled_for) + date.format(formatter);
+         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(context.getString(R.string.date_format));
+         return context.getString(R.string.alarm_scheduled_for) + date.format(formatter);
       }
 
       // Alarm time is set for 10 days, 11 hours and 5 Minutes.
@@ -310,28 +310,28 @@ public class AlarmItem {
       // Value 1 is without the plural
 
       if (days > 1)
-         strD = days + mainActivity.getString(R.string.day_plural);
+         strD = days + context.getString(R.string.day_plural);
       else if (days == 1)
-         strD = mainActivity.getString(R.string.day_singular);
+         strD = context.getString(R.string.day_singular);
       else
          strD = "";
 
       if (hours > 1)
-         strH = hours + mainActivity.getString(R.string.hour_plural);
+         strH = hours + context.getString(R.string.hour_plural);
       else if (hours == 1)
-         strH = mainActivity.getString(R.string.hour_singular);
+         strH = context.getString(R.string.hour_singular);
       else
          strH = "";
 
       if (minutes > 1)
-         strM = minutes + mainActivity.getString(R.string.minute_plural);
+         strM = minutes + context.getString(R.string.minute_plural);
       else if (minutes == 1)
-         strM = mainActivity.getString(R.string.minute_singular);
+         strM = context.getString(R.string.minute_singular);
       else
          strM = "";
 
 
-      return mainActivity.getString(R.string.alarm_scheduled_for) + strD + strH + strM + mainActivity.getString(R.string.from_now);
+      return context.getString(R.string.alarm_scheduled_for) + strD + strH + strM + context.getString(R.string.from_now);
    }
 
    public static String strGetDurationToAlarm(LocalDateTime alarmTime) {
@@ -346,7 +346,7 @@ public class AlarmItem {
       // Calculate duration in millis
       long duration = now.until(alarmTime, ChronoUnit.MILLIS);
       if (duration < 120000)
-         return mainActivity.getString(R.string.alarm_scheduled_for_now);
+         return context.getString(R.string.alarm_scheduled_for_now);
 
       // Calculate D, H, M
       long days = duration / DaysInMillis;
@@ -357,8 +357,8 @@ public class AlarmItem {
 
       // When Alarm is scheduled for more than 2 days from now, print the date and time
       if (days > 2) {
-         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mainActivity.getString(R.string.date_format));
-         return mainActivity.getString(R.string.alarm_scheduled_for) + alarmTime.format(formatter);
+         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(context.getString(R.string.date_format));
+         return context.getString(R.string.alarm_scheduled_for) + alarmTime.format(formatter);
       }
 
       // Alarm time is set for 10 days, 11 hours and 5 Minutes.
@@ -367,28 +367,28 @@ public class AlarmItem {
       // Value 1 is without the plural
 
       if (days > 1)
-         strD = days +  mainActivity.getString(R.string.day_plural);
+         strD = days +  context.getString(R.string.day_plural);
       else if (days == 1)
-         strD = mainActivity.getString(R.string.day_singular);
+         strD = context.getString(R.string.day_singular);
       else
          strD = "";
 
       if (hours > 1)
-         strH = hours + mainActivity.getString(R.string.hour_plural);
+         strH = hours + context.getString(R.string.hour_plural);
       else if (hours == 1)
-         strH = mainActivity.getString(R.string.hour_singular);
+         strH = context.getString(R.string.hour_singular);
       else
          strH = "";
 
       if (minutes > 1)
-         strM = minutes + mainActivity.getString(R.string.minute_plural);
+         strM = minutes + context.getString(R.string.minute_plural);
       else if (minutes == 1)
-         strM = mainActivity.getString(R.string.minute_singular);
+         strM = context.getString(R.string.minute_singular);
       else
          strM = "";
 
 
-      return mainActivity.getString(R.string.alarm_scheduled_for) + strD + strH + strM + mainActivity.getString(R.string.from_now);
+      return context.getString(R.string.alarm_scheduled_for) + strD + strH + strM + context.getString(R.string.from_now);
    }
 
    // Getters
@@ -601,12 +601,12 @@ public class AlarmItem {
 
       // Preferences
       Context context = TheTimeMachineApp.appContext;
-      b.putString(mainActivity.getString(R.string.key_ring_duration), ringDuration);
-      b.putString(mainActivity.getString(R.string.key_ring_repeat), ringRepeat);
-      b.putString(mainActivity.getString(R.string.key_snooze_duration), snoozeDuration);
-      b.putString(mainActivity.getString(R.string.key_vibration_pattern), vibrationPattern);
-      b.putString(mainActivity.getString(R.string.key_alarm_sound), alarmSound);
-      b.putString(mainActivity.getString(R.string.key_gradual_volume), gradualVolume);
+      b.putString(context.getString(R.string.key_ring_duration), ringDuration);
+      b.putString(context.getString(R.string.key_ring_repeat), ringRepeat);
+      b.putString(context.getString(R.string.key_snooze_duration), snoozeDuration);
+      b.putString(context.getString(R.string.key_vibration_pattern), vibrationPattern);
+      b.putString(context.getString(R.string.key_alarm_sound), alarmSound);
+      b.putString(context.getString(R.string.key_gradual_volume), gradualVolume);
 
       return b;
    }
@@ -834,12 +834,12 @@ public class AlarmItem {
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
       // Set preferences as strings
-      setRingDuration(preferences.getString(mainActivity.getString(R.string.key_ring_duration), ""));
-      setRingRepeat(preferences.getString(mainActivity.getString(R.string.key_ring_repeat), ""));
-      setSnoozeDuration(preferences.getString(mainActivity.getString(R.string.key_snooze_duration), ""));
-      setVibrationPattern(preferences.getString(mainActivity.getString(R.string.key_vibration_pattern), ""));
-      setAlarmSound(preferences.getString(mainActivity.getString(R.string.key_alarm_sound), ""));
-      setGradualVolume(preferences.getString(mainActivity.getString(R.string.key_gradual_volume), ""));
+      setRingDuration(preferences.getString(context.getString(R.string.key_ring_duration), ""));
+      setRingRepeat(preferences.getString(context.getString(R.string.key_ring_repeat), ""));
+      setSnoozeDuration(preferences.getString(context.getString(R.string.key_snooze_duration), ""));
+      setVibrationPattern(preferences.getString(context.getString(R.string.key_vibration_pattern), ""));
+      setAlarmSound(preferences.getString(context.getString(R.string.key_alarm_sound), ""));
+      setGradualVolume(preferences.getString(context.getString(R.string.key_gradual_volume), ""));
 
    }
 

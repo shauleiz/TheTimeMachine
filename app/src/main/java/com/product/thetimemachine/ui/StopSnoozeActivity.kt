@@ -249,10 +249,11 @@ class StopSnoozeActivity : BaseActivity() {
    }
 
 
+   @Composable
    private fun snoozeButtonTextCompose(): String {
        return AlarmService.snoozeButtonText(
            extras!!.getString(
-               TheTimeMachineApp.appContext.getString(
+               stringResource(
                    R.string.key_snooze_duration
                ), ""
            )
