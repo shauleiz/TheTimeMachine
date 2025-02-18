@@ -1001,7 +1001,7 @@ public class AlarmItem {
          alarmManager.cancel(alarmIntent);
 
          // Toast and Log
-         String toastText = String.format(mainActivity.getResources().getString(R.string.msg_alarm_canceled), hour, minute);
+         String toastText = String.format(context.getResources().getString(R.string.msg_alarm_canceled), hour, minute);
          Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
          Log.d("THE_TIME_MACHINE", "Exec(): " + toastText);
       }
