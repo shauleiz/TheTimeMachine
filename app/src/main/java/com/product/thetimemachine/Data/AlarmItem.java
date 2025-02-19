@@ -2,15 +2,20 @@ package com.product.thetimemachine.Data;
 
 import static com.product.thetimemachine.AlarmService.ALARM;
 import static com.product.thetimemachine.AlarmService.K_TYPE;
+import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
 import static com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefLanguage;
 
 import static java.time.ZoneId.systemDefault;
 
 import android.app.AlarmManager;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -341,7 +346,6 @@ public class AlarmItem {
       final long DaysInMillis = 24 * 60 * 60 * 1000;
       final long HoursInMillis = 60 * 60 * 1000;
       final long MinutesInMillis = 60 * 1000;
-
 
       // Calculate duration in millis
       long duration = now.until(alarmTime, ChronoUnit.MILLIS);
@@ -853,6 +857,26 @@ public class AlarmItem {
       return Integer.parseInt(intValue) * 1000;
    }
 
+   private void modifyLocale(){
+      /////  Get language from preferences and make App Context match
+
+      // Set the current Locale
+      String  language = getPrefLanguage(TheTimeMachineApp.appContext);
+
+      // Get locale from the language and set default locale
+      Locale locale = new Locale(language);
+      Locale.setDefault(locale);
+
+      // Set App Context
+      Resources resources = TheTimeMachineApp.appContext.getResources();
+      Configuration config = resources.getConfiguration();
+      config.setLocale(locale);
+      appContext = TheTimeMachineApp.appContext.createConfigurationContext(config);
+
+      Log.i("THE_TIME_MACHINE", "onStartCommand(): locale = " + locale + " language = " + language);
+
+   }
+
    /********** Execute an alarm action according to alarm state **********
     * Actions:
     * Schedule - alarmManager.setExactAndAllowWhileIdle to the correct time marking the alarm
@@ -913,6 +937,9 @@ public class AlarmItem {
    public void Exec() {
       LocalDateTime alarmTime;
       // Things that are common to all/most tasks
+
+      // Updates Language of app context so that the Toast messages will appear correctly
+      modifyLocale();
 
       // Get context
       Context context = TheTimeMachineApp.appContext;

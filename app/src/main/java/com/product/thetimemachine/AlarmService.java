@@ -12,6 +12,7 @@ import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_duration;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_ring_repeat;
 import static com.product.thetimemachine.Data.AlarmItem.Str2Int_vibration_pattern;
 import static com.product.thetimemachine.Data.AlarmRoomDatabase.insertAlarm;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefLanguage;
 import static com.product.thetimemachine.ui.SettingsScreenKt.isPref24h;
 
 import android.annotation.SuppressLint;
@@ -22,6 +23,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.VolumeShaper;
@@ -46,6 +49,7 @@ import com.product.thetimemachine.ui.StopSnoozeActivity;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.IllformedLocaleException;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
@@ -72,6 +76,25 @@ public class AlarmService  extends Service {
    public int onStartCommand(Intent intent, int flags, int startId) {
 
       Log.i("THE_TIME_MACHINE", "Service Started");
+
+      /////  Get language from preferences and make App Context match
+
+      // Set the current Locale
+      String  language = getPrefLanguage(getBaseContext());
+
+      // Get locale from the language and set default locale
+      Locale locale = new Locale(language);
+      Locale.setDefault(locale);
+
+      // Set App Context
+      Resources resources = this.getResources();
+      Configuration config = resources.getConfiguration();
+      config.setLocale(locale);
+      appContext = createConfigurationContext(config);
+
+      Log.i("THE_TIME_MACHINE", "onStartCommand(): locale = " + locale + " language = " + language);
+
+
       // Display Activity: Stop, Snooze and general data
       // TODO: Define activity Intent notificationIntent = new Intent(this, RingActivity.class);
 
@@ -83,9 +106,9 @@ public class AlarmService  extends Service {
 
       // Set The time format
       if (isPref24h(appContext))
-         dateFormat = new SimpleDateFormat("H:mm",Locale.US);
+         dateFormat = new SimpleDateFormat("H:mm",locale);
       else
-         dateFormat = new SimpleDateFormat("h:mm a",Locale.US);
+         dateFormat = new SimpleDateFormat("h:mm a",locale);
 
       // Strings to show as alarm text when the notification shows for the 1st time
       String alarmText;
@@ -93,9 +116,9 @@ public class AlarmService  extends Service {
       if (inBundle == null) return START_NOT_STICKY;
       String label = inBundle.getString(K_LABEL);
       if (!Objects.requireNonNull(label).isEmpty())
-         alarmText = String.format(Locale.ENGLISH,"%s - %s", label, dateFormat.format(new Date()));
+         alarmText = String.format(locale,"%s - %s", label, dateFormat.format(new Date()));
       else
-         alarmText = String.format(Locale.ENGLISH,"%s", dateFormat.format(new Date()));
+         alarmText = String.format(locale,"%s", dateFormat.format(new Date()));
 
 
       // Display Notification for the 1st time
@@ -115,9 +138,9 @@ public class AlarmService  extends Service {
 
             // Refresh Text
             if (!label.isEmpty())
-               alarmText = String.format(Locale.ENGLISH,"%s - %s", label, dateFormat.format(new Date()));
+               alarmText = String.format(locale,"%s - %s", label, dateFormat.format(new Date()));
             else
-               alarmText = String.format(Locale.ENGLISH,"%s", dateFormat.format(new Date()));
+               alarmText = String.format(locale,"%s", dateFormat.format(new Date()));
 
             // Update message text
             builder.setContentText(alarmText).build();
@@ -447,11 +470,11 @@ public class AlarmService  extends Service {
       if (strSnoozeDuration == null || strSnoozeDuration.isEmpty())
          return strBase;
 
-      String units="Sec"; // TODO: Replace by global string
+      String units= appContext.getString(R.string.snooze_button_sec);
       int snoozeDuration =  Str2Int_SnoozeDuration(strSnoozeDuration)/1000;
       if (snoozeDuration>=60){
          snoozeDuration=snoozeDuration/60;
-         units = "Min";// TODO: Replace by global string
+         units = appContext.getString(R.string.snooze_button_min);
       }
       return strBase + "  "+ snoozeDuration + units;
    }
@@ -485,7 +508,7 @@ public class AlarmService  extends Service {
       // Create the Stop action
       PendingIntent stopIntent = createStopPendingIntent(this, inBundle);
       NotificationCompat.Action stopAction = new NotificationCompat.Action.Builder(
-            R.drawable.baseline_alarm_off_24, getString(R.string.stop), stopIntent).build();
+            R.drawable.baseline_alarm_off_24, appContext.getString(R.string.stop), stopIntent).build();
 
       // Create the Snooze action
       PendingIntent snoozeIntent = createSnoozePendingIntent(this, inBundle);
@@ -495,7 +518,7 @@ public class AlarmService  extends Service {
       // Notification
       NotificationCompat.Builder builder;
       builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-            /* Title */                .setContentTitle(getResources().getString(R.string.notification_title))
+            /* Title */                .setContentTitle(appContext.getString(R.string.notification_title))
             /* Content */              //.setContentText(alarmText)
             /* Status bar Icon */      .setSmallIcon(R.drawable.baseline_alarm_24)
             /* Always on top */        .setPriority(NotificationCompat.PRIORITY_MAX)

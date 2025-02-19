@@ -1,0 +1,23 @@
+<resources>
+    <!--    Snooze Time: Duration between two alarms (for Snooze & Auto-Snooze)-->
+    <array name="snooze_duration_entries">
+        <item>@string/seconds_30</item>
+        <item>@string/minutes_1</item>
+        <item>@string/minutes_2</item>
+        <item>@string/minutes_3</item>
+        <item>@string/minutes_5</item>
+        <item>@string/minutes_6</item>
+        <item>@string/minutes_7</item>
+        <item>@string/minutes_10</item>
+    </array>
+    <array name="snooze_duration_values">
+        <item>30Seconds</item>
+        <item>60Seconds</item>
+        <item>120Seconds</item>
+        <item>180Seconds</item>
+        <item>300Seconds</item>
+        <item>360Seconds</item>
+        <item>420Seconds</item>
+        <item>600Seconds</item>
+    </array>
+</resources>

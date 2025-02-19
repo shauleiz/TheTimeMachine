@@ -119,7 +119,7 @@ class StopSnoozeActivity : BaseActivity() {
        val snoozeDurationValues = resources.obtainTypedArray(R.array.snooze_duration_values)
        // Update the bundle
        extras!!.putString(
-           TheTimeMachineApp.appContext.getString(R.string.key_snooze_duration),
+           applicationContext.getString(R.string.key_snooze_duration),
            snoozeDurationValues.getString(iItem)
        )
 

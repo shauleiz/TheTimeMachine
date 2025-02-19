@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="alarm_add">הוסף השכמה</string>
-    <string name="label_hint">"הצלצול מתוכנן ל: "</string>
+    <string name="label_hint">כותרת</string>
     <string name="delete_alarm">מחק</string>
     <string name="stop">הפסק</string>
     <string name="snooze">נודניק</string>
+    <string name="notification_title">שעון מעורר</string>
     <string name="stop_button">הפסק</string>
     <string name="snooze_button">נודניק</string>
     <string name="snooze_duration_label">שינוי ההמתנה לנודניק</string>
@@ -134,4 +135,6 @@
     <string name="sort_alphabet">אלפביתי</string>
     <string name="no_inc">עוצמה קבועה</string>
     <string name="date_format_wd">EEEE, d MMMM, yyyy</string>
+    <string name="snooze_button_sec">ש\'</string>
+    <string name="snooze_button_min">דק\'</string>
 </resources>

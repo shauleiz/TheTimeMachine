@@ -248,27 +248,7 @@
         <item>100T</item>
     </array>
 
-<!--    Snooze Time: Duration between two alarms (for Snooze & Auto-Snooze)-->
-        <array name="snooze_duration_entries">
-        <item>30 Seconds</item>
-        <item>1 Minute</item>
-        <item>2 Minute</item>
-        <item>3 Minute</item>
-        <item>5 Minutes</item>
-        <item>6 Minutes</item>
-        <item>7 Minutes</item>
-        <item>10 Minutes</item>
-    </array>
-    <array name="snooze_duration_values">
-        <item>30Seconds</item>
-        <item>60Seconds</item>
-        <item>120Seconds</item>
-        <item>180Seconds</item>
-        <item>300Seconds</item>
-        <item>360Seconds</item>
-        <item>420Seconds</item>
-        <item>600Seconds</item>
-    </array>
+
 
     <!-- Vibration Pattern  -->
     <array name="vibration_pattern_entries">
@@ -342,5 +322,7 @@
         <item>180Seconds</item>
     </array>
     <string name="no_inc">No Increase</string>
+    <string name="snooze_button_sec">Sec</string>
+    <string name="snooze_button_min">Min</string>
 
 </resources>
