@@ -133,6 +133,8 @@
     <string name="sort_by_time_set">על בסיס זמן ההגדרה</string>
     <string name="sort_by_alarm_time">על בסיס זמן הצלצול</string>
     <string name="sort_alphabet">אלפביתי</string>
+    <string name="olive_green">ירוק זית</string>
+    <string name="red_cyan">אדום ותכלת</string>
     <string name="no_inc">עוצמה קבועה</string>
     <string name="date_format_wd">EEEE, d MMMM, yyyy</string>
     <string name="snooze_button_sec">ש\'</string>
