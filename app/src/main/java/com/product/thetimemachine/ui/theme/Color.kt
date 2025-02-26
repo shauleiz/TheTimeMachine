@@ -1,4 +1,6 @@
 package com.product.thetimemachine.ui.theme
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.product.thetimemachine.R
 
@@ -676,4 +678,15 @@ val  PaletteList = listOf(OliveGreenColorBase, RedCyanColorBase)
 fun getPalette(palette: MyThemeColor) : MaterialThemeColorsPalette?{
     for (p in PaletteList) if (p.paletteKey == palette) return p
     return null
+}
+
+fun createPaletteList():  List<Pair<Int, String>> {
+
+    val list = mutableListOf<Pair<Int, String>>()
+
+    for (palette in PaletteList) {
+        list.add(Pair(palette.paletteDisplayName, palette.paletteKey.toString()))
+    }
+
+    return list.toList()
 }

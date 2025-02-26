@@ -38,6 +38,7 @@ import com.product.thetimemachine.LanguageManager.restartApp
 import com.product.thetimemachine.R
 import com.product.thetimemachine.Settings
 import com.product.thetimemachine.ui.theme.AppTheme
+import com.product.thetimemachine.ui.theme.MyThemeColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -61,6 +62,8 @@ object PreferencesKeys {
     val KEY_SNOOZE_DURATION   = stringPreferencesKey("KEY_SNOOZE_DURATION")
     val KEY_SORT_SEPARATE     = stringPreferencesKey("KEY_SORT_SEPARATE")
     val KEY_LANGUAGE          = stringPreferencesKey("KEY_LANGUAGE")
+    val KEY_THEME             = stringPreferencesKey("KEY_THEME")
+    val KEY_THEME_TYPE        = stringPreferencesKey("KEY_THEME_TYPE")
 }
 
 
@@ -77,6 +80,8 @@ data class UserPreferences(
     val sortSeparate: String,
     val gradualVolume: String,
     val language: String,
+    val theme : String,
+    val themeType : String,
 )
 
 val Context.timeMachineDataStore by preferencesDataStore(
@@ -102,13 +107,16 @@ fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferen
     val sortSeparate    = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: parent.getString(R.string.sort_separate_def)
     val gradualVolume   = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: parent.getString(R.string.gradual_volume_def)
     val language        = preferences[PreferencesKeys.KEY_LANGUAGE] ?: Locale.getDefault().language
+    val theme           = preferences[PreferencesKeys.KEY_THEME] ?: MyThemeColor.OLIVEGREEN.toString()
+    val themeType       = preferences[PreferencesKeys.KEY_THEME_TYPE] ?: parent.getString(R.string.theme_type_auto)
 
 
     return UserPreferences(
         ringRepeat, ringDuration, snoozeDuration,
         hour12Or24, clockType, firstDayWeek,
         vibratePattern, alarmSound, sortType,
-        sortSeparate, gradualVolume, language
+        sortSeparate, gradualVolume, language,
+        theme, themeType,
     )
 }
 
@@ -151,6 +159,16 @@ fun getPrefFirstDayOfWeek(parent: Context?): String {
 fun getPrefLanguage(parent: Context?): String {
     if (parent == null) return ""
     return getPrefs(parent).language
+}
+
+fun getPrefTheme(parent: Context?): String {
+    if (parent == null) return ""
+    return getPrefs(parent).theme
+}
+
+fun getPrefThemeType(parent: Context?): String {
+    if (parent == null) return ""
+    return getPrefs(parent).themeType
 }
 
 fun getPrefSortType(parent: Context?): String {

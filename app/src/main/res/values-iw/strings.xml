@@ -139,4 +139,9 @@
     <string name="date_format_wd">EEEE, d MMMM, yyyy</string>
     <string name="snooze_button_sec">ש\'</string>
     <string name="snooze_button_min">דק\'</string>
+    <string name="theme_select">צבעי טפט</string>
+    <string name="theme_type">בהירות טפט</string>
+    <string name="theme_type_auto">מערכת</string>
+    <string name="theme_type_light">בהירה</string>
+    <string name="theme_type_dark">כהה</string>
 </resources>

@@ -45,6 +45,7 @@ import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.R
+import com.product.thetimemachine.ui.theme.createPaletteList
 
 
 /***********************************************************************************************/
@@ -116,6 +117,13 @@ val sortTypeList = listOf(
 
 val languageList = listOf (
     Pair(R.string.lang_en,"en"), Pair(R.string.lang_he, "iw"))
+
+val themeList = createPaletteList()
+
+val themeTypeList =  listOf (
+    Pair(R.string.theme_type_auto, "Auto"), Pair(R.string.theme_type_light, "Light"),
+    Pair(R.string.theme_type_dark, "Dark"),
+)
 
 object SoundObj {
 
@@ -309,6 +317,26 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
             origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.language) }),
             list = languageList,
             iconId = R.drawable.language_opsz24,
+            showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
+
+        PrefData(
+            title = R.string.theme_select,
+            prefKey = PreferencesKeys.KEY_THEME,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.theme) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.theme) }),
+            list = themeList,
+            iconId = R.drawable.palette_24dp,
+            showDialog = rememberSaveable { mutableStateOf(false) }
+        ),
+
+        PrefData(
+            title = R.string.theme_type,
+            prefKey = PreferencesKeys.KEY_THEME_TYPE,
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.themeType) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.themeType) }),
+            list = themeTypeList,
+            iconId = R.drawable.dark_mode_24dp,
             showDialog = rememberSaveable { mutableStateOf(false) }
         ),
 
