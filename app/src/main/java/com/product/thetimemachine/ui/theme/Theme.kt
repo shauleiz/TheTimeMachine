@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
+import com.product.thetimemachine.ui.getPrefTheme
 
 
 /*
@@ -23,9 +25,12 @@ import androidx.compose.ui.platform.LocalContext
 typealias lightScheme= ColorScheme
 typealias darkScheme= ColorScheme
 
-enum class MyThemeColor {
-    REDCYAN, OLIVEGREEN,
+/*
+enum class MyThemeColor (color : String) {
+    REDCYAN("REDCYAN"), OLIVEGREEN("OLIVEGREEN"),
 }
+*/
+
 fun createColorSchemes(palette: MaterialThemeColorsPalette): Pair<lightScheme, darkScheme> {
     
     val lightScheme= lightColorScheme(
@@ -259,7 +264,7 @@ fun createColorSchemes(palette: MaterialThemeColorsPalette): Pair<lightScheme, d
 
     return Pair(lightScheme, darkScheme)
 }
-fun getSelectedThemeColors(myThemeSelected: MyThemeColor) : Pair<lightScheme, darkScheme> {
+fun getSelectedThemeColors(myThemeSelected: String) : Pair<lightScheme, darkScheme> {
     return createColorSchemes(getPalette(myThemeSelected)!!)
 }
 
@@ -276,12 +281,14 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
+
+
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    selectedTheme: MyThemeColor = MyThemeColor.REDCYAN,
+    selectedTheme: String = getPrefTheme(appContext),
     content: @Composable() () -> Unit
 ) {
     val (lightScheme, darkScheme) = getSelectedThemeColors(selectedTheme)

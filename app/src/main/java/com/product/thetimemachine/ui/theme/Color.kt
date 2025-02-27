@@ -6,7 +6,7 @@ import com.product.thetimemachine.R
 
 interface MaterialThemeColorsPalette {
     val paletteDisplayName : Int
-    val paletteKey: MyThemeColor
+    val paletteKey: String
 
     val primaryLight: Color
     val onPrimaryLight: Color
@@ -232,7 +232,7 @@ interface MaterialThemeColorsPalette {
 */
 object OliveGreenColorBase : MaterialThemeColorsPalette {
     override val paletteDisplayName = R.string.olive_green
-    override val paletteKey = MyThemeColor.OLIVEGREEN
+    override val paletteKey = "OLIVEGREEN"
 
     override val primaryLight = Color(0xFF35693F)
     override val onPrimaryLight = Color(0xFFFFFFFF)
@@ -452,7 +452,7 @@ object OliveGreenColorBase : MaterialThemeColorsPalette {
 }
 object RedCyanColorBase : MaterialThemeColorsPalette {
     override val paletteDisplayName = R.string.red_cyan
-    override val paletteKey = MyThemeColor.REDCYAN
+    override val paletteKey = "REDCYAN"
 
     override val primaryLight = Color(0xFFBB0700)
     override val onPrimaryLight = Color(0xFFFFFFFF)
@@ -675,7 +675,7 @@ object RedCyanColorBase : MaterialThemeColorsPalette {
 
 val  PaletteList = listOf(OliveGreenColorBase, RedCyanColorBase)
 
-fun getPalette(palette: MyThemeColor) : MaterialThemeColorsPalette?{
+fun getPalette(palette: String) : MaterialThemeColorsPalette?{
     for (p in PaletteList) if (p.paletteKey == palette) return p
     return null
 }
@@ -685,7 +685,7 @@ fun createPaletteList():  List<Pair<Int, String>> {
     val list = mutableListOf<Pair<Int, String>>()
 
     for (palette in PaletteList) {
-        list.add(Pair(palette.paletteDisplayName, palette.paletteKey.toString()))
+        list.add(Pair(palette.paletteDisplayName, palette.paletteKey))
     }
 
     return list.toList()

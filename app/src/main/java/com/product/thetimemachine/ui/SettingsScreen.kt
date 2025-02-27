@@ -38,7 +38,6 @@ import com.product.thetimemachine.LanguageManager.restartApp
 import com.product.thetimemachine.R
 import com.product.thetimemachine.Settings
 import com.product.thetimemachine.ui.theme.AppTheme
-import com.product.thetimemachine.ui.theme.MyThemeColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -107,7 +106,7 @@ fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferen
     val sortSeparate    = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: parent.getString(R.string.sort_separate_def)
     val gradualVolume   = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: parent.getString(R.string.gradual_volume_def)
     val language        = preferences[PreferencesKeys.KEY_LANGUAGE] ?: Locale.getDefault().language
-    val theme           = preferences[PreferencesKeys.KEY_THEME] ?: MyThemeColor.OLIVEGREEN.toString()
+    val theme           = preferences[PreferencesKeys.KEY_THEME] ?: "OLIVEGREEN"
     val themeType       = preferences[PreferencesKeys.KEY_THEME_TYPE] ?: parent.getString(R.string.theme_type_auto)
 
 
@@ -163,6 +162,7 @@ fun getPrefLanguage(parent: Context?): String {
 
 fun getPrefTheme(parent: Context?): String {
     if (parent == null) return ""
+    Log.d("THE_TIME_MACHINE", "getPrefTheme(): getPrefs(parent).theme = ${getPrefs(parent).theme} ")
     return getPrefs(parent).theme
 }
 
