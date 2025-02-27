@@ -21,6 +21,8 @@ import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.BaseActivity
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
+import com.product.thetimemachine.ui.theme.getCurrentColorScheme
+import com.product.thetimemachine.ui.theme.getSelectedThemeColors
 
 
 private const val isDynamicColor = false
@@ -84,10 +86,16 @@ class MainActivity : BaseActivity() {
 
     @Composable
     fun NavigationBarBgColor() {
+
+        val (lightScheme, darkScheme) = getSelectedThemeColors(getPrefTheme(mainActivity))
+
+        Log.d("THE_TIME_MACHINE", "NavigationBarBgColor(): getPrefTheme(mainActivity) = ${getPrefTheme(mainActivity)} ")
+
         val window = this.window
         //window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.navigationBarColor = colorScheme.surfaceContainer.toArgb()
+        //window.navigationBarColor = colorScheme.surfaceContainer.toArgb()
+        window.navigationBarColor = getCurrentColorScheme().surfaceContainer.toArgb()
     }
 
     override fun onResume() {
@@ -105,10 +113,7 @@ class MainActivity : BaseActivity() {
      AppTheme(dynamicColor = isDynamicColor) {
          Surface {
              MaterialTheme {
-                 mainActivity.NavigationBarBgColor()
-                 AlarmNavHost(
-                     alarmViewModel = alarmViewModel,
-                 )
+                 AlarmNavHost(alarmViewModel = alarmViewModel,)
              }
          }
      }
