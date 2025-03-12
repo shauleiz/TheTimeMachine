@@ -35,13 +35,14 @@ fun AlarmNavHost(
 
 
     val navController = rememberNavController()
-    //val currentBackStack by navController.currentBackStackEntryAsState()
+
 
     NavHost(
         navController = navController,
         startDestination = AlarmList.route,
     ) {
         composable(route = AlarmList.route) {
+            mainActivity.NavigationBarBgColor()
             ShowAlarmListScreen(alarmViewModel, navController)
         }
         composable(
@@ -50,10 +51,11 @@ fun AlarmNavHost(
         ) { navBackStackEntry ->
             val itemId =
                 navBackStackEntry.arguments?.getLong(AlarmEdit.ITEM_ID_ARG, 0)
+            mainActivity.NavigationBarBgColor()
             ShowAlarmEditScreen(navController, itemId)
-            Log.d("THE_TIME_MACHINE", "--- AlarmNavHost(): itemId=$itemId")
         }
         composable(route = Settings.route) {
+            mainActivity.NavigationBarBgColor()
             ShowSettingsScreen(navController)
         }
     }

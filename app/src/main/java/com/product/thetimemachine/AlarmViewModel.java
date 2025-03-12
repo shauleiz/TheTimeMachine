@@ -5,6 +5,7 @@ import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefGradualVolum
 import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefRingDuration;
 import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefRingRepeat;
 import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefSnoozeDuration;
+import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefTheme;
 import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefVibrationPattern;
 
 import android.app.Application;
@@ -42,6 +43,8 @@ public class AlarmViewModel extends AndroidViewModel {
    private AlarmRepository repo;
    private final MutableLiveData<ArrayList<Integer>> liveSelectedItems = new MutableLiveData<>(new ArrayList<>());
 
+   // Preferences
+   final MutableLiveData<String> theme;
 
    public LiveData<ArrayList<Integer>> getLiveSelectedItems() {
       return liveSelectedItems;
@@ -54,7 +57,13 @@ public class AlarmViewModel extends AndroidViewModel {
       setUpAlarmValues = new SetUpAlarmValues();
       repo = new AlarmRepository(application);
       LiveAlarmList = repo.getAlarmList();
+
+      theme = new MutableLiveData<>();
+      theme.setValue(getPrefTheme(TheTimeMachineApp.appContext));
    }
+
+   public MutableLiveData<String> getTheme() {return  theme;}
+
 
 
    @Override

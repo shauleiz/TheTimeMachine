@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -268,6 +269,25 @@ fun getSelectedThemeColors(myThemeSelected: String) : Pair<lightScheme, darkSche
     return createColorSchemes(getPalette(myThemeSelected)!!)
 }
 
+@Composable
+fun getCurrentColorScheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = false,
+    ) : ColorScheme {
+
+    val (lightScheme, darkScheme) = getSelectedThemeColors(getPrefTheme(appContext))
+
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        darkTheme -> darkScheme
+        else -> lightScheme
+    }
+    return colorScheme
+}
 
 @Immutable
 data class ColorFamily(
@@ -288,20 +308,10 @@ fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    selectedTheme: String = getPrefTheme(appContext),
     content: @Composable() () -> Unit
 ) {
-    val (lightScheme, darkScheme) = getSelectedThemeColors(selectedTheme)
 
-  val colorScheme = when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-          val context = LocalContext.current
-          if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
-      
-      darkTheme -> darkScheme
-      else -> lightScheme
-  }
+  val colorScheme = getCurrentColorScheme(darkTheme = darkTheme, dynamicColor = dynamicColor)
 
   MaterialTheme(
     colorScheme = colorScheme,

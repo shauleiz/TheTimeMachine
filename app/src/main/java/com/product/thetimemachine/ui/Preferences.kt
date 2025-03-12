@@ -41,9 +41,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp
+import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.createPaletteList
 
@@ -323,8 +325,8 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
         PrefData(
             title = R.string.theme_select,
             prefKey = PreferencesKeys.KEY_THEME,
-            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.theme) }),
-            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.theme) }),
+            currentValue = (rememberSaveable { mutableStateOf(alarmViewModel!!.theme.value) }),
+            origValue = (rememberSaveable { mutableStateOf(alarmViewModel!!.theme.value) }),
             list = themeList,
             iconId = R.drawable.palette_24dp,
             showDialog = rememberSaveable { mutableStateOf(false) }
@@ -461,6 +463,8 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
     val typography = MaterialTheme.typography
     val styledOverLineText = typography.labelSmall
     val styledTrailing = typography.bodySmall
+    val alarmViewModel = ViewModelProvider(mainActivity)[AlarmViewModel::class.java]
+
 
     // TODO: Write a callback function to give a sample of vibration & Sound pattern
     // Use SettingsFragment::vibrate and SettingsFragment::sound
