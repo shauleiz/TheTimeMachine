@@ -31,7 +31,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.product.thetimemachine.Application.TheTimeMachineApp
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.LanguageManager.restartApp
@@ -272,6 +271,14 @@ class SettingsScreen(private val navBack: () -> Unit) {
                 restartApp(mainActivity)
         }
 
+        fun onPrefDialogSelected(entry: PrefData, value: String?){
+            onDialogSelect(entry, value)
+        }
+
+        fun onPrefDialogCancel(index: Int, entry: PrefData){
+            onDialogCancel(index, entry)
+        }
+
 
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
@@ -318,7 +325,11 @@ class SettingsScreen(private val navBack: () -> Unit) {
                             /* Preferences - listOfPrefs is the list of top entries */
                             /* The trailing lambda: Called when user clicks OK after
                             *  changing a property value                            */
-                            ShowPreferences(listOfPrefs) { i, v -> onPrefDialogOK(i, v) }
+                            ShowPreferences(
+                                listOfPrefs = listOfPrefs,
+                                onSelected = {e,v-> onPrefDialogSelected(e,v)},
+                                onCancel = {i, e -> onPrefDialogCancel(i, e)}
+                            ) { i, v -> onPrefDialogOK(i, v) } // onOK
                         }
                     }
                 }

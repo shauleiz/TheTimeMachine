@@ -448,6 +448,24 @@ fun getListOfPrefLiveData (setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : 
         )
 }
 
+// Use SettingsFragment::vibrate and SettingsFragment::sound
+// Call from Row/Radio button OnClick
+fun playVibOrSound(pattern : String? , entry : PrefData) {
+    if (entry.title == R.string.vibration_pattern) VibrateObj.playVibrate(pattern, 5000)
+    else if (entry.title == R.string.alarm_sounds) SoundObj.playSound(pattern, 4000)
+}
+
+fun onDialogCancel(index: Int, entry : PrefData){
+    playVibOrSound( null , entry,) // Mute
+    entry.showDialog?.value  = false
+    entry.currentValue!!.value = entry.origValue!!.value
+}
+
+fun onDialogSelect(entry : PrefData, value: String?){
+    entry.currentValue!!.value = value
+    playVibOrSound(value,entry)
+}
+
 /*
         Show the list of preferences
         listOfPrefs: List of all preferences
@@ -459,7 +477,13 @@ fun getListOfPrefLiveData (setUpAlarmValues: AlarmViewModel.SetUpAlarmValues) : 
        Each PrefRow is a structure representing a Preference
  */
 @Composable
-fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : String?)->Unit) {
+fun ShowPreferences(
+    listOfPrefs: List<PrefData>,
+    onSelected: (entry : PrefData, value : String?)->Unit = { entry: PrefData, value:String? -> onDialogSelect(entry,value) },
+    onCancel: (index: Int, entry : PrefData) -> Unit = { index: Int, entry: PrefData -> onDialogCancel(index,entry)},
+    onOK: (index: Int, value : String?)->Unit) {
+
+
     val typography = MaterialTheme.typography
     val styledOverLineText = typography.labelSmall
     val styledTrailing = typography.bodySmall
@@ -482,10 +506,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
         if (entry.showDialog != null && entry.showDialog.value && entry.isDialog) {
 
             // Display Preference Dialog when a Preference row is clicked (index of Preference)
-            Dialog(onDismissRequest = {
-                playVibOrSound(index, null) // Mute
-                entry.showDialog.value = false
-                entry.currentValue!!.value = entry.origValue!!.value }) {
+            Dialog(onDismissRequest = {onCancel(index, entry)}) {
 
                 // Column: Text (Dialog title) then all radio buttons then OK/Cancel buttons
                 Column(
@@ -521,8 +542,9 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
                                 .fillMaxWidth()
                                 .clickable {
                                     // The radio button was selected - currentValue changes
-                                    entry.currentValue!!.value = pair.second
-                                    playVibOrSound(index, pair.second)
+                                    onSelected(entry, pair.second)
+                                    //entry.currentValue!!.value = pair.second
+                                    //playVibOrSound(index, pair.second)
                                 }
                         ) {
                             // Radio button: Selected if equal to currentValue
@@ -544,9 +566,7 @@ fun ShowPreferences(listOfPrefs: List<PrefData>, onOK : (index: Int, value : Str
 
                         // Cancel: Stops sound/vibration and resets CurrentValue to origValue
                         TextButton({
-                            playVibOrSound(index, null) // Mute
-                            entry.showDialog.value = false
-                            entry.currentValue!!.value = entry.origValue!!.value})
+                            onCancel(index, entry)})
                         {
                             Text(stringResource(id = R.string.cancel_general)
                             )
