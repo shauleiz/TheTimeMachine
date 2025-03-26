@@ -268,7 +268,6 @@ class SettingsScreen(private val navBack: () -> Unit) {
 
 
         var currentTheme by rememberSaveable() { mutableStateOf(getPrefTheme(parent)) }
-        var prevTheme by rememberSaveable() { mutableStateOf(getPrefTheme(parent)) }
 
         // Call when preferences dialog OK button pressed
         val onPrefDialogOK = { index: Int, value: String? ->
@@ -287,10 +286,6 @@ class SettingsScreen(private val navBack: () -> Unit) {
             // Special case: If language changed - restart app
             if (listOfPrefs[index].prefKey == PreferencesKeys.KEY_LANGUAGE && hasChanged)
                 restartApp(mainActivity)
-
-            // DEBUG
-            if (listOfPrefs[index].prefKey == PreferencesKeys.KEY_THEME)
-                Log.d("THE_TIME_MACHINE", "onPrefDialogOK(): getPrefTheme() =  ${getPrefTheme(parent)}")
         }
 
 
