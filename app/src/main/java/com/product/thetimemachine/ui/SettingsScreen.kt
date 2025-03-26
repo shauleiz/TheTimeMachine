@@ -22,8 +22,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.datastore.preferences.SharedPreferencesMigration
@@ -48,20 +53,20 @@ const val USER_PREFERENCES_NAME = "the_time_machine_preferences_datastore"
 
 // TODO: Use R.string instead of hardcoded strings
 object PreferencesKeys {
-    val KEY_H12_24            = stringPreferencesKey("KEY_H12_24")
-    val KEY_CLOCK_TYPE        = stringPreferencesKey("KEY_CLOCK_TYPE")
-    val KEY_RING_DURATION     = stringPreferencesKey("KEY_RING_DURATION")
-    val KEY_FIRST_DAY         = stringPreferencesKey("KEY_FIRST_DAY")
-    val KEY_RING_REPEAT       = stringPreferencesKey("KEY_RING_REPEAT")
+    val KEY_H12_24 = stringPreferencesKey("KEY_H12_24")
+    val KEY_CLOCK_TYPE = stringPreferencesKey("KEY_CLOCK_TYPE")
+    val KEY_RING_DURATION = stringPreferencesKey("KEY_RING_DURATION")
+    val KEY_FIRST_DAY = stringPreferencesKey("KEY_FIRST_DAY")
+    val KEY_RING_REPEAT = stringPreferencesKey("KEY_RING_REPEAT")
     val KEY_VIBRATION_PATTERN = stringPreferencesKey("KEY_VIBRATION_PATTERN")
-    val KEY_ALARM_SOUND       = stringPreferencesKey("KEY_ALARM_SOUND")
-    val KEY_SORT_TYPE         = stringPreferencesKey("KEY_SORT_TYPE")
-    val KEY_GRADUAL_VOLUME    = stringPreferencesKey("KEY_GRADUAL_VOLUME")
-    val KEY_SNOOZE_DURATION   = stringPreferencesKey("KEY_SNOOZE_DURATION")
-    val KEY_SORT_SEPARATE     = stringPreferencesKey("KEY_SORT_SEPARATE")
-    val KEY_LANGUAGE          = stringPreferencesKey("KEY_LANGUAGE")
-    val KEY_THEME             = stringPreferencesKey("KEY_THEME")
-    val KEY_THEME_TYPE        = stringPreferencesKey("KEY_THEME_TYPE")
+    val KEY_ALARM_SOUND = stringPreferencesKey("KEY_ALARM_SOUND")
+    val KEY_SORT_TYPE = stringPreferencesKey("KEY_SORT_TYPE")
+    val KEY_GRADUAL_VOLUME = stringPreferencesKey("KEY_GRADUAL_VOLUME")
+    val KEY_SNOOZE_DURATION = stringPreferencesKey("KEY_SNOOZE_DURATION")
+    val KEY_SORT_SEPARATE = stringPreferencesKey("KEY_SORT_SEPARATE")
+    val KEY_LANGUAGE = stringPreferencesKey("KEY_LANGUAGE")
+    val KEY_THEME = stringPreferencesKey("KEY_THEME")
+    val KEY_THEME_TYPE = stringPreferencesKey("KEY_THEME_TYPE")
 }
 
 
@@ -78,8 +83,8 @@ data class UserPreferences(
     val sortSeparate: String,
     val gradualVolume: String,
     val language: String,
-    val theme : String,
-    val themeType : String,
+    val theme: String,
+    val themeType: String,
 )
 
 val Context.timeMachineDataStore by preferencesDataStore(
@@ -91,22 +96,33 @@ val Context.timeMachineDataStore by preferencesDataStore(
 
 private const val isDynamicColor = false
 
-fun mapUserPreferences(parent : Context, preferences: Preferences): UserPreferences {
+fun mapUserPreferences(parent: Context, preferences: Preferences): UserPreferences {
 
-    val ringRepeat      = preferences[PreferencesKeys.KEY_RING_REPEAT] ?: parent.getString(R.string.ring_repeat_def)
-    val ringDuration    = preferences[PreferencesKeys.KEY_RING_DURATION] ?: parent.getString(R.string.ring_duration_def)
-    val snoozeDuration  = preferences[PreferencesKeys.KEY_SNOOZE_DURATION] ?: parent.getString(R.string.snooze_duration_def)
-    val hour12Or24      = preferences[PreferencesKeys.KEY_H12_24] ?: getSystemTimeFormat(parent)
-    val clockType       = preferences[PreferencesKeys.KEY_CLOCK_TYPE] ?: parent.getString(R.string.clock_type_def)
-    val firstDayWeek    = preferences[PreferencesKeys.KEY_FIRST_DAY] ?: parent.getString(R.string.first_day_week_def)
-    val vibratePattern  = preferences[PreferencesKeys.KEY_VIBRATION_PATTERN] ?: parent.getString(R.string.vibration_pattern_def)
-    val alarmSound      = preferences[PreferencesKeys.KEY_ALARM_SOUND] ?: parent.getString(R.string.alarm_sound_def)
-    val sortType        = preferences[PreferencesKeys.KEY_SORT_TYPE] ?: parent.getString(R.string.sort_type_def)
-    val sortSeparate    = preferences[PreferencesKeys.KEY_SORT_SEPARATE] ?: parent.getString(R.string.sort_separate_def)
-    val gradualVolume   = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME] ?: parent.getString(R.string.gradual_volume_def)
-    val language        = preferences[PreferencesKeys.KEY_LANGUAGE] ?: Locale.getDefault().language
-    val theme           = preferences[PreferencesKeys.KEY_THEME] ?: "OLIVEGREEN"
-    val themeType       = preferences[PreferencesKeys.KEY_THEME_TYPE] ?: parent.getString(R.string.theme_type_auto)
+    val ringRepeat =
+        preferences[PreferencesKeys.KEY_RING_REPEAT] ?: parent.getString(R.string.ring_repeat_def)
+    val ringDuration = preferences[PreferencesKeys.KEY_RING_DURATION]
+        ?: parent.getString(R.string.ring_duration_def)
+    val snoozeDuration = preferences[PreferencesKeys.KEY_SNOOZE_DURATION]
+        ?: parent.getString(R.string.snooze_duration_def)
+    val hour12Or24 = preferences[PreferencesKeys.KEY_H12_24] ?: getSystemTimeFormat(parent)
+    val clockType =
+        preferences[PreferencesKeys.KEY_CLOCK_TYPE] ?: parent.getString(R.string.clock_type_def)
+    val firstDayWeek =
+        preferences[PreferencesKeys.KEY_FIRST_DAY] ?: parent.getString(R.string.first_day_week_def)
+    val vibratePattern = preferences[PreferencesKeys.KEY_VIBRATION_PATTERN]
+        ?: parent.getString(R.string.vibration_pattern_def)
+    val alarmSound =
+        preferences[PreferencesKeys.KEY_ALARM_SOUND] ?: parent.getString(R.string.alarm_sound_def)
+    val sortType =
+        preferences[PreferencesKeys.KEY_SORT_TYPE] ?: parent.getString(R.string.sort_type_def)
+    val sortSeparate = preferences[PreferencesKeys.KEY_SORT_SEPARATE]
+        ?: parent.getString(R.string.sort_separate_def)
+    val gradualVolume = preferences[PreferencesKeys.KEY_GRADUAL_VOLUME]
+        ?: parent.getString(R.string.gradual_volume_def)
+    val language = preferences[PreferencesKeys.KEY_LANGUAGE] ?: Locale.getDefault().language
+    val theme = preferences[PreferencesKeys.KEY_THEME] ?: "OLIVEGREEN"
+    val themeType =
+        preferences[PreferencesKeys.KEY_THEME_TYPE] ?: parent.getString(R.string.theme_type_auto)
 
 
     return UserPreferences(
@@ -206,7 +222,7 @@ fun getPrefGradualVolume(parent: Context?): String {
 }
 
 // Return "h24"/"h12"
-fun getSystemTimeFormat(context: Context) : String{
+fun getSystemTimeFormat(context: Context): String {
     return if (is24HourFormat(context)) "h24" else "h12"
 }
 
@@ -219,22 +235,21 @@ class SettingsScreen(private val navBack: () -> Unit) {
     private lateinit var setUpAlarmValues: UserPreferences
 
 
-
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SettingsDisplayTop() {
 
         parent = appContext
-/*
-        //          --- DEBUG Section ---                //
-        // Remove all preferences - for Debug use only
-        // Testing reset values
-        runBlocking {
-            parent.timeMachineDataStore.edit { preferences ->
-                preferences.clear()
-            }
-        }
- */
+        /*
+                //          --- DEBUG Section ---                //
+                // Remove all preferences - for Debug use only
+                // Testing reset values
+                runBlocking {
+                    parent.timeMachineDataStore.edit { preferences ->
+                        preferences.clear()
+                    }
+                }
+         */
 
         userPreferencesFlow = parent.timeMachineDataStore.data.map { preferences ->
             mapUserPreferences(parent, preferences)
@@ -248,11 +263,14 @@ class SettingsScreen(private val navBack: () -> Unit) {
         listOfPrefs.addAll(listOfPrefsEx)
 
 
-       // val prefs = getPrefs(parent)
+        // val prefs = getPrefs(parent)
         //var sortSeparate by remember { mutableStateOf(prefs.sortSeparate) }
 
 
-        // Execute when preferences dialog OK button pressed
+        var currentTheme by rememberSaveable() { mutableStateOf(getPrefTheme(parent)) }
+        var prevTheme by rememberSaveable() { mutableStateOf(getPrefTheme(parent)) }
+
+        // Call when preferences dialog OK button pressed
         val onPrefDialogOK = { index: Int, value: String? ->
             Log.d("THE_TIME_MACHINE", "onPrefDialogOK(): index=$index ; value=$value ")
 
@@ -271,16 +289,45 @@ class SettingsScreen(private val navBack: () -> Unit) {
                 restartApp(mainActivity)
         }
 
-        fun onPrefDialogSelected(entry: PrefData, value: String?){
-            onDialogSelect(entry, value)
+
+        // Call when entry (radiobutton) selected in preferences dialog
+        fun onPrefDialogSelected(entry: PrefData, value: String?) {
+            entry.currentValue!!.value = value
+
+            // Special cases
+            when (entry.prefKey) {
+                // Theme selected
+                PreferencesKeys.KEY_THEME -> currentTheme = entry.currentValue.value.toString()
+
+
+                // Sound/Vibration
+                PreferencesKeys.KEY_VIBRATION_PATTERN,
+                PreferencesKeys.KEY_ALARM_SOUND -> playVibOrSound(value, entry)
+            }
+
+
         }
 
-        fun onPrefDialogCancel(index: Int, entry: PrefData){
-            onDialogCancel(index, entry)
+        // Call when preferences dialog Cancel button pressed
+        // or dialog dismissed
+        fun onPrefDialogCancel(index: Int, entry: PrefData) {
+            entry.showDialog?.value = false
+            entry.currentValue!!.value = entry.origValue!!.value
+
+            // Special cases
+            when (entry.prefKey) {
+                // Theme selected
+                PreferencesKeys.KEY_THEME -> currentTheme = entry.origValue.value.toString()
+
+                // Sound/Vibration
+                PreferencesKeys.KEY_VIBRATION_PATTERN,
+                PreferencesKeys.KEY_ALARM_SOUND -> playVibOrSound(null, entry)
+            }
+
         }
 
 
-        AppTheme(dynamicColor = isDynamicColor) {
+        AppTheme(dynamicColor = isDynamicColor, theme = currentTheme) {
             Surface {
                 MaterialTheme {
                     Scaffold(
@@ -327,8 +374,8 @@ class SettingsScreen(private val navBack: () -> Unit) {
                             *  changing a property value                            */
                             ShowPreferences(
                                 listOfPrefs = listOfPrefs,
-                                onSelected = {e,v-> onPrefDialogSelected(e,v)},
-                                onCancel = {i, e -> onPrefDialogCancel(i, e)}
+                                onSelected = { e, v -> onPrefDialogSelected(e, v) },
+                                onCancel = { i, e -> onPrefDialogCancel(i, e) }
                             ) { i, v -> onPrefDialogOK(i, v) } // onOK
                         }
                     }

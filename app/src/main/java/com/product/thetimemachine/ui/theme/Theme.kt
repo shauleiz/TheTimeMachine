@@ -273,9 +273,13 @@ fun getSelectedThemeColors(myThemeSelected: String) : Pair<lightScheme, darkSche
 fun getCurrentColorScheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
+    color: String = "",
     ) : ColorScheme {
 
-    val (lightScheme, darkScheme) = getSelectedThemeColors(getPrefTheme(appContext))
+    val (lightScheme, darkScheme) = when (color){
+        "" -> getSelectedThemeColors(getPrefTheme(appContext))
+        else -> getSelectedThemeColors(color)
+}
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -305,13 +309,14 @@ val unspecified_scheme = ColorFamily(
 
 @Composable
 fun AppTheme(
+    theme: String = "",
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
 
-  val colorScheme = getCurrentColorScheme(darkTheme = darkTheme, dynamicColor = dynamicColor)
+  var colorScheme = getCurrentColorScheme(darkTheme = darkTheme, dynamicColor = dynamicColor, color = theme)
 
   MaterialTheme(
     colorScheme = colorScheme,
