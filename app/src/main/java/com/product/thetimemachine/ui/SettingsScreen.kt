@@ -287,6 +287,10 @@ class SettingsScreen(private val navBack: () -> Unit) {
             // Special case: If language changed - restart app
             if (listOfPrefs[index].prefKey == PreferencesKeys.KEY_LANGUAGE && hasChanged)
                 restartApp(mainActivity)
+
+            // DEBUG
+            if (listOfPrefs[index].prefKey == PreferencesKeys.KEY_THEME)
+                Log.d("THE_TIME_MACHINE", "onPrefDialogOK(): getPrefTheme() =  ${getPrefTheme(parent)}")
         }
 
 

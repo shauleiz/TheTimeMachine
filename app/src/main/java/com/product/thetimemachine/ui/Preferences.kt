@@ -325,8 +325,8 @@ fun getListOfGeneralPreferences(setUpAlarmValues: UserPreferences): List<PrefDat
         PrefData(
             title = R.string.theme_select,
             prefKey = PreferencesKeys.KEY_THEME,
-            currentValue = (rememberSaveable { mutableStateOf(alarmViewModel!!.theme.value) }),
-            origValue = (rememberSaveable { mutableStateOf(alarmViewModel!!.theme.value) }),
+            currentValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.theme) }),
+            origValue = (rememberSaveable { mutableStateOf(setUpAlarmValues.theme) }),
             list = themeList,
             iconId = R.drawable.palette_24dp,
             showDialog = rememberSaveable { mutableStateOf(false) }
