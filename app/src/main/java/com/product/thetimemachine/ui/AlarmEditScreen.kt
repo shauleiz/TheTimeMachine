@@ -341,6 +341,8 @@ class AlarmEditScreen(
             calendarSelType = type
         }
 
+        mainActivity.NavigationBarBgColor()
+
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {

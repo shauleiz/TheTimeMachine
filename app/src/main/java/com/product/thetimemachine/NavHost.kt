@@ -42,7 +42,6 @@ fun AlarmNavHost(
         startDestination = AlarmList.route,
     ) {
         composable(route = AlarmList.route) {
-            mainActivity.NavigationBarBgColor()
             ShowAlarmListScreen(alarmViewModel, navController)
         }
         composable(
@@ -51,11 +50,10 @@ fun AlarmNavHost(
         ) { navBackStackEntry ->
             val itemId =
                 navBackStackEntry.arguments?.getLong(AlarmEdit.ITEM_ID_ARG, 0)
-            mainActivity.NavigationBarBgColor()
             ShowAlarmEditScreen(navController, itemId)
         }
         composable(route = Settings.route) {
-            mainActivity.NavigationBarBgColor()
+            //mainActivity.NavigationBarBgColor()
             ShowSettingsScreen(navController)
         }
     }

@@ -325,6 +325,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
 
         }
 
+        mainActivity.NavigationBarBgColor(currentTheme)
 
         AppTheme(dynamicColor = isDynamicColor, theme = currentTheme) {
             Surface {

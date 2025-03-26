@@ -295,6 +295,8 @@ private fun deleteSelectedAlarms() {
         var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
         var nSelectedItems by rememberSaveable { mutableIntStateOf(0) }
 
+        mainActivity.NavigationBarBgColor()
+
         AppTheme(dynamicColor = isDynamicColor) {
             Surface {
                 MaterialTheme {
