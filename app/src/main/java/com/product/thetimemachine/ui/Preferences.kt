@@ -41,11 +41,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import com.product.thetimemachine.AlarmService
 import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp
-import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.createPaletteList
 
@@ -455,8 +453,8 @@ fun playVibOrSound(pattern : String? , entry : PrefData) {
     else if (entry.title == R.string.alarm_sounds) SoundObj.playSound(pattern, 4000)
 }
 
-fun onDialogCancel(index: Int, entry : PrefData){
-    playVibOrSound( null , entry,) // Mute
+fun onDialogCancel( entry : PrefData){
+    playVibOrSound( null , entry) // Mute
     entry.showDialog?.value  = false
     entry.currentValue!!.value = entry.origValue!!.value
 }
@@ -480,14 +478,13 @@ fun onDialogSelect(entry : PrefData, value: String?){
 fun ShowPreferences(
     listOfPrefs: List<PrefData>,
     onSelected: (entry : PrefData, value : String?)->Unit = { entry: PrefData, value:String? -> onDialogSelect(entry,value) },
-    onCancel: (index: Int, entry : PrefData) -> Unit = { index: Int, entry: PrefData -> onDialogCancel(index,entry)},
+    onCancel: (index: Int, entry : PrefData) -> Unit = { _: Int, entry: PrefData -> onDialogCancel(entry)},
     onOK: (index: Int, value : String?)->Unit) {
 
 
     val typography = MaterialTheme.typography
     val styledOverLineText = typography.labelSmall
     val styledTrailing = typography.bodySmall
-    val alarmViewModel = ViewModelProvider(mainActivity)[AlarmViewModel::class.java]
 
 
     // TODO: Write a callback function to give a sample of vibration & Sound pattern

@@ -79,7 +79,6 @@ import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
-import androidx.core.content.PermissionChecker.checkSelfPermission
 import com.product.thetimemachine.AlarmList
 import com.product.thetimemachine.AlarmReceiver
 import com.product.thetimemachine.AlarmService
@@ -87,7 +86,6 @@ import com.product.thetimemachine.AlarmViewModel
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 import com.product.thetimemachine.Data.AlarmItem
-import com.product.thetimemachine.LanguageManager.isRtl
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.format.DateTimeFormatter

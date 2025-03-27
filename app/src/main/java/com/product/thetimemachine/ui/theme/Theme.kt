@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
-import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.getPrefTheme
 import com.product.thetimemachine.ui.getPrefThemeType
 
@@ -333,7 +331,7 @@ fun AppTheme(
     darkTheme: String = "",
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
 
 

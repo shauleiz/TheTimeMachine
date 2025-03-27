@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
@@ -22,7 +21,6 @@ import com.product.thetimemachine.BaseActivity
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import com.product.thetimemachine.ui.theme.getCurrentColorScheme
-import com.product.thetimemachine.ui.theme.getSelectedThemeColors
 
 
 private const val isDynamicColor = false
@@ -109,7 +107,7 @@ class MainActivity : BaseActivity() {
      AppTheme(dynamicColor = isDynamicColor, theme = getPrefTheme(appContext)) {
          Surface {
              MaterialTheme {
-                 AlarmNavHost(alarmViewModel = alarmViewModel,)
+                 AlarmNavHost(alarmViewModel = alarmViewModel)
              }
          }
      }
