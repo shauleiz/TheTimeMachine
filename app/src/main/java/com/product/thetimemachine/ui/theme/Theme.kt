@@ -1,6 +1,7 @@
 package com.product.thetimemachine.ui.theme
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -14,7 +15,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
+import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.getPrefTheme
+import com.product.thetimemachine.ui.getPrefThemeType
 
 
 /*
@@ -271,7 +274,7 @@ fun getSelectedThemeColors(myThemeSelected: String) : Pair<lightScheme, darkSche
 
 @Composable
 fun getCurrentColorScheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: String = "",
     dynamicColor: Boolean = false,
     color: String = "",
     ) : ColorScheme {
@@ -279,17 +282,34 @@ fun getCurrentColorScheme(
     val (lightScheme, darkScheme) = when (color){
         "" -> getSelectedThemeColors(getPrefTheme(appContext))
         else -> getSelectedThemeColors(color)
-}
+    }
+
+    val darkThemeCom = when (darkTheme) {
+        "" -> getPrefThemeType(appContext)
+        else -> darkTheme
+    }
+
+    val isDarkTheme = when (darkThemeCom) {
+        "Light" -> false
+        "Dark" -> true
+        "Auto" -> isSystemInDarkTheme()
+        else -> false
+    }
+
+    Log.d("THE_TIME_MACHINE", "getCurrentColorScheme():  darkTheme = $darkTheme ; darkThemeCom = $darkThemeCom ; isDarkTheme = $isDarkTheme")
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> darkScheme
+        isDarkTheme -> darkScheme
         else -> lightScheme
     }
+
+
+
     return colorScheme
 }
 
@@ -310,13 +330,14 @@ val unspecified_scheme = ColorFamily(
 @Composable
 fun AppTheme(
     theme: String = "",
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: String = "",
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
 
-  var colorScheme = getCurrentColorScheme(darkTheme = darkTheme, dynamicColor = dynamicColor, color = theme)
+
+  val colorScheme = getCurrentColorScheme(darkTheme = darkTheme, dynamicColor = dynamicColor, color = theme)
 
   MaterialTheme(
     colorScheme = colorScheme,

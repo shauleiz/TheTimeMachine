@@ -85,13 +85,13 @@ class MainActivity : BaseActivity() {
         }
 
     @Composable
-    fun NavigationBarBgColor(theme: String = "") {
+    fun NavigationBarBgColor(theme: String = "", themeType: String = "") {
 
         val window = this.window
         //window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         //window.navigationBarColor = colorScheme.surfaceContainer.toArgb()
-        window.navigationBarColor = getCurrentColorScheme(color = theme).surfaceContainer.toArgb()
+        window.navigationBarColor = getCurrentColorScheme(color = theme, darkTheme = themeType).surfaceContainer.toArgb()
     }
 
     override fun onResume() {

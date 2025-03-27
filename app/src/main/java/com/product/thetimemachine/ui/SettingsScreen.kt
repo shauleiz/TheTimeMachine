@@ -268,6 +268,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
 
 
         var currentTheme by rememberSaveable() { mutableStateOf(getPrefTheme(parent)) }
+        var currentThemeType by rememberSaveable() { mutableStateOf(getPrefThemeType(parent)) }
 
         // Call when preferences dialog OK button pressed
         val onPrefDialogOK = { index: Int, value: String? ->
@@ -298,6 +299,11 @@ class SettingsScreen(private val navBack: () -> Unit) {
                 // Theme selected
                 PreferencesKeys.KEY_THEME -> currentTheme = entry.currentValue.value.toString()
 
+                // Theme Type
+                PreferencesKeys.KEY_THEME_TYPE -> {
+                    currentThemeType = entry.currentValue.value.toString()
+                    Log.d("THE_TIME_MACHINE", "onPrefDialogSelected():  currentThemeType = $currentThemeType ")
+                }
 
                 // Sound/Vibration
                 PreferencesKeys.KEY_VIBRATION_PATTERN,
@@ -318,6 +324,9 @@ class SettingsScreen(private val navBack: () -> Unit) {
                 // Theme selected
                 PreferencesKeys.KEY_THEME -> currentTheme = entry.origValue.value.toString()
 
+                // Theme Type
+                PreferencesKeys.KEY_THEME_TYPE -> currentThemeType = entry.origValue.value.toString()
+
                 // Sound/Vibration
                 PreferencesKeys.KEY_VIBRATION_PATTERN,
                 PreferencesKeys.KEY_ALARM_SOUND -> playVibOrSound(null, entry)
@@ -325,9 +334,9 @@ class SettingsScreen(private val navBack: () -> Unit) {
 
         }
 
-        mainActivity.NavigationBarBgColor(currentTheme)
+        mainActivity.NavigationBarBgColor(currentTheme,  currentThemeType)
 
-        AppTheme(dynamicColor = isDynamicColor, theme = currentTheme) {
+        AppTheme(dynamicColor = isDynamicColor, theme = currentTheme, darkTheme = currentThemeType) {
             Surface {
                 MaterialTheme {
                     Scaffold(

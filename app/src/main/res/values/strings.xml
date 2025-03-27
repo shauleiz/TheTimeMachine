@@ -48,7 +48,7 @@
     <string name="sort_alarms_list">Sort Alarms List</string>
     <string name="language_list">Language</string>
     <string name="theme_select">Theme Colors</string>
-    <string name="theme_type">Theme Type</string>
+    <string name="theme_type">Theme Brightness</string>
     <string name="description_up_arrow_back">Back</string>
     <string name="key_h12_24" translatable="false">KEY_H12_24</string>
     <string name="key_ring_duration" translatable="false">KEY_RING_DURATION</string>
@@ -196,7 +196,7 @@
     <string name="olive_green">Olive Green</string>
     <string name="red_cyan">Red &amp; Cyan</string>
 
-    <string name="theme_type_auto">Auto</string>
+    <string name="theme_type_auto">System</string>
     <string name="theme_type_light">Light Colors</string>
     <string name="theme_type_dark">Dark Colors</string>
 
