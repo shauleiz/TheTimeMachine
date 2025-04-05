@@ -195,6 +195,10 @@
 
     <string name="olive_green">Olive Green</string>
     <string name="red_cyan">Red &amp; Cyan</string>
+    <string name="fairy">Fairy</string>
+    <string name="autumn">Autumn</string>
+    <string name="tame">Earth</string>
+    <string name="summer">Summer</string>
 
     <string name="theme_type_auto">System</string>
     <string name="theme_type_light">Light Colors</string>

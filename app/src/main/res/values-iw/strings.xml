@@ -135,6 +135,10 @@
     <string name="sort_alphabet">אלפביתי</string>
     <string name="olive_green">ירוק זית</string>
     <string name="red_cyan">אדום ותכלת</string>
+    <string name="fairy">פיה</string>
+    <string name="autumn">סתיו</string>
+    <string name="tame">אדמה</string>
+    <string name="summer">קיץ</string>
     <string name="no_inc">עוצמה קבועה</string>
     <string name="date_format_wd">EEEE, d MMMM, yyyy</string>
     <string name="snooze_button_sec">ש\'</string>
