@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.View
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.product.thetimemachine.AlarmReceiver
@@ -173,7 +175,10 @@ class StopSnoozeActivity : BaseActivity() {
                finish()
            }
        }
-       registerReceiver(killActivityReceiver,  IntentFilter(KILL_STOP_SNOOZE))
+       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+           registerReceiver(killActivityReceiver,  IntentFilter(KILL_STOP_SNOOZE),  RECEIVER_NOT_EXPORTED)
+       else
+           registerReceiver(killActivityReceiver,  IntentFilter(KILL_STOP_SNOOZE))
 
        // Allow this activity on a locked screen
        allowOnLockScreen()
