@@ -121,7 +121,7 @@ val languageList = listOf (
 val themeList = createPaletteList()
 
 val themeTypeList =  listOf (
-    Pair(R.string.theme_type_auto, "Auto"), Pair(R.string.theme_type_light, "Light"),
+    Pair(R.string.theme_type_auto, "System"), Pair(R.string.theme_type_light, "Light"),
     Pair(R.string.theme_type_dark, "Dark"),
 )
 
@@ -623,6 +623,9 @@ fun ShowPreferences(
     // Get the string that corresponds with the display-value of a selected value of a Preference
     fun getEntryValueStr(value: String, list: List<Pair<Int, String>>): Int {
         list.forEach { if (it.second == value) return it.first }
+
+        Log.d("THE_TIME_MACHINE", "getEntryValueStr():  pattern = $value  ; list = $list")
+
         return 0
     }
 
