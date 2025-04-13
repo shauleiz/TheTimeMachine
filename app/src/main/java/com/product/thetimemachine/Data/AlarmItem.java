@@ -3,13 +3,11 @@ package com.product.thetimemachine.Data;
 import static com.product.thetimemachine.AlarmService.ALARM;
 import static com.product.thetimemachine.AlarmService.K_TYPE;
 import static com.product.thetimemachine.Application.TheTimeMachineApp.appContext;
-import static com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity;
 import static com.product.thetimemachine.ui.SettingsScreenKt.getPrefLanguage;
 
 import static java.time.ZoneId.systemDefault;
 
 import android.app.AlarmManager;
-import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -32,13 +30,10 @@ import com.product.thetimemachine.Application.TheTimeMachineApp;
 import com.product.thetimemachine.R;
 import com.product.thetimemachine.ui.MainActivity;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.ChronoField;
 import java.util.Locale;
 import java.util.Random;
@@ -87,7 +82,7 @@ public class AlarmItem {
    public static final int THURSDAY = 0x10;
    public static final int FRIDAY = 0x20;
    public static final int SATURDAY = 0x40;
-   public static final int DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
+   //public static final int DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
    // GenStatus flags
    public static final int RINGING = 0x1;
    @PrimaryKey
@@ -342,13 +337,14 @@ public class AlarmItem {
    public static String strGetDurationToAlarm(LocalDateTime alarmTime) {
       String strH, strD, strM;
       final Context context = TheTimeMachineApp.appContext;
-      final LocalDateTime now = LocalDateTime.now();
+      final long nowMillis = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+      final long alarmTimeMillis  = alarmTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
       final long DaysInMillis = 24 * 60 * 60 * 1000;
       final long HoursInMillis = 60 * 60 * 1000;
       final long MinutesInMillis = 60 * 1000;
 
       // Calculate duration in millis
-      long duration = now.until(alarmTime, ChronoUnit.MILLIS);
+      long duration = alarmTimeMillis - nowMillis;
       if (duration < 120000)
          return context.getString(R.string.alarm_scheduled_for_now);
 
@@ -356,6 +352,9 @@ public class AlarmItem {
       long days = duration / DaysInMillis;
       long hours = (duration - days * DaysInMillis) / HoursInMillis;
       long minutes = (duration - days * DaysInMillis - hours * HoursInMillis) / MinutesInMillis;
+
+      Log.d("THE_TIME_MACHINE", "strGetDurationToAlarm()  alarmTime = " + alarmTime + "; duration(millis) = " + duration);
+
 
       // Create the print string.
 
@@ -670,7 +669,7 @@ public class AlarmItem {
 
 
       LocalDateTime now = LocalDateTime.now();
-      LocalDateTime dateTime = null;
+      LocalDateTime dateTime;
 
       try {
          if (isFutureDate() && getYear() > 0)
@@ -1008,7 +1007,6 @@ public class AlarmItem {
          long milli = alarmTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
          AlarmManager.AlarmClockInfo ac = new AlarmManager.AlarmClockInfo(milli, targetPending);
          alarmManager.setAlarmClock(ac, alarmIntent);
-
 
          // Toast
          Toast.makeText(context, strGetDurationToAlarm(alarmTime), Toast.LENGTH_LONG).show();
