@@ -78,6 +78,7 @@
     <string name="duplicate_action_bar">שכפול</string>
     <string name="delete_action_bar">מחיקה</string>
     <string name="settings_action_bar">הגדרות</string>
+    <string name="alarmlist_action_bar">רשימת צלצולים</string>
     <string name="ok_calendar">אישור</string>
     <string name="cancel_calendar">ביטול</string>
     <string name="dates_to_exclude_calendar_title">"להחריג תאריכים "</string>

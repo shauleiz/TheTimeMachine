@@ -61,7 +61,10 @@ fun AlarmNavHost(
 
 @Composable
 fun ShowSettingsScreen(navController: NavHostController){
-    SettingsScreen(navBack = {navController.popBackStack()}).SettingsDisplayTop()
+    SettingsScreen(
+        navToAlarmList = { navigate2AlarmList(navController) },
+        navBack = {navController.popBackStack()}
+    ).SettingsDisplayTop()
 }
 
 @Composable
@@ -70,7 +73,7 @@ fun ShowAlarmEditScreen(navController: NavHostController,
 {
     if (itemId != null) AlarmEditScreen(
         navToSettings = { navigate2Settings(navController) },
-        navyToAlarmList = {navigate2AlarmList(navController)},
+        navToAlarmList = {navigate2AlarmList(navController)},
         navBack = {navController.popBackStack()},
     ).AlarmEditDisplayTop(itemId)
 }

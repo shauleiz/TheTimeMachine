@@ -107,6 +107,7 @@
     <string name="duplicate_action_bar">Duplicate</string>
     <string name="delete_action_bar">Delete</string>
     <string name="settings_action_bar">Settings</string>
+    <string name="alarmlist_action_bar">Alarm List</string>
     <string name="checkmark_action_bar">Checkmark</string>
     <string name="call">Call</string>
     <string name="sms">SMS</string>

@@ -30,6 +30,7 @@ val editDesc = appContext.getString(R.string.edit_action_bar)
 val duplicateDesc = appContext.getString(R.string.duplicate_action_bar)
 val deleteDesc = appContext.getString(R.string.delete_action_bar)
 val settingsDesc = appContext.getString(R.string.settings_action_bar)
+val alarmListDesc = appContext.getString(R.string.alarmlist_action_bar)
 val checkDesc = appContext.getString(R.string.checkmark_action_bar)
 
 

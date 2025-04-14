@@ -12,6 +12,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -225,14 +228,33 @@ fun getSystemTimeFormat(context: Context): String {
     return if (is24HourFormat(context)) "h24" else "h12"
 }
 
+@Composable
+private fun SettingsActions(onActionClick: (String) -> Unit) {
+
+    // Alarm List Action
+    IconButton(onClick = {
+        onActionClick(alarmListDesc)
+    }) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.List,
+            contentDescription = alarmListDesc
+        )
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
-class SettingsScreen(private val navBack: () -> Unit) {
+class SettingsScreen( private val navToAlarmList: () -> Unit, private val navBack: () -> Unit, ) {
 
     lateinit var parent: Context
     private lateinit var userPreferencesFlow: Flow<UserPreferences>
     private lateinit var setUpAlarmValues: UserPreferences
 
+    private fun actionClicked(action: String) {
+        when (action) {
+            alarmListDesc -> navToAlarmList()
+        }
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -357,7 +379,7 @@ class SettingsScreen(private val navBack: () -> Unit) {
                                     }
                                 },
                                 actions = {
-                                    //AlarmEditActions() { actionClicked(it) }
+                                    SettingsActions() { actionClicked(it) }
                                 },
 
                                 colors = TopAppBarDefaults.topAppBarColors(

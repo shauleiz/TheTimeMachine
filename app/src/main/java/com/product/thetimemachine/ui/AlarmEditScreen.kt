@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialogDefaults
@@ -112,7 +113,7 @@ import java.time.format.DateTimeFormatter
 
 class AlarmEditScreen(
     private val navToSettings: () -> Unit,
-    private val navyToAlarmList: () -> Unit,
+    private val navToAlarmList: () -> Unit,
     private val navBack: () -> Unit,
 ) {
 
@@ -405,6 +406,7 @@ class AlarmEditScreen(
         when (action) {
             checkDesc -> checkmarkClicked{clickResult()}
             settingsDesc -> navToSettings()//navigate2Settings(navController = navController)
+            alarmListDesc -> navToAlarmList()
         }
     }
 
@@ -522,6 +524,16 @@ class AlarmEditScreen(
             Icon(
                 imageVector = Icons.Filled.Settings,
                 contentDescription = settingsDesc
+            )
+        }
+
+        // Alarm List Action
+        IconButton(onClick = {
+            onActionClick(alarmListDesc)
+        }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.List,
+                contentDescription = alarmListDesc
             )
         }
     }
@@ -1338,7 +1350,7 @@ class AlarmEditScreen(
         item.Exec()
 
         // Display the Alarm List Fragment
-        navyToAlarmList()
+        navToAlarmList()
 
         /*
         if (parent != null) parent!!.supportFragmentManager
