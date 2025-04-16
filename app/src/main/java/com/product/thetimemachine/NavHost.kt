@@ -38,11 +38,12 @@ fun AlarmNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = AlarmList.route,
+        startDestination = AlarmEditEntry.route,
     ) {
         composable(route = AlarmList.route) {
             ShowAlarmListScreen(alarmViewModel, navController)
         }
+
         composable(
             route = AlarmEdit.routeWithArgs,
             arguments = AlarmEdit.arguments,
@@ -51,6 +52,13 @@ fun AlarmNavHost(
                 navBackStackEntry.arguments?.getLong(AlarmEdit.ITEM_ID_ARG, 0)
             ShowAlarmEditScreen(navController, itemId)
         }
+
+        composable(
+            route = AlarmEditEntry.route,
+        ) { navBackStackEntry ->
+            ShowAlarmEditScreen(navController, 0)
+        }
+
         composable(route = Settings.route) {
             //mainActivity.NavigationBarBgColor()
             ShowSettingsScreen(navController)
@@ -69,7 +77,7 @@ fun ShowSettingsScreen(navController: NavHostController){
 
 @Composable
 fun ShowAlarmEditScreen(navController: NavHostController,
-                        itemId : Long?, )
+                        itemId : Long? =0, )
 {
     if (itemId != null) AlarmEditScreen(
         navToSettings = { navigate2Settings(navController) },
@@ -88,7 +96,8 @@ fun ShowAlarmListScreen(alarmViewModel: AlarmViewModel?,
         AlarmListScreen(
             alarmViewModel = alarmViewModel,
             navToSettings = { navigate2Settings(navController) },
-            navToAlarmEdit = {navigate2AlarmEdit(navController,it)}
+            navToAlarmEdit = {navigate2AlarmEdit(navController,it)},
+            navBack = {navController.popBackStack()}
         ).AlarmListDisplay()
     }
 }

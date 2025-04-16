@@ -144,20 +144,20 @@ class AlarmEditScreen(
 
 
     private fun getInitialHour(): Int {
-        if (!isNewAlarm) {
-            return setUpAlarmValues.hour.value!!
+        return if (!isNewAlarm) {
+            setUpAlarmValues.hour.value!!
         } else {
             // Get Current time
-            return LocalDateTime.now().hour
+            LocalDateTime.now().hour
         }
     }
 
     private fun getInitialMinute(): Int {
-        if (!isNewAlarm) {
-            return setUpAlarmValues.minute.value!!
+        return if (!isNewAlarm) {
+            setUpAlarmValues.minute.value!!
         } else {
             // Get Current time
-            return LocalDateTime.now().minute
+            LocalDateTime.now().minute
         }
     }
 
@@ -816,7 +816,7 @@ class AlarmEditScreen(
         //  If explicitly set in the past - leave it so but raise 'in the past' flag
         //  If Implicitly set in the past - add one day to the alarm time
         val isPast = LocalDateTime.now().plusSeconds(15).isAfter(alarmTime)
-        val isError = isPast && isExplicit
+        //val isError = isPast && isExplicit
         if (isPast && !isExplicit) alarmTime = alarmTime.plusDays(1)
 
 

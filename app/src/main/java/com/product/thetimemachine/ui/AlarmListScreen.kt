@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
@@ -91,10 +92,11 @@ import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.format.DateTimeFormatter
 
 
-class AlarmListScreen (
-     val alarmViewModel : AlarmViewModel,
-     val navToAlarmEdit: (Long)->Unit,
-     val navToSettings: ()->Unit,
+class AlarmListScreen(
+    val alarmViewModel: AlarmViewModel,
+    val navToAlarmEdit: (Long) -> Unit,
+    val navToSettings: () -> Unit,
+    val navBack: () -> Unit,
  ) {
      private var parent = appContext
      private val isDynamicColor = false
@@ -308,6 +310,16 @@ private fun deleteSelectedAlarms() {
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 },
+
+                                navigationIcon = {
+                                    IconButton(onClick = { navBack() }) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "Localized description" // TODO: Replace
+                                        )
+                                    }
+                                },
+
                                 actions = {
                                     AlarmListActions(nSelectedItems) { route ->
                                         actionClicked(
