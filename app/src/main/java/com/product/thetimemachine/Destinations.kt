@@ -18,9 +18,6 @@ package com.product.thetimemachine
 
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.product.thetimemachine.Application.TheTimeMachineApp
-import com.product.thetimemachine.Application.TheTimeMachineApp.appContext
-import com.product.thetimemachine.Application.TheTimeMachineApp.mainActivity
 
 /**
  * Contract for information needed on every Rally navigation destination
