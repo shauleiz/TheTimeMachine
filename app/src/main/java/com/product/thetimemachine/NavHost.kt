@@ -42,10 +42,6 @@ fun AlarmNavHost(
         startDestination = AlarmEditEntry.route,
     ) {
 
-        fun isStackEmpty():Boolean{
-            val entry = navController.previousBackStackEntry
-            return entry==null
-        }
 
         composable(route = AlarmList.route) {
             ShowAlarmListScreen(alarmViewModel, navController)
@@ -58,13 +54,13 @@ fun AlarmNavHost(
             val itemId =
                 navBackStackEntry.arguments?.getLong(AlarmEdit.ITEM_ID_ARG, 0)
             ShowAlarmEditScreen(navController, itemId,
-                {isStackEmpty()})
+                {navController.previousBackStackEntry == null})
         }
 
         composable(
             route = AlarmEditEntry.route,
         ) {
-            ShowAlarmEditScreen(navController, 0, {isStackEmpty()})
+            ShowAlarmEditScreen(navController, 0, {navController.previousBackStackEntry == null})
         }
 
         composable(route = Settings.route) {
