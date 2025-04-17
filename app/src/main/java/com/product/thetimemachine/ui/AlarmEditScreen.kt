@@ -115,6 +115,7 @@ class AlarmEditScreen(
     private val navToSettings: () -> Unit,
     private val navToAlarmList: () -> Unit,
     private val navBack: () -> Unit,
+    private val entryPoint: () -> Boolean = {false},
 ) {
 
 
@@ -209,8 +210,6 @@ class AlarmEditScreen(
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun AlarmEditDisplayTop(itemId: Long) {
-
-        Log.d("THE_TIME_MACHINE", "AlarmEditDisplayTop(): itemId=$itemId")
 
         this.itemId = itemId
         // Get the initial setup values from the ViewModel
@@ -357,14 +356,16 @@ class AlarmEditScreen(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 },
-                                navigationIcon = {
-                                    IconButton(onClick = { navBack() }) {
+
+                                navigationIcon = { if (!entryPoint()){
+                                IconButton(onClick = { navBack() }) {
                                         Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            imageVector =  Icons.AutoMirrored.Filled.ArrowBack,
                                             contentDescription = "Localized description" // TODO: Replace
                                         )
-                                    }
+                                    }}
                                 },
+
                                 colors = TopAppBarDefaults.topAppBarColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
                                     scrolledContainerColor = MaterialTheme.colorScheme.surface,

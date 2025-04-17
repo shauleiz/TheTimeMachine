@@ -27,6 +27,7 @@ import com.product.thetimemachine.ui.AlarmEditScreen
 import com.product.thetimemachine.ui.AlarmListScreen
 import com.product.thetimemachine.ui.SettingsScreen
 
+
 @Composable
 fun AlarmNavHost(
     alarmViewModel: AlarmViewModel?,
@@ -40,6 +41,12 @@ fun AlarmNavHost(
         navController = navController,
         startDestination = AlarmEditEntry.route,
     ) {
+
+        fun isStackEmpty():Boolean{
+            val entry = navController.previousBackStackEntry
+            return entry==null
+        }
+
         composable(route = AlarmList.route) {
             ShowAlarmListScreen(alarmViewModel, navController)
         }
@@ -50,13 +57,14 @@ fun AlarmNavHost(
         ) { navBackStackEntry ->
             val itemId =
                 navBackStackEntry.arguments?.getLong(AlarmEdit.ITEM_ID_ARG, 0)
-            ShowAlarmEditScreen(navController, itemId)
+            ShowAlarmEditScreen(navController, itemId,
+                {isStackEmpty()})
         }
 
         composable(
             route = AlarmEditEntry.route,
-        ) { navBackStackEntry ->
-            ShowAlarmEditScreen(navController, 0)
+        ) {
+            ShowAlarmEditScreen(navController, 0, {isStackEmpty()})
         }
 
         composable(route = Settings.route) {
@@ -76,13 +84,17 @@ fun ShowSettingsScreen(navController: NavHostController){
 }
 
 @Composable
-fun ShowAlarmEditScreen(navController: NavHostController,
-                        itemId : Long? =0, )
+fun ShowAlarmEditScreen(
+    navController: NavHostController,
+    itemId : Long? =0,
+    entryPoint: ()  -> Boolean = {false},
+    )
 {
     if (itemId != null) AlarmEditScreen(
         navToSettings = { navigate2Settings(navController) },
         navToAlarmList = {navigate2AlarmList(navController)},
         navBack = {navController.popBackStack()},
+        entryPoint = entryPoint,
     ).AlarmEditDisplayTop(itemId)
 }
 
