@@ -4,6 +4,7 @@ import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -13,6 +14,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -43,10 +45,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -90,6 +94,16 @@ import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.format.DateTimeFormatter
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.SwipeToDismissBoxValue.EndToStart
+import androidx.compose.material3.SwipeToDismissBoxValue.Settled
+import androidx.compose.material3.SwipeToDismissBoxValue.StartToEnd
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.ListItem
 
 
 class AlarmListScreen(
@@ -508,20 +522,22 @@ private fun deleteSelectedAlarms() {
         nSel(alarmViewModel.nofSelectedItems)
 
 
-            Card(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .fillMaxWidth()
-                    .combinedClickable(
-                        onLongClick = { alarmItemLongClicked(alarmItem.getCreateTime()) },
-                        onClickLabel = stringResource(id = R.string.edit_alarm)
-                    )
-                    {
-                        if (selected) alarmItemLongClicked(alarmItem.getCreateTime())
-                        else alarmItemEdit(alarmItem, true)
-                    }
-                    .background(MaterialTheme.colorScheme.surface)
-                    .wrapContentHeight(),
+
+        val  alarmCard = @Composable { Card(
+                modifier = Modifier.run {
+                    padding(5.dp)
+                                .fillMaxWidth()
+                                .combinedClickable(
+                                    onLongClick = { alarmItemLongClicked(alarmItem.getCreateTime()) },
+                                    onClickLabel = stringResource(id = R.string.edit_alarm)
+                                )
+                                {
+                                    if (selected) alarmItemLongClicked(alarmItem.getCreateTime())
+                                    else alarmItemEdit(alarmItem, true)
+                                }
+                                .background(MaterialTheme.colorScheme.surface)
+                                .wrapContentHeight()
+                },
                 shape = MaterialTheme.shapes.small,
                 elevation = CardDefaults.elevatedCardElevation(5.dp),
                 colors = CardDefaults.cardColors(containerColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface),
@@ -676,8 +692,66 @@ private fun deleteSelectedAlarms() {
                         )
                     }
                 }
+            }}
+
+
+        @OptIn(ExperimentalMaterial3Api::class)
+        @Composable
+        fun DismissBackground(dismissState: SwipeToDismissBoxState) {
+            val color = when (dismissState.dismissDirection) {
+                StartToEnd -> Color(0xFFFF1744)
+                EndToStart -> Color(0xFF1DE9B6)
+                Settled -> Color.Transparent
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color)
+                    .padding(12.dp, 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "delete"
+                )
+                Spacer(modifier = Modifier)
+                Icon(
+                    // make sure add baseline_archive_24 resource to drawable folder
+                    painter = painterResource(R.drawable.baseline_alarm_24),
+                    contentDescription = "Archive"
+                )
             }
         }
+
+        val dismissState = rememberSwipeToDismissBoxState(
+            confirmValueChange = {
+                when(it) {
+                    StartToEnd -> {
+                        //onRemove(currentItem)
+                        Toast.makeText(appContext, "Item deleted", Toast.LENGTH_SHORT).show()
+                    }
+                    EndToStart -> {
+                        //onRemove(currentItem)
+                        Toast.makeText(appContext, "Item archived", Toast.LENGTH_SHORT).show()
+                    }
+                    Settled -> return@rememberSwipeToDismissBoxState false
+                }
+                return@rememberSwipeToDismissBoxState true
+            },
+            // positional threshold of 25%
+            positionalThreshold = { it * .25f }
+        )
+
+        SwipeToDismissBox(
+            state = dismissState,
+            //modifier = modifier,
+            backgroundContent = { DismissBackground(dismissState)},
+            content = { alarmCard() })
+        }
+
+
 
 
     @Composable
