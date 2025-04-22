@@ -933,7 +933,7 @@ public class AlarmItem {
     *  the alarm is deactivated
     *
     */
-   public void Exec() {
+   public void Exec(boolean mute) {
       LocalDateTime alarmTime;
       // Things that are common to all/most tasks
 
@@ -1009,7 +1009,8 @@ public class AlarmItem {
          alarmManager.setAlarmClock(ac, alarmIntent);
 
          // Toast
-         Toast.makeText(context, strGetDurationToAlarm(alarmTime), Toast.LENGTH_LONG).show();
+         if (!mute)
+            Toast.makeText(context, strGetDurationToAlarm(alarmTime), Toast.LENGTH_LONG).show();
       }
       else {
          ///// Cancel Alarm
@@ -1032,4 +1033,5 @@ public class AlarmItem {
       }
    }
 
+   public void Exec () {Exec(false);}
 }

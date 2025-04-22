@@ -35,7 +35,7 @@ public class BootService extends LifecycleService{
          if (alarms != null) {
             for ( AlarmItem item : alarms) {
                if (item.isActive()) {
-                  item.Exec();
+                  item.Exec(true);
                   Log.d("THE_TIME_MACHINE", "Schedule Alarm: " + item.getLabel());
                }
             }
