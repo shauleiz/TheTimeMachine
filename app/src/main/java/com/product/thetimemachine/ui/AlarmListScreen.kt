@@ -104,6 +104,9 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.SwipeToDismissBoxDefaults.positionalThreshold
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 
 
 class AlarmListScreen(
@@ -697,10 +700,16 @@ private fun deleteSelectedAlarms() {
 
         @OptIn(ExperimentalMaterial3Api::class)
         @Composable
-        fun DismissBackground(dismissState: SwipeToDismissBoxState) {
+        fun DismissBackground(
+            dismissState: SwipeToDismissBoxState,
+            colorStart2End: Color = Color(0xFFFF1744), // Red
+            colorEnd2Start: Color = Color(0xFF1DE9B6), // Green
+            iconStart2End: Painter = rememberVectorPainter(Icons.Default.Delete),
+            iconEnd2Start: Painter =  painterResource(R.drawable.baseline_alarm_24),
+        ) {
             val color = when (dismissState.dismissDirection) {
-                StartToEnd -> Color(0xFFFF1744)
-                EndToStart -> Color(0xFF1DE9B6)
+                StartToEnd -> colorStart2End
+                EndToStart -> colorEnd2Start
                 Settled -> Color.Transparent
             }
 
@@ -713,20 +722,20 @@ private fun deleteSelectedAlarms() {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "delete"
+                    iconStart2End,
+                    contentDescription = "Swipe Start to End"
                 )
                 Spacer(modifier = Modifier)
                 Icon(
                     // make sure add baseline_archive_24 resource to drawable folder
-                    painter = painterResource(R.drawable.baseline_alarm_24),
-                    contentDescription = "Archive"
+                    iconEnd2Start,
+                    contentDescription = "Swipe End to Start"
                 )
             }
         }
 
-        val dismissState = rememberSwipeToDismissBoxState(
-            confirmValueChange = {
+        val dismissState  = rememberSwipeToDismissBoxState(
+            confirmValueChange  = {
                 when(it) {
                     StartToEnd -> {
                         //onRemove(currentItem)
@@ -744,11 +753,40 @@ private fun deleteSelectedAlarms() {
             positionalThreshold = { it * .25f }
         )
 
+        val dismissState1 = rememberSwipeToDismissBoxState(positionalThreshold = { it * .55f })
+
+
+        @Composable
+        fun dState() : SwipeToDismissBoxState =
+            rememberSwipeToDismissBoxState(
+                confirmValueChange  = {
+                    when(it) {
+                        StartToEnd -> {
+                            //onRemove(currentItem)
+                            Toast.makeText(appContext, "Item deleted", Toast.LENGTH_SHORT).show()
+                        }
+                        EndToStart -> {
+                            //onRemove(currentItem)
+                            Toast.makeText(appContext, "Item archived", Toast.LENGTH_SHORT).show()
+                        }
+                        Settled -> return@rememberSwipeToDismissBoxState false
+                    }
+                    return@rememberSwipeToDismissBoxState true
+                },
+                // positional threshold of 25%
+                positionalThreshold = { it * .25f },
+            )
+
+
+
+
         SwipeToDismissBox(
-            state = dismissState,
+            state = dismissState1,
             //modifier = modifier,
-            backgroundContent = { DismissBackground(dismissState)},
-            content = { alarmCard() })
+            backgroundContent = { DismissBackground(dismissState1)},
+            content = { alarmCard()
+                //Toast.makeText(appContext, dismissState1.currentValue.name, Toast.LENGTH_SHORT).show()
+            })
         }
 
 
