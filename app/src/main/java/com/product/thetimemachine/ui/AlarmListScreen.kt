@@ -4,7 +4,6 @@ import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -94,17 +93,14 @@ import com.product.thetimemachine.Data.AlarmItem
 import com.product.thetimemachine.R
 import com.product.thetimemachine.ui.theme.AppTheme
 import java.time.format.DateTimeFormatter
-import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.SwipeToDismissBoxValue.EndToStart
 import androidx.compose.material3.SwipeToDismissBoxValue.Settled
 import androidx.compose.material3.SwipeToDismissBoxValue.StartToEnd
-import androidx.compose.material3.rememberSwipeToDismissBoxState
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.ListItem
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.SwipeToDismissBoxDefaults.positionalThreshold
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 
@@ -114,19 +110,16 @@ class AlarmListScreen(
     val navToAlarmEdit: (Long) -> Unit,
     val navToSettings: () -> Unit,
     val navBack: () -> Unit,
- ) {
-     private var parent = appContext
-     private val isDynamicColor = false
-
+) {
+    private var parent = appContext
+    private val isDynamicColor = false
 
 
     // Called while initializing the activity.
     // Checks if Notification is enabled
     // If not enabled - launches request for permission that defines the callback to run
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    fun checkPermissions( showDialog: (Boolean) -> Unit) : Boolean
-
-    {
+    fun checkPermissions(showDialog: (Boolean) -> Unit): Boolean {
         val permission = appContext.checkSelfPermission(POST_NOTIFICATIONS)
         if (permission == PERMISSION_GRANTED) {
             Log.i("THE_TIME_MACHINE", "checkPermissions(): POST_NOTIFICATIONS Permission Granted")
@@ -149,8 +142,7 @@ class AlarmListScreen(
                 // Define action to do when pop-up window is dismissed -
                 // Request permission to show notifications
 
-            }
-            else {
+            } else {
                 // Request permission to show notifications (when pop-up window is not shown)
                 Log.i("THE_TIME_MACHINE", "checkPermissions(): Going to call launch")
                 mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)
@@ -160,12 +152,6 @@ class AlarmListScreen(
         }
         return false
     }
-
-
-
-
-
-
 
 
     /*
@@ -205,7 +191,6 @@ class AlarmListScreen(
         alarmViewModel.toggleSelection(id)
 
 
-
         // Modify toolbar according to number of selected items
         //parent!!.UpdateOptionMenu()
     }
@@ -217,10 +202,10 @@ class AlarmListScreen(
     * Create a bundle with data to be passed to the setup fragment
     * Replace this fragment by setup fragment
     * */
-    private fun addAlarmClicked( showDialog: (Boolean)->Unit) {
+    private fun addAlarmClicked(showDialog: (Boolean) -> Unit) {
 
         var navigate = true
-        Log.d("THE_TIME_MACHINE", "AddAlarmClicked()) " )
+        Log.d("THE_TIME_MACHINE", "AddAlarmClicked()) ")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             navigate = !checkPermissions(showDialog)
@@ -237,14 +222,13 @@ class AlarmListScreen(
     }
 
 
-
-private fun deleteSelectedAlarms() {
+    private fun deleteSelectedAlarms() {
         //val tempList = ArrayList(selectedItems)
         val tempList = alarmViewModel.liveSelectedItems?.value?.let { ArrayList(it) }
         if (tempList != null) {
             for (id in tempList) {
                 val item = alarmViewModel.getAlarmItemById(id)
-                if (item!=null) {
+                if (item != null) {
                     alarmViewModel.DeleteAlarm(item)
                     // Remove from list of selected alarms
                     alarmViewModel.clearSelection(item.createTime)
@@ -256,19 +240,19 @@ private fun deleteSelectedAlarms() {
 
     }
 
-     private fun actionClicked(action : String){
-         when (action) {
-             editDesc -> editSelectedAlarm()
-             duplicateDesc -> duplicateSelectedAlarm()
-             deleteDesc -> deleteSelectedAlarms()
-             settingsDesc -> navToSettings()
-         }
-     }
+    private fun actionClicked(action: String) {
+        when (action) {
+            editDesc -> editSelectedAlarm()
+            duplicateDesc -> duplicateSelectedAlarm()
+            deleteDesc -> deleteSelectedAlarms()
+            settingsDesc -> navToSettings()
+        }
+    }
 
     private fun editSelectedAlarm() {
         val tempList = alarmViewModel.liveSelectedItems?.value?.let { ArrayList(it) }
         // Edit only is exactly one item selected
-        if (tempList==null || tempList.size != 1) return
+        if (tempList == null || tempList.size != 1) return
 
         alarmItemEdit(alarmViewModel.getAlarmItemById(tempList[0]), true)
     }
@@ -276,11 +260,10 @@ private fun deleteSelectedAlarms() {
     private fun duplicateSelectedAlarm() {
         // Duplicate only is exactly one item selected
         val tempList = alarmViewModel.liveSelectedItems?.value?.let { ArrayList(it) }
-        if (tempList==null || tempList.size != 1) return
+        if (tempList == null || tempList.size != 1) return
 
         alarmItemEdit(alarmViewModel.getAlarmItemById(tempList[0]), false)
     }
-
 
 
     /*** Composable Functions ***/
@@ -305,7 +288,12 @@ private fun deleteSelectedAlarms() {
     @Composable
     fun AlarmListDisplay() {
 
-        Log.d("THE_TIME_MACHINE", "AlarmListDisplay():  mainActivity.getString(R.string.alarmlist_title) = ${mainActivity.getString(R.string.alarmlist_title)}")
+        Log.d(
+            "THE_TIME_MACHINE",
+            "AlarmListDisplay():  mainActivity.getString(R.string.alarmlist_title) = ${
+                mainActivity.getString(R.string.alarmlist_title)
+            }"
+        )
 
         // Observes values coming from the VM's LiveData<Plant> field
         val alarmList by alarmViewModel.alarmList.observeAsState()
@@ -362,114 +350,117 @@ private fun deleteSelectedAlarms() {
             }
         }
 
-        ShowPopUpPermissionWarning(showPermissionDialog) { showPermissionDialog = it ; mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)}
+        ShowPopUpPermissionWarning(showPermissionDialog) {
+            showPermissionDialog = it; mainActivity.requestPermissionLauncher.launch(
+            POST_NOTIFICATIONS
+        )
+        }
     }
 
-     // Display Action icons on the Top App Bar - and react to click
-     @Composable
-     private fun AlarmListActions(nSelected: Int, onActionClick: (String)-> Unit) {
+    // Display Action icons on the Top App Bar - and react to click
+    @Composable
+    private fun AlarmListActions(nSelected: Int, onActionClick: (String) -> Unit) {
 
-         // Edit Action: Display only if one items selected
-         if (nSelected == 1) {
-             IconButton(onClick = {
-                 onActionClick(editDesc)
-             }) {
-                 Icon(
-                     imageVector = Icons.Filled.Edit,
-                     contentDescription = editDesc
-                 )
-             }
-
-
-             // Duplicate Action: Display only if one items selected
-             IconButton(onClick = {
-                 onActionClick(duplicateDesc)
-             }) {
-                 Icon(
-                     imageVector = ImageVector.vectorResource(R.drawable.octicon__duplicate_24),
-                     contentDescription = duplicateDesc
-                 )
-             }
-         }
-
-         // Delete item: Only if at least one item selected
-         if (nSelected>0){
-             IconButton(onClick = {
-                 onActionClick(deleteDesc)
-             }) {
-                 Icon(
-                     imageVector = Icons.Filled.Delete,
-                     contentDescription = deleteDesc
-                 )
-             }
-         }
-
-         IconButton(onClick = {
-             onActionClick(settingsDesc)
-         }) {
-             Icon(
-                 imageVector = Icons.Filled.Settings,
-                 contentDescription = settingsDesc
-             )
-         }
-     }
+        // Edit Action: Display only if one items selected
+        if (nSelected == 1) {
+            IconButton(onClick = {
+                onActionClick(editDesc)
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Edit,
+                    contentDescription = editDesc
+                )
+            }
 
 
+            // Duplicate Action: Display only if one items selected
+            IconButton(onClick = {
+                onActionClick(duplicateDesc)
+            }) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.octicon__duplicate_24),
+                    contentDescription = duplicateDesc
+                )
+            }
+        }
 
-     // Show a Pop-up dialog box that warns that Notification Permission is required
-     @OptIn(ExperimentalMaterial3Api::class)
-     @Composable
-     private fun ShowPopUpPermissionWarning(show : Boolean, onClick : (Boolean)->Unit){
-         if (!show) return
-         BasicAlertDialog(
-             //title = R.string.title_error,
-             //text = "LLL",
-             onDismissRequest = { launchRequest4Permission(); onClick(false)}
-             //confirmButton = null
-         )
-         {
+        // Delete item: Only if at least one item selected
+        if (nSelected > 0) {
+            IconButton(onClick = {
+                onActionClick(deleteDesc)
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = deleteDesc
+                )
+            }
+        }
 
-             AppTheme(dynamicColor = isDynamicColor) {
-                 Surface(
-                     modifier = Modifier
-                         .wrapContentWidth()
-                         .wrapContentHeight(),
-                     shape = MaterialTheme.shapes.large,
-                     tonalElevation = AlertDialogDefaults.TonalElevation
-                 )
-                 {
-                     MaterialTheme {
-                         Column(modifier = Modifier.padding(16.dp)) {
-                             Text(
-                                 text = stringResource(R.string.title_warning),
-                                 style = MaterialTheme.typography.titleLarge,
-                                 color = MaterialTheme.colorScheme.error,
-                             )
-                             Spacer(modifier = Modifier.height(16.dp))
-                             Text(text = stringResource(R.string.must_permit))
-                             TextButton(
-                                 onClick = { launchRequest4Permission(); onClick(false) },
-                                 modifier = Modifier.align(Alignment.End)
-                             ) {
-                                 Text(stringResource(R.string.confirm))
-                             }
-                         }
-                     }
-                 }
-             }
-         }
+        IconButton(onClick = {
+            onActionClick(settingsDesc)
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Settings,
+                contentDescription = settingsDesc
+            )
+        }
+    }
 
-     }
 
-     private fun launchRequest4Permission() =
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-             mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)
-         } else {
-             null
-         }
+    // Show a Pop-up dialog box that warns that Notification Permission is required
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ShowPopUpPermissionWarning(show: Boolean, onClick: (Boolean) -> Unit) {
+        if (!show) return
+        BasicAlertDialog(
+            //title = R.string.title_error,
+            //text = "LLL",
+            onDismissRequest = { launchRequest4Permission(); onClick(false) }
+            //confirmButton = null
+        )
+        {
+
+            AppTheme(dynamicColor = isDynamicColor) {
+                Surface(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .wrapContentHeight(),
+                    shape = MaterialTheme.shapes.large,
+                    tonalElevation = AlertDialogDefaults.TonalElevation
+                )
+                {
+                    MaterialTheme {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = stringResource(R.string.title_warning),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(text = stringResource(R.string.must_permit))
+                            TextButton(
+                                onClick = { launchRequest4Permission(); onClick(false) },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(stringResource(R.string.confirm))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun launchRequest4Permission() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mainActivity.requestPermissionLauncher.launch(POST_NOTIFICATIONS)
+        } else {
+            null
+        }
 
     @Composable
-    fun DisplayAlarmList (list: MutableList<AlarmItem>?, pad : PaddingValues, nSel : (Int)->Unit) {
+    fun DisplayAlarmList(list: MutableList<AlarmItem>?, pad: PaddingValues, nSel: (Int) -> Unit) {
         if (list == null) return
 
         // Sorting
@@ -484,62 +475,62 @@ private fun deleteSelectedAlarms() {
             items(
                 count = sortedList.size,
                 key = { sortedList[it].createTime }
-            ) { DisplayAlarmItem(sortedList[it]){n -> nSel(n)} }
+            ) { DisplayAlarmItem(sortedList[it]) { n -> nSel(n) } }
         }
     }
 
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    private fun DisplayAlarmItem(alarmItem: AlarmItem, nSel : (Int) -> Unit) {
+    private fun DisplayAlarmItem(alarmItem: AlarmItem, nSel: (Int) -> Unit) {
 
-            // Force this function to be called when list of selected changes
-            // val selectToggle by parent!!.alarmViewModel.selectToggleObserve.observeAsState( )
-            // val toggled = if (selectToggle!=null && selectToggle as Boolean) "A" else "B"
+        // Force this function to be called when list of selected changes
+        // val selectToggle by parent!!.alarmViewModel.selectToggleObserve.observeAsState( )
+        // val toggled = if (selectToggle!=null && selectToggle as Boolean) "A" else "B"
 
-            // Get list of selected alarms and mark this item as selected(yes/no)
-            val selectedAlarmList by alarmViewModel.liveSelectedItems.observeAsState(
-                ArrayList()
-            )
-            val filterList = selectedAlarmList?.filter { it.equals(alarmItem.createTime.toInt()) }
-            val selected = !filterList.isNullOrEmpty()
+        // Get list of selected alarms and mark this item as selected(yes/no)
+        val selectedAlarmList by alarmViewModel.liveSelectedItems.observeAsState(
+            ArrayList()
+        )
+        val filterList = selectedAlarmList?.filter { it.equals(alarmItem.createTime.toInt()) }
+        val selected = !filterList.isNullOrEmpty()
 
-            val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
-            val snoozeIconColor =
-                if (alarmItem.getSnoozeCounter() > 0) Color.Unspecified else Color.Transparent
-            val vibrateIconColor =
-                if (alarmItem.isVibrationActive) Color.Unspecified else Color.Transparent
-            val muteIconColor = if (alarmItem.isAlarmMute) Color.Unspecified else Color.Transparent
+        val currentAlpha = if (alarmItem.isActive) 1.0f else 0.3f
+        val snoozeIconColor =
+            if (alarmItem.getSnoozeCounter() > 0) Color.Unspecified else Color.Transparent
+        val vibrateIconColor =
+            if (alarmItem.isVibrationActive) Color.Unspecified else Color.Transparent
+        val muteIconColor = if (alarmItem.isAlarmMute) Color.Unspecified else Color.Transparent
 
-            // Flashing of alarm time display
-            // Animation (From: https://developer.android.com/develop/ui/compose/animation/quick-guide#animate-text-scale)
-            val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
-            val scale by infiniteTransition.animateFloat(
-                initialValue = if (alarmItem.isRinging) 1.2f else 1.0f,
-                targetValue = if (alarmItem.isRinging) 0.8f else 1.0f,
-                animationSpec = infiniteRepeatable(tween(200), RepeatMode.Reverse),
-                label = "scale"
-            )
+        // Flashing of alarm time display
+        // Animation (From: https://developer.android.com/develop/ui/compose/animation/quick-guide#animate-text-scale)
+        val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
+        val scale by infiniteTransition.animateFloat(
+            initialValue = if (alarmItem.isRinging) 1.2f else 1.0f,
+            targetValue = if (alarmItem.isRinging) 0.8f else 1.0f,
+            animationSpec = infiniteRepeatable(tween(200), RepeatMode.Reverse),
+            label = "scale"
+        )
 
         // Hoist number of selected items
         nSel(alarmViewModel.nofSelectedItems)
 
 
-
-        val  alarmCard = @Composable { Card(
+        val alarmCard = @Composable {
+            Card(
                 modifier = Modifier.run {
                     padding(5.dp)
-                                .fillMaxWidth()
-                                .combinedClickable(
-                                    onLongClick = { alarmItemLongClicked(alarmItem.getCreateTime()) },
-                                    onClickLabel = stringResource(id = R.string.edit_alarm)
-                                )
-                                {
-                                    if (selected) alarmItemLongClicked(alarmItem.getCreateTime())
-                                    else alarmItemEdit(alarmItem, true)
-                                }
-                                .background(MaterialTheme.colorScheme.surface)
-                                .wrapContentHeight()
+                        .fillMaxWidth()
+                        .combinedClickable(
+                            onLongClick = { alarmItemLongClicked(alarmItem.getCreateTime()) },
+                            onClickLabel = stringResource(id = R.string.edit_alarm)
+                        )
+                        {
+                            if (selected) alarmItemLongClicked(alarmItem.getCreateTime())
+                            else alarmItemEdit(alarmItem, true)
+                        }
+                        .background(MaterialTheme.colorScheme.surface)
+                        .wrapContentHeight()
                 },
                 shape = MaterialTheme.shapes.small,
                 elevation = CardDefaults.elevatedCardElevation(5.dp),
@@ -579,8 +570,7 @@ private fun deleteSelectedAlarms() {
                                     bias = 0.0f,
                                 )
                             },
-                        )
-
+                    )
 
 
                     // Weekdays / Today / Tomorrow / Date in the future
@@ -656,12 +646,13 @@ private fun deleteSelectedAlarms() {
                             },
                     )
 
-                    ConstraintLayout (modifier = Modifier
-                        .wrapContentSize()
-                        .constrainAs(refAlarmTimeBox){
-                            bottom.linkTo(parent.bottom, margin = 2.dp)
-                            end.linkTo(parent.end, margin = 8.dp)
-                        }
+                    ConstraintLayout(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .constrainAs(refAlarmTimeBox) {
+                                bottom.linkTo(parent.bottom, margin = 2.dp)
+                                end.linkTo(parent.end, margin = 8.dp)
+                            }
                     ) {
 
 
@@ -695,18 +686,20 @@ private fun deleteSelectedAlarms() {
                         )
                     }
                 }
-            }}
+            }
+        }
 
 
-        @OptIn(ExperimentalMaterial3Api::class)
         @Composable
         fun DismissBackground(
             dismissState: SwipeToDismissBoxState,
             colorStart2End: Color = Color(0xFFFF1744), // Red
             colorEnd2Start: Color = Color(0xFF1DE9B6), // Green
             iconStart2End: Painter = rememberVectorPainter(Icons.Default.Delete),
-            iconEnd2Start: Painter =  painterResource(R.drawable.baseline_alarm_24),
+            iconEnd2Start: Painter = rememberVectorPainter(Icons.Default.Check), // painterResource(R.drawable.baseline_alarm_24),
         ) {
+
+            // TODO: Add color animation
             val color = when (dismissState.dismissDirection) {
                 StartToEnd -> colorStart2End
                 EndToStart -> colorEnd2Start
@@ -734,66 +727,41 @@ private fun deleteSelectedAlarms() {
             }
         }
 
-        val dismissState  = rememberSwipeToDismissBoxState(
-            confirmValueChange  = {
-                when(it) {
-                    StartToEnd -> {
-                        //onRemove(currentItem)
-                        Toast.makeText(appContext, "Item deleted", Toast.LENGTH_SHORT).show()
-                    }
-                    EndToStart -> {
-                        //onRemove(currentItem)
-                        Toast.makeText(appContext, "Item archived", Toast.LENGTH_SHORT).show()
-                    }
-                    Settled -> return@rememberSwipeToDismissBoxState false
-                }
-                return@rememberSwipeToDismissBoxState true
-            },
-            // positional threshold of 25%
-            positionalThreshold = { it * .25f }
-        )
+        fun swipeAction(state: SwipeToDismissBoxState) {
 
-        val dismissState1 = rememberSwipeToDismissBoxState(positionalThreshold = { it * .55f })
+            Log.d("THE_TIME_MACHINE", "swipeAction(): " +
+                    "progress = ${state.progress} ; " +
+                    "dismissDirection = ${state.dismissDirection} ; " +
+                    "currentValue = ${state.currentValue} ; " +
+                    "targetValue = ${state.targetValue} ; ")
 
-
-        @Composable
-        fun dState() : SwipeToDismissBoxState =
-            rememberSwipeToDismissBoxState(
-                confirmValueChange  = {
-                    when(it) {
-                        StartToEnd -> {
-                            //onRemove(currentItem)
-                            Toast.makeText(appContext, "Item deleted", Toast.LENGTH_SHORT).show()
-                        }
-                        EndToStart -> {
-                            //onRemove(currentItem)
-                            Toast.makeText(appContext, "Item archived", Toast.LENGTH_SHORT).show()
-                        }
-                        Settled -> return@rememberSwipeToDismissBoxState false
-                    }
-                    return@rememberSwipeToDismissBoxState true
-                },
-                // positional threshold of 25%
-                positionalThreshold = { it * .25f },
-            )
-
-
-
-
-        SwipeToDismissBox(
-            state = dismissState1,
-            //modifier = modifier,
-            backgroundContent = { DismissBackground(dismissState1)},
-            content = { alarmCard()
-                //Toast.makeText(appContext, dismissState1.currentValue.name, Toast.LENGTH_SHORT).show()
-            })
+            when (state.currentValue) {
+                StartToEnd -> alarmViewModel.DeleteAlarm(alarmItem)
+                EndToStart -> { onActiveChange(alarmItem, !alarmItem.isActive) /*; suspend {state.snapTo(Settled)}*/}
+                Settled -> {}
+            }
         }
 
+        val dismissState = rememberSwipeToDismissBoxState(
+            //confirmValueChange = {false},
+            positionalThreshold = { it * .70f })
 
+        SwipeToDismissBox(
+            state = dismissState,
+            //modifier = modifier,
+            backgroundContent = { DismissBackground(dismissState) },
+            content = {
+                alarmCard()
+                //Toast.makeText(appContext, dismissState1.currentValue.name, Toast.LENGTH_SHORT).show()
+            }
+        )
+
+        swipeAction(dismissState)
+    }
 
 
     @Composable
-    private fun sortAlarmList(list: MutableList<AlarmItem>) : List<AlarmItem>{
+    private fun sortAlarmList(list: MutableList<AlarmItem>): List<AlarmItem> {
         // Sorting
         val comparatorType = getPrefSortType(parent)
         val separate = isPrefSortSeparate(parent)
@@ -807,7 +775,7 @@ private fun deleteSelectedAlarms() {
             } else {
                 when (comparatorType) {
                     "alphabetically" -> list.sortedWith(compareBy { it.label })
-                    "by_alarm_time" -> list.sortedWith(compareBy{ it.alarmTimeInLocalDateTime() })
+                    "by_alarm_time" -> list.sortedWith(compareBy { it.alarmTimeInLocalDateTime() })
                     else -> list.sortedWith(compareBy { it.createTime })
                 }
             }
@@ -816,207 +784,206 @@ private fun deleteSelectedAlarms() {
         return sortedList
     }
 
-        @Composable
-        private fun getPrimaryTextColor(alarmItem: AlarmItem): Color {
-            if (alarmItem.isActive) return MaterialTheme.colorScheme.primary
-            return MaterialTheme.colorScheme.inversePrimary
-        }
+    @Composable
+    private fun getPrimaryTextColor(alarmItem: AlarmItem): Color {
+        if (alarmItem.isActive) return MaterialTheme.colorScheme.primary
+        return MaterialTheme.colorScheme.inversePrimary
+    }
 
-        @Composable
-        private fun DisplayAddFloatButton( showDialog: (Boolean)->Unit) {
-            Log.i("THE_TIME_MACHINE", "DisplayAddFloatButton()")
-            FloatingActionButton(
-                onClick =  { addAlarmClicked(showDialog) },
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.secondary,
+    @Composable
+    private fun DisplayAddFloatButton(showDialog: (Boolean) -> Unit) {
+        Log.i("THE_TIME_MACHINE", "DisplayAddFloatButton()")
+        FloatingActionButton(
+            onClick = { addAlarmClicked(showDialog) },
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.secondary,
+        )
+        {
+            Icon(
+                painter = painterResource(R.drawable.baseline_alarm_add_48),
+                contentDescription = parent?.applicationContext?.getString(R.string.alarm_add),
+                modifier = Modifier.size(24.dp),
             )
-            {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_alarm_add_48),
-                    contentDescription = parent?.applicationContext?.getString(R.string.alarm_add),
-                    modifier = Modifier.size(24.dp),
-                )
-            }
-
-
         }
 
 
-        private fun getAmPm24h(alarmItem: AlarmItem): Int {
-            // Time
-            val h = alarmItem.getHour()
-            return if (isPref24h(parent))
-                (R.string.format_24h)
+    }
+
+
+    private fun getAmPm24h(alarmItem: AlarmItem): Int {
+        // Time
+        val h = alarmItem.getHour()
+        return if (isPref24h(parent))
+            (R.string.format_24h)
+        else {
+            if (h == 0) {
+                (R.string.format_am)
+            } else if (h < 12)
+                (R.string.format_am)
             else {
-                if (h == 0) {
-                    (R.string.format_am)
-                } else if (h < 12)
-                    (R.string.format_am)
-                else {
-                    (R.string.format_pm)
-                }
-            }
-        }
-
-        @Composable
-        private fun getDisplayAlarmTime(alarmItem: AlarmItem): String {
-
-            // Time
-            var h = alarmItem.getHour()
-            if (!isPref24h(parent))
-            {
-                if (h == 0) {
-                    h = 12
-                }
-                else {
-                    if (h > 12) h -= 12
-                }
-            }
-            val fmt = stringResource(R.string.alarm_format)
-            val alarmTime = java.lang.String.format(fmt, h, alarmItem.getMinute())
-            return (alarmTime)
-        }
-
-
-        @Composable
-        private fun getDisplayWeekdays(alarmItem: AlarmItem): AnnotatedString {
-
-            /// Is it a One-Off case? If so, is the alarm set for today or tomorrow?
-            if (alarmItem.isOneOff) {
-
-                // Today - Active(Red) or inactive (pale Primary)
-                if (alarmItem.isNotInThePast() && alarmItem.isToday()) {
-                    //val todayColorId = if (alarmItem.isActive) colorResource(R.color.RealRed) else MaterialTheme.colorScheme.inversePrimary
-                    return ((buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = colorResource(R.color.RealRed))) {
-                            append(stringResource(R.string.day_today))
-                        }
-                    }))
-                }
-
-                // Tomorrow - Active(Blue) or inactive (pale Primary)
-                if (alarmItem.isNotInThePast() && alarmItem.isTomorrow()) {
-                    //val tomorrowColorId = if (alarmItem.isActive) colorResource(R.color.light_blue_600) else MaterialTheme.colorScheme.inversePrimary
-                    return ((buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = colorResource(R.color.light_blue_600))) {
-                            append(stringResource(R.string.day_tomorrow))
-                        }
-                    }))
-
-                    // Future Date
-                } /**/ else {
-                    val format = DateTimeFormatter.ofPattern(mainActivity.getString(R.string.date_format_wd))
-                    val alarmTime = alarmItem.alarmTimeInLocalDateTime()
-                    val word = alarmTime.format(format)
-                    //if (alarmItem.isActive)
-                        return ((buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                                append(word)
-                            }
-                        }))
-                }
-            }
-
-            // Repeating
-            return getAnnotatedWeekdays(alarmItem)
-
-        }
-
-        // Returns the annotated string that displays the weekdays
-        // called by getDisplayWeekdays()
-        // Selected weekdays are bold
-        // The next weekday in which the alarm will sound is underscored
-        @Composable
-        private fun getAnnotatedWeekdays(alarmItem: AlarmItem): AnnotatedString {
-
-            // Indeces of the weekdays in the weekdays strings
-            val suArray = intArrayOf(0,  3,  6,  9,  12, 15, 18)
-            val moArray = intArrayOf(18, 0,  3,  6,  9,  12, 15)
-
-            val genArray: IntArray
-            val weekdaysString: String
-
-            // Get the array oכ 'skips' and the correct weekdays string
-                when (getPrefFirstDayOfWeek(parent)) {
-                    "Su" -> {
-                        weekdaysString = stringResource(R.string.su_mo_tu_we_th_fr_sa)
-                        genArray = suArray
-                    }
-
-                    else -> {
-                        weekdaysString = stringResource(R.string.mo_tu_we_th_fr_sa_su)
-                        genArray = moArray
-                    }
-                }
-
-
-            val defaultColor =
-                MaterialTheme.colorScheme.onSurface
-            val fadedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-
-            // If alarm inactive - just print string in default color
-            if (!alarmItem.isActive)
-                return buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = defaultColor)) {
-                        append(weekdaysString)
-                    }
-                }
-
-            // If Active - Set color to selected/unselected days and mark the next day with underline
-            val indexOfNextDay = alarmItem.weekdayOfNextAlarm
-            val weekdays = alarmItem.getWeekDays()
-            var currentColor: Color
-            var underlined: TextDecoration
-
-            return buildAnnotatedString {
-                append(weekdaysString)
-                for (day in 0..6) {
-                    currentColor = if ((weekdays and (1 shl day)) > 0) defaultColor else fadedColor
-                    underlined =
-                        if (day == indexOfNextDay) TextDecoration.Underline else TextDecoration.None
-                    addStyle(
-                        style = SpanStyle(
-                            color = currentColor,
-                            textDecoration = underlined
-                        ),
-                        start = genArray[day],
-                        end = genArray[day] +2
-                    )
-                }
-            }
-        }
-
-        // Get Item's info from Alarm list
-        // Get new state of checkbox
-        // Send update to this item down to the ViewModel
-        // Schedule/cancel alarm
-        private fun onActiveChange(alarmItem: AlarmItem, checked: Boolean) {
-
-            var b = alarmItem.bundle
-
-            // Create a new alarm, set active
-            val item = AlarmItem(b!!)
-            item.active = checked
-
-            // Reset snooze
-            item.resetSnoozeCounter()
-
-            if (checked)
-                item.recalculateDate() // If is an explicit date and in the past - change date to the near future
-
-            // Update View Model - this also causes recomposition
-            alarmViewModel.UpdateAlarm(item)
-
-            // Schedule/Cancel Alarm
-            item.Exec()
-
-            // Stop ringing if unchecked
-            if (!item.active) {
-                b = item.bundle
-                val context = appContext
-                val stopIntent = Intent(context, AlarmService::class.java)
-                stopIntent.putExtras(b)
-                AlarmReceiver.stopping(context, stopIntent)
+                (R.string.format_pm)
             }
         }
     }
+
+    @Composable
+    private fun getDisplayAlarmTime(alarmItem: AlarmItem): String {
+
+        // Time
+        var h = alarmItem.getHour()
+        if (!isPref24h(parent)) {
+            if (h == 0) {
+                h = 12
+            } else {
+                if (h > 12) h -= 12
+            }
+        }
+        val fmt = stringResource(R.string.alarm_format)
+        val alarmTime = java.lang.String.format(fmt, h, alarmItem.getMinute())
+        return (alarmTime)
+    }
+
+
+    @Composable
+    private fun getDisplayWeekdays(alarmItem: AlarmItem): AnnotatedString {
+
+        /// Is it a One-Off case? If so, is the alarm set for today or tomorrow?
+        if (alarmItem.isOneOff) {
+
+            // Today - Active(Red) or inactive (pale Primary)
+            if (alarmItem.isNotInThePast() && alarmItem.isToday()) {
+                //val todayColorId = if (alarmItem.isActive) colorResource(R.color.RealRed) else MaterialTheme.colorScheme.inversePrimary
+                return ((buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = colorResource(R.color.RealRed))) {
+                        append(stringResource(R.string.day_today))
+                    }
+                }))
+            }
+
+            // Tomorrow - Active(Blue) or inactive (pale Primary)
+            if (alarmItem.isNotInThePast() && alarmItem.isTomorrow()) {
+                //val tomorrowColorId = if (alarmItem.isActive) colorResource(R.color.light_blue_600) else MaterialTheme.colorScheme.inversePrimary
+                return ((buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = colorResource(R.color.light_blue_600))) {
+                        append(stringResource(R.string.day_tomorrow))
+                    }
+                }))
+
+                // Future Date
+            } /**/ else {
+                val format =
+                    DateTimeFormatter.ofPattern(mainActivity.getString(R.string.date_format_wd))
+                val alarmTime = alarmItem.alarmTimeInLocalDateTime()
+                val word = alarmTime.format(format)
+                //if (alarmItem.isActive)
+                return ((buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        append(word)
+                    }
+                }))
+            }
+        }
+
+        // Repeating
+        return getAnnotatedWeekdays(alarmItem)
+
+    }
+
+    // Returns the annotated string that displays the weekdays
+    // called by getDisplayWeekdays()
+    // Selected weekdays are bold
+    // The next weekday in which the alarm will sound is underscored
+    @Composable
+    private fun getAnnotatedWeekdays(alarmItem: AlarmItem): AnnotatedString {
+
+        // Indeces of the weekdays in the weekdays strings
+        val suArray = intArrayOf(0, 3, 6, 9, 12, 15, 18)
+        val moArray = intArrayOf(18, 0, 3, 6, 9, 12, 15)
+
+        val genArray: IntArray
+        val weekdaysString: String
+
+        // Get the array oכ 'skips' and the correct weekdays string
+        when (getPrefFirstDayOfWeek(parent)) {
+            "Su" -> {
+                weekdaysString = stringResource(R.string.su_mo_tu_we_th_fr_sa)
+                genArray = suArray
+            }
+
+            else -> {
+                weekdaysString = stringResource(R.string.mo_tu_we_th_fr_sa_su)
+                genArray = moArray
+            }
+        }
+
+
+        val defaultColor =
+            MaterialTheme.colorScheme.onSurface
+        val fadedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+
+        // If alarm inactive - just print string in default color
+        if (!alarmItem.isActive)
+            return buildAnnotatedString {
+                withStyle(style = SpanStyle(color = defaultColor)) {
+                    append(weekdaysString)
+                }
+            }
+
+        // If Active - Set color to selected/unselected days and mark the next day with underline
+        val indexOfNextDay = alarmItem.weekdayOfNextAlarm
+        val weekdays = alarmItem.getWeekDays()
+        var currentColor: Color
+        var underlined: TextDecoration
+
+        return buildAnnotatedString {
+            append(weekdaysString)
+            for (day in 0..6) {
+                currentColor = if ((weekdays and (1 shl day)) > 0) defaultColor else fadedColor
+                underlined =
+                    if (day == indexOfNextDay) TextDecoration.Underline else TextDecoration.None
+                addStyle(
+                    style = SpanStyle(
+                        color = currentColor,
+                        textDecoration = underlined
+                    ),
+                    start = genArray[day],
+                    end = genArray[day] + 2
+                )
+            }
+        }
+    }
+
+    // Get Item's info from Alarm list
+    // Get new state of checkbox
+    // Send update to this item down to the ViewModel
+    // Schedule/cancel alarm
+    private fun onActiveChange(alarmItem: AlarmItem, checked: Boolean) {
+
+        var b = alarmItem.bundle
+
+        // Create a new alarm, set active
+        val item = AlarmItem(b!!)
+        item.active = checked
+
+        // Reset snooze
+        item.resetSnoozeCounter()
+
+        if (checked)
+            item.recalculateDate() // If is an explicit date and in the past - change date to the near future
+
+        // Update View Model - this also causes recomposition
+        alarmViewModel.UpdateAlarm(item)
+
+        // Schedule/Cancel Alarm
+        item.Exec()
+
+        // Stop ringing if unchecked
+        if (!item.active) {
+            b = item.bundle
+            val context = appContext
+            val stopIntent = Intent(context, AlarmService::class.java)
+            stopIntent.putExtras(b)
+            AlarmReceiver.stopping(context, stopIntent)
+        }
+    }
+}
