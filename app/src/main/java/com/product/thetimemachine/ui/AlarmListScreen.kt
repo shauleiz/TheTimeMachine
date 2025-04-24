@@ -104,6 +104,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import com.product.thetimemachine.LanguageManager.isRtl
 
 
 class AlarmListScreen(
@@ -706,10 +707,16 @@ class AlarmListScreen(
             iconEnd2Start: Painter = rememberVectorPainter(Icons.Default.Check), // painterResource(R.drawable.baseline_alarm_24),
         ) {
 
+            Log.d("THE_TIME_MACHINE", "DismissBackground(): " +
+                    "progress = ${dismissState.progress} ; " +
+                    "dismissDirection = ${dismissState.dismissDirection} ; " +
+                    "currentValue = ${dismissState.currentValue} ; " +
+                    "targetValue = ${dismissState.targetValue} ; ")
+
             // TODO: Add color animation
             val color = when (dismissState.dismissDirection) {
-                StartToEnd -> colorStart2End
-                EndToStart -> colorEnd2Start
+                StartToEnd -> if (isRtl()) colorEnd2Start else colorStart2End // RTL has bug
+                EndToStart -> if (isRtl()) colorStart2End else colorEnd2Start // RTL has bug
                 Settled -> Color.Transparent
             }
 
@@ -749,22 +756,11 @@ class AlarmListScreen(
             }
         }
 
-        // Parameter 'confirmValueChange' of 'rememberSwipeToDismissBoxState()'
-        // Returns 'true' to confirm the swipe or 'false' to cancel the swipe
-        fun confirm(direction: SwipeToDismissBoxValue):Boolean{
-            when (direction)
-            {
-                StartToEnd -> { alarmViewModel.DeleteAlarm(alarmItem); return true}
-                EndToStart -> { return true}
-                Settled -> {return true}
-            }
-        }
+
 
         // Definition of the state of the swipe box
         // used as a parameter of 'SwipeToDismissBox()'
-        val dismissState = rememberSwipeToDismissBoxState(
-            confirmValueChange = {confirm(it)},
-            positionalThreshold = { it * .70f })
+        val dismissState = rememberSwipeToDismissBoxState(positionalThreshold = { it * .70f })
 
         // Swipe Box
         // Encapsulates the alarm item Card as its content
@@ -781,13 +777,8 @@ class AlarmListScreen(
         LaunchedEffect(dismissState.currentValue) {
             if (dismissState.currentValue == EndToStart)
                 onActiveChange(alarmItem, !alarmItem.isActive)
-            dismissState.snapTo(Settled)
+            dismissState.reset()
         }
-        /*if (dismissState.currentValue == EndToStart)
-            onActiveChange(alarmItem, !alarmItem.isActive)*/
-
-        //suspend {dismissState.snapTo(Settled)}
-        //swipeAction(dismissState)
     }
 
 
