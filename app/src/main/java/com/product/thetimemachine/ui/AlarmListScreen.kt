@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -13,7 +14,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -97,10 +98,8 @@ import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue.EndToStart
 import androidx.compose.material3.SwipeToDismissBoxValue.Settled
 import androidx.compose.material3.SwipeToDismissBoxValue.StartToEnd
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.SwipeToDismissBoxDefaults.positionalThreshold
-import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -697,62 +696,70 @@ class AlarmListScreen(
 
         // Composable reveled when the alarm Card is swiped
         // It's color, icon and alignment depends on the 'dismissDirection' of the swiping
-        // TODO: Animate color and icon depending on 'progress' of the swiping
         @Composable
         fun DismissBackground(
-            dismissState: SwipeToDismissBoxState,
+            state: SwipeToDismissBoxState,
             colorStart2End: Color = Color(0xFFFF1744), // Red
             colorEnd2Start: Color = Color(0xFF1DE9B6), // Green
             iconStart2End: Painter = rememberVectorPainter(Icons.Default.Delete),
             iconEnd2Start: Painter = rememberVectorPainter(Icons.Default.Check), // painterResource(R.drawable.baseline_alarm_24),
         ) {
+            var alpha : Float = 0F
 
-            Log.d("THE_TIME_MACHINE", "DismissBackground(): " +
-                    "progress = ${dismissState.progress} ; " +
-                    "dismissDirection = ${dismissState.dismissDirection} ; " +
-                    "currentValue = ${dismissState.currentValue} ; " +
-                    "targetValue = ${dismissState.targetValue} ; ")
-
-            // TODO: Add color animation
-            val color = when (dismissState.dismissDirection) {
+            // Color reveled when swiping
+            val color: Color = when (state.dismissDirection) {
                 StartToEnd -> if (isRtl()) colorEnd2Start else colorStart2End // RTL has bug
                 EndToStart -> if (isRtl()) colorStart2End else colorEnd2Start // RTL has bug
                 Settled -> Color.Transparent
             }
 
-            Row(
+            // Icon reveled when swiping
+            var icon: Painter = when (state.dismissDirection) {
+                StartToEnd -> if (!isRtl()) iconStart2End else iconEnd2Start // RTL has bug
+                EndToStart -> if (!isRtl()) iconEnd2Start else iconStart2End // RTL has bug
+                Settled -> iconEnd2Start // Never seen
+            }
+
+            // Icon alignment
+            var alignment: Alignment = when (state.dismissDirection) {
+                StartToEnd -> if (!isRtl()) Alignment.CenterStart else Alignment.CenterEnd
+                EndToStart -> if (!isRtl()) Alignment.CenterEnd else Alignment.CenterStart
+                Settled -> Alignment.CenterEnd// Never used
+            }
+
+            // Alpha of BG color - start with a weak color then increase intensity
+            // When swiping crosses threshold - full intensity
+            if (state.dismissDirection != Settled){
+                alpha = if (state.targetValue == Settled)
+                    state.progress*0.75F
+                else
+                    1F
+            }
+
+            // Color box and an action icon
+            Box(
+                contentAlignment = alignment,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color)
-                    .padding(12.dp, 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .background(color.copy(alpha=alpha))
             ) {
                 Icon(
-                    iconStart2End,
-                    contentDescription = "Swipe Start to End"
-                )
-                Spacer(modifier = Modifier)
-                Icon(
-                    // make sure add baseline_archive_24 resource to drawable folder
-                    iconEnd2Start,
-                    contentDescription = "Swipe End to Start"
+                    icon,
+                    modifier = Modifier.minimumInteractiveComponentSize(),
+                    contentDescription = null
                 )
             }
         }
 
+        // Called when swipe state changes
+        // Here the swipe action happens
+        // Swipe End to Start: Toggle active attribute of the alarm item
+        @Composable
         fun swipeAction(state: SwipeToDismissBoxState) {
-
-            Log.d("THE_TIME_MACHINE", "swipeAction(): " +
-                    "progress = ${state.progress} ; " +
-                    "dismissDirection = ${state.dismissDirection} ; " +
-                    "currentValue = ${state.currentValue} ; " +
-                    "targetValue = ${state.targetValue} ; ")
-
-            when (state.currentValue) {
-                StartToEnd -> alarmViewModel.DeleteAlarm(alarmItem)
-                EndToStart -> { onActiveChange(alarmItem, !alarmItem.isActive) /*; suspend {state.snapTo(Settled)}*/}
-                Settled -> {}
+            LaunchedEffect(state.currentValue) {
+                if (state.currentValue == EndToStart)
+                    onActiveChange(alarmItem, !alarmItem.isActive)
+                state.reset()
             }
         }
 
@@ -767,18 +774,15 @@ class AlarmListScreen(
         // TODO: Add animateContentSize to the modifier
         SwipeToDismissBox(
             state = dismissState,
-            //modifier = modifier,
+            modifier = Modifier.animateContentSize(),
             backgroundContent = { DismissBackground(dismissState) },
             content = {
                 alarmCard()
             }
         )
 
-        LaunchedEffect(dismissState.currentValue) {
-            if (dismissState.currentValue == EndToStart)
-                onActiveChange(alarmItem, !alarmItem.isActive)
-            dismissState.reset()
-        }
+        swipeAction(dismissState)
+
     }
 
 
