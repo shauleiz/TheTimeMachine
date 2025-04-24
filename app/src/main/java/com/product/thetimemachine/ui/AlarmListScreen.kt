@@ -101,6 +101,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.SwipeToDismissBoxDefaults.positionalThreshold
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 
@@ -516,6 +517,9 @@ class AlarmListScreen(
         nSel(alarmViewModel.nofSelectedItems)
 
 
+        //// SWIPE
+        //   The actual alarm entry implemented as a Composable Card
+        //   Encapsulated inside a SwipeToDismissBox
         val alarmCard = @Composable {
             Card(
                 modifier = Modifier.run {
@@ -690,6 +694,9 @@ class AlarmListScreen(
         }
 
 
+        // Composable reveled when the alarm Card is swiped
+        // It's color, icon and alignment depends on the 'dismissDirection' of the swiping
+        // TODO: Animate color and icon depending on 'progress' of the swiping
         @Composable
         fun DismissBackground(
             dismissState: SwipeToDismissBoxState,
@@ -742,21 +749,45 @@ class AlarmListScreen(
             }
         }
 
+        // Parameter 'confirmValueChange' of 'rememberSwipeToDismissBoxState()'
+        // Returns 'true' to confirm the swipe or 'false' to cancel the swipe
+        fun confirm(direction: SwipeToDismissBoxValue):Boolean{
+            when (direction)
+            {
+                StartToEnd -> { alarmViewModel.DeleteAlarm(alarmItem); return true}
+                EndToStart -> { return true}
+                Settled -> {return true}
+            }
+        }
+
+        // Definition of the state of the swipe box
+        // used as a parameter of 'SwipeToDismissBox()'
         val dismissState = rememberSwipeToDismissBoxState(
-            //confirmValueChange = {false},
+            confirmValueChange = {confirm(it)},
             positionalThreshold = { it * .70f })
 
+        // Swipe Box
+        // Encapsulates the alarm item Card as its content
+        // TODO: Add animateContentSize to the modifier
         SwipeToDismissBox(
             state = dismissState,
             //modifier = modifier,
             backgroundContent = { DismissBackground(dismissState) },
             content = {
                 alarmCard()
-                //Toast.makeText(appContext, dismissState1.currentValue.name, Toast.LENGTH_SHORT).show()
             }
         )
 
-        swipeAction(dismissState)
+        LaunchedEffect(dismissState.currentValue) {
+            if (dismissState.currentValue == EndToStart)
+                onActiveChange(alarmItem, !alarmItem.isActive)
+            dismissState.snapTo(Settled)
+        }
+        /*if (dismissState.currentValue == EndToStart)
+            onActiveChange(alarmItem, !alarmItem.isActive)*/
+
+        //suspend {dismissState.snapTo(Settled)}
+        //swipeAction(dismissState)
     }
 
 
