@@ -754,11 +754,16 @@ class AlarmListScreen(
         // Called when swipe state changes
         // Here the swipe action happens
         // Swipe End to Start: Toggle active attribute of the alarm item
+        // Swipe Start to End: Delete item
         @Composable
         fun swipeAction(state: SwipeToDismissBoxState) {
             LaunchedEffect(state.currentValue) {
                 if (state.currentValue == EndToStart)
                     onActiveChange(alarmItem, !alarmItem.isActive)
+
+                if (state.currentValue == StartToEnd)
+                    alarmViewModel.DeleteAlarm(alarmItem)
+
                 state.reset()
             }
         }
