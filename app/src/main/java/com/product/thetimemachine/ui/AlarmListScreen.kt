@@ -17,6 +17,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -476,7 +477,9 @@ class AlarmListScreen(
             items(
                 count = sortedList.size,
                 key = { sortedList[it].createTime }
-            ) { DisplayAlarmItem(sortedList[it]) { n -> nSel(n) } }
+            ) { Row(Modifier.animateItem()){
+                DisplayAlarmItem(sortedList[it]) { n -> nSel(n) } }
+            }
         }
     }
 
@@ -758,13 +761,15 @@ class AlarmListScreen(
         @Composable
         fun swipeAction(state: SwipeToDismissBoxState) {
             LaunchedEffect(state.currentValue) {
-                if (state.currentValue == EndToStart)
+                if (state.currentValue == EndToStart){
                     onActiveChange(alarmItem, !alarmItem.isActive)
+                    state.reset()
+                }
 
-                if (state.currentValue == StartToEnd)
+                if (state.currentValue == StartToEnd) {
+                    //state.reset()
                     alarmViewModel.DeleteAlarm(alarmItem)
-
-                state.reset()
+                }
             }
         }
 
