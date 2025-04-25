@@ -290,11 +290,11 @@ fun getCurrentColorScheme(
     val isDarkTheme = when (darkThemeCom) {
         "Light" -> false
         "Dark" -> true
-        "Auto" -> isSystemInDarkTheme()
+        "System" -> isSystemInDarkTheme()
         else -> false
     }
 
-    Log.d("THE_TIME_MACHINE", "getCurrentColorScheme():  darkTheme = $darkTheme ; darkThemeCom = $darkThemeCom ; isDarkTheme = $isDarkTheme")
+    Log.d("THE_TIME_MACHINE", "getCurrentColorScheme():  isSystemInDarkTheme() = ${isSystemInDarkTheme()} ; darkTheme = $darkTheme ; darkThemeCom = $darkThemeCom ; isDarkTheme = $isDarkTheme")
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
