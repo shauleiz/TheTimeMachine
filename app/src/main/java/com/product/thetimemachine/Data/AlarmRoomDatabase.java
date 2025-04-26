@@ -24,9 +24,9 @@ public abstract class AlarmRoomDatabase extends RoomDatabase {
    public abstract AlarmDao alarmDao();
 
    private static volatile AlarmRoomDatabase alarmRoomDatabase;
-   private static final int NUMBER_OF_THREADS = 4;
+   //private static final int NUMBER_OF_THREADS = 4;
    public static final ExecutorService databaseWriteExecutor =
-         Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+         Executors.newSingleThreadExecutor();
 
    public static AlarmRoomDatabase getDatabase(final Context context) {
       if (alarmRoomDatabase == null) {

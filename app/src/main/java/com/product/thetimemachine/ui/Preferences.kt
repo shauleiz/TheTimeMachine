@@ -626,7 +626,7 @@ fun ShowPreferences(
 
         Log.d("THE_TIME_MACHINE", "getEntryValueStr():  pattern = $value  ; list = $list")
 
-        return 0
+        return R.string.general_error
     }
 
     //  Display the current value (e.g. 24h Clock) under the title
