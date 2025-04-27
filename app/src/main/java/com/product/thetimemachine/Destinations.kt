@@ -44,7 +44,16 @@ data object AlarmEditEntry : Destination {
     override val label = R.string.alarmsetup_title
 }
 
-data object AlarmList :  Destination {
+
+data object AlarmList : Destination {
+    override val route = "AlarmList"
+    override val label = R.string.alarmlist_title
+    const val ITEM_ID_ARG = "item_id"
+    val routeWithArgs = "$route/{$ITEM_ID_ARG}"
+    val arguments = listOf(navArgument(ITEM_ID_ARG) { type = NavType.LongType })
+}
+
+data object AlarmListEntry :  Destination {
     override val route = "AlarmList"
     override val label = R.string.alarmlist_title
 }

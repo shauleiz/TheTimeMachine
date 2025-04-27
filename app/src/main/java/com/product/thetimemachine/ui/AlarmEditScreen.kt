@@ -113,7 +113,7 @@ import java.time.format.DateTimeFormatter
 
 class AlarmEditScreen(
     private val navToSettings: () -> Unit,
-    private val navToAlarmList: () -> Unit,
+    private val navToAlarmList: (Long) -> Unit,
     private val navBack: () -> Unit,
     private val entryPoint: () -> Boolean = {false},
 ) {
@@ -407,7 +407,7 @@ class AlarmEditScreen(
         when (action) {
             checkDesc -> checkmarkClicked{clickResult()}
             settingsDesc -> navToSettings()//navigate2Settings(navController = navController)
-            alarmListDesc -> navToAlarmList()
+            alarmListDesc -> navToAlarmList(0)
         }
     }
 
@@ -1351,7 +1351,7 @@ class AlarmEditScreen(
         item.Exec()
 
         // Display the Alarm List Fragment
-        navToAlarmList()
+        navToAlarmList(item.createTime)
 
         /*
         if (parent != null) parent!!.supportFragmentManager

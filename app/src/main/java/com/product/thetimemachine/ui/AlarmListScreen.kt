@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.Animatable
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -288,7 +290,7 @@ class AlarmListScreen(
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun AlarmListDisplay() {
+    fun AlarmListDisplay(itemId: Long = 0) {
 
         Log.d(
             "THE_TIME_MACHINE",
@@ -346,7 +348,7 @@ class AlarmListScreen(
                             }
                         },
                         floatingActionButtonPosition = FabPosition.End,
-                    ) { DisplayAlarmList(alarmList, it) { n -> nSelectedItems = n } }
+                    ) { DisplayAlarmList(alarmList, itemId, it) { n -> nSelectedItems = n } }
 
                 }
             }
@@ -462,7 +464,7 @@ class AlarmListScreen(
         }
 
     @Composable
-    fun DisplayAlarmList(list: MutableList<AlarmItem>?, pad: PaddingValues, nSel: (Int) -> Unit) {
+    fun DisplayAlarmList(list: MutableList<AlarmItem>?, itemId: Long = 0, pad: PaddingValues, nSel: (Int) -> Unit) {
         if (list == null) return
 
         // Sorting
@@ -478,7 +480,7 @@ class AlarmListScreen(
                 count = sortedList.size,
                 key = { sortedList[it].createTime }
             ) { Row(Modifier.animateItem()){
-                DisplayAlarmItem(sortedList[it]) { n -> nSel(n) } }
+                DisplayAlarmItem(sortedList[it], itemId) { n -> nSel(n) } }
             }
         }
     }
@@ -486,7 +488,7 @@ class AlarmListScreen(
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    private fun DisplayAlarmItem(alarmItem: AlarmItem, nSel: (Int) -> Unit) {
+    private fun DisplayAlarmItem(alarmItem: AlarmItem, itemId: Long = 0, nSel: (Int) -> Unit) {
 
         // Force this function to be called when list of selected changes
         // val selectToggle by parent!!.alarmViewModel.selectToggleObserve.observeAsState( )
@@ -516,6 +518,15 @@ class AlarmListScreen(
             label = "scale"
         )
 
+        // Animate newly added/edited item by its id (id==0 -> do nothing)
+        val cardColor = MaterialTheme.colorScheme.surface
+        val tempColor = MaterialTheme.colorScheme.inverseSurface
+        val animColor = remember { Animatable(cardColor) }
+        if (alarmItem.createTime == itemId){ LaunchedEffect(Unit) {
+            animColor.animateTo(tempColor, animationSpec = tween(500, easing = LinearEasing))
+            animColor.animateTo(cardColor, animationSpec = tween(500, easing = LinearEasing))}
+        }
+
         // Hoist number of selected items
         nSel(alarmViewModel.nofSelectedItems)
 
@@ -536,12 +547,12 @@ class AlarmListScreen(
                             if (selected) alarmItemLongClicked(alarmItem.getCreateTime())
                             else alarmItemEdit(alarmItem, true)
                         }
-                        .background(MaterialTheme.colorScheme.surface)
+                        .background(cardColor)
                         .wrapContentHeight()
                 },
                 shape = MaterialTheme.shapes.small,
                 elevation = CardDefaults.elevatedCardElevation(5.dp),
-                colors = CardDefaults.cardColors(containerColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface),
+                colors = CardDefaults.cardColors(containerColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else animColor.value),
                 // onClick = {}
             ) {
                 ConstraintLayout(modifier = Modifier.fillMaxSize()) {

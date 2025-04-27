@@ -42,8 +42,17 @@ fun AlarmNavHost(
         startDestination = AlarmEditEntry.route,
     ) {
 
+        composable(
+            route = AlarmList.routeWithArgs,
+            arguments = AlarmList.arguments,
+        ) { navBackStackEntry ->
+            val itemId =
+                navBackStackEntry.arguments?.getLong(AlarmList.ITEM_ID_ARG, 0)
+            if (itemId != null)
+                ShowAlarmListScreen(alarmViewModel, navController, itemId)
+        }
 
-        composable(route = AlarmList.route) {
+        composable(route = AlarmListEntry.route) {
             ShowAlarmListScreen(alarmViewModel, navController)
         }
 
@@ -62,6 +71,8 @@ fun AlarmNavHost(
         ) {
             ShowAlarmEditScreen(navController, 0, {navController.previousBackStackEntry == null})
         }
+
+
 
         composable(route = Settings.route) {
             //mainActivity.NavigationBarBgColor()
@@ -88,7 +99,7 @@ fun ShowAlarmEditScreen(
 {
     if (itemId != null) AlarmEditScreen(
         navToSettings = { navigate2Settings(navController) },
-        navToAlarmList = {navigate2AlarmList(navController)},
+        navToAlarmList = {navigate2AlarmList(navController, it)},
         navBack = {navController.popBackStack()},
         entryPoint = entryPoint,
     ).AlarmEditDisplayTop(itemId)
@@ -97,6 +108,7 @@ fun ShowAlarmEditScreen(
 @Composable
 fun ShowAlarmListScreen(alarmViewModel: AlarmViewModel?,
                         navController: NavHostController,
+                        itemId: Long = 0,
                         )
 {
 
@@ -106,7 +118,7 @@ fun ShowAlarmListScreen(alarmViewModel: AlarmViewModel?,
             navToSettings = { navigate2Settings(navController) },
             navToAlarmEdit = {navigate2AlarmEdit(navController,it)},
             navBack = {navController.popBackStack()}
-        ).AlarmListDisplay()
+        ).AlarmListDisplay(itemId)
     }
 }
 
@@ -143,6 +155,10 @@ private fun navigate2Target(navController: NavHostController, route : String){
 fun navigate2AlarmEdit(navController: NavHostController, itemId: Long) {
     Log.d("THE_TIME_MACHINE", "+++ navigate2AlarmEdit(): itemId=${itemId}")
     navigate2Target(navController, "${AlarmEdit.route}/$itemId")
+}
+
+fun navigate2AlarmList(navController: NavHostController, itemId: Long) {
+    navigate2Target(navController, "${AlarmList.route}/$itemId")
 }
 
 fun navigate2AlarmList(navController: NavHostController) {
