@@ -1338,6 +1338,8 @@ class AlarmEditScreen(
         item.alarmSound = setUpAlarmValues.alarmSound.value!!
         item.gradualVolume = setUpAlarmValues.gradualVolume.value!!
 
+        // Mark the alarm item to be highlighted when displayed in the list
+        item.setHighLight()
 
         // And finally:
         // Add or Update the entry on the list

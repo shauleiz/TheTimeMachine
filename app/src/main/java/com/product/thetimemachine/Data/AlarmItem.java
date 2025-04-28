@@ -83,8 +83,11 @@ public class AlarmItem {
    public static final int FRIDAY = 0x20;
    public static final int SATURDAY = 0x40;
    //public static final int DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
+
    // GenStatus flags
    public static final int RINGING = 0x1;
+   public static final int HIGHLIGHT = 0x2;
+
    @PrimaryKey
    public long createTime;
    public int hour, minute, snoozeCounter;
@@ -570,6 +573,24 @@ public class AlarmItem {
          stat &= (~RINGING);
       setGenStatus(stat);
    }
+
+   public boolean isHighLight() {
+      int stat = getGenStatus();
+      return (stat & HIGHLIGHT) > 0;
+   }
+
+   public void setHighLight(boolean highLight) {
+      int stat = getGenStatus();
+      if (highLight)
+         stat |= HIGHLIGHT;
+      else
+         stat &= (~HIGHLIGHT);
+      setGenStatus(stat);
+   }
+
+   public void setHighLight() {setHighLight(true);}
+   public void resetHighLight() {setHighLight(false);}
+
 
    public void resetSnoozeCounter() {
       setSnoozeCounter(0);
