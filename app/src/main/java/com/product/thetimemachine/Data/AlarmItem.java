@@ -588,7 +588,7 @@ public class AlarmItem {
       setGenStatus(stat);
    }
 
-   public void setHighLight() {setHighLight(true);}
+   public void setHighLight() {setHighLight(true); }
    public void resetHighLight() {setHighLight(false);}
 
 

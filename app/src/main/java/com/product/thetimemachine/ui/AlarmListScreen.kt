@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.EaseInCubic
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -106,6 +107,7 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import com.product.thetimemachine.Data.AlarmRoomDatabase.insertAlarm
 import com.product.thetimemachine.LanguageManager.isRtl
 
 
@@ -518,13 +520,24 @@ class AlarmListScreen(
             label = "scale"
         )
 
-        // Animate newly added/edited item by its id (id==0 -> do nothing)
+        // Animate newly added/edited item by flag HighLight
         val cardColor = MaterialTheme.colorScheme.surface
-        val tempColor = MaterialTheme.colorScheme.inverseSurface
+        val tempColor = MaterialTheme.colorScheme.surfaceVariant
         val animColor = remember { Animatable(cardColor) }
-        if (alarmItem.createTime == itemId){ LaunchedEffect(Unit) {
-            animColor.animateTo(tempColor, animationSpec = tween(500, easing = LinearEasing))
-            animColor.animateTo(cardColor, animationSpec = tween(500, easing = LinearEasing))}
+
+        // If HighLight required: Launch animation then remove flag HighLight
+        // Animating Card's containerColor
+        if (alarmItem.isHighLight) {
+            LaunchedEffect(Unit) {
+                // Animation
+                animColor.animateTo(cardColor, animationSpec = tween(40, easing = EaseInCubic))
+                animColor.animateTo(tempColor, animationSpec = tween(100, easing = EaseInCubic))
+                animColor.animateTo(cardColor, animationSpec = tween(1000, easing = LinearEasing))
+
+                // Reset flag
+                alarmItem.resetHighLight()
+                insertAlarm(alarmItem, appContext)
+            }
         }
 
         // Hoist number of selected items
@@ -755,7 +768,7 @@ class AlarmListScreen(
                 contentAlignment = alignment,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color.copy(alpha=alpha))
+                    .background(color.copy(alpha = alpha))
             ) {
                 Icon(
                     icon,
